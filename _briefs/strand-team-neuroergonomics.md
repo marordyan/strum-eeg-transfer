@@ -78,6 +78,19 @@ Provisional, pending the user's seed list of papers and authors. Team neuroergon
 smaller and more scattered literature than the model strands, so the user's pointers matter more
 here than anywhere else in the review.
 
+Two anchors are already fixed:
+
+- Mullen T, Kothe C, Makeig S. STRUM: A New Dataset for Neuroergonomics Research. IEEE SMC 2018,
+  digital object identifier `10.1109/SMC.2018.00023`. The `datasets-benchmarks` strand cards the
+  recording; this strand cards the task and stimulus design, what construct the authors intended
+  the conditions to elicit, and how they justified the spoken and written contrast. Use the same
+  extraction, and use slug `strum-2018-design` so the two cards do not collide.
+- Kothe C and colleagues. Decoding Working-Memory Load During n-Back Task Performance from High
+  Channel NIRS Data. arXiv `2312.07546`. An inferred lead rather than a given one: same author
+  group, workload as the construct, a different modality. Bears on categories 1 and 4. Verify it
+  earns a card rather than assuming it does, and mark it `relevance: low` if the construct
+  definition does not transfer to EEG.
+
 Until they arrive, anchor on hyperscanning review articles and on the operational workload
 literature, and expand with `opencite cite --direction both`, which recovers this literature
 better than keyword search because terminology is inconsistent across communities.

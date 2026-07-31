@@ -79,12 +79,45 @@ access route. Write `unknown` where the source does not say. Do not infer.
 
 ## Seed material
 
-Provisional, pending the user's seed list. The user is supplying the STRUM reference, which is
-the anchor for category 5 and a required entry.
+### Required entry: the STRUM dataset
 
-Until then, anchor on the pretraining corpora named by the `eeg-models` strand's checkpoints,
-and on the dataset registries PhysioNet, OpenNeuro, and the EEG-BIDS example collection, mining
-each for entries in categories 3 and 4.
+Mullen T, Kothe C, Makeig S. STRUM: A New Dataset for Neuroergonomics Research. 2018 IEEE
+International Conference on Systems, Man, and Cybernetics (SMC), pages 77 to 82.
+Digital object identifier `10.1109/SMC.2018.00023`.
+
+Card this as `type: dataset`, slug `strum-2018`, with the full fixed field set. Retrieval notes:
+IEEE SMC proceedings are paywalled, so expect `redistribution_ok: false` and a markdown
+extraction only, unless an author copy exists. Check the Swartz Center for Computational
+Neuroscience and Intheon publication pages for an author accepted manuscript before settling for
+extraction alone.
+
+Record the citation count and check it against the claim below. At retrieval time Semantic
+Scholar and OpenAlex both reported 2 citations. If that holds, it is a substantive finding rather
+than trivia: it means there is almost no published modeling work on STRUM to compare against,
+which changes what the project can claim as a baseline and belongs in the Phase 4 gap analysis.
+Search explicitly for work citing this paper with `opencite cite "10.1109/SMC.2018.00023"
+--direction backward` and card whatever it returns.
+
+### Secondary seeds, inferred rather than given
+
+These follow from the STRUM authorship and are worth checking, but they are the collector's
+leads rather than confirmed dependencies. Verify relevance before carding; drop any that turn out
+not to bear on STRUM.
+
+- Kothe C and colleagues. The Lab Streaming Layer for Synchronized Multimodal Recording. bioRxiv,
+  digital object identifier `10.1101/2024.02.13.580071`. Bears on category 3, since
+  synchronization method and its precision constrain any inter-participant analysis, and STRUM
+  was plausibly recorded with this toolchain. Confirm from the STRUM paper's methods rather than
+  assuming it.
+- Other datasets and recording infrastructure from the same authors, found by
+  `opencite cite --direction both` from the two entries above.
+
+### Remaining anchors
+
+The user's broader seed list of papers and authors has not yet arrived, so categories 1 through 4
+still rely on derived anchors: the pretraining corpora named by the `eeg-models` strand's
+checkpoints, and the dataset registries PhysioNet, OpenNeuro, and the EEG-BIDS example
+collection, mined for entries in categories 3 and 4.
 
 Imported entries must set `imported_from: <relative path>` in `card.md`.
 
@@ -122,7 +155,10 @@ reports on them.
 
 - [ ] At least 18 entries across all 5 categories
 - [ ] At least 3 entries per category
-- [ ] The STRUM dataset is carded from its primary source
+- [ ] The STRUM dataset is carded from its primary source, digital object identifier
+      `10.1109/SMC.2018.00023`
+- [ ] A backward citation search from the STRUM digital object identifier has been run, and
+      `INDEX.md` records what it returned, including the case where it returns nothing usable
 - [ ] Every `type: dataset` card records the full fixed field set, with `unknown` where the
       source is silent
 - [ ] At least 4 datasets carrying synchronized EEG and at least one peripheral modality
