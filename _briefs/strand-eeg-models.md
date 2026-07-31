@@ -186,6 +186,13 @@ Exclusion: single-dataset supervised models with no pretraining and no role as a
 baseline; brain-computer interface (BCI) application papers that use a pretrained model as a
 black box without reporting a baseline comparison.
 
+## Collection practice
+
+Read `_briefs/collection-practice.md` before starting. It carries the working tool invocations, the
+BibTeX verification requirement, the search trap that silently reports zero matches on converted
+sources, and the rules for missing facts, self-contradicting sources, and strand-level fields. Every
+item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
+
 ## Skills to use
 
 - `opencite:opencite` for DOI lookup, PDF retrieval, PDF to markdown conversion, BibTeX export.

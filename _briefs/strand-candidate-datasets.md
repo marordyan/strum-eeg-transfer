@@ -156,6 +156,13 @@ establishes whether a label type supports a cognitive claim.
 Exclusion: private clinical datasets with no access route; datasets under 8 participants with no
 peripheral channels and no multi-person structure, unless a checkpoint in strand A reports on them.
 
+## Collection practice
+
+Read `_briefs/collection-practice.md` before starting. It carries the working tool invocations, the
+BibTeX verification requirement, the search trap that silently reports zero matches on converted
+sources, and the rules for missing facts, self-contradicting sources, and strand-level fields. Every
+item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
+
 ## Skills to use
 
 - `opencite:opencite` for lookup, retrieval, conversion, and BibTeX export.

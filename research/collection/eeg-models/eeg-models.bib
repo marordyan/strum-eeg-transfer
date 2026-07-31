@@ -1,0 +1,80 @@
+% Strand A: EEG representation learning and foundation models.
+% Citation keys equal entry slugs verbatim, per the project addendum in
+% research/collection/_schema/paper-card.md. Entries were generated with
+% `uvx opencite lookup ... -f bibtex` and then corrected by hand; the
+% corrections are noted per entry, because opencite's output was wrong in
+% ways a key rewrite alone would not fix.
+
+@inproceedings{reve-2025,
+  title        = {{REVE}: A Foundation Model for {EEG} -- Adapting to Any Setup with Large-Scale Pretraining on 25,000 Subjects},
+  author       = {El Ouahidi, Yassine and Lys, Jonathan and Th{\"o}lke, Philipp and Farrugia, Nicolas and Pasdeloup, Bastien and Gripon, Vincent and Jerbi, Karim and Lioi, Giulia},
+  booktitle    = {Advances in Neural Information Processing Systems 39 ({NeurIPS} 2025)},
+  year         = {2025},
+  eprint       = {2510.21585},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2510.21585},
+  note         = {opencite returned @article with journal = {arXiv:cs.LG}; changed to @inproceedings because the PDF footer states ``39th Conference on Neural Information Processing Systems (NeurIPS 2025)''. Surname corrected to ``El Ouahidi'' (opencite split it as ``Ouahidi, Yassine El'').}
+}
+
+@inproceedings{labram-2024,
+  title        = {Large Brain Model for Learning Generic Representations with Tremendous {EEG} Data in {BCI}},
+  author       = {Jiang, Wei-Bang and Zhao, Li-Ming and Lu, Bao-Liang},
+  booktitle    = {The Twelfth International Conference on Learning Representations ({ICLR} 2024)},
+  year         = {2024},
+  doi          = {10.48550/arXiv.2405.18765},
+  eprint       = {2405.18765},
+  archiveprefix = {arXiv},
+  url          = {https://arxiv.org/abs/2405.18765},
+  note         = {opencite returned @article with the ICLR name in the journal field; changed to @inproceedings. Title retains the trailing ``in BCI'' as it appears on the arXiv record and the PDF title block; the ICLR proceedings title omits it.}
+}
+
+@article{brainwave,
+  title        = {{BrainWave}: A Brain Signal Foundation Model for Clinical Applications},
+  author       = {Yuan, Zhizhang and Shen, Fanqi and Li, Meng and Yu, Yuguo and Wu, Fei and Tan, Chenhao and Yang, Yang},
+  journal      = {arXiv preprint arXiv:2402.10251},
+  year         = {2024},
+  doi          = {10.48550/arXiv.2402.10251},
+  eprint       = {2402.10251},
+  archiveprefix = {arXiv},
+  primaryclass = {q-bio.NC},
+  url          = {https://arxiv.org/abs/2402.10251},
+  note         = {opencite omitted Fei Wu from the author list; restored from the PDF author block, giving the seven authors named in the strand brief. Record is at v7 (September 2025); year is the first-posting year.}
+}
+
+@article{lin-2026-identity-trap,
+  title        = {The Identity Trap in {EEG} Foundation Models: A Diagnostic Audit},
+  author       = {Lin, Jun-You and Wu, Ying Choon and Jung, Tzyy-Ping},
+  journal      = {arXiv preprint arXiv:2606.06647},
+  year         = {2026},
+  eprint       = {2606.06647},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2606.06647},
+  note         = {No DOI exists. Supplied by the brief as OpenAlex W7164090340; arXiv identifier resolved via the OpenAlex REST API, since opencite cannot look up a bare OpenAlex work ID.}
+}
+
+@article{zare-2026-stress-testing,
+  title        = {Stress-Testing {EEG} Foundation Models for Clinical Decoding: Dataset Identity and Targeted Negative Controls},
+  author       = {Zare, Marzieh},
+  journal      = {arXiv preprint arXiv:2607.24519},
+  year         = {2026},
+  eprint       = {2607.24519},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2607.24519},
+  note         = {No DOI exists. Supplied by the brief as OpenAlex W7171748390; arXiv identifier resolved via the OpenAlex REST API, since opencite cannot look up a bare OpenAlex work ID.}
+}
+
+@inproceedings{sirca-2026-peft-motor-imagery,
+  title        = {Parameter-Efficient Fine-Tuning of {EEG} Foundation Models for Plug-and-Play Motor Imagery {BCIs}},
+  author       = {{\v S}irca, Urban and Brulec, Lovro and Alimardani, Maryam},
+  booktitle    = {2026 14th International Conference on Brain-Computer Interface ({BCI})},
+  publisher    = {IEEE},
+  address      = {Gangwon Province, Korea},
+  pages        = {1--7},
+  year         = {2026},
+  doi          = {10.1109/BCI69045.2026.11435102},
+  url          = {https://doi.org/10.1109/BCI69045.2026.11435102},
+  note         = {opencite returned @Conference with booktitle = {Balkan Conference in Informatics}, which is wrong -- a Semantic Scholar venue-matching error. Corrected against Crossref, which gives the container title, IEEE as publisher, the event location, and pages 1--7. Surname diacritic and full given name of the third author restored (opencite had ``M. Alimardani'').}
+}

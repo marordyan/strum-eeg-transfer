@@ -174,6 +174,64 @@ enforced invariants:
 When a license is unclear the answer is `unknown`, which means no PDF is committed. Re-archiving
 later is cheap; a takedown notice is not.
 
+### Preprint licenses are read, never inferred from the host
+
+Found during the Phase 2 pilot, on the first entry collected. The vocabulary token
+`preprint-cc-arxiv` reads as though being on arXiv implied a Creative Commons license. It does not.
+arXiv's default is a perpetual non-exclusive license granted to arXiv itself, which conveys no
+redistribution right to anyone else. A paper posted under that default is `redistribution_ok: false`
+with no committed PDF, however open it looks in a browser.
+
+So the token is never applied from the fact of the host. Read the license statement on the landing
+page and act on what it says:
+
+| What the landing page states | Leading token | `redistribution_ok` | PDF |
+|---|---|---|---|
+| CC-BY, CC-BY-SA, CC0, CC-BY-NC | `preprint-cc-arxiv`, `preprint-cc-biorxiv`, `preprint-cc-osf`, or the matching `CC-*` token | true | archive |
+| Any Creative Commons license including NoDerivatives, for example CC-BY-NC-ND | same, with the full license in a parenthetical qualifier | true | archive the PDF; see the ND note below |
+| arXiv default non-exclusive, or no license stated, or a license you cannot positively identify | `unknown` | false | none |
+
+Record the license string you actually read, verbatim, in `meta.json.notes`. If the page states no
+license, say so explicitly rather than leaving the field to imply it.
+
+#### NoDerivatives and the markdown extraction
+
+A verbatim PDF copy is not a derivative work, so a NoDerivatives license still permits archiving
+`source.pdf`. A markdown conversion arguably is a derivative, so under an ND license `source.md`
+rests on research-note fair use rather than on the license grant, which is the same footing as a
+paywalled paper's extraction. Where that applies, say so in `notes` rather than leaving it implied.
+The reasoning belongs on the record, because the person auditing this later will not reconstruct it.
+
+The vocabulary in the copied schema above has no token for CC-BY-NC-ND. Use the closest preprint or
+`CC-*` token as the leading token and put the real license in the qualifier, which the validator
+accepts by design.
+
+### `md_quality` describes fidelity, not completeness
+
+Also from the pilot. The enum reads as though it measured how much of a source was captured, but the
+problem in practice is how badly the captured text is mangled. A markitdown conversion of a two-column
+paper is complete and close to unusable: words lose their spacing, tables shred into invalid markdown,
+figures become character soup. A single-column preprint converts cleanly.
+
+Apply it this way, so the field means the same thing across 79 entries:
+
+- `clean` — single-column source, text and tables readable as written.
+- `rough` — two-column source, or any conversion where tables and numbers must be cross-checked
+  against the original PDF before being quoted on a card.
+- `partial` — a substantial part of the source is absent from the extraction.
+- `abstract-only` — only the abstract and metadata were retrievable, typically a paywalled paper with
+  no open copy.
+
+When the value is `rough` or worse, `meta.json.notes` must name which parts came out unusable. A
+downstream reader deciding whether to re-extract needs to know whether the tables survived, and the
+enum alone cannot say.
+
+### `imported_from` means carried over, not found
+
+Set it only for an entry brought in from an existing document: a prior review, a grant application,
+another strand's corpus. A paper named as a seed or a lead in a strand brief was found during
+collection, not imported, so `null` is correct for it.
+
 One limit worth knowing: the archived-only-PDF rule and the sha256 match are read from `card.md`
 frontmatter, so they are skipped when `card.md` is missing or cannot be read. Those cases raise
 their own violations, so nothing passes clean, but the license reason will not be the one named.

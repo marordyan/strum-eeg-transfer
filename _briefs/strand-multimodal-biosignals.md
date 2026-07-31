@@ -232,6 +232,13 @@ peripheral contribution by ablation, or establishes an engineered-feature baseli
 Exclusion: consumer wearable stress or recovery products with no published evaluation; medical
 diagnosis from ECG alone with no representation-learning or transfer angle.
 
+## Collection practice
+
+Read `_briefs/collection-practice.md` before starting. It carries the working tool invocations, the
+BibTeX verification requirement, the search trap that silently reports zero matches on converted
+sources, and the rules for missing facts, self-contradicting sources, and strand-level fields. Every
+item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
+
 ## Skills to use
 
 - `opencite:opencite` for retrieval, conversion, and BibTeX export.

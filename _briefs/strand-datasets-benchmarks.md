@@ -151,6 +151,13 @@ specifies a data format, or critiques evaluation practice.
 Exclusion: candidate datasets this project might fine-tune on, which belong to strand D unless a
 strand A checkpoint pretrained on or benchmarked against them; private corpora with no access route.
 
+## Collection practice
+
+Read `_briefs/collection-practice.md` before starting. It carries the working tool invocations, the
+BibTeX verification requirement, the search trap that silently reports zero matches on converted
+sources, and the rules for missing facts, self-contradicting sources, and strand-level fields. Every
+item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
+
 ## Skills to use
 
 - `opencite:opencite` for lookup, retrieval, conversion, and BibTeX export.

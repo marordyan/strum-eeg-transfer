@@ -1,0 +1,146 @@
+# Collection practice (read before starting any strand)
+
+Rules and tool invocations that apply to every strand, separated out so there is one place to fix
+them rather than four. Everything here was learned from the Phase 2 pilot on `eeg-models`, where six
+entries were collected specifically to find these problems before four agents hit them at once. Each
+item below cost real time or nearly corrupted a card.
+
+Your strand brief governs what to collect. This document governs how.
+
+## Tool invocations that actually work
+
+### Converting a PDF to markdown
+
+Bare `uvx opencite convert` fails on a missing dependency, and `uvx --from 'opencite[pdf]'` then
+fails on markitdown's own extra. The only form that works:
+
+```bash
+uvx --from 'opencite[pdf]' --with 'markitdown[pdf]' opencite convert <pdf> -o <out.md>
+```
+
+### Resolving a bare OpenAlex work identifier
+
+`opencite lookup` handles digital object identifiers, not OpenAlex work identifiers.
+`uvx opencite lookup "W7164090340"` returns "Paper not found". Use the REST interface:
+
+```bash
+curl -s "https://api.openalex.org/works/W7164090340"
+```
+
+Several leads in the briefs are given as OpenAlex identifiers, so this is not an edge case.
+
+### Resolving a paper that keyword search cannot find
+
+Keyword search misses recent preprints that exact-title search finds. Before concluding an identifier
+is unresolvable, try the exact title in quotes. In the pilot, BrainWave failed repeated keyword
+queries and resolved immediately on exact title. Only after exact title, an arXiv listing search, and
+an OpenAlex title query all fail should an entry take the `not-available` path.
+
+Never construct an identifier that looks plausible. A card honestly recording a failed resolution is
+correct and useful; a card carrying a well-formed wrong identifier is corpus poison, because
+everything downstream treats it as verified.
+
+## Do not use grep on converted markdown
+
+This nearly poisoned a card in the pilot. Markitdown output can contain bytes that make BSD grep on
+macOS treat the file as binary, and `grep -c` then prints nothing and exits 1, which is
+indistinguishable from a genuine zero. Verified on the pilot corpus: `grep -c "Hz"` on
+`labram-2024/source.md` reports no matches, while Python counts 24 occurrences of the same string in
+the same file.
+
+The failure mode is what makes this dangerous. An agent that trusts the silent zero writes "the paper
+does not report its sampling rate" on the card, and that reads as diligence rather than as an error.
+
+Search converted sources with `rg`, or with Python:
+
+```bash
+python3 -c "print(open('<path>', encoding='utf-8', errors='replace').read().count('<needle>'))"
+```
+
+## BibTeX from opencite is not trustworthy
+
+Rewriting the citation key to the slug, which the schema addendum requires, is necessary but nowhere
+near sufficient. Three of six pilot entries came back with substantively wrong metadata:
+
+- a conference paper was given `booktitle = {Balkan Conference in Informatics}`, an unrelated venue,
+  from a Semantic Scholar venue-match error
+- an author was silently dropped from the author list
+- conference papers came back as `@article` with the conference name stuffed into `journal`
+
+These fields flow into the direction paper's reference list, where a wrong venue or a truncated author
+list is a citation error in a published document.
+
+So for every entry: verify the entry type, venue, year, and full author list against the PDF's own
+title block or against Crossref before appending to the strand bib. Treat opencite's venue and author
+fields as leads. Fix the entry type (`@inproceedings` for conference papers) rather than leaving what
+opencite emitted.
+
+## Reading the source well enough to fill the card
+
+The per-entry cost is dominated by this, not by retrieval. The facts each brief requires are scattered:
+in the pilot, one paper's parameter counts were in an appendix table and its patch size in another,
+neither mentioned in the body. Budget four to six targeted reads per paper after conversion. This
+cannot be shortened without guessing, and guessing here is what the whole review is built to avoid.
+
+Where a converted source is mangled, cross-check numbers against the PDF's own tables rather than
+trusting the extraction.
+
+## Two distinct kinds of missing fact
+
+Your brief requires certain facts on every card, for example a transfer number with its baseline. When
+one is absent, which of these two cases applies changes what a reader should do about it, so record
+them differently:
+
+- **The source does not report it.** Write `not reported`. This is evidence about the literature and
+  belongs in the synthesis.
+- **The source reports it but you could not see it**, typically a paywalled paper whose abstract gives
+  the comparator and the direction but not the magnitude. Write
+  `reported but not accessible: <what is known>`, and in `meta.json.notes` record what retrieval was
+  attempted. This is a gap in our access, not in the literature, and it is worth re-attempting later.
+
+Conflating the two would tell Phase 4 that the field has not measured something when in fact we simply
+have not read it.
+
+## When a source contradicts itself
+
+This happened twice in six pilot entries. One paper's prose named a different classifier than its own
+table; another gave a different model count in its abstract, its table, and its conclusion.
+
+Standing rule: prefer the tables and the abstract over body prose, card the value you take, and record
+the discrepancy in the card's "Open questions / limitations" section. Do not silently pick one. A
+source that contradicts itself is a fact about that source, and Phase 3 needs it.
+
+## Fields that need strand-level judgment
+
+### `relevance`
+
+The 40 percent ceiling on `relevance: high` is a property of the finished strand, but you assign the
+field one entry at a time and cannot see the distribution mid-collection. Assign provisionally as you
+go, then rebalance at strand close, before running the validator for the last time. The validator
+warns rather than fails on this, so nothing blocks, and an unrebalanced strand quietly loses the
+field's discriminative power.
+
+### `imported_from`
+
+Set this only when an entry was carried over from an existing document rather than found during
+collection: a prior literature review, a grant document, another strand's corpus. A paper named as a
+seed or a lead in your brief is not imported, it is found. When nothing was carried over, `null` is
+correct. None of the pilot's six entries qualified.
+
+## `type` values
+
+Use the full schema vocabulary, `paper`, `dataset`, `tool`, `platform`, `standard`, choosing from what
+the source actually is. Where a brief lists a narrower set, the brief is describing what that strand
+usually collects, not restricting the enum. A released checkpoint with only a repository is a `tool`;
+a benchmark that defines a protocol is a `standard`.
+
+## Expect most entries to be markdown-only
+
+The pilot corrected an assumption built into the briefs. Because arXiv's default license grants no
+redistribution right to third parties, and because most arXiv postings use it, `pdf_status: archived`
+is the exception rather than the rule. One of six pilot entries qualified.
+
+Two consequences. Extraction quality matters more than archival, so `md_quality` and the `notes`
+describing what is unusable carry real weight. And paywalled entries are cheaper per entry than open
+ones, not more expensive, since an abstract-only card is quick to write. Cheaper does not mean better:
+such a card supports much less, and the acceptance criteria still apply.
