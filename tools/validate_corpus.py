@@ -71,6 +71,25 @@ PDF_LICENSE_VALUES = {
     "unknown",
 }
 
+# Subset of PDF_LICENSE_VALUES that the schema's mapping table marks as
+# actually redistributable. Everything else in the vocabulary - including
+# "not-applicable" ("no paper exists") and "unknown" - must not sit next to
+# a committed source.pdf, even though only "publisher-paywall" and
+# "unknown" are excluded from the separate redistribution_ok=false rule
+# above.
+REDISTRIBUTABLE_LICENSES = {
+    "CC-BY",
+    "CC-BY-2.0",
+    "CC-BY-3.0",
+    "CC-BY-4.0",
+    "CC-BY-NC",
+    "CC0",
+    "preprint-cc-arxiv",
+    "preprint-cc-biorxiv",
+    "preprint-cc-osf",
+    "author-accepted-manuscript",
+}
+
 # Strand directories currently recognized under research/collection/. New
 # strands are legitimate but should be added here deliberately, rather than
 # a typo'd or misplaced directory silently going uncounted.
@@ -106,20 +125,36 @@ class _UniqueKeyLoader(yaml.SafeLoader):
     `relevance: high` followed by `relevance: medium`. Raising here turns
     that into a yaml.YAMLError, which parse_frontmatter reports as a
     violation like any other malformed YAML.
+
+    A YAML key can be unhashable (e.g. `? [a, b]`), in which case it can't
+    be tested for set membership. The membership test and the bookkeeping
+    add are both guarded with `try/except TypeError` so an unhashable key
+    just skips duplicate-tracking for itself; `super().construct_mapping`
+    is then left to raise PyYAML's own ConstructorError ("found unhashable
+    key"), which is still a yaml.YAMLError and so still reported as a
+    violation naming the file, rather than escaping as a bare TypeError
+    that aborts the whole run.
     """
 
     def construct_mapping(self, node, deep=False):
         seen: set[object] = set()
         for key_node, _value_node in node.value:
             key = self.construct_object(key_node, deep=deep)
-            if key in seen:
+            try:
+                is_duplicate = key in seen
+            except TypeError:
+                is_duplicate = False
+            if is_duplicate:
                 raise yaml.constructor.ConstructorError(
                     "while constructing a mapping",
                     node.start_mark,
                     f"found duplicate key {key!r}",
                     key_node.start_mark,
                 )
-            seen.add(key)
+            try:
+                seen.add(key)
+            except TypeError:
+                pass
         return super().construct_mapping(node, deep=deep)
 
 
@@ -139,18 +174,44 @@ def _read_text_safe(path: Path) -> tuple[str | None, str | None]:
         return None, f"could not be read: {exc}"
 
 
+def _read_bytes_safe(path: Path) -> tuple[bytes | None, str | None]:
+    """Read a file as raw bytes.
+
+    Returns (data, None) on success or (None, error_message) on failure, so
+    an unreadable file (e.g. permissions) is reported as a violation naming
+    the file rather than aborting the whole run with a traceback.
+    """
+    try:
+        return path.read_bytes(), None
+    except OSError as exc:
+        return None, f"could not be read: {exc}"
+
+
 def parse_frontmatter(text: str) -> tuple[dict[str, object] | None, list[str]]:
     """Parse the '---' delimited YAML frontmatter block at the top of card.md.
 
-    The '---'-delimited block is located by hand (line 1 must be '---', and
-    the next '---' line closes the block); only the lines between those
-    delimiters are handed to the YAML parser. Uses `_UniqueKeyLoader` so a
+    Two hand checks exist only to produce the specific error messages
+    below: line 1 must be '---', and there must be a later line that is
+    exactly '---' with no leading whitespace to close the block (not merely
+    a line that strips down to '---' - that would also match an indented
+    '---' inside a block scalar, which YAML does not treat as a document
+    boundary).
+
+    The actual parse does not hand-slice the block: the FULL card text is
+    given to `yaml.load_all(text, Loader=_UniqueKeyLoader)`, and only the
+    first document is taken via `next(...)`. YAML's own document-boundary
+    rule then decides where the frontmatter ends, so a '---' line indented
+    inside a block scalar cannot truncate it early. The generator is lazy,
+    so the markdown body after the closing delimiter is never parsed and
+    its colons and bullets cannot raise. Uses `_UniqueKeyLoader` so a
     duplicate key is a violation rather than silently last-wins.
 
     Returns (fields, parse_errors). `fields` is None when there is no
     well-formed frontmatter block to parse at all: missing delimiters,
     malformed YAML, or a block that doesn't parse to a mapping. Never
-    raises: a yaml.YAMLError becomes an error string.
+    raises: a yaml.YAMLError (malformed YAML, duplicate/unhashable keys)
+    or a RecursionError (deeply nested flow YAML can exceed the parser's
+    recursion limit) becomes an error string instead.
     """
     lines = text.splitlines()
     if not lines or lines[0].strip() != "---":
@@ -158,16 +219,15 @@ def parse_frontmatter(text: str) -> tuple[dict[str, object] | None, list[str]]:
 
     end_idx = None
     for i in range(1, len(lines)):
-        if lines[i].strip() == "---":
+        if lines[i] == "---":
             end_idx = i
             break
     if end_idx is None:
         return None, ["card.md frontmatter block has no closing '---' delimiter"]
 
-    block = "\n".join(lines[1:end_idx])
     try:
-        loaded = yaml.load(block, Loader=_UniqueKeyLoader)
-    except yaml.YAMLError as exc:
+        loaded = next(yaml.load_all(text, Loader=_UniqueKeyLoader))
+    except (yaml.YAMLError, RecursionError) as exc:
         return None, [f"card.md frontmatter is not valid YAML: {exc}"]
 
     if loaded is None:
@@ -205,6 +265,7 @@ def _validate_frontmatter_fields(
             value is None
             or (isinstance(value, str) and value.strip() == "")
             or (isinstance(value, list) and len(value) == 0)
+            or (isinstance(value, dict) and len(value) == 0)
         )
         if missing:
             violations.append(f"frontmatter missing required key '{key}'")
@@ -244,6 +305,9 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
     """Parse meta.json and enforce the redistribution-license and
     archival-storage invariants against source.pdf."""
     violations: list[str] = []
+
+    pdf_path = entry_dir / "source.pdf"
+    pdf_exists = pdf_path.is_file()
 
     meta: object = _UNSET
     meta_path = entry_dir / "meta.json"
@@ -293,16 +357,32 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
                         f"meta.json pdf_license '{raw_license}' has leading token "
                         f"'{leading}' not in {sorted(PDF_LICENSE_VALUES)}"
                     )
-                elif leading.startswith("publisher-paywall") or leading == "unknown":
-                    if redistribution_ok is not False:
+                else:
+                    # publisher-paywall is the only vocabulary member with
+                    # that prefix, so it is exactly `==`, not a real prefix
+                    # family; membership makes that explicit instead of
+                    # reading like unfinished prefix-matching logic.
+                    if leading in {"publisher-paywall", "unknown"}:
+                        if redistribution_ok is not False:
+                            violations.append(
+                                f"meta.json pdf_license '{raw_license}' implies "
+                                f"redistribution_ok must be false, but redistribution_ok "
+                                f"is {redistribution_ok!r}"
+                            )
+                    # Separate from the redistribution_ok cross-check above:
+                    # a committed source.pdf requires a license that is
+                    # actually redistributable, not merely "not one of the
+                    # two excluded values". Closes the hole where
+                    # "not-applicable" ("no paper exists") or a qualified
+                    # variant like "not-applicable (really publisher-
+                    # paywall)" sat next to a committed PDF uncaught.
+                    if pdf_exists and leading not in REDISTRIBUTABLE_LICENSES:
                         violations.append(
-                            f"meta.json pdf_license '{raw_license}' implies "
-                            f"redistribution_ok must be false, but redistribution_ok "
-                            f"is {redistribution_ok!r}"
+                            f"meta.json pdf_license '{raw_license}' has leading token "
+                            f"'{leading}', which is not in the redistributable set "
+                            f"{sorted(REDISTRIBUTABLE_LICENSES)}; a committed source.pdf "
+                            "requires a redistributable license"
                         )
-
-    pdf_path = entry_dir / "source.pdf"
-    pdf_exists = pdf_path.is_file()
 
     # License invariant: the single source of truth for whether source.pdf
     # is allowed to exist in the repo.
@@ -316,15 +396,26 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
                 violations.append("pdf_status is 'archived' but source.pdf is missing")
             sha256 = meta.get("pdf_sha256") if isinstance(meta, dict) else None
             if not sha256:
-                violations.append(
-                    "pdf_status is 'archived' but meta.json pdf_sha256 is null/missing"
-                )
-            elif pdf_exists:
-                actual = hashlib.sha256(pdf_path.read_bytes()).hexdigest()
-                if actual != sha256:
+                # Suppressed when meta is _UNSET: meta.json could not be
+                # parsed at all in that case, and a violation naming that
+                # real cause (missing file, unreadable, invalid JSON, or a
+                # non-object top-level value) was already appended above.
+                # Without this guard the report named two causes for one
+                # problem.
+                if meta is not _UNSET:
                     violations.append(
-                        f"pdf_sha256 mismatch: meta.json has '{sha256}', actual is '{actual}'"
+                        "pdf_status is 'archived' but meta.json pdf_sha256 is null/missing"
                     )
+            elif pdf_exists:
+                pdf_bytes, read_error = _read_bytes_safe(pdf_path)
+                if read_error is not None:
+                    violations.append(f"source.pdf {read_error}")
+                else:
+                    actual = hashlib.sha256(pdf_bytes).hexdigest()
+                    if actual != sha256:
+                        violations.append(
+                            f"pdf_sha256 mismatch: meta.json has '{sha256}', actual is '{actual}'"
+                        )
         else:
             if frontmatter.get("pdf_path") is not None:
                 violations.append("pdf_status is not 'archived' but card.md pdf_path is not null")

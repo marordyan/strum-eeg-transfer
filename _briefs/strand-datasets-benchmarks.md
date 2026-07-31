@@ -64,7 +64,8 @@ Create folder `research/collection/datasets-benchmarks/<slug>/` containing:
   for protocol and critique papers, `type: standard` for format specifications.
 - `source.md` always. For datasets with no paper, snapshot the canonical documentation or
   landing page. Set `pdf_status: not-applicable` in that case.
-- `source.pdf` only when `meta.json.redistribution_ok` is true.
+- `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`,
+  and `pdf_license` is in the redistributable set listed in the card schema addendum.
 - `meta.json` with the access uniform resource locator, `retrieved_at`, license, and
   `redistribution_ok`. Record the data license, not only the paper license, in `notes`.
 - BibTeX appended to `research/collection/datasets-benchmarks/datasets-benchmarks.bib`, with
@@ -167,7 +168,7 @@ reports on them.
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `datasets-benchmarks.bib`
 - [ ] No more than 40 percent of entries marked `relevance: high`
-- [ ] `python tools/validate_corpus.py` exits 0
+- [ ] `uv run python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis and no dataset ranking; that is Phases 3 and 4
 
 ## Out of scope

@@ -57,9 +57,21 @@ as PDFs. Paywalled papers are not: the markdown extraction is committed as resea
 PDF is not, and `notes` records where the text came from. Figures from paywalled papers are
 referenced by number, never reproduced. When a license is unclear, the default is deny.
 
-The full policy is `license-rules.md` in the `manuscript:lit-review` skill; the invariant that
-no `source.pdf` exists where `redistribution_ok` is false is enforced by
-`tools/validate_corpus.py` and by continuous integration.
+Four invariants are enforced by `tools/validate_corpus.py` and by continuous integration:
+
+1. No `source.pdf` exists in an entry folder where `redistribution_ok` is false.
+2. `pdf_license` is checked against the schema vocabulary, reading only the leading token so a
+   trailing qualifier such as `publisher-paywall (NeuroImage); repository copy archived` stays
+   valid.
+3. A `publisher-paywall` or `unknown` license requires `redistribution_ok: false`.
+4. `source.pdf` may exist only when `pdf_status` is `archived` and `pdf_license` names a
+   redistributable license, and its sha256 must match `meta.json.pdf_sha256`.
+
+The background reasoning, the license-to-redistribution mapping table, and the fair-use rationale
+for committing markdown extractions of paywalled papers live in `license-rules.md` in the
+`manuscript:lit-review` skill. Where that document and the project addendum in
+`research/collection/_schema/paper-card.md` disagree, the addendum governs, because it is what the
+validator enforces.
 
 ## Validating the corpus
 
@@ -67,8 +79,12 @@ no `source.pdf` exists where `redistribution_ok` is false is enforced by
 uv run python tools/validate_corpus.py
 ```
 
+Use `uv run`, not bare `python`. The validator depends on PyYAML, which is declared in the `dev`
+dependency group, and `uv run` installs that group by default.
+
 The validator checks structure, not judgment: required files, frontmatter fields and their
 vocabularies, slug and strand agreement with the directory names, BibTeX coverage, index links,
-and the license invariant. It also warns when more than 40 percent of a strand's entries are
-marked `relevance: high`, which means the field has stopped discriminating. Whether a card is
-any good is a reviewer's call, not the validator's.
+and the four license invariants above. It also warns when more than 40 percent of a strand's
+entries are marked `relevance: high`, which means the field has stopped discriminating, and when a
+strand directory appears that is not one of the four expected names. Whether a card is any good is
+a reviewer's call, not the validator's.

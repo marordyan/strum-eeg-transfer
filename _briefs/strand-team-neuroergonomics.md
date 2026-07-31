@@ -59,7 +59,8 @@ sensory response rather than any team or cognitive state.
 Create folder `research/collection/team-neuroergonomics/<slug>/` containing:
 
 - `card.md` with `strand: team-neuroergonomics` and `type` usually paper.
-- `source.md` always; `source.pdf` only when `meta.json.redistribution_ok` is true.
+- `source.md` always; `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`,
+  and `pdf_license` is in the redistributable set listed in the card schema addendum.
 - `meta.json` with digital object identifier or uniform resource locator, `retrieved_at`,
   license, and `redistribution_ok`.
 - BibTeX appended to `research/collection/team-neuroergonomics/team-neuroergonomics.bib`, with
@@ -84,7 +85,12 @@ Two anchors are already fixed:
   digital object identifier `10.1109/SMC.2018.00023`. The `datasets-benchmarks` strand cards the
   recording; this strand cards the task and stimulus design, what construct the authors intended
   the conditions to elicit, and how they justified the spoken and written contrast. Use the same
-  extraction, and use slug `strum-2018-design` so the two cards do not collide.
+  extraction, and use slug `strum-2018-design`.
+
+  The two cards live in separate strand directories with separate bib files, so the validator
+  cannot see that they describe one paper. The risk is at merge time, when a combined bibliography
+  would carry two entries for the same digital object identifier. Record the relationship in both
+  cards' "Notable details" so Phase 5 deduplicates deliberately rather than by accident.
 - Kothe C and colleagues. Decoding Working-Memory Load During n-Back Task Performance from High
   Channel NIRS Data. arXiv `2312.07546`. An inferred lead rather than a given one: same author
   group, workload as the construct, a different modality. Bears on categories 1 and 4. Verify it
@@ -138,7 +144,7 @@ transfers directly to EEG.
 - [ ] Every entry has BibTeX in `team-neuroergonomics.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners
 - [ ] No more than 40 percent of entries marked `relevance: high`
-- [ ] `python tools/validate_corpus.py` exits 0
+- [ ] `uv run python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3
 
 ## Out of scope

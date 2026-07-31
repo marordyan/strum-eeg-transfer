@@ -63,7 +63,8 @@ with no EEG-only arm, cannot answer the project's question and should be marked
 Create folder `research/collection/multimodal-biosignals/<slug>/` containing:
 
 - `card.md` with `strand: multimodal-biosignals` and `type` one of paper, tool, or platform.
-- `source.md` always; `source.pdf` only when `meta.json.redistribution_ok` is true.
+- `source.md` always; `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`,
+  and `pdf_license` is in the redistributable set listed in the card schema addendum.
 - `meta.json` with digital object identifier (DOI) or uniform resource locator (URL),
   `retrieved_at`, license, `pdf_sha256` when archived, and `redistribution_ok`.
 - BibTeX appended to `research/collection/multimodal-biosignals/multimodal-biosignals.bib`,
@@ -130,7 +131,7 @@ diagnosis from ECG alone with no representation-learning or transfer angle.
 - [ ] `INDEX.md` fully populated with categorized one-liners
 - [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] `modalities` uses the controlled spellings listed above
-- [ ] `python tools/validate_corpus.py` exits 0
+- [ ] `uv run python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3
 
 ## Out of scope

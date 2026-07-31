@@ -691,3 +691,455 @@ def test_expected_strand_validates_normally_without_warning(tmp_path: Path) -> N
     assert not any("unexpected strand directory" in w for w in warnings)
     assert entry_count == 1
     assert strand_counts == {"eeg-models": 1}
+
+
+# -- Second-round fixes: _UniqueKeyLoader unhashable-key TypeError, the
+# unguarded source.pdf read, hand-split frontmatter truncation, the
+# residual license hole, dead prefix logic, and dict emptiness / a
+# misleading cascade --
+
+
+def test_unhashable_yaml_key_is_reported_not_raised(tmp_path: Path) -> None:
+    """Fix 1: `construct_mapping` did `if key in seen` before delegating to
+    PyYAML, so an unhashable key (e.g. `? [a, b]`) raised a bare TypeError
+    that escaped parse_frontmatter uncaught, aborting the entire run. With
+    the membership test guarded, super().construct_mapping is left to
+    raise PyYAML's own catchable ConstructorError instead."""
+    entry_dir = write_entry(tmp_path, "strand-a", "paper-one")
+    (entry_dir / "card.md").write_text(
+        "---\n? [a, b]\n: v\n---\n\n# paper-one\n\nBody text.\n", encoding="utf-8"
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("paper-one" in v and "not valid YAML" in v for v in violations)
+
+
+def test_deeply_nested_flow_yaml_is_reported_not_raised(tmp_path: Path) -> None:
+    """Fix 1: deeply nested flow YAML can exceed PyYAML's recursion limit
+    (RecursionError), a failure mode inherited from PyYAML rather than
+    introduced here. parse_frontmatter must still catch it and report a
+    violation rather than let it propagate."""
+    nested = "k: " + "[" * 20000
+    text = f"---\n{nested}\n---\n"
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert len(errors) == 1
+    assert "not valid YAML" in errors[0]
+
+
+def test_unreadable_archived_pdf_is_reported_not_raised(tmp_path: Path) -> None:
+    """Fix 2: hashlib.sha256(pdf_path.read_bytes()) in the archived-PDF
+    branch was not routed through a safe reader. A source.pdf with mode 000
+    used to abort the run with PermissionError."""
+    pdf_bytes = b"%PDF-1.4 unreadable test\n"
+    entry_dir = write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={
+            "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+            "pdf_license": "CC-BY-4.0",
+        },
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    pdf_path = entry_dir / "source.pdf"
+    pdf_path.chmod(0o000)
+    try:
+        violations, _, _ = vc.validate_strand(
+            tmp_path / "research" / "collection" / "strand-a", tmp_path
+        )
+    finally:
+        pdf_path.chmod(0o644)
+
+    assert any("source.pdf" in v and "could not be read" in v for v in violations)
+
+
+def test_block_scalar_with_indented_delimiter_no_longer_runs_clean(tmp_path: Path) -> None:
+    """Fix 3: the old hand-split extraction stopped at the first line whose
+    strip() was '---', which truncated the frontmatter block when a '---'
+    appeared indented inside a block scalar (here, `notes: |`). That
+    silently dropped `pdf_path: source.pdf` before the
+    pdf_status-versus-pdf_path check could see it, producing a clean run
+    with zero violations. Parsing via yaml.load_all on the full text lets
+    YAML's own document-boundary rule find the real end of frontmatter, so
+    pdf_path survives and the violation fires."""
+    entry_dir = write_entry(tmp_path, "strand-a", "paper-one")
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-redistributable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "notes: |\n"
+        "  Retrieval notes\n"
+        "  ---\n"
+        "  continued\n"
+        "pdf_path: source.pdf\n"
+        "---\n"
+        "\n# paper-one\n\nBody text.\n"
+    )
+    (entry_dir / "card.md").write_text(text, encoding="utf-8")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any(
+        "pdf_status is not 'archived' but card.md pdf_path is not null" in v for v in violations
+    )
+
+
+def test_notes_block_scalar_with_indented_delimiter_keeps_later_keys(tmp_path: Path) -> None:
+    """Fix 3 positive case: a '---' indented inside a block scalar must not
+    be mistaken for the closing delimiter, and every key after it must
+    still parse."""
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "notes: |\n"
+        "  Retrieval notes\n"
+        "  ---\n"
+        "  continued\n"
+        "pdf_path: null\n"
+        "---\n"
+        "\n# paper-one\n\nBody text.\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert errors == []
+    assert fields is not None
+    assert fields["notes"] == "Retrieval notes\n---\ncontinued\n"
+    assert fields["pdf_path"] is None
+    assert fields["md_quality"] == "clean"
+
+
+def test_archived_not_applicable_license_with_committed_pdf_is_a_violation(
+    tmp_path: Path,
+) -> None:
+    """Fix 4: pdf_license: not-applicable ('no paper exists' per the
+    schema) sitting next to a committed, correctly-hashed source.pdf must
+    be caught. The old rule only excluded publisher-paywall/unknown, so
+    everything else - including not-applicable - was implicitly treated as
+    redistributable."""
+    pdf_bytes = b"%PDF-1.4 not-applicable license test\n"
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={
+            "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+            "pdf_license": "not-applicable",
+        },
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("requires a redistributable license" in v for v in violations)
+
+
+def test_archived_not_applicable_qualifier_license_with_committed_pdf_is_a_violation(
+    tmp_path: Path,
+) -> None:
+    """Fix 4: the qualifier form must not dodge the redistributable check
+    either - only the leading token before '(' or ';' is checked, and here
+    that leading token is still 'not-applicable'."""
+    pdf_bytes = b"%PDF-1.4 qualifier license test\n"
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={
+            "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+            "pdf_license": "not-applicable (really publisher-paywall)",
+        },
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("requires a redistributable license" in v for v in violations)
+
+
+def test_archived_cc_by_license_with_committed_pdf_is_clean(tmp_path: Path) -> None:
+    """Fix 4 positive case: a license that IS in REDISTRIBUTABLE_LICENSES,
+    next to a committed PDF with a matching sha256, must not trip the new
+    check."""
+    pdf_bytes = b"%PDF-1.4 redistributable license test\n"
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={
+            "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+            "pdf_license": "CC-BY-4.0",
+        },
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert violations == []
+
+
+def test_critical_2_repro_archived_paywall_license_is_a_violation(tmp_path: Path) -> None:
+    """The original critical-2 repro, end to end: pdf_status archived,
+    pdf_license publisher-paywall, redistribution_ok true, a committed PDF
+    with a matching sha256. Every storage/hash invariant is internally
+    consistent; only the license-implies-redistribution_ok cross-check
+    should fire."""
+    pdf_bytes = b"%PDF-1.4 critical-2 repro\n"
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={
+            "pdf_sha256": hashlib.sha256(pdf_bytes).hexdigest(),
+            "pdf_license": "publisher-paywall",
+            "redistribution_ok": True,
+        },
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("implies redistribution_ok must be false" in v for v in violations)
+
+
+def test_empty_authors_dict_is_a_missing_required_key_violation(tmp_path: Path) -> None:
+    """Fix 6: the required-key emptiness test covered str and list, but not
+    dict, so `authors: {}` passed."""
+    write_entry(tmp_path, "strand-a", "paper-one", card_overrides={"authors": "{}"})
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("frontmatter missing required key 'authors'" in v for v in violations)
+
+
+def test_archived_with_unparseable_meta_json_does_not_also_emit_pdf_sha256_message(
+    tmp_path: Path,
+) -> None:
+    """Fix 6: for an archived entry whose meta.json could not be parsed at
+    all, the run used to emit the real diagnosis plus a spurious
+    "pdf_status is 'archived' but meta.json pdf_sha256 is null/missing".
+    The second message must be suppressed when meta is the _UNSET
+    sentinel, so the report names one cause rather than two."""
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_raw="{not valid json",
+        with_pdf=True,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json is not valid JSON" in v for v in violations)
+    assert not any("pdf_sha256 is null/missing" in v for v in violations)
+
+
+def test_duplicate_key_at_nesting_depth_two_is_rejected(tmp_path: Path) -> None:
+    """Locks currently-working behavior: _UniqueKeyLoader.construct_mapping
+    is invoked by PyYAML for every nested mapping node, not just the top
+    level, so a duplicate two levels down is already caught."""
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "archival:\n"
+        "  tier: cold\n"
+        "  tier: hot\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert any("duplicate" in e for e in errors)
+
+
+def test_duplicate_key_at_nesting_depth_three_is_rejected(tmp_path: Path) -> None:
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "archival:\n"
+        "  storage:\n"
+        "    tier: cold\n"
+        "    tier: hot\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert any("duplicate" in e for e in errors)
+
+
+def test_duplicate_key_inside_list_of_mappings_is_rejected(tmp_path: Path) -> None:
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "reviewers:\n"
+        "  - name: A\n"
+        "    name: B\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert any("duplicate" in e for e in errors)
+
+
+def test_latin1_meta_json_is_a_violation_not_a_raise(tmp_path: Path) -> None:
+    """`_read_text_safe` failures were only tested for card.md; meta.json
+    goes through the same helper and must be covered too."""
+    write_entry(tmp_path, "strand-a", "paper-one")
+    entry_dir = tmp_path / "research" / "collection" / "strand-a" / "paper-one"
+    (entry_dir / "meta.json").write_bytes("café résumé".encode("latin-1"))
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json" in v and "could not be read as UTF-8" in v for v in violations)
+
+
+def test_latin1_index_md_is_a_violation_not_a_raise(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+    strand_dir = tmp_path / "research" / "collection" / "strand-a"
+    (strand_dir / "INDEX.md").write_bytes("café résumé".encode("latin-1"))
+
+    violations, _, _ = vc.validate_strand(strand_dir, tmp_path)
+
+    assert any("INDEX.md" in v and "could not be read as UTF-8" in v for v in violations)
+
+
+def test_latin1_strand_bib_is_a_violation_not_a_raise(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    strand_dir = tmp_path / "research" / "collection" / "strand-a"
+    (strand_dir / "strand-a.bib").write_bytes("café résumé".encode("latin-1"))
+
+    violations, _, _ = vc.validate_strand(strand_dir, tmp_path)
+
+    assert any("strand-a.bib" in v and "could not be read as UTF-8" in v for v in violations)
+
+
+def test_non_archived_pdf_status_with_non_null_pdf_path_is_a_violation(tmp_path: Path) -> None:
+    """No test previously covered this directly (Fix 3's block-scalar test
+    exercises the same message, but only as a side effect of the
+    truncation bug)."""
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "not-redistributable", "pdf_path": "source.pdf"},
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any(
+        "pdf_status is not 'archived' but card.md pdf_path is not null" in v for v in violations
+    )

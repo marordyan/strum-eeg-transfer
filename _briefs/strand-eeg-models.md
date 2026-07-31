@@ -64,7 +64,8 @@ Create folder `research/collection/eeg-models/<slug>/` containing:
   `type` one of paper, tool, or platform.
 - `source.md` always. Markdown extraction of the paper, or the canonical README for a released
   checkpoint or codebase.
-- `source.pdf` only when `meta.json.redistribution_ok` is true.
+- `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`,
+  and `pdf_license` is in the redistributable set listed in the card schema addendum.
 - `meta.json` with digital object identifier (DOI) or uniform resource locator (URL),
   `retrieved_at`, license, `pdf_sha256` when a PDF is archived, and `redistribution_ok`.
 - BibTeX appended to `research/collection/eeg-models/eeg-models.bib`, with the citation key
@@ -134,7 +135,7 @@ black box without reporting a baseline comparison.
 - [ ] `INDEX.md` fully populated with categorized one-liners
 - [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] Every category 4 card records a transfer number and the baseline it was measured against
-- [ ] `python tools/validate_corpus.py` exits 0
+- [ ] `uv run python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3
 
 ## Out of scope

@@ -164,10 +164,16 @@ enforced invariants:
 - No `source.pdf` exists in an entry folder where `meta.json.redistribution_ok` is false.
 - `pdf_license` is checked against the vocabulary listed above, reading only the leading token, so
   a trailing qualifier such as `publisher-paywall (NeuroImage); university repository copy
-  archived` remains valid.
+  archived` remains valid. Only `(` and `;` open a qualifier. A comma or a bare space does not, so
+  `publisher-paywall, NeuroImage` is rejected as out of vocabulary rather than read as a qualified
+  paywall.
 - A `publisher-paywall` or `unknown` license requires `redistribution_ok: false`.
 - `source.pdf` may exist only when `pdf_status` is `archived`, and its sha256 must match
   `meta.json.pdf_sha256`.
 
 When a license is unclear the answer is `unknown`, which means no PDF is committed. Re-archiving
 later is cheap; a takedown notice is not.
+
+One limit worth knowing: the archived-only-PDF rule and the sha256 match are read from `card.md`
+frontmatter, so they are skipped when `card.md` is missing or cannot be read. Those cases raise
+their own violations, so nothing passes clean, but the license reason will not be the one named.
