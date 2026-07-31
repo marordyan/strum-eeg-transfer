@@ -166,7 +166,7 @@ reports on them.
       returned
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `datasets-benchmarks.bib`
-- [ ] Fewer than 40 percent of entries marked `relevance: high`
+- [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] `python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis and no dataset ranking; that is Phases 3 and 4
 

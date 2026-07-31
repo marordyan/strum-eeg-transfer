@@ -137,7 +137,7 @@ transfers directly to EEG.
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `team-neuroergonomics.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners
-- [ ] Fewer than 40 percent of entries marked `relevance: high`
+- [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] `python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3
 

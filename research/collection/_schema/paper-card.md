@@ -132,3 +132,42 @@ Use `opencite:opencite` to:
 4. Export BibTeX
 
 For tools or platforms without papers, snapshot the canonical README / docs landing as `source.md`. Link the repo URL in `meta.json.source_url`.
+
+---
+
+## Project addendum
+
+Everything above is copied verbatim from the `manuscript:lit-review` skill and is deliberately not
+edited, so the copy stays diffable against upstream. This repository hardens two points. Where the
+two disagree, the addendum wins, because `tools/validate_corpus.py` enforces it and continuous
+integration fails on a violation.
+
+### BibTeX key must equal the slug exactly
+
+The copied text says to keep the citation key "consistent with the slug where possible". This
+repository requires the key to equal the slug verbatim, and rejects duplicate keys within a strand
+bib. `opencite` emits keys such as `Xu2019ADT`; rewrite the key to the slug before appending the
+entry. Hyphens are legal in BibTeX and biblatex keys, so
+`@article{xu-2019-deep-transfer-cnn, ...}` is correct.
+
+The reason for hardening it: direction papers cite cards by slug, and the references section is
+keyed to the strand bib. If those two identifiers may differ, every citation needs a lookup table
+that nothing maintains.
+
+### License policy lives in this repository, not in a sibling file
+
+The copied text points at `license-rules.md` for the redistribution policy and the continuous
+integration rule. That file belongs to the skill, not to this repository, so the link above does
+not resolve here. The policy in force is summarized in `research/README.md`, and these are the
+enforced invariants:
+
+- No `source.pdf` exists in an entry folder where `meta.json.redistribution_ok` is false.
+- `pdf_license` is checked against the vocabulary listed above, reading only the leading token, so
+  a trailing qualifier such as `publisher-paywall (NeuroImage); university repository copy
+  archived` remains valid.
+- A `publisher-paywall` or `unknown` license requires `redistribution_ok: false`.
+- `source.pdf` may exist only when `pdf_status` is `archived`, and its sha256 must match
+  `meta.json.pdf_sha256`.
+
+When a license is unclear the answer is `unknown`, which means no PDF is committed. Re-archiving
+later is cheap; a takedown notice is not.

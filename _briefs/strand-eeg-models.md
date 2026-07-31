@@ -132,7 +132,7 @@ black box without reporting a baseline comparison.
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `eeg-models.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners
-- [ ] Fewer than 40 percent of entries marked `relevance: high`
+- [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] Every category 4 card records a transfer number and the baseline it was measured against
 - [ ] `python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3

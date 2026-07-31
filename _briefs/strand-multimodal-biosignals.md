@@ -128,7 +128,7 @@ diagnosis from ECG alone with no representation-learning or transfer angle.
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `multimodal-biosignals.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners
-- [ ] Fewer than 40 percent of entries marked `relevance: high`
+- [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] `modalities` uses the controlled spellings listed above
 - [ ] `python tools/validate_corpus.py` exits 0
 - [ ] No prose synthesis; that is Phase 3

@@ -2,7 +2,11 @@ name: corpus-check
 
 on:
   push:
+    branches: [master]
   pull_request:
+
+permissions:
+  contents: read
 
 jobs:
   validate:
@@ -14,6 +18,9 @@ jobs:
         uses: astral-sh/setup-uv@v3
         with:
           python-version: "3.11"
+
+      - name: Sync dependencies (locked)
+        run: uv sync --locked
 
       - name: Lint (ruff check)
         run: uv run ruff check .

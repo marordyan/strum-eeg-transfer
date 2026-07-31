@@ -6,6 +6,8 @@ one thing away from a known-valid baseline entry.
 
 from __future__ import annotations
 
+import datetime
+import hashlib
 import json
 from pathlib import Path
 
@@ -55,11 +57,19 @@ def write_entry(
     *,
     card_overrides: dict[str, str] | None = None,
     meta_overrides: dict[str, object] | None = None,
+    meta_missing_keys: tuple[str, ...] = (),
+    meta_raw: str | None = None,
     skip_files: tuple[str, ...] = (),
     with_pdf: bool = False,
     pdf_bytes: bytes = b"%PDF-1.4 test content\n",
 ) -> Path:
-    """Write one valid entry folder, then apply targeted perturbations."""
+    """Write one valid entry folder, then apply targeted perturbations.
+
+    `meta_raw`, when given, is written verbatim as meta.json's content
+    instead of the JSON-encoded META_TEMPLATE (for testing malformed/
+    non-object meta.json bodies). `meta_missing_keys` drops keys from the
+    template dict before encoding (for testing missing required keys).
+    """
     entry_dir = root / "research" / "collection" / strand / slug
     entry_dir.mkdir(parents=True, exist_ok=True)
 
@@ -78,11 +88,16 @@ def write_entry(
     if "source.md" not in skip_files:
         (entry_dir / "source.md").write_text(f"# {slug}\n\nSource text.\n", encoding="utf-8")
 
-    meta = dict(META_TEMPLATE)
-    if meta_overrides:
-        meta.update(meta_overrides)
     if "meta.json" not in skip_files:
-        (entry_dir / "meta.json").write_text(json.dumps(meta), encoding="utf-8")
+        if meta_raw is not None:
+            (entry_dir / "meta.json").write_text(meta_raw, encoding="utf-8")
+        else:
+            meta = dict(META_TEMPLATE)
+            if meta_overrides:
+                meta.update(meta_overrides)
+            for key in meta_missing_keys:
+                meta.pop(key, None)
+            (entry_dir / "meta.json").write_text(json.dumps(meta), encoding="utf-8")
 
     if with_pdf:
         (entry_dir / "source.pdf").write_bytes(pdf_bytes)
@@ -248,10 +263,11 @@ def test_duplicate_bibtex_key_is_a_violation(tmp_path: Path) -> None:
 def test_empty_corpus_is_valid(tmp_path: Path) -> None:
     (tmp_path / "research" / "collection").mkdir(parents=True)
 
-    violations, warnings, entry_count = vc.run_validation(tmp_path)
+    violations, warnings, entry_count, strand_counts = vc.run_validation(tmp_path)
     assert violations == []
     assert warnings == []
     assert entry_count == 0
+    assert strand_counts == {}
 
     exit_code = vc.main(["--root", str(tmp_path)])
     assert exit_code == 0
@@ -299,8 +315,379 @@ def test_relevance_high_share_warning(tmp_path: Path) -> None:
     write_strand_index(tmp_path, "strand-a", slugs)
     write_strand_bib(tmp_path, "strand-a", slugs)
 
-    violations, warnings, entry_count = vc.run_validation(tmp_path)
+    violations, warnings, entry_count, _strand_counts = vc.run_validation(tmp_path)
 
     assert violations == []
     assert entry_count == 6
     assert any("relevance=high share" in w for w in warnings)
+
+
+# -- Finding 1: meta.json literal null bypassing the "must be an object" check --
+
+
+def test_meta_json_null_is_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", meta_raw="null")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json top-level value must be an object" in v for v in violations)
+
+
+def test_meta_json_null_with_committed_pdf_also_violates_license_invariant(
+    tmp_path: Path,
+) -> None:
+    """This is the exact bypass the reviewer demonstrated: a null meta.json
+    (with the entry's `pdf_status` left at its non-archived template
+    default) alongside a committed source.pdf used to produce zero
+    violations, because `meta is not None` was False for a parsed `null`
+    and the symmetric storage rule didn't exist yet. Both the "must be an
+    object" check and the storage rule now catch it independently."""
+    write_entry(tmp_path, "strand-a", "paper-one", meta_raw="null", with_pdf=True)
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json top-level value must be an object" in v for v in violations)
+    assert any("pdf_status is 'not-applicable' but source.pdf exists" in v for v in violations)
+
+
+def test_meta_json_array_is_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", meta_raw="[]")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json top-level value must be an object" in v for v in violations)
+
+
+def test_meta_json_invalid_json_is_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", meta_raw="{not valid json")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json is not valid JSON" in v for v in violations)
+
+
+def test_meta_json_missing_required_key_is_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", meta_missing_keys=("doi",))
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("meta.json missing required key 'doi'" in v for v in violations)
+
+
+def test_non_boolean_redistribution_ok_is_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", meta_overrides={"redistribution_ok": "yes"})
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("redistribution_ok must be a boolean" in v for v in violations)
+
+
+# -- Finding 2: the license invariant now validates pdf_license itself --
+
+
+def test_paywall_license_with_redistribution_ok_true_is_a_violation(tmp_path: Path) -> None:
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        meta_overrides={"pdf_license": "publisher-paywall", "redistribution_ok": True},
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("implies redistribution_ok must be false" in v for v in violations)
+
+
+def test_paywall_license_with_qualifier_and_redistribution_ok_false_is_accepted(
+    tmp_path: Path,
+) -> None:
+    """Guards against over-strict matching: the schema explicitly permits a
+    trailing parenthetical/semicolon qualifier on pdf_license, and only the
+    leading token should be checked against the vocabulary / cross-check."""
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        meta_overrides={
+            "pdf_license": "publisher-paywall (NeuroImage); university repository copy archived",
+            "redistribution_ok": False,
+        },
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert violations == []
+
+
+def test_out_of_vocabulary_pdf_license_is_a_violation(tmp_path: Path) -> None:
+    write_entry(
+        tmp_path, "strand-a", "paper-one", meta_overrides={"pdf_license": "made-up-license"}
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("has leading token 'made-up-license' not in" in v for v in violations)
+
+
+def test_not_redistributable_with_committed_pdf_is_a_violation(tmp_path: Path) -> None:
+    """Closes the case the reviewer demonstrated: pdf_status:
+    not-redistributable sitting next to a committed PDF, even with
+    redistribution_ok: true in meta.json, must be flagged."""
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "not-redistributable"},
+        with_pdf=True,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("pdf_status is 'not-redistributable' but source.pdf exists" in v for v in violations)
+
+
+def test_archived_happy_path_has_no_violations(tmp_path: Path) -> None:
+    """There was previously no positive test for the archived path at all."""
+    pdf_bytes = b"%PDF-1.4 archived happy path\n"
+    sha256 = hashlib.sha256(pdf_bytes).hexdigest()
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={"pdf_sha256": sha256, "pdf_license": "CC-BY-4.0"},
+        with_pdf=True,
+        pdf_bytes=pdf_bytes,
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert violations == []
+
+
+# -- Parser behavior under PyYAML --
+
+
+def test_nested_mapping_keys_are_not_promoted_to_top_level(tmp_path: Path) -> None:
+    """Finding 3: the hand-rolled parser ignored indentation and promoted
+    any `key: value` line to the top level, regardless of nesting. A real
+    YAML parser must instead leave a nested key (here, pdf_status under an
+    `archival:` mapping) absent from the top-level fields dict."""
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "archival:\n"
+        "  pdf_status: archived\n"
+        "  pdf_path: source.pdf\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert errors == []
+    assert fields is not None
+    assert fields.get("pdf_status") is None
+    assert fields["archival"]["pdf_status"] == "archived"
+
+
+def test_venue_hash_without_preceding_whitespace_is_literal(tmp_path: Path) -> None:
+    """Finding 4, verified against real PyYAML behavior rather than assumed:
+    a '#' preceded by whitespace *does* start a YAML comment (confirmed:
+    `venue: Workshop #3 on EEG` parses to just `Workshop`), but a '#' with
+    no preceding whitespace is literal and round-trips intact."""
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Workshop#3 on EEG\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert errors == []
+    assert fields is not None
+    assert fields["venue"] == "Workshop#3 on EEG"
+
+
+def test_empty_authors_list_is_a_missing_required_key_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", card_overrides={"authors": "[]"})
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("frontmatter missing required key 'authors'" in v for v in violations)
+
+
+def test_duplicate_relevance_key_is_a_violation(tmp_path: Path) -> None:
+    text = (
+        "---\n"
+        "slug: paper-one\n"
+        "type: paper\n"
+        "strand: strand-a\n"
+        "year: 2023\n"
+        "authors: [Smith]\n"
+        "venue: Some Venue\n"
+        "relevance: high\n"
+        "relevance: medium\n"
+        "added: 2024-01-01\n"
+        "pdf_status: not-applicable\n"
+        "md_path: source.md\n"
+        "md_quality: clean\n"
+        "---\n"
+    )
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert any("duplicate" in e for e in errors)
+
+
+def test_malformed_yaml_is_a_violation_not_a_raise(tmp_path: Path) -> None:
+    text = "---\n\tbadly: indented\n---\n"
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert fields is None
+    assert len(errors) == 1
+
+
+def test_year_int_and_added_date_still_validate(tmp_path: Path) -> None:
+    text = CARD_TEMPLATE.format(slug="paper-one", strand="strand-a")
+
+    fields, errors = vc.parse_frontmatter(text)
+
+    assert errors == []
+    assert fields is not None
+    assert isinstance(fields["year"], int)
+    assert isinstance(fields["added"], datetime.date)
+
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert not any(
+        "is not a 4-digit year" in v or "is not a YYYY-MM-DD date" in v for v in violations
+    )
+
+
+# -- Robustness and structure --
+
+
+def test_latin1_card_is_a_violation_not_a_raise(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one")
+    entry_dir = tmp_path / "research" / "collection" / "strand-a" / "paper-one"
+    (entry_dir / "card.md").write_bytes("café résumé".encode("latin-1"))
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("card.md" in v and "could not be read as UTF-8" in v for v in violations)
+
+
+def test_card_at_strand_depth_is_a_violation(tmp_path: Path) -> None:
+    strand_dir = tmp_path / "research" / "collection" / "eeg-models"
+    strand_dir.mkdir(parents=True)
+    (strand_dir / "card.md").write_text(
+        CARD_TEMPLATE.format(slug="paper-one", strand="eeg-models"), encoding="utf-8"
+    )
+
+    violations, _warnings, _entry_count, _strand_counts = vc.run_validation(tmp_path)
+
+    assert any("card.md found at strand depth" in v for v in violations)
+
+
+def test_unexpected_strand_directory_is_a_warning_not_a_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, warnings, _entry_count, strand_counts = vc.run_validation(tmp_path)
+
+    assert violations == []
+    assert any("unexpected strand directory 'strand-a'" in w for w in warnings)
+    assert strand_counts == {"strand-a": 1}
+
+
+def test_expected_strand_validates_normally_without_warning(tmp_path: Path) -> None:
+    write_entry(tmp_path, "eeg-models", "paper-one")
+    write_strand_index(tmp_path, "eeg-models", ["paper-one"])
+    write_strand_bib(tmp_path, "eeg-models", ["paper-one"])
+
+    violations, warnings, entry_count, strand_counts = vc.run_validation(tmp_path)
+
+    assert violations == []
+    assert not any("unexpected strand directory" in w for w in warnings)
+    assert entry_count == 1
+    assert strand_counts == {"eeg-models": 1}
