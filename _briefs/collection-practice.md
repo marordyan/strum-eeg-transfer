@@ -101,6 +101,25 @@ them differently:
 Conflating the two would tell Phase 4 that the field has not measured something when in fact we simply
 have not read it.
 
+## Use domain terms precisely, even when the source does not
+
+Caught during review of the pilot's first card. The card said a pretrained model tolerates an unseen
+"montage", following the source's own abstract. But montage means the derivation scheme, referential
+or bipolar or average-reference, while what the mechanism actually supports is an arbitrary electrode
+*layout*, a set of positions. The distinction was load-bearing: a bipolar derivation is a difference
+between two electrodes, and the model in question has no representation for one, so its authors
+substituted the midpoint of the pair in preprocessing. The imprecise word concealed an approximation
+that matters for whether the method transfers.
+
+Papers, including good ones, use these terms loosely in abstracts and tighten them in methods
+sections. When they diverge, card the methods-section meaning, and say on the card that the abstract
+is looser so a later reader does not think the card misread the paper.
+
+Terms worth keeping distinct in this corpus: montage versus electrode layout versus channel count;
+epoch versus trial versus window; session versus run versus recording; subject-wise versus
+record-wise splits. If a source blurs one of these in a way that changes what a claim supports, that
+is a finding for "Open questions / limitations", not a wording preference.
+
 ## When a source contradicts itself
 
 This happened twice in six pilot entries. One paper's prose named a different classifier than its own

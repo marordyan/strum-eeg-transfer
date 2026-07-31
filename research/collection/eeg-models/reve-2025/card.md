@@ -8,8 +8,8 @@ venue: NeurIPS 2025 (arXiv preprint 2510.21585)
 doi: null
 url: https://arxiv.org/abs/2510.21585
 license: CC BY-NC-ND 4.0 (arXiv posting)
-modalities: [scalp-eeg, high-density-eeg, clinical-eeg, arbitrary-montage, 3d-electrode-coordinates]
-tags: [masked-autoencoder, transformer, 4d-positional-encoding, montage-flexible, linear-probing, lora, model-souping, released-weights, motor-imagery, sleep-staging]
+modalities: [scalp-eeg, high-density-eeg, clinical-eeg, arbitrary-electrode-layout, 3d-electrode-coordinates]
+tags: [masked-autoencoder, transformer, 4d-positional-encoding, layout-flexible, bipolar-as-midpoint, linear-probing, lora, model-souping, released-weights, motor-imagery, sleep-staging]
 relevance: high
 imported_from: null
 added: 2026-07-31
@@ -52,9 +52,18 @@ This is the strand's most direct answer to whether a pretrained checkpoint can b
 at all. The competing checkpoints named in the paper (BIOT, LaBraM, CBraMod) bind spatial identity
 to a learned embedding table indexed by channel, which is why the paper describes them as
 "often necessitating full fine-tuning for transfer"; REVE's encoding is computed from coordinates,
-so a montage absent from pretraining costs nothing structurally. The paper substantiates this on
-two axes STRUM will exercise: TUEV includes bipolar derivations never seen in pretraining, and
-HMC/ISRUC feed 30-second windows to a model pretrained on 10-second segments. The two-stage
+so an electrode layout absent from pretraining costs nothing structurally. The paper substantiates
+this on two axes STRUM will exercise: TUEV is preprocessed into 16 bipolar channels the model never
+saw in pretraining, and HMC/ISRUC feed 30-second windows to a model pretrained on 10-second segments.
+
+A terminology caution that matters for how far this claim can be carried. What the mechanism supports
+is an arbitrary *electrode layout*, meaning a set of positions. A *montage* in the strict sense is a
+derivation scheme, and a bipolar derivation is a difference between two electrodes rather than a
+signal at one. REVE does not represent that difference natively: per Appendix C, bipolar channels are
+given "the average position of each bipolar montage", a single midpoint coordinate. The paper's own
+abstract and conclusion say "montages" where its methods section says "arbitrary electrode layouts",
+so the looser reading comes from the source, not from this card. Phase 3 should carry the precise
+claim, not the abstract's. The two-stage
 fine-tuning recipe (frozen-backbone linear probe, then unfreeze, as one continuous run, with LoRA
 on the QKVO projections) is also directly transferable to a small dataset like STRUM, and the
 paper's own framing of why — EEG datasets are "limited in size, subject-dependent, and prone to
@@ -90,6 +99,12 @@ pretraining is separable from the contribution of the architecture.
   same table CBraMod gains only ~2 points from its pretraining (0.6417 with, 0.6196 without), and
   without pretraining CBraMod *beats* REVE by roughly 8 points. Against a small supervised
   baseline, REVE-Base averages 0.7150 balanced accuracy across nine tasks versus EEGNet at 0.5941.
+- **How bipolar derivations are handled**: TUEV is preprocessed with BIOT's scripts into 16 common
+  bipolar channels in the 10-20 system, and the paper states in Appendix C that "to provide our model
+  with the electrode positions, we used the average position of each bipolar montage". So a
+  derivation is represented by the midpoint of its electrode pair. This is a preprocessing decision
+  by the authors rather than a property of the positional encoding, which takes one coordinate per
+  channel and has no representation for a difference between two sites.
 - **Frozen-feature transfer**: with the backbone frozen on PhysioNet-MI, REVE-Base reaches 0.5371
   balanced accuracy against 0.3845 (CBraMod), 0.3715 (LaBraM), 0.3698 (BIOT). Across ten tasks
   under linear probing, REVE-Large averages 0.654 versus CBraMod at 0.501. The paper attributes the
@@ -116,9 +131,15 @@ pretraining is separable from the contribution of the architecture.
 - Cross-subject generalization is inherited from the baselines' split protocols rather than
   independently established. The paper does not state per-dataset whether splits are subject-wise,
   so the claim that REVE generalizes across subjects rests on protocols defined elsewhere.
-- The unseen-montage claim is demonstrated on TUEV's bipolar derivations and on longer windows, not
-  on a systematically held-out montage family. How far the coordinate-based encoding extrapolates —
-  for example to a montage denser or sparser than anything in the 92 datasets — is untested.
+- The generalization claim is demonstrated on TUEV's bipolar channels and on longer windows, not on a
+  systematically held-out electrode layout. How far the coordinate-based encoding extrapolates, for
+  example to a layout denser or sparser than anything in the 92 datasets, is untested.
+- Representing a bipolar derivation by the midpoint of its electrode pair is lossy in a way the paper
+  does not examine. Two different pairs can share a midpoint, and the midpoint discards the
+  orientation and separation of the pair, which is what a differential recording actually measures.
+  No ablation compares this choice against alternatives, so its adequacy rests on the TUEV result
+  alone. This bears directly on the project: whether it matters for STRUM depends on the derivation
+  scheme STRUM uses, which the `candidate-datasets` strand must record.
 - No task in the evaluation set is a dyadic or two-person recording, and none of the ten downstream
   datasets is smaller than roughly 1,700 samples, so the paper provides no evidence at STRUM's
   sample scale.
