@@ -156,6 +156,22 @@ Supplied by the user. These are required entries, not suggestions.
   Record which indices carry the classification, whether they were derived from eye tracking or from
   electrooculography, and the performance against chance.
 
+- Zeng X, Zhang X, Dong H, Bian G, de Albuquerque VHC, Wu W. Emotion effects on spatiotemporal
+  brain-heart interactions with convergent cross mapping. Slug `zeng-brain-heart-ccm`. Identifier not
+  yet resolved; resolve by exact title in Phase 2 and record it in `meta.json`. Do not guess an
+  identifier.
+
+  Categories 3 and 4, and it asks a sharper question than the fusion papers do. Convergent cross
+  mapping tests directed coupling between two dynamical systems, so this is not fusion for
+  classification but an attempt to establish whether cardiac and cortical activity drive each other.
+  That bears directly on the project's third comparison: if the cardiac signal is largely downstream
+  of the same central state the EEG already reflects, then adding it should buy little, and a measured
+  gain would need another explanation. If the coupling is genuinely bidirectional or lagged, the
+  peripheral channel may carry information the EEG does not.
+
+  Record the direction and strength of coupling reported, the time scales involved, and whether the
+  analysis controlled for shared task structure driving both signals.
+
 Also anchor on the model families in category 1 and on affect-recognition and workload-estimation
 datasets that ship synchronized EEG and peripheral channels, since those are where ablation arms
 are most often reported. Expand with `opencite cite --direction both` from each resolved seed.
