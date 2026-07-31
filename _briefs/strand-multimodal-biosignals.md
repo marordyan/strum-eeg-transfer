@@ -1,6 +1,6 @@
 # Strand B, Peripheral biosignals and multimodal fusion (Phase 1 brief)
 
-**Goal:** populate `research/collection/multimodal-biosignals/` with at least 18 paper-cards
+**Goal:** populate `research/collection/multimodal-biosignals/` with at least 25 paper-cards
 covering models for non-electroencephalography (non-EEG) biosignals and architectures that fuse
 them with EEG, with priority on evidence that isolates what the peripheral channel contributes.
 
@@ -133,7 +133,7 @@ Supplied by the user. These are required entries, not suggestions.
   Cognitive load is the construct closest to what this project could plausibly decode beyond a
   stimulus label, so record how load was manipulated, how it was labelled, which physiological
   channels were used, and whether the framework was validated across participants. The
-  `team-neuroergonomics` strand covers the construct definition; this strand covers the estimation
+  `candidate-datasets` strand covers label validity; this strand covers the estimation
   method. Card it here, and cross-reference it there rather than carding it twice.
 - Haque Y, Zawad RS, Rony CSA, Al Banna H, Ghosh T, Kaiser MS, Mahmud M. State-of-the-Art of Stress
   Prediction from Heart Rate Variability Using Artificial Intelligence. Slug
@@ -199,9 +199,9 @@ diagnosis from ECG alone with no representation-learning or transfer angle.
 
 ## Acceptance criteria
 
-- [ ] At least 18 entries across all 5 categories
-- [ ] At least 3 entries per category
-- [ ] At least 5 entries in category 3 that report a genuine EEG-only versus combined comparison
+- [ ] At least 25 entries across all 5 categories
+- [ ] At least 4 entries per category
+- [ ] At least 8 entries in category 3 that report a genuine EEG-only versus combined comparison
 - [ ] At least 2 entries in category 4 arguing that a reported physiological effect was artifact
       or confound
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`

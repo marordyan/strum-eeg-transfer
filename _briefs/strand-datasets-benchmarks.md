@@ -1,13 +1,13 @@
-# Strand C, Datasets, benchmarks, and evaluation protocols (Phase 1 brief)
+# Strand C, Pretraining corpora, benchmarks, and evaluation protocols (Phase 1 brief)
 
-**Goal:** populate `research/collection/datasets-benchmarks/` with at least 18 cards covering
-the data layer: what electroencephalography (EEG) and physiology datasets exist, what each one
-actually contains, how models are evaluated on them, and where the STRUM dataset sits among
-them.
+**Goal:** populate `research/collection/datasets-benchmarks/` with at least 18 cards covering how the
+field trains and measures: what corpora the checkpoints were pretrained on, which benchmarks and
+protocols they are evaluated under, and whether those evaluations are sound.
 
-This strand carries the load for the epic's headline question, which is how the project can use
-STRUM or other datasets to close an identified gap. Phase 4 maps gaps to datasets; that mapping
-is only as good as the specifications collected here.
+This strand answers "how is transfer measured, and can the measurement be trusted". Strand D answers
+the separate question of what data this project could actually fine-tune on. The split matters
+because an evaluation protocol can invalidate a result on a dataset that is otherwise perfect for the
+study, and Phase 4 needs both halves to say anything useful.
 
 ## Scope
 
@@ -15,109 +15,96 @@ Cover 5 categories.
 
 ### 1. Large EEG pretraining corpora
 
-- Temple University Hospital EEG Corpus, Sleep-EDF, and other multi-thousand-hour sources used
-  to pretrain the models in the `eeg-models` strand.
+- Temple University Hospital EEG Corpus, Sleep-EDF, and other multi-thousand-hour sources used to
+  pretrain the models in strand A.
 - Recording context: clinical versus laboratory, montage, sampling rate, population.
-- License and access terms, since these determine whether the project could pretrain or
-  continue pretraining rather than only fine-tune.
+- License and access terms, since these decide whether the project could continue pretraining rather
+  than only fine-tune.
 
-### 2. Small downstream benchmarks
+### 2. Downstream benchmarks the checkpoints report on
 
 - BCI Competition sets, motor imagery, event-related potential paradigms, and the workload and
-  attention datasets that transfer papers report on.
+  attention datasets that transfer papers use.
 - Participant counts, trials per participant, and class balance.
-- Which of these the pretrained checkpoints have already been evaluated on, so the project can
-  tell an established result from a novel one.
+- Which checkpoints have already been evaluated on which benchmark, so the project can tell an
+  established result from a novel one. This mapping is the category's main deliverable.
 
-### 3. Dyadic, team, and hyperscanning recordings
+### 3. Benchmark suites and standardized protocols
 
-- Public datasets with two or more simultaneously recorded participants.
-- Synchronization method and its precision, which constrains any inter-brain analysis.
-- Task structure, and whether labels are per-participant, per-dyad, or per-trial.
+- Multi-model, multi-dataset evaluation suites built specifically for brain foundation models.
+- What each suite fixes: datasets included, splits, fine-tuning budget, metrics, and which
+  checkpoints it covers.
+- Where suites disagree with each other. Disagreement between two suites about how to split or score
+  is more informative than either suite's leaderboard, and Phase 3 needs it named rather than
+  averaged away.
 
-This category is where the project's setting either has public comparators or does not. If the
-category comes back thin after a genuine search, that absence is itself a finding, and the
-strand must record what was searched rather than quietly returning fewer entries.
+### 4. Evaluation protocol conventions and their critiques
 
-### 4. Multimodal physiology datasets
+- Subject-wise versus record-wise versus random splits, and documented cases of leakage.
+- Whether reported gains survive a corrected protocol, where anyone has checked.
+- Metric conventions, and whether small-sample confidence intervals are reported at all.
+- Shortcut learning in this specific setting: evidence that a model separated recording sessions,
+  dataset identity, or acquisition hardware rather than the labelled construct.
 
-- Datasets carrying synchronized EEG with electrocardiography, electrooculography,
-  respiration, or electrodermal activity.
-- Which peripheral channels are usable as signal versus recorded only for artifact rejection.
-- Standard formats: Brain Imaging Data Structure for EEG (EEG-BIDS), European Data Format,
-  and what tooling reads them.
+Category 4 is the strand's center of gravity. A transfer number produced under a leaky split is not
+weak evidence, it is no evidence, and Phase 4 cannot weigh the literature without knowing which
+numbers were produced that way.
 
-### 5. STRUM and evaluation protocol conventions
+### 5. Formats and tooling standards
 
-- The STRUM data descriptor or documentation, carded as `type: dataset` from the primary source
-  the user provides. Record participant count, channel montage, peripheral channels present,
-  stimulus conditions and their markers, session structure, and total hours.
-- Split conventions in the surrounding literature: subject-wise versus record-wise versus
-  random splits, and documented cases of leakage.
-- Metric conventions and how small-sample confidence intervals are reported, or not.
+- Brain Imaging Data Structure for EEG, European Data Format, and what reads them.
+- Conventions for storing events, annotations, and stimulus markers, since the project's labels come
+  from stimulus markers.
+- Reference implementations, carded as `type: tool` where a tool is the primary source.
 
 ## Per-entry deliverable
 
 Create folder `research/collection/datasets-benchmarks/<slug>/` containing:
 
-- `card.md` with `strand: datasets-benchmarks`, and `type: dataset` for datasets, `type: paper`
-  for protocol and critique papers, `type: standard` for format specifications.
-- `source.md` always. For datasets with no paper, snapshot the canonical documentation or
-  landing page. Set `pdf_status: not-applicable` in that case.
-- `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`,
-  and `pdf_license` is in the redistributable set listed in the card schema addendum.
+- `card.md` with `strand: datasets-benchmarks`, and `type: dataset` for corpora and benchmark
+  datasets, `type: paper` for protocol and critique papers, `type: standard` for format
+  specifications, `type: tool` for implementations.
+- `source.md` always. For a corpus or tool with no paper, snapshot the canonical documentation or
+  landing page and set `pdf_status: not-applicable`.
+- `source.pdf` only when `meta.json.redistribution_ok` is true, `pdf_status` is `archived`, and
+  `pdf_license` is in the redistributable set listed in the card schema addendum.
 - `meta.json` with the access uniform resource locator, `retrieved_at`, license, and
-  `redistribution_ok`. Record the data license, not only the paper license, in `notes`.
-- BibTeX appended to `research/collection/datasets-benchmarks/datasets-benchmarks.bib`, with
-  the citation key rewritten to equal the entry slug exactly. `opencite` generates keys such as
+  `redistribution_ok`. Record the data license separately from the paper license in `notes`.
+- BibTeX appended to `research/collection/datasets-benchmarks/datasets-benchmarks.bib`, with the
+  citation key rewritten to equal the entry slug exactly. `opencite` generates keys such as
   `Xu2019ADT`; replace them, since the validator and the direction papers both key on the slug.
 - One categorized line in `research/collection/datasets-benchmarks/INDEX.md`.
 
-Every dataset card must record, in "Notable details", a fixed set of fields so Phase 3 can build
-a comparison table without re-reading sources: participants, simultaneous participants per
-recording, channels, sampling rate, peripheral channels, total hours, task, label type, license,
-access route. Write `unknown` where the source does not say. Do not infer.
+Every `type: dataset` card must record, in "Notable details": participants, channels, sampling rate,
+total hours, task, label type, license, access route, and which checkpoints were pretrained on or
+evaluated against it. Write `unknown` where the source is silent. Do not infer.
+
+Every protocol or benchmark-suite card must record the split rule, the metric, the fine-tuning budget
+where one is specified, and the checkpoints covered.
+
+Imported entries must set `imported_from: <relative path>` in `card.md`.
 
 ## Seed material
-
-### Required entry: the STRUM dataset
-
-Mullen T, Kothe C, Makeig S. STRUM: A New Dataset for Neuroergonomics Research. 2018 IEEE
-International Conference on Systems, Man, and Cybernetics (SMC), pages 77 to 82.
-Digital object identifier `10.1109/SMC.2018.00023`.
-
-Card this as `type: dataset`, slug `strum-2018`, with the full fixed field set. Retrieval notes:
-IEEE SMC proceedings are paywalled, so expect `redistribution_ok: false` and a markdown
-extraction only, unless an author copy exists. Check the Swartz Center for Computational
-Neuroscience and Intheon publication pages for an author accepted manuscript before settling for
-extraction alone.
-
-Record the citation count and check it against the claim below. At retrieval time Semantic
-Scholar and OpenAlex both reported 2 citations. If that holds, it is a substantive finding rather
-than trivia: it means there is almost no published modeling work on STRUM to compare against,
-which changes what the project can claim as a baseline and belongs in the Phase 4 gap analysis.
-Search explicitly for work citing this paper with `opencite cite "10.1109/SMC.2018.00023"
---direction backward` and card whatever it returns.
 
 ### Benchmark seed, supplied by the user
 
 - Wu J, Ren Z, Wang J, Zhu P, Song Y, Liu M, Zheng Q, Bai L, Ouyang W, Song C. AdaBrain-Bench:
   Benchmarking Brain Foundation Models for Brain-Computer Interface Applications. Slug
   `adabrain-bench`. Identifier not yet resolved: `opencite` keyword search did not return it, so
-  resolve it in Phase 2 from the arXiv listing or by exact title on OpenAlex and record the
-  identifier in `meta.json`. Do not guess an identifier.
+  resolve it in Phase 2 from the arXiv listing or by exact title on OpenAlex and record the identifier
+  in `meta.json`. Do not guess an identifier.
 
   Card as `type: standard` if it defines a protocol, or `type: paper` if it is an evaluation study;
-  decide from the source, not from the title. This is a category 5 entry above all: record which
-  split protocol it prescribes, which datasets it includes, and which checkpoints it evaluates, so
-  Phase 4 can tell whether the project's planned evaluation is comparable to an established
-  protocol or is bespoke.
+  decide from the source rather than from the title. A category 3 entry above all: record which split
+  protocol it prescribes, which datasets it includes, and which checkpoints it evaluates, so Phase 4
+  can tell whether this project's planned evaluation is comparable to an established protocol or is
+  bespoke.
 
 ### Benchmark leads surfaced while resolving the seeds
 
-Recorded so they are not lost; verify each before carding. If two or more of these prescribe
-conflicting split protocols, that disagreement is a finding for the Phase 3 synthesis, not
-something to resolve by picking one.
+Recorded so they are not lost; verify each before carding. If two or more prescribe conflicting split
+protocols, that disagreement belongs in the Phase 3 synthesis rather than being resolved by picking
+one.
 
 - Lu and colleagues. OmniEEG-Bench: A Standardized Evaluation Benchmark for EEG Foundation Models.
   arXiv `2606.00815`.
@@ -126,53 +113,43 @@ something to resolve by picking one.
 - Banville and colleagues. NeuralBench: A Unifying Framework to Benchmark NeuroAI Models. OpenAlex
   `W7161091175`.
 
-### Secondary seeds, inferred rather than given
+### Shortcut-learning leads, shared with strand A
 
-These follow from the STRUM authorship and are worth checking, but they are the collector's
-leads rather than confirmed dependencies. Verify relevance before carding; drop any that turn out
-not to bear on STRUM.
+These bear on category 4 and are also recorded in the `eeg-models` brief for category 5. Card
+whichever strand the source fits better and cross-reference the other; do not card twice.
 
-- Kothe C and colleagues. The Lab Streaming Layer for Synchronized Multimodal Recording. bioRxiv,
-  digital object identifier `10.1101/2024.02.13.580071`. Bears on category 3, since
-  synchronization method and its precision constrain any inter-participant analysis, and STRUM
-  was plausibly recorded with this toolchain. Confirm from the STRUM paper's methods rather than
-  assuming it.
-- Other datasets and recording infrastructure from the same authors, found by
-  `opencite cite --direction both` from the two entries above.
+- Lin and colleagues. The Identity Trap in EEG Foundation Models: A Diagnostic Audit. OpenAlex
+  `W7164090340`.
+- Zare. Stress-Testing EEG Foundation Models for Clinical Decoding: Dataset Identity and Targeted
+  Negative Controls. OpenAlex `W7171748390`.
 
 ### Remaining anchors
 
-The user's broader seed list of papers and authors has not yet arrived, so categories 1 through 4
-still rely on derived anchors: the pretraining corpora named by the `eeg-models` strand's
-checkpoints, and the dataset registries PhysioNet, OpenNeuro, and the EEG-BIDS example
-collection, mined for entries in categories 3 and 4.
-
-Imported entries must set `imported_from: <relative path>` in `card.md`.
+Categories 1, 2, and 5 rely on derived anchors: the pretraining corpora named by strand A's
+checkpoints, followed by the benchmark datasets those checkpoints report on, followed by the format
+specifications those datasets use.
 
 ## Search strategy
 
-Sources: arXiv, OpenAlex, Crossref, PubMed, plus direct registry browsing for PhysioNet and
-OpenNeuro, which are not well covered by citation search. Record registry finds with the
-registry landing page as `source_url`.
+Sources: arXiv, OpenAlex, Crossref, PubMed, plus direct browsing for corpus landing pages, which
+citation search covers poorly. Record such finds with the landing page as `source_url`.
 
-Window: no lower bound. Datasets remain current long after publication, and an older corpus can
-still be the one a 2025 checkpoint was pretrained on.
+Window: no lower bound. An older corpus can still be the one a 2025 checkpoint was pretrained on.
 
 Representative queries:
 
-- `opencite search "EEG dataset data descriptor multimodal physiological" --max 25`
-- `opencite search "hyperscanning dataset two participants simultaneous EEG" --max 25`
-- `opencite search "EEG BIDS dataset open access workload" --max 20`
-- `opencite search "cross-subject evaluation protocol EEG leakage benchmark" --max 20`
-- `opencite lookup "<STRUM reference>"`
+- `opencite search "EEG foundation model benchmark standardized evaluation" --max 25`
+- `opencite search "cross-subject evaluation protocol EEG leakage benchmark" --max 25`
+- `opencite search "EEG deep learning shortcut learning dataset identity confound" --max 20`
+- `opencite search "Temple University Hospital EEG corpus" --max 15`
+- `opencite search "EEG BIDS specification events annotations" --max 15`
 - `opencite cite "<pretraining corpus DOI>" --direction both`
 
-Inclusion: the work releases data, specifies a data format, defines a benchmark protocol, or
-critiques evaluation practice on these datasets.
+Inclusion: the work releases a corpus used for pretraining, defines a benchmark or protocol,
+specifies a data format, or critiques evaluation practice.
 
-Exclusion: private clinical datasets with no access route; datasets under 8 participants with no
-peripheral channels and no dyadic structure, unless a checkpoint in the `eeg-models` strand
-reports on them.
+Exclusion: candidate datasets this project might fine-tune on, which belong to strand D unless a
+strand A checkpoint pretrained on or benchmarked against them; private corpora with no access route.
 
 ## Skills to use
 
@@ -183,26 +160,27 @@ reports on them.
 
 - [ ] At least 18 entries across all 5 categories
 - [ ] At least 3 entries per category
-- [ ] The STRUM dataset is carded from its primary source, digital object identifier
-      `10.1109/SMC.2018.00023`
-- [ ] A backward citation search from the STRUM digital object identifier has been run, and
-      `INDEX.md` records what it returned, including the case where it returns nothing usable
-- [ ] Every `type: dataset` card records the full fixed field set, with `unknown` where the
-      source is silent
-- [ ] At least 4 datasets carrying synchronized EEG and at least one peripheral modality
-- [ ] Category 3 either reaches 3 entries or `INDEX.md` records the queries run and what they
-      returned
+- [ ] At least 4 entries in category 4, of which at least 2 critique a protocol or demonstrate
+      leakage or shortcut learning rather than merely describing convention
+- [ ] The checkpoint-to-benchmark mapping in category 2 is recorded on the cards, not left implicit
+- [ ] Every `type: dataset` card records the full fixed field set, with `unknown` where the source is
+      silent
+- [ ] Every benchmark-suite card records its split rule, metric, and covered checkpoints
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
-- [ ] Every entry has BibTeX in `datasets-benchmarks.bib`
+- [ ] Every entry has BibTeX in `datasets-benchmarks.bib`, keyed to the slug
+- [ ] `INDEX.md` fully populated with categorized one-liners
 - [ ] No more than 40 percent of entries marked `relevance: high`
 - [ ] `uv run python tools/validate_corpus.py` exits 0
-- [ ] No prose synthesis and no dataset ranking; that is Phases 3 and 4
+- [ ] No prose synthesis and no protocol recommendation; those are Phases 3 and 4
 
 ## Out of scope
 
-- Model architectures and pretraining objectives. That is the `eeg-models` strand.
-- Fusion methods. That is the `multimodal-biosignals` strand.
-- Cognitive interpretation of the tasks a dataset uses. That is the `team-neuroergonomics`
-  strand, which cards the construct while this strand cards the recording.
+- Model architectures and pretraining objectives. That is strand A, `eeg-models`. This strand cards
+  the corpus; strand A cards the model trained on it.
+- Fusion methods and peripheral signal modeling. That is strand B, `multimodal-biosignals`.
+- Candidate datasets for this project to fine-tune on, dyadic and multi-person recordings, EEG plus
+  peripheral physiology datasets, and label validity. Those moved to strand D,
+  `candidate-datasets`. A dataset that is both a strand A benchmark and a strand D candidate gets a
+  card in each, written to that strand's question.
 - Data engineering tooling beyond format readers.
-- Recommending which dataset the project should use. Phase 4 decides that from this evidence.
+- Recommending an evaluation protocol for this project. Phase 4 decides that from this evidence.

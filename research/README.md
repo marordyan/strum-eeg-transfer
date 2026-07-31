@@ -38,9 +38,12 @@ research/
 direction-papers/                          Phase 5 outputs
 ```
 
-Strands: `eeg-models`, `multimodal-biosignals`, `datasets-benchmarks`, `team-neuroergonomics`.
-They partition the topic into methods, fusion, data, and application. The partition is chosen so
-that no strand can be merged into another without losing a distinction the gap analysis needs.
+Strands: `eeg-models`, `multimodal-biosignals`, `datasets-benchmarks`, `candidate-datasets`. They
+partition the topic into models, fusion, measurement, and candidate data. The partition is chosen so
+that no strand can be merged into another without losing a distinction the gap analysis needs. In
+particular, `datasets-benchmarks` asks how the field measures transfer and whether that measurement
+is sound, while `candidate-datasets` asks what data this project could fine-tune on and whether its
+labels support a claim. A dataset can pass one test and fail the other.
 
 ## Traceability rule
 

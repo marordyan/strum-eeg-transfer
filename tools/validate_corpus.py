@@ -97,7 +97,7 @@ EXPECTED_STRANDS = {
     "eeg-models",
     "multimodal-biosignals",
     "datasets-benchmarks",
-    "team-neuroergonomics",
+    "candidate-datasets",
 }
 
 YEAR_RE = re.compile(r"^\d{4}$")
