@@ -110,6 +110,52 @@ Supplied by the user. These are required entries, not suggestions.
   at the level of acquisition and synchronization constraints, and mark it `relevance: low` if the
   modality set does not overlap enough to inform the STRUM design.
 
+- Wang H, Jiang C, Liu G, Yuan J, Yu M, Ma X, Liu C, Xiao J, Zhang G. A Machine Learning Approach
+  for Real-Time Detection of Inadequate Sedation Using Non-EEG Physiological Signals.
+  Bioengineering, 2025. Digital object identifier `10.3390/bioengineering12101049`. Slug
+  `wang-2025-sedation-non-eeg`. Published by a fully open-access publisher, so expect
+  `pdf_license: CC-BY-4.0` and an archivable PDF.
+
+  Categories 3 and 5, and it earns its place for a specific reason: it decodes a state from
+  peripheral physiology with no EEG at all. Category 3 asks for EEG-only, physiology-only, and
+  combined arms, and the physiology-only arm is the one the literature most often omits. This entry
+  supplies it directly. Record which signals and which engineered features carry the decoding, the
+  performance against chance, and whether evaluation held out participants.
+
+  Note the scope tension: the out-of-scope section below excludes clinical endpoints, and sedation
+  adequacy is one. The exclusion is amended for this case, because a clinical setting is where
+  physiology-only decoding is most often reported and the endpoint is incidental to what the card
+  contributes. Card the decoding evidence, not the clinical claim.
+
+- Ahmad MI, Keller I, Robb DA, Lohan KS. A framework to estimate cognitive load using physiological
+  data. Personal and Ubiquitous Computing, 2020. Digital object identifier
+  `10.1007/s00779-020-01455-7`. Slug `ahmad-2020-cognitive-load-framework`. Categories 3 and 5.
+  Cognitive load is the construct closest to what this project could plausibly decode beyond a
+  stimulus label, so record how load was manipulated, how it was labelled, which physiological
+  channels were used, and whether the framework was validated across participants. The
+  `team-neuroergonomics` strand covers the construct definition; this strand covers the estimation
+  method. Card it here, and cross-reference it there rather than carding it twice.
+- Haque Y, Zawad RS, Rony CSA, Al Banna H, Ghosh T, Kaiser MS, Mahmud M. State-of-the-Art of Stress
+  Prediction from Heart Rate Variability Using Artificial Intelligence. Slug
+  `haque-hrv-stress-review`. Identifier not yet resolved; resolve by exact title in Phase 2 and
+  record it in `meta.json`. Do not guess an identifier. Category 5, and the strand's reference point
+  for what engineered heart rate variability features achieve before any learned encoder is
+  introduced. As a review, mine its reference list for primary entries rather than treating its
+  aggregate numbers as evidence.
+
+- Wibirama S, Alfarozi SAI, Suhari AR, Fristiana AH, Nurlatifa H, Santosa PI. Classification of
+  Cognitive Load Using Deep Learning Based on Eye Movement Indices. Slug
+  `wibirama-cognitive-load-eye-movement`. Identifier not yet resolved; resolve by exact title in
+  Phase 2 and record it in `meta.json`. Do not guess an identifier.
+
+  Categories 4 and 5, and it sits on the strand's most useful fault line. Eye movement indices are
+  what electrooculography measures, and the same ocular activity that this literature decodes as
+  signal is what EEG pipelines routinely remove as artifact. If cognitive load is decodable from eye
+  movement alone, then ocular artifact removal is discarding task-relevant information, and any gain
+  this project sees from adding an electrooculography channel may be ocular rather than cortical.
+  Record which indices carry the classification, whether they were derived from eye tracking or from
+  electrooculography, and the performance against chance.
+
 Also anchor on the model families in category 1 and on affect-recognition and workload-estimation
 datasets that ship synchronized EEG and peripheral channels, since those are where ablation arms
 are most often reported. Expand with `opencite cite --direction both` from each resolved seed.
@@ -171,7 +217,10 @@ diagnosis from ECG alone with no representation-learning or transfer angle.
 - EEG-only pretraining and architecture work. That is the `eeg-models` strand.
 - Dataset characterization beyond naming which signals a dataset carries. That is the
   `datasets-benchmarks` strand.
-- Cardiology, sleep medicine, and critical-care prediction as clinical endpoints, except where
-  the paper is the primary reference for a peripheral foundation model.
+- Cardiology, sleep medicine, and critical-care prediction as clinical endpoints, with two
+  exceptions: the paper is the primary reference for a peripheral foundation model, or the clinical
+  setting is the only one in which a physiology-only decoding arm is reported, as with the sedation
+  entry in Seed material. In the second case, card the decoding evidence and leave the clinical
+  claim alone.
 - Camera-based or contactless physiology estimation.
 - Comparing or ranking entries against each other. Collection only.
