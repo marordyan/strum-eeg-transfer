@@ -116,6 +116,22 @@ Supplied by the user. These are required entries, not suggestions.
   standard author manuscript deposit, `author-accepted-manuscript` applies and the PDF may be
   archived. If the license is unclear, use `unknown`, which means markdown only.
 
+- Alexander DM, Ball T, Schulze-Bonhage A, van Leeuwen C. Large-scale cortical travelling waves
+  predict localized future cortical signals. PLOS Computational Biology, 2019. Digital object
+  identifier `10.1371/journal.pcbi.1007316`. PubMed Central identifier `PMC6894364`. Slug
+  `alexander-2019-cortical-waves`. Published by PLOS under Creative Commons Attribution, so the PDF is
+  archivable and `pdf_license: CC-BY-4.0` applies.
+
+  The second and final entry on the theoretical-motivation line, which this fills. Note honestly on
+  the card what it is: an empirical result about the spatiotemporal structure of cortical signals, not
+  a theory paper and not transfer evidence. It is carded under a motivation line by a deliberate
+  scoping decision to keep this thread small, so the card must state that its evidential weight here
+  is limited to establishing that cortical signals carry predictable spatiotemporal structure. It
+  cannot support any claim about whether a pretrained model captures that structure.
+
+  The line is now at its cap. A further signal-structure paper cannot be added without reopening the
+  scoping decision, which is a Phase 3 conversation and not a collection-time judgment.
+
 Also anchor on the model families named in categories 2 and 3, then expand outward with
 `opencite cite --direction both` from each resolved seed. Prefer the citation graph over keyword
 search for categories 4 and 5, since null results rarely surface in citation-ranked keyword

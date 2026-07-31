@@ -172,6 +172,30 @@ Supplied by the user. These are required entries, not suggestions.
   Record the direction and strength of coupling reported, the time scales involved, and whether the
   analysis controlled for shared task structure driving both signals.
 
+- Schiecke K, Pester B, Feucht M, Leistritz L, Witte H. Convergent Cross Mapping: Basic concept,
+  influence of estimation parameters and practical application. Slug `schiecke-ccm-methods`. Identifier
+  not yet resolved; resolve by exact title in Phase 2 and record it in `meta.json`. Do not guess an
+  identifier.
+
+  A methods entry, category 5, and it is what makes the coupling results in this strand judgeable. If
+  convergent cross mapping outcomes are sensitive to embedding dimension, lag, or library size, then a
+  reported coupling direction is a function of analysis choices as much as of physiology. Record which
+  parameters matter, how much, and what the paper recommends. Phase 3 needs this to weigh
+  `zeng-brain-heart-ccm` rather than take its direction claim at face value.
+
+  Related and already resolved, from the same group: Schiecke K and colleagues. Brain-heart
+  interactions considering complex physiological data: processing schemes for time-variant,
+  frequency-dependent, topographical and statistical examination of directed interactions by convergent
+  cross mapping. Physiological Measurement, 2019. Digital object identifier
+  `10.1088/1361-6579/ab5050`. Slug `schiecke-2019-brain-heart-ccm`. This applies the method to
+  brain-heart interaction directly and is closer to the project's question than a generic methods
+  treatment, so card it as well rather than treating the two as duplicates.
+
+Convergent cross mapping now appears in three seed entries. Treat it as a recurring method in the
+corpus rather than an incidental one: the applications belong to categories 3 and 4, the methods and
+parameter-sensitivity work to category 5, and Phase 3 should be able to state whether the coupling
+findings across these papers agree once analysis choices are accounted for.
+
 Also anchor on the model families in category 1 and on affect-recognition and workload-estimation
 datasets that ship synchronized EEG and peripheral channels, since those are where ablation arms
 are most often reported. Expand with `opencite cite --direction both` from each resolved seed.
