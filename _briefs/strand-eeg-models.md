@@ -22,6 +22,10 @@ Cover 5 categories. Breadth first across model families, depth on transfer evide
   sample windows.
 - What the objective assumes about channel montage, sampling rate, and recording length, since
   those assumptions determine whether STRUM data can be fed to the model at all.
+- Theoretical or mechanistic motivation for applying sequence models to neural time series, kept
+  strictly separate from evidence that they work. At most 2 entries, marked `relevance: medium` or
+  lower. A card here explains why an architecture might suit neural data; it never establishes that
+  a checkpoint transfers.
 
 ### 2. Architectures
 
@@ -94,6 +98,23 @@ Supplied by the user. These are required entries, not suggestions.
   Clinical Applications. Slug `brainwave`. Identifier not yet resolved: `opencite` keyword search
   did not return it. Resolve it in Phase 2 by searching the arXiv listing directly or by exact
   title on OpenAlex, and record the identifier in `meta.json`. Do not guess an identifier.
+
+- Muller L, Churchland PS, Sejnowski TJ. Transformers and cortical waves: encoders for pulling in
+  context across time. Trends in Neurosciences, 2024. Digital object identifier
+  `10.1016/j.tins.2024.08.006`. PubMed Central identifier `PMC11936488`. Slug
+  `muller-2024-transformers-cortical-waves`.
+
+  Category 1, under the theoretical-motivation line, and the only theory entry in the seed set. It
+  argues an analogy between transformer attention over a sequence and cortical traveling waves
+  carrying context over time. Card it as motivation and nothing more. It reports no transfer result,
+  so it cannot support any claim about whether a pretrained model works on STRUM, and a direction
+  paper that cites it as though it did would be making an argument the source does not make. State
+  that limit explicitly in the card's "Open questions / limitations" section.
+
+  Retrieval note: a PubMed Central copy exists, but availability there does not by itself establish
+  a redistribution license. Check the actual license on the PubMed Central record. If it is a
+  standard author manuscript deposit, `author-accepted-manuscript` applies and the PDF may be
+  archived. If the license is unclear, use `unknown`, which means markdown only.
 
 Also anchor on the model families named in categories 2 and 3, then expand outward with
 `opencite cite --direction both` from each resolved seed. Prefer the citation graph over keyword
