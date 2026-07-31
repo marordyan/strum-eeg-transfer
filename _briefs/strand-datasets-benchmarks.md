@@ -99,6 +99,33 @@ which changes what the project can claim as a baseline and belongs in the Phase 
 Search explicitly for work citing this paper with `opencite cite "10.1109/SMC.2018.00023"
 --direction backward` and card whatever it returns.
 
+### Benchmark seed, supplied by the user
+
+- Wu J, Ren Z, Wang J, Zhu P, Song Y, Liu M, Zheng Q, Bai L, Ouyang W, Song C. AdaBrain-Bench:
+  Benchmarking Brain Foundation Models for Brain-Computer Interface Applications. Slug
+  `adabrain-bench`. Identifier not yet resolved: `opencite` keyword search did not return it, so
+  resolve it in Phase 2 from the arXiv listing or by exact title on OpenAlex and record the
+  identifier in `meta.json`. Do not guess an identifier.
+
+  Card as `type: standard` if it defines a protocol, or `type: paper` if it is an evaluation study;
+  decide from the source, not from the title. This is a category 5 entry above all: record which
+  split protocol it prescribes, which datasets it includes, and which checkpoints it evaluates, so
+  Phase 4 can tell whether the project's planned evaluation is comparable to an established
+  protocol or is bespoke.
+
+### Benchmark leads surfaced while resolving the seeds
+
+Recorded so they are not lost; verify each before carding. If two or more of these prescribe
+conflicting split protocols, that disagreement is a finding for the Phase 3 synthesis, not
+something to resolve by picking one.
+
+- Lu and colleagues. OmniEEG-Bench: A Standardized Evaluation Benchmark for EEG Foundation Models.
+  arXiv `2606.00815`.
+- Shen and colleagues. Brain4FMs: A Benchmark of Foundation Models for Electrical Brain Signal.
+  OpenAlex `W7128864510`.
+- Banville and colleagues. NeuralBench: A Unifying Framework to Benchmark NeuroAI Models. OpenAlex
+  `W7161091175`.
+
 ### Secondary seeds, inferred rather than given
 
 These follow from the STRUM authorship and are worth checking, but they are the collector's

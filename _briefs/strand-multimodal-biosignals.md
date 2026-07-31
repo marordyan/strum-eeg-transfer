@@ -82,12 +82,44 @@ explicitly rather than omitting the line.
 
 ## Seed material
 
-Provisional, pending the user's seed list of papers and authors.
+Supplied by the user. These are required entries, not suggestions.
 
-Until it arrives, anchor on the model families in category 1 and on affect-recognition and
-workload-estimation datasets that ship synchronized EEG and peripheral channels, since those
-are where ablation arms are most often reported. Expand with
-`opencite cite --direction both` from each anchor.
+- Li J, Chen N, Zhu H, Li G, Xu Z, Chen D. Incongruity-aware multimodal physiology signals fusion
+  for emotion recognition. Information Fusion, 2023. Digital object identifier
+  `10.1016/j.inffus.2023.102220`. Slug `li-2023-incongruity-fusion`. Categories 2 and 3. The
+  incongruity framing is the useful part: it treats disagreement between modalities as information
+  rather than noise, which is the mechanism by which peripheral signals could add value beyond a
+  redundant copy of what the EEG already carries. Record how incongruity is operationalized and
+  whether the ablation isolates it.
+- Salam A, Alam F, Shah D, Rahman SU, Ali S, Tahir M. Improving cognitive stress classification via
+  multimodal EEG and ECG fusion: gender differences in physiological response. Scientific Reports.
+  Digital object identifier `10.1038/s41598-026-38356-3`. Slug `salam-eeg-ecg-stress`. Category 3,
+  and the closest published analogue to this project's third comparison. Record the EEG-only arm,
+  the combined arm, the split protocol, and the participant count. The gender-difference result
+  also raises a subgroup-confound question worth carrying to Phase 4.
+- Liu H, Lou T, Zhang Y, Wu Y, Xiao Y, and colleagues. EEG-Based Multimodal Emotion Recognition: A
+  Machine Learning Perspective. Slug `liu-eeg-multimodal-emotion-review`. Identifier not yet
+  resolved; resolve by exact title in Phase 2 and record it in `meta.json`. Do not guess an
+  identifier. As a review it is a source of further entries for categories 2 and 3; mine its
+  reference list rather than treating it as evidence on its own.
+- Ha U, Lee Y, Kim H, Roh T, Bae J, Kim C. A Wearable EEG-HEG-HRV Multimodal System With
+  Simultaneous Monitoring of transcranial Electrical Stimulation for Mental Health Management. Slug
+  `ha-wearable-eeg-heg-hrv`. Identifier not yet resolved; resolve in Phase 2. Categories 1 and 5,
+  and the only hardware-side entry in the seed set. It carries heart rate variability and
+  hemoencephalography rather than the ECG and respiration this project has, so card what transfers
+  at the level of acquisition and synchronization constraints, and mark it `relevance: low` if the
+  modality set does not overlap enough to inform the STRUM design.
+
+Also anchor on the model families in category 1 and on affect-recognition and workload-estimation
+datasets that ship synchronized EEG and peripheral channels, since those are where ablation arms
+are most often reported. Expand with `opencite cite --direction both` from each resolved seed.
+
+### Lead surfaced while resolving the seeds
+
+- Lee and colleagues. A Comprehensive Review of Biosignal Foundation Models, 2025. Digital object
+  identifier `10.36227/techrxiv.176369849.97173246/v1`. Bears on category 1 and is a likely source
+  of further entries. Note it is a preprint on a server that does not peer review, so weigh it as
+  a map of the field rather than as evidence.
 
 Imported entries must set `imported_from: <relative path>` in `card.md`.
 

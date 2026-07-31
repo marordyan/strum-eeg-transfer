@@ -82,13 +82,42 @@ without a baseline number is not useful to Phase 3.
 
 ## Seed material
 
-Provisional. The user is supplying a seed list of papers and authors; when it arrives, the
-named entries below are replaced or extended and this section loses its provisional marking.
+Supplied by the user. These are required entries, not suggestions.
 
-Until then, anchor on the model families named in categories 2 and 3, and expand outward with
-`opencite cite --direction both` from each anchor once its DOI is resolved. Prefer the citation
-graph over keyword search for category 4 and 5 entries, since null results rarely surface in
-citation-ranked keyword queries.
+- El Ouahidi Y, Lys J, Thölke P, Farrugia N, Pasdeloup B, Gripon V, Jerbi K, Lioi G. REVE: A
+  Foundation Model for EEG, Adapting to Any Setup with Large-Scale Pretraining on 25,000 Subjects.
+  arXiv `2510.21585`, 2025. Slug `reve-2025`. The highest-value entry in the strand for category 2,
+  because adapting to any setup is precisely the montage-flexibility question that determines
+  whether STRUM data can be fed to a checkpoint at all. Record the exact mechanism by which it
+  handles an unseen channel set, not merely the claim that it does.
+- Yuan Z, Shen F, Li M, Yu Y, Wu F, Tan C, Yang Y. BrainWave: A Brain Signal Foundation Model for
+  Clinical Applications. Slug `brainwave`. Identifier not yet resolved: `opencite` keyword search
+  did not return it. Resolve it in Phase 2 by searching the arXiv listing directly or by exact
+  title on OpenAlex, and record the identifier in `meta.json`. Do not guess an identifier.
+
+Also anchor on the model families named in categories 2 and 3, then expand outward with
+`opencite cite --direction both` from each resolved seed. Prefer the citation graph over keyword
+search for categories 4 and 5, since null results rarely surface in citation-ranked keyword
+queries.
+
+### Leads surfaced while resolving the seeds
+
+Found incidentally during seed lookup and recorded so they are not lost. Verify each before
+carding. The first two are unusually valuable for category 5 and should be chased first.
+
+- Lin and colleagues. The Identity Trap in EEG Foundation Models: A Diagnostic Audit. OpenAlex
+  `W7164090340`.
+- Zare. Stress-Testing EEG Foundation Models for Clinical Decoding: Dataset Identity and Targeted
+  Negative Controls. OpenAlex `W7171748390`.
+
+  Both appear to argue that these models can score well by recognizing which dataset a recording
+  came from rather than by decoding the task. If that holds it bears directly on how this project
+  must design its evaluation, and it belongs in Phase 4 whichever way the evidence falls.
+
+- Wang and colleagues. CBraMod: A Criss-Cross Brain Foundation Model for EEG Decoding. Digital
+  object identifier `10.48550/arxiv.2412.07236`.
+- Guetschel and colleagues. Review of deep representation learning techniques for brain-computer
+  interfaces. Digital object identifier `10.1088/1741-2552/ad8962`.
 
 Imported entries must set `imported_from: <relative path>` in `card.md`.
 
