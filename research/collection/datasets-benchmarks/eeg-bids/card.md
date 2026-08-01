@@ -47,7 +47,7 @@ derivatives are deferred to a separate extension proposal.
 
 Three parts of this specification bear on the project directly.
 
-The first is `events.tsv`, and it is the reason this card is `relevance: high`. This project's labels
+The first is `events.tsv`, and it is the reason this card is `relevance: medium` rather than low. This project's labels
 come from stimulus markers, and the specification's rationale for requiring an events file is exactly
 the problem that creates: "while such information is often present as one or several binary 'trigger'
 channels in the EEG recordings, the representation of events is rarely explicit in the original

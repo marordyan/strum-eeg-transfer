@@ -25,8 +25,8 @@ md_quality: clean
 
 A third-party benchmark that runs four released EEG checkpoints and four supervised baselines
 through one adaptation pipeline on 13 datasets, and finds that the pretrained models win on
-average — by 6.5 macro-average points cross-subject — while losing outright on every
-clinical-monitoring task, and that one of them scores below chance on 4-class motor imagery under
+average — by 6.5 macro-average points cross-subject — while faring "comparable or even worse" on
+clinical-monitoring tasks, and that one of them collapses to chance on 4-class motor imagery under
 full fine-tuning.
 
 ## Summary
@@ -99,7 +99,7 @@ fact that determines whether STRUM's montage can be fed to it at all.
   for the best traditional one; on Siena, EEGNet's 72.29 beats every foundation model (best BIOT
   at 71.67); on HMC, Conformer's 73.84 beats every foundation model. The authors attribute this to
   those datasets being large enough that supervised learning suffices.
-- **A below-chance result**: EEGPT under full fine-tuning reaches 25.81 balanced accuracy on
+- **A collapse to chance**: EEGPT under full fine-tuning reaches 25.81 balanced accuracy on
   BCI-IV-2A, a 4-class task where chance is 25 percent. Under linear probing the same checkpoint
   reaches 47.89. The authors attribute the collapse to overfitting given EEGPT's parameter count,
   and thereafter report linear-probing results for EEGPT and full fine-tuning for the others — a

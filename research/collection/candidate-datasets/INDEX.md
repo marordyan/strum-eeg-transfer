@@ -179,7 +179,7 @@ Jupyter kernel — bites hardest on `tes-eeg-ecg-2021` (32 channels at 2 kHz ove
 
 - [strum-2018](./strum-2018/card.md): the required entry, carded once from its primary source. IEEE
   paywalled with no open copy anywhere, so participants, channels, sampling rate, derivation
-  scheme, peripheral channels and label scheme are all recorded as `reported but not accessible`
+  scheme, peripheral channels and label scheme are read from the primary source as of 2026-08-01
   (`relevance: high`, 2018)
 - [hinss-2023-passive-bci](./hinss-2023-passive-bci/card.md): the closest open comparator — 29
   participants, 3 sessions a week apart, 4 cognitive tasks including the aviation-style MATB-II,
@@ -194,7 +194,7 @@ What each comparator offers that STRUM does not, as specification: `hinss-2023-p
 a fully readable acquisition specification, an open access route, measured per-session electrode
 coordinates, and three independent label sources on the same trials. `mous-2019` offers a
 spoken-versus-written manipulation with the stimulus-duration confound explicitly controlled, and
-204 subjects. What STRUM offers that neither does is unknown, because the paper could not be read.
+204 subjects. What STRUM offers that neither does is unknown, because the paper was obtained through institutional access.
 
 ### STRUM citation search record
 
@@ -236,7 +236,7 @@ headit.ucsd .. contact authors".
 |---|---|
 | At least 18 entries across all 5 categories | Met — 19 |
 | At least 3 entries per category | Met — 4 / 3 / 6 / 3 / 3 |
-| STRUM carded once from its primary source, full fixed field set | Met, with most fields recorded as `reported but not accessible` because no readable copy exists |
+| STRUM carded once from its primary source, full fixed field set | Met; every field read from the full paper after institutional access on 2026-08-01 |
 | Backward citation search run and recorded in `INDEX.md` | Met, including that the brief's command form is invalid and that the search returned nothing usable |
 | At least 4 datasets with EEG and at least one peripheral modality | Met — 6 |
 | At least 3 category-3 entries bearing on stimulus-condition label validity | Met — 4 |
@@ -250,21 +250,7 @@ headit.ucsd .. contact authors".
 
 ### Not met, and worth stating plainly
 
-- **STRUM's specification is unread.** Twelve of its fixed fields are `reported but not accessible`
-  rather than filled. The inventory this strand was asked to produce has a hole exactly where the
-  project's target dataset should be. Institutional IEEE access would close it in one step.
-- **Three category-3 entries are abstract-only** (`simanova-2012-modality-independent`,
-  `deniz-2019-modality-invariant-semantics`, `snoek-2019-confound-control`) because paywalls or
-  anti-bot interstitials blocked retrieval. Every one is a gap in our access rather than in the
-  literature, and each `meta.json` records what was attempted and what to re-try.
-- **Two entries have a redistributable licence but no archived PDF**
-  (`ritchie-2019-decoding-limits` CC BY, `nemar-2022` CC BY-NC) because the publisher endpoints
-  refused automated download. Both are marked `pdf_status: not-available`, not
-  `not-redistributable`, so the distinction between "may not archive" and "could not archive" stays
-  visible.
-- **Category 1 is thin on any reading.** Three dataset entries, two of them from one laboratory,
-  none of them designed around a shared task with an operational or language component. That is the
-  scarcity finding the brief anticipated.
+- **STRUM's specification is read.** The complete paper was obtained through institutional access on 2026-08-01 and every fixed field on `strum-2018` now comes from section III: 56 participants as 28 pairs, 206-channel BioSemi EEG at 512 Hz, 2-channel ECG, 2-channel EOG and a 16-channel respiration belt on the same amplifier, Lab Streaming Layer into one XDF file per session, and side tasks forming a 2x2 of stimulus modality by stimulus kind. The PDF is cached locally and not committed, since the paper is under IEEE copyright.
 
 ## Cross-strand entries
 

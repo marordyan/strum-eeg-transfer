@@ -3,7 +3,7 @@
   "source_url": "https://doi.org/10.1038/s41598-026-38356-3",
   "retrieved_at": "2026-07-31",
   "pdf_sha256": "826fb5bb2f8e2b8546a242efd8a16bc543bb0cd21bb9ac280aa2355976ec299b",
-  "pdf_license": "CC-BY-NC (CC BY-NC-ND 4.0, as stated in the article's own licence block)",
+  "pdf_license": "CC-BY-NC-ND (CC BY-NC-ND 4.0, as stated in the article's own licence block)",
   "redistribution_ok": true,
   "notes": "Licence read from the article's own licence block, which names the Creative Commons Attribution-NonCommercial-NoDerivatives licence; Europe PMC and OpenAlex both report cc-by-nc-nd. CC BY-NC-ND permits verbatim non-commercial redistribution with attribution, so the PDF is archived; the vocabulary has no CC-BY-NC-ND token, so CC-BY-NC is the leading token with the real licence in the qualifier. NoDerivatives caveat: the markdown conversion is arguably a derivative and is retained as internal research notes under fair use rather than under the licence grant. Extraction: markitdown on the Nature single-column template converts cleanly for prose; the numeric tables survive as usable markdown but with merged column headers (e.g. 'DT KNN | LD NB RF SVM'), so the mapping of values to classifiers was checked against the PDF before anything was quoted. EXTRACTION UPDATE 2026-08-01 -- source.md was regenerated with pymupdf4llm, which preserves markdown tables and inter-word spacing that the earlier markitdown conversion destroyed, and md_quality was reassessed against the new extraction as clean (was rough)."
 }

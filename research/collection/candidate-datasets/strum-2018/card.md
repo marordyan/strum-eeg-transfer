@@ -114,7 +114,10 @@ secondary descriptions.
   hardware-synchronous with it. Also present, and not in the project's plan: 43-channel EMG neckband,
   force plate, head-mounted eye tracker with scene camera, two video cameras, desk microphone, and an
   instrumented Xbox 360 controller. The third comparison's premise is sound.
-- **Total hours**: not reported. The paper gives neither session duration nor total recorded hours.
+- **Total hours**: **about 3.5 hours per session.** "The overall experiment takes ca. 3.5 hours to
+  maximize the amount of data collected per subject, and also to induce a moderate degree of
+  fatigue." The paper does not give a corpus total; 28 pairs at roughly 3.5 hours is on the order of
+  98 session-hours, but that is arithmetic rather than a reported figure.
 - **Task**: a multi-task battery. The side tasks form an explicit factorial design: "broken down by
   stimulus modality (auditory/visual) and stimulus kind (verbal/non-verbal), yielding a matrix of
   four tasks, plus one additional task with natural visual stimuli". Each task presents a stimulus
@@ -191,7 +194,10 @@ layout-flexible checkpoint can ingest STRUM without approximation):
   conductivity using SCALE head tissue conductivity estimation using EEG", EMBC,
   `10.1109/embc48229.2022.9872004` — a forward-model methods paper, also sharing an author.
   Neither trains or evaluates a model on STRUM data.
-- **Backward citations (references)**: 21 works, all pre-2017, and characteristic of a passive-BCI
+- **Backward citations (references)**: OpenAlex lists 21 works, while the printed bibliography
+  numbers 24; the years below come from the indexes rather than the printed list, and three of
+  them disagree with it (Blankertz 2011, Lotte and Guan 2011, Tomioka and Mueller 2010). All
+  pre-2017, and characteristic of a passive-BCI
   methods lineage rather than a dataset lineage — Farwell & Donchin (1988), Ramoser et al. (2000)
   common spatial patterns, Ang et al. (2008) FBCSP, Blankertz et al. (2010), Lotte & Guan (2010),
   Tomioka & Müller (2009), Zander & Kothe (2011) passive BCI, Kothe & Makeig (2013) BCILAB,
@@ -206,23 +212,35 @@ layout-flexible checkpoint can ingest STRUM without approximation):
   give Mullen, Kothe, Makeig. Crossref's IEEE deposit and OpenAlex both give Kothe (sequence
   `first`, corresponding author, affiliation "Intheon Labs, Intheon, San Diego, CA, USA"), then
   Mullen, then Makeig. The IEEE Xplore page, which would settle it, blocks automated retrieval.
-  The card and the bib entry follow dblp and Semantic Scholar, and the discrepancy is recorded
-  here so a later reader does not assume the bib was checked against the publisher's own page.
-  It was not.
+  **Settled by the PDF title block**, which gives Kothe, then Mullen, then Makeig, matching Crossref
+  and OpenAlex against dblp and Semantic Scholar. The card frontmatter follows the paper. The bib
+  entry still carries the dblp order and is corrected alongside this note.
 
 ## Open questions / limitations
 
-- Every field that decides whether this project is feasible is unread. Until the paper is
-  obtained through institutional IEEE access, or the data are obtained from the authors, the
-  channel count, sampling rate, derivation scheme, peripheral channel inventory, participant
-  count, and label scheme are all unknown, and no downstream phase should treat this card as
-  supplying them.
-- The abstract says "open dataset" while the only recorded access route is contacting the
-  authors. Whether the data were ever hosted publicly, and whether they still are, is unresolved.
-- Whether STRUM was recorded with the Lab Streaming Layer is unverified. The strand brief flags
-  this as plausible and instructs confirming it from the STRUM methods rather than assuming it;
-  the methods could not be read, and the fact that the LSL paper cites STRUM establishes only
-  that LSL's authors cite it, not that STRUM used LSL. Carded as unresolved.
+This section was written before the paper was obtained and has been rewritten against the full text.
+The specification is no longer among the open questions; what follows is what the paper genuinely
+leaves open.
+
+- **The reference is not stated.** BioSemi acquires against its CMS/DRL pair, so the recording is
+  referential rather than bipolar, but the paper never says what reference any released version of
+  the data carries, nor whether re-referencing was applied before distribution.
+- **Electrode positions are not stated.** Whether per-subject coordinates were digitised, or a
+  template is assumed, is unrecorded. For a 206-channel cap this decides whether a coordinate-driven
+  checkpoint can be given a position per channel at all.
+- **The paper contradicts itself on channel count.** Section III says "206channel EEG montage";
+  section IV says "the 205-channel EEG was subsampled to a subset of 64 approximately equidistant
+  channels". Both are quoted here rather than reconciled. The card's fixed field set uses 206, from
+  the data-collection section, following the standing rule to prefer the section that describes the
+  recording over one describing an analysis.
+- **The paper contradicts itself on participants.** 56 as 28 pairs, against a sex breakdown of
+  "13 f, 49 m" summing to 62.
+- **The usable session count is not restated** after "3 datasets were excluded due to interruptions".
+- The abstract says "open dataset", and the paper's own footnote gives a distribution point:
+  "Available from http://headit.ucsd.edu/". So the data were published, and the community list
+  recording "not available on headit.ucsd .. contact authors" describes a host that has since gone
+  away rather than a dataset that was never released. What remains open is whether the authors will
+  supply it now, not whether it was ever public.
 - The two-citation figure is a fact about visibility, not about quality, and the same figure is
   consistent with a dataset that was never distributed widely enough to be modelled. Which of
   those explains it is not determinable from what was read.

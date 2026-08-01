@@ -58,9 +58,10 @@ within-subject spoken-versus-written classifier, and any across-subject classifi
 contrast is separating two disjoint groups of people, so its accuracy is confounded with subject
 identity at the maximum possible strength. The `eeg-models` strand has already recorded that frozen
 foundation-model embeddings are dominated by subject identity; a between-subjects modality label is
-the worst possible case for that failure mode. If STRUM manipulates spoken versus written *within*
-subject, it has a design property MOUS does not, and that is worth checking against the STRUM
-methods when they become readable.
+the worst possible case for that failure mode. STRUM does manipulate modality *within* subject: its
+side tasks run concurrently for every participant, in a 2x2 of stimulus modality by stimulus kind,
+which the full paper settled on 2026-08-01. So STRUM has the design property MOUS lacks, and the
+subject-identity confound that dominates the MOUS contrast does not apply to it in the same way.
 
 The second transferable element is the stimulus timing control. MOUS derives each word's visual
 presentation duration from the duration of the spoken recording of the same sentence, so the two
@@ -162,5 +163,6 @@ Primary: `mous-2019`
   and written presentation that MOUS's duration formula is designed to neutralise.
 - `eeg-bids-2019` and `openneuro-2021` — the format MOUS uses, and the more permissive access model
   it does not.
-- `strum-2018` — the dataset this one is a comparator for; whether STRUM manipulates presentation
-  modality within or between subjects is the open question MOUS makes concrete.
+- `strum-2018` — the dataset this one is a comparator for. MOUS makes concrete what a
+  between-subjects modality contrast costs; STRUM's own 2x2 is within-subject, so MOUS reads as the
+  cautionary comparison rather than the model to follow.

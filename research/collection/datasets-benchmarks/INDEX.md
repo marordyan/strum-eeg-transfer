@@ -4,9 +4,14 @@ Strand C. Scope categories are those defined in `_briefs/strand-datasets-benchma
 entry; each entry's full record is its `card.md`. Nothing here is a synthesis, a ranking, or a
 protocol recommendation; those are Phases 3 and 4.
 
-**Collection status: 19 entries, quota met.** Category counts: 3 in category 1, 4 in category 2,
-5 in category 3, 4 in category 4, 3 in category 5. Relevance distribution: 7 high (36.8%), 10 medium,
+**Collection status: 18 entries, quota met.** Category counts: 3 in category 1, 4 in category 2,
+5 in category 3, 3 in category 4, 3 in category 5. Relevance distribution: 6 high (33.3%), 10 medium,
 2 low.
+
+These counts were stale until the Phase 2 review: they still described 19 entries, because
+`brookshire-2024-data-leakage` was collected independently by this strand and by `eeg-models`, and
+the near-identical duplicate here was removed in favour of a cross-reference. Category 4 lost that
+entry from its count but not its evidence; see the cross-reference in that section.
 
 ## 1. Large EEG pretraining corpora
 

@@ -18,6 +18,7 @@ import argparse
 import hashlib
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -120,7 +121,7 @@ INDEX_LINK_RE = re.compile(r"\]\(\./([^)]+)\)")
 PDF_LICENSE_LEADING_RE = re.compile(r"[(;]")
 DOI_URL_PREFIX_RE = re.compile(r"^https?://(dx\.)?doi\.org/")
 ARXIV_ABS_RE = re.compile(r"arxiv\.org/abs/([0-9]+\.[0-9]+)")
-CHECKPOINT_LINE_RE = re.compile(r"^-\s+\*\*Checkpoints covered[^:]*:\*\*\s*(.+)$")
+CHECKPOINT_LABEL_RE = re.compile(r"^[-*\s]*\**\s*Checkpoints covered", re.I)
 
 HIGH_RELEVANCE_CEILING = 0.40
 HIGH_RELEVANCE_MIN_ENTRIES = 5
@@ -201,6 +202,31 @@ def _read_bytes_safe(path: Path) -> tuple[bytes | None, str | None]:
         return path.read_bytes(), None
     except OSError as exc:
         return None, f"could not be read: {exc}"
+
+
+def _is_tracked_by_git(path: Path) -> bool:
+    """Whether git tracks this path.
+
+    The local PDF cache holds papers whose licence forbids redistribution, and
+    .gitignore is not a guarantee: `git add -f` overrides it without comment,
+    and continuous integration runs the validator but never inspects the
+    index. Checking tracking directly is the only thing that actually enforces
+    "never committed".
+
+    Returns False when git is unavailable or the path is outside a repository,
+    since the validator must stay usable on a plain directory.
+    """
+    try:
+        result = subprocess.run(
+            ["git", "ls-files", "--error-unmatch", "--", path.name],
+            cwd=path.parent,
+            capture_output=True,
+            timeout=10,
+            check=False,
+        )
+    except (OSError, subprocess.SubprocessError):
+        return False
+    return result.returncode == 0
 
 
 def parse_frontmatter(text: str) -> tuple[dict[str, object] | None, list[str]]:
@@ -355,6 +381,12 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
             violations.append(
                 "both source.pdf and source.local.pdf exist; an archived entry keeps only "
                 "source.pdf, and a non-redistributable one keeps only source.local.pdf"
+            )
+        if _is_tracked_by_git(local_pdf_path):
+            violations.append(
+                "source.local.pdf is tracked by git; it is the cache for a paper whose licence "
+                "forbids redistribution and must never be committed. .gitignore alone does not "
+                "prevent this, since `git add -f` bypasses it silently"
             )
 
     meta: object = _UNSET
@@ -635,6 +667,69 @@ def _normalize_model_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
 
+# Corpora that appear inside "Checkpoints covered" bullets as the data a
+# checkpoint was pretrained or evaluated on. They are datasets, not models,
+# and most are not carded anywhere, so slug lookup alone does not exclude them.
+KNOWN_DATASET_TOKENS = {
+    _n
+    for _n in (
+        "tuab tuev tuar tuep tuse tusz tusl tueg seed shhs siena chbmit iiic spis tsu hgd "
+        "grasp inria emobrain physionetmi physionet sleepedf hmc isruc mdd bciiv2a bciiv2b "
+        "faced mumtaz stew dreamer deap amigos"
+    ).split()
+}
+
+
+def _strip_pretraining_clause(block: str) -> str:
+    """Drop a trailing 'with what each was pretrained on' style qualifier.
+
+    One card's bullet is "Checkpoints covered, with what each was pretrained
+    on (the paper's own Table 7): ...", which interleaves corpus names with
+    model names. The label itself is consumed upstream; this removes the
+    parenthetical so its words do not become candidate model names.
+    """
+    return re.sub(r"\([^)]*\)", " ", block)
+
+
+def _checkpoint_blocks(text: str) -> list[str]:
+    """Return the text of every 'Checkpoints covered' bullet in a card.
+
+    Deliberately tolerant of formatting, because the first version of this
+    matched on the exact punctuation `:**` and so read only two of the five
+    real bullets in the corpus: it missed a card whose bold span wrapped a
+    line, one whose colon sat outside the bold, and one that used a plain
+    label. It also stopped at the first line, truncating a list that wrapped.
+    A coverage check that silently reads a third of its input looks clean
+    while covering almost nothing, which is worse than no check at all.
+
+    So: find the label however it is emphasised, then consume continuation
+    lines until the next bullet or heading.
+    """
+    lines = text.splitlines()
+    blocks: list[str] = []
+    index = 0
+    while index < len(lines):
+        stripped = lines[index].strip()
+        if CHECKPOINT_LABEL_RE.match(stripped):
+            collected = [stripped]
+            index += 1
+            while index < len(lines):
+                nxt = lines[index]
+                nxt_stripped = nxt.strip()
+                if not nxt_stripped or nxt_stripped.startswith(("-", "#", "*", "|")):
+                    break
+                collected.append(nxt_stripped)
+                index += 1
+            joined = " ".join(collected)
+            # Drop everything up to and including the label's colon, wherever
+            # the emphasis markers happen to fall around it.
+            after_label = re.sub(r"^.*?Checkpoints covered[^:]*:\s*\**", "", joined, flags=re.I)
+            blocks.append(after_label)
+            continue
+        index += 1
+    return blocks
+
+
 def _checkpoint_coverage_warnings(collection_root: Path) -> list[str]:
     """Warn when a benchmark suite evaluates a checkpoint no model card covers.
 
@@ -653,17 +748,24 @@ def _checkpoint_coverage_warnings(collection_root: Path) -> list[str]:
         for p in models_dir.iterdir()
         if p.is_dir() and not p.name.startswith("_")
     }
+    dataset_names = set(KNOWN_DATASET_TOKENS)
+    for strand in ("datasets-benchmarks", "candidate-datasets"):
+        strand_dir = collection_root / strand
+        if strand_dir.is_dir():
+            dataset_names.update(
+                _normalize_model_name(re.sub(r"-(19|20)\d{2}$", "", p.name))
+                for p in strand_dir.iterdir()
+                if p.is_dir() and not p.name.startswith("_")
+            )
 
-    uncovered: dict[str, set[str]] = {}
+    uncovered: dict[str, tuple[str, set[str]]] = {}
     for card_path in sorted((collection_root / "datasets-benchmarks").glob("*/card.md")):
         text, read_error = _read_text_safe(card_path)
         if read_error is not None:
             continue
-        for line in text.splitlines():
-            match = CHECKPOINT_LINE_RE.match(line.strip())
-            if not match:
-                continue
-            for chunk in match.group(1).split(","):
+        for block in _checkpoint_blocks(text):
+            # Separators differ by card: most use commas, one uses semicolons.
+            for chunk in re.split(r"[,;]", _strip_pretraining_clause(block)):
                 # Chunks may carry trailing detail ("BIOT, 3.2M params"); keep
                 # only a leading model-name-shaped token.
                 token = re.match(r"\s*([A-Za-z][A-Za-z0-9.\-]{2,})", chunk)
@@ -673,13 +775,25 @@ def _checkpoint_coverage_warnings(collection_root: Path) -> list[str]:
                 normalized = _normalize_model_name(name)
                 if not normalized or normalized.isdigit():
                     continue
+                # A model name is capitalised; prose connectives in the same
+                # bullet ("the", "none", "pretrained") are not.
+                if name[0].islower():
+                    continue
+                # One card lists each checkpoint alongside the corpus it was
+                # pretrained on, so dataset names appear in the same bullet.
+                # Anything this corpus cards as a dataset is not a checkpoint.
+                if normalized in dataset_names:
+                    continue
                 if not any(normalized in slug or slug in normalized for slug in carded):
-                    uncovered.setdefault(name, set()).add(card_path.parent.name)
+                    # Keyed by normalized name so "Neuro-GPT" and "NeuroGPT"
+                    # are reported once, not twice.
+                    _display, suites = uncovered.setdefault(normalized, (name, set()))
+                    suites.add(card_path.parent.name)
 
     return [
-        f"WARNING checkpoint '{name}' is evaluated by {', '.join(sorted(suites))} "
+        f"WARNING checkpoint '{display}' is evaluated by {', '.join(sorted(suites))} "
         f"but has no entry in eeg-models"
-        for name, suites in sorted(uncovered.items())
+        for _, (display, suites) in sorted(uncovered.items())
     ]
 
 

@@ -1,0 +1,4 @@
+# Archived source PDFs are binary. Without this git treats the 14 of them that
+# happen to contain no null bytes early on as text, which makes diffs unusable and
+# exposes them to EOL normalisation that would corrupt the bytes the sha256 pins.
+*.pdf binary

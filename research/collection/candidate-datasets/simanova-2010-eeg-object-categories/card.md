@@ -30,7 +30,8 @@ only the exemplars, possibly through the use of perceptual differences between t
 
 ## Summary
 
-Twenty participants saw four animals and four tools, each presented eighty times in each of three
+Twenty-four native Dutch speakers took part, four of them a pilot group, leaving twenty in the
+analysis; they saw four animals and four tools, each presented eighty times in each of three
 stimulus modalities: as a spoken Dutch word, as a black line drawing, and as a written Dutch word.
 All exemplars were monosyllabic and matched for lemma frequency; pictures were matched for
 familiarity and complexity. EEG was recorded on a 64-channel ActiCap system, 60 scalp electrodes on
@@ -90,7 +91,10 @@ spoken and written stimuli that any spoken-versus-written epoching scheme inheri
 - **Acquisition**: 64-channel ActiCap (Brain Products), 60 equidistant scalp electrodes, 0.2–200 Hz,
   500 Hz sampling; right-mastoid reference converted offline to linked mastoids; bipolar EOG from
   horizontal and vertical periocular electrodes. Epochs of 1 s from −300 ms.
-- **Headline accuracy**: 89 % correctly classified trials for pictures. Auditory and orthographical
+- **Headline accuracy**: for pictures, "the highest classification accuracy reached over all
+  subjects was 0.89", with "a mean value of 0.79 (SD = 0.07)" and significance for all twenty
+  analysed subjects. 0.89 is the best single subject, not the group result; quoting it alone
+  overstates the paper, and the mean is the number synthesis should carry. Auditory and orthographical
   "lower though still significant for some subjects" — for written words significant in only two of
   twenty subjects.
 - **Cross-modal transfer learning** (Table 2): pictures 0.83 (SD 0.05), spoken words 0.66 (SD 0.04),

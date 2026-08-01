@@ -11,12 +11,17 @@ Your strand brief governs what to collect. This document governs how.
 
 ### Converting a PDF to markdown
 
-Bare `uvx opencite convert` fails on a missing dependency, and `uvx --from 'opencite[pdf]'` then
-fails on markitdown's own extra. The only form that works:
+**Superseded. Use pymupdf4llm; see "Converting PDFs" below for the invocation and the measurements.**
+Kept only because the failure recorded here is real and someone will otherwise rediscover it: bare
+`uvx opencite convert` fails on a missing dependency, and `uvx --from 'opencite[pdf]'` then fails on
+markitdown's own extra, so the only form of the markitdown route that runs at all is
 
 ```bash
 uvx --from 'opencite[pdf]' --with 'markitdown[pdf]' opencite convert <pdf> -o <out.md>
 ```
+
+Do not use it for new entries. It mangles two-column layouts badly enough that the whole corpus was
+re-extracted.
 
 ### Resolving a bare OpenAlex work identifier
 
@@ -91,9 +96,15 @@ disk in `source.md`.
 
 This nearly poisoned a card in the pilot. Markitdown output can contain bytes that make BSD grep on
 macOS treat the file as binary, and `grep -c` then prints nothing and exits 1, which is
-indistinguishable from a genuine zero. Verified on the pilot corpus: `grep -c "Hz"` on
-`labram-2024/source.md` reports no matches, while Python counts 24 occurrences of the same string in
-the same file.
+indistinguishable from a genuine zero. It was verified at the time on `labram-2024/source.md`, then
+a markitdown conversion: `grep -c "Hz"` reported no matches while Python counted 24 occurrences of
+the same string in the same file.
+
+That example no longer reproduces, and the reason is worth knowing rather than hiding. Every
+extraction was later regenerated with pymupdf4llm, which emits plain UTF-8, so the same command now
+returns a count on the committed file. The hazard is a property of the converter's output, not of the
+corpus, so it returns the moment anyone converts with a tool that emits stray control bytes. Treat
+the rule as standing and the example as historical.
 
 The failure mode is what makes this dangerous. An agent that trusts the silent zero writes "the paper
 does not report its sampling rate" on the card, and that reads as diligence rather than as an error.
