@@ -49,7 +49,7 @@ and 18.5 ms inference latency per sample.
 On its face this is exactly the ablation the project's third comparison needs: one table with
 EEG-only, ECG-only, two naive fusion baselines and the proposed fusion, all on the same data, plus
 an attention-removal ablation isolating the fusion mechanism (0.905 without attention versus 0.957
-with). The claimed peripheral contribution is large, +10.1 points over the best EEG-only backbone
+with). The claimed peripheral contribution is large, +11.6 points over the best EEG-only backbone
 and +13.4 over the weakest.
 
 The reason this entry is marked `relevance: low` despite that is a data-provenance problem serious

@@ -663,6 +663,35 @@ def _entry_identifier(entry_dir: Path) -> str | None:
     return None
 
 
+SYNTHESIS_LINK_RE = re.compile(r"\]\((\.\.?/[^)]+)\)")
+
+
+def _synthesis_link_violations(root: Path) -> list[str]:
+    """Every relative link in research/synthesis/ must resolve.
+
+    The synthesis documents cite roughly 1800 card paths, and Phase 4 keeps
+    editing cards underneath them. Nothing checked these until review pointed
+    out that a renamed or removed entry would rot silently, which is the same
+    class as the stale-citation defects this phase kept finding by hand.
+    """
+    synthesis_dir = root / "research" / "synthesis"
+    if not synthesis_dir.is_dir():
+        return []
+    violations: list[str] = []
+    for doc in sorted(synthesis_dir.glob("*.md")):
+        text, read_error = _read_text_safe(doc)
+        if read_error is not None:
+            violations.append(f"{doc.relative_to(root)}: {read_error}")
+            continue
+        for link in SYNTHESIS_LINK_RE.findall(text):
+            target = link.split("#", 1)[0]
+            if not target:
+                continue
+            if not (doc.parent / target).resolve().exists():
+                violations.append(f"{doc.relative_to(root)}: link '{link}' does not resolve")
+    return violations
+
+
 def _normalize_model_name(name: str) -> str:
     return re.sub(r"[^a-z0-9]", "", name.lower())
 
@@ -868,6 +897,7 @@ def run_validation(root: Path) -> tuple[list[str], list[str], int, dict[str, int
                     f"above the 40% ceiling"
                 )
 
+    violations.extend(_synthesis_link_violations(root))
     warnings.extend(_checkpoint_coverage_warnings(collection_root))
     warnings.extend(_cross_strand_duplicate_warnings(collection_root, root))
 
