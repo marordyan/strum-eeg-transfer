@@ -1,0 +1,9 @@
+{
+  "doi": null,
+  "source_url": "https://isip.piconepress.com/projects/nedc/html/tuh_eeg/",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "not-applicable",
+  "redistribution_ok": false,
+  "notes": "Carded from corpus documentation rather than from a paper, so pdf_status is not-applicable. No DOI exists. DATA LICENCE: none stated; access is by signed form emailed to help@nedcdata.org and then ssh key and rsync at data/tuh_eeg/tuh_eeg_events/v2.0.1. source.md is a composite of two retrieved plain-text snapshots, each delimited by an explicit banner: the downloads page https://isip.piconepress.com/projects/nedc/html/tuh_eeg/ and the overview page https://isip.piconepress.com/projects/tuh_eeg/html/overview.shtml, both retrieved 2026-07-31. md_quality is clean for what was retrieved, but the retrieval is thin by the source's own nature: unlike TUAB, which the downloads page describes via a linked master's thesis, TUEV has no linked descriptive document, and its entire public documentation is one paragraph listing the six annotation classes. Every quantitative field on the card beyond the class list and the access route is therefore recorded as unknown from the primary source, with benchmark-paper figures attributed to the benchmark rather than to the corpus. A per-corpus _AAREADME exists inside the distributed release and is behind the registration wall; probed public URLs returned HTTP 404. The strand's BibTeX entry for this slug cites the parent corpus paper (Obeid and Picone 2016), since no TUEV-specific citable record exists; that substitution is noted in the bib entry itself."
+}

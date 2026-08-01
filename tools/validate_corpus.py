@@ -61,6 +61,13 @@ PDF_LICENSE_VALUES = {
     "CC-BY-3.0",
     "CC-BY-4.0",
     "CC-BY-NC",
+    # Added after the four-strand run: without these, a Nature Scientific Data
+    # article under CC-BY-NC-ND had to be recorded with a leading token of
+    # "preprint-cc-arxiv", which asserts an arXiv posting that does not exist.
+    # A vocabulary that forces a false statement is worse than a longer one.
+    "CC-BY-NC-ND",
+    "CC-BY-SA",
+    "CC-BY-NC-SA",
     "CC0",
     "preprint-cc-arxiv",
     "preprint-cc-biorxiv",
@@ -83,6 +90,12 @@ REDISTRIBUTABLE_LICENSES = {
     "CC-BY-3.0",
     "CC-BY-4.0",
     "CC-BY-NC",
+    # NoDerivatives permits verbatim redistribution, so a PDF may be archived;
+    # the markdown extraction rests on research-note fair use instead, which
+    # the schema addendum requires be stated in notes.
+    "CC-BY-NC-ND",
+    "CC-BY-SA",
+    "CC-BY-NC-SA",
     "CC0",
     "preprint-cc-arxiv",
     "preprint-cc-biorxiv",

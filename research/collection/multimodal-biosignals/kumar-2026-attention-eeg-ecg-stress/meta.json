@@ -1,0 +1,9 @@
+{
+  "doi": "10.1038/s41598-026-44499-0",
+  "source_url": "https://doi.org/10.1038/s41598-026-44499-0",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "ff2f75b4ba1cffe5575855183566a2c8d0307fe74825d3c2ef63f12402187ecc",
+  "pdf_license": "CC-BY-4.0",
+  "redistribution_ok": true,
+  "notes": "Licence read from the PDF's own licence block, which names the Creative Commons Attribution 4.0 International License and links http://creativecommons.org/licenses/by/4.0/. Europe PMC reports 'cc by'. Extraction: markitdown on the Nature single-column template; clean, with Tables 3-5 surviving as readable markdown tables. SUBSTANTIVE WARNING, repeated here because it governs whether this entry should be re-checked rather than reused: the paper states that WESAD 'consists of synchronised, high-resolution EEG and ECG recordings for 14 channels' and that CASE 'offers an EEG with a maximum of 32 EEG electrodes'. Neither public dataset distributes EEG. The provenance of the EEG arm is therefore unverifiable from the paper itself."
+}

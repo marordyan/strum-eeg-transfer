@@ -1,0 +1,9 @@
+{
+  "doi": "10.1038/s41597-019-0104-8",
+  "source_url": "https://doi.org/10.1038/s41597-019-0104-8",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "08213a0be3fc66728088b0738824ad93315be553fbb094b0fe958fb1b1193341",
+  "pdf_license": "CC-BY-4.0 (Scientific Data open access)",
+  "redistribution_ok": true,
+  "notes": "PAPER LICENCE: CC BY 4.0. Europe PMC records licence 'cc by' for PMC6592877 and Unpaywall reports oa_status 'gold' with a cc-by best_oa_location on the publisher host. PDF archived (8 pages). DATA LICENCE, separate: not applicable in the ordinary sense -- this entry is a specification, not a data release. The specification text itself lives at https://bids.neuroimaging.io/ and in the bids-specification repository under CC-BY-4.0; the version described by this paper is the 2019 EEG extension, and the live specification has since evolved, which is flagged on the card. EXTRACTION: source.md built from the Europe PMC full-text XML. md_quality is rough -- the article's single table (the comparison of EEG data formats) is flattened into pipe rows without its header alignment, and the two figures, which are the most information-dense part of a specification paper because they show an annotated directory tree and file previews, survive only as caption text. Everything quoted on the card comes from body prose describing the required and recommended sidecar files, and was read back against source.pdf."
+}

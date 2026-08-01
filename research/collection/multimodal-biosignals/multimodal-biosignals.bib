@@ -1,0 +1,372 @@
+% Strand B: peripheral biosignals and multimodal fusion.
+%
+% Citation keys equal entry slugs verbatim, per the project addendum in
+% research/collection/_schema/paper-card.md.
+%
+% Every entry below was verified field by field against Crossref
+% (api.crossref.org/works/<doi>) for entry type, container title, volume, issue,
+% pages/article number, year and the full author list, and cross-checked against
+% OpenAlex and, where a PMID exists, PubMed. opencite's BibTeX export was not
+% trusted: the Phase 2 pilot found wrong venues, dropped authors and conference
+% papers typed as @article, so the metadata here is assembled from Crossref
+% rather than corrected from opencite output. Where a record disagreed across
+% sources, the disagreement is recorded in a note field.
+%
+% Surnames with particles or multi-word family names are braced so BibTeX does
+% not split them: {de Albuquerque}, {van Erp}, {Al Banna}, {Abu Ishaq Alfarozi}.
+
+% ---------------------------------------------------------------------------
+% 1. Single-modality foundation models for peripheral signals
+% ---------------------------------------------------------------------------
+
+@inproceedings{papagei-2024,
+  title        = {{PaPaGei}: Open Foundation Models for Optical Physiological Signals},
+  author       = {Pillai, Arvind and Spathis, Dimitris and Kawsar, Fahim and Malekzadeh, Mohammad},
+  booktitle    = {The Thirteenth International Conference on Learning Representations ({ICLR} 2025)},
+  year         = {2024},
+  doi          = {10.48550/arXiv.2410.20542},
+  eprint       = {2410.20542},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2410.20542},
+  note         = {Typed @inproceedings because the first page of arXiv v2 states ``Published as a conference paper at ICLR 2025''; the only DOI is the arXiv DOI, and OpenAlex types the record as a preprint with venue ``arXiv (Cornell University)''. Year is 2024, the first-posting year, as used on the card; the conference year is 2025.}
+}
+
+@article{mckeen-2025-ecg-fm,
+  title        = {{ECG-FM}: an open electrocardiogram foundation model},
+  author       = {McKeen, Kaden and Masood, Sameer and Toma, Augustin and Rubin, Barry and Wang, Bo},
+  journal      = {JAMIA Open},
+  volume       = {8},
+  number       = {5},
+  pages        = {ooaf122},
+  year         = {2025},
+  publisher    = {Oxford University Press},
+  doi          = {10.1093/jamiaopen/ooaf122},
+  url          = {https://doi.org/10.1093/jamiaopen/ooaf122},
+  note         = {Crossref gives an article number rather than a page range; ooaf122 is used in the pages field, matching the journal's own citation line ``JAMIA Open, 2025, 8(5), ooaf122''.}
+}
+
+@misc{lee-2025-biosignal-fm-review,
+  title        = {A Comprehensive Review of Biosignal Foundation Models},
+  author       = {Lee, Na and Koliousis, Alexandros and Barmpas, Konstantinos and Panagakis, Yannis and Adamos, Dimitrios and Laskaris, Nikolaos and Zafeiriou, Stefanos},
+  year         = {2025},
+  howpublished = {TechRxiv preprint},
+  doi          = {10.36227/techrxiv.176369849.97173246/v1},
+  url          = {https://doi.org/10.36227/techrxiv.176369849.97173246/v1},
+  note         = {Typed @misc because TechRxiv is a preprint server with no peer review and there is no journal or proceedings container. Version 1. Author list from the OpenAlex record for the DOI; the posting itself is behind a Cloudflare challenge and could not be read to confirm the title block.}
+}
+
+@article{ha-wearable-eeg-heg-hrv,
+  title        = {A Wearable {EEG-HEG-HRV} Multimodal System With Simultaneous Monitoring of {tES} for Mental Health Management},
+  author       = {Ha, Unsoo and Lee, Yongsu and Kim, Hyunki and Roh, Taehwan and Bae, Joonsung and Kim, Changhyeon and Yoo, Hoi-Jun},
+  journal      = {IEEE Transactions on Biomedical Circuits and Systems},
+  volume       = {9},
+  number       = {6},
+  pages        = {758--766},
+  year         = {2015},
+  publisher    = {IEEE},
+  doi          = {10.1109/TBCAS.2015.2504959},
+  url          = {https://doi.org/10.1109/TBCAS.2015.2504959},
+  note         = {Title uses the published abbreviation ``tES'', not the expansion given in the strand brief. Year and pages from PubMed (PMID 26742142), which gives the issue as December 2015, 9(6), 758--766; Crossref and OpenAlex record 2016 (online publication) and Crossref's page field is the placeholder ``1-1''. Seven authors; the brief lists six, omitting Hoi-Jun Yoo.}
+}
+
+% ---------------------------------------------------------------------------
+% 2. Fusion architectures
+% ---------------------------------------------------------------------------
+
+@article{li-2023-incongruity-fusion,
+  title        = {Incongruity-aware multimodal physiology signals fusion for emotion recognition},
+  author       = {Li, Jing and Chen, Ning and Zhu, Hongqing and Li, Guangqiang and Xu, Zhangyong and Chen, Dingxin},
+  journal      = {Information Fusion},
+  volume       = {105},
+  pages        = {102220},
+  year         = {2023},
+  publisher    = {Elsevier},
+  doi          = {10.1016/j.inffus.2023.102220},
+  url          = {https://doi.org/10.1016/j.inffus.2023.102220},
+  note         = {Year discrepancy: OpenAlex, Semantic Scholar and the strand brief give 2023 (online first); Crossref's issue date is May 2024 and the DBLP key is journals/inffus/LiCZLXC24. 2023 is used here to match the brief. Author list identical across Crossref, OpenAlex and Semantic Scholar.}
+}
+
+@article{liu-eeg-multimodal-emotion-review,
+  title        = {{EEG}-Based Multimodal Emotion Recognition: A Machine Learning Perspective},
+  author       = {Liu, Huan and Lou, Tianyu and Zhang, Yuzhe and Wu, Yixiao and Xiao, Yang and Jensen, Christian S. and Zhang, Dalin},
+  journal      = {IEEE Transactions on Instrumentation and Measurement},
+  volume       = {73},
+  pages        = {1--29},
+  year         = {2024},
+  publisher    = {IEEE},
+  doi          = {10.1109/TIM.2024.3369130},
+  url          = {https://doi.org/10.1109/TIM.2024.3369130},
+  note         = {Identifier resolved by exact-title search; the strand brief supplied no identifier. The brief's ``and colleagues'' resolves to Christian S. Jensen and Dalin Zhang, giving seven authors, identical in Crossref and OpenAlex.}
+}
+
+@article{ding-2025-cross-attention-fusion,
+  title        = {Multimodal physiological signal emotion recognition based on multi-head cross attention with representation learning},
+  author       = {Ding, Shihang and Ma, Lin and Li, Haifeng},
+  journal      = {Frontiers in Psychiatry},
+  volume       = {16},
+  pages        = {1713559},
+  year         = {2025},
+  publisher    = {Frontiers Media},
+  doi          = {10.3389/fpsyt.2025.1713559},
+  url          = {https://doi.org/10.3389/fpsyt.2025.1713559},
+  note         = {Three authors, confirmed against Crossref and against the PDF byline. The markdown extraction of the Frontiers template places a reviewer's name adjacent to the author list; that name is not an author.}
+}
+
+@article{kuttala-2023-hierarchical-fusion,
+  title        = {Multimodal Hierarchical {CNN} Feature Fusion for Stress Detection},
+  author       = {Kuttala, Radhika and Subramanian, Ramanathan and Oruganti, Venkata Ramana Murthy},
+  journal      = {IEEE Access},
+  volume       = {11},
+  pages        = {6867--6878},
+  year         = {2023},
+  publisher    = {IEEE},
+  doi          = {10.1109/ACCESS.2023.3237545},
+  url          = {https://doi.org/10.1109/ACCESS.2023.3237545}
+}
+
+% ---------------------------------------------------------------------------
+% 3. Ablations that isolate the peripheral contribution
+% ---------------------------------------------------------------------------
+
+@article{salam-eeg-ecg-stress,
+  title        = {Improving cognitive stress classification via multimodal {EEG} and {ECG} fusion: gender differences in physiological response},
+  author       = {Salam, Abdus and Alam, Fakhre and Shah, Dilawar and Rahman, Sami Ur and Ali, Shujaat and Tahir, Muhammad},
+  journal      = {Scientific Reports},
+  volume       = {16},
+  number       = {1},
+  pages        = {7304},
+  year         = {2026},
+  publisher    = {Nature Portfolio},
+  doi          = {10.1038/s41598-026-38356-3},
+  url          = {https://doi.org/10.1038/s41598-026-38356-3},
+  note         = {Crossref records an article number (7304) rather than a page range; the article's own running footer reads ``Scientific Reports | (2026) 16:7304''.}
+}
+
+@article{hogervorst-2014-workload-comparison,
+  title        = {Combining and comparing {EEG}, peripheral physiology and eye-related measures for the assessment of mental workload},
+  author       = {Hogervorst, Maarten A. and Brouwer, Anne-Marie and {van Erp}, Jan B. F.},
+  journal      = {Frontiers in Neuroscience},
+  volume       = {8},
+  pages        = {322},
+  year         = {2014},
+  publisher    = {Frontiers Media},
+  doi          = {10.3389/fnins.2014.00322},
+  url          = {https://doi.org/10.3389/fnins.2014.00322},
+  note         = {Crossref returns no page field; the article number 322 is taken from the article's own citation line, ``Front. Neurosci. 8:322''. ``van Erp'' braced so the particle is not treated as a given name.}
+}
+
+@article{angkan-2024-invehicle-cognitive-load,
+  title        = {Multimodal Brain-Computer Interface for In-Vehicle Driver Cognitive Load Measurement: Dataset and Baselines},
+  author       = {Angkan, Prithila and Behinaein, Behnam and Mahmud, Zunayed and Bhatti, Anubhav and Rodenburg, Dirk and Hungler, Paul and Etemad, Ali},
+  journal      = {IEEE Transactions on Intelligent Transportation Systems},
+  volume       = {25},
+  number       = {6},
+  pages        = {5949--5964},
+  year         = {2024},
+  publisher    = {IEEE},
+  doi          = {10.1109/TITS.2023.3345846},
+  eprint       = {2304.04273},
+  archiveprefix = {arXiv},
+  url          = {https://doi.org/10.1109/TITS.2023.3345846},
+  note         = {Two versions. The version of record is the IEEE TITS article cited here; the archived source.pdf is arXiv 2304.04273 v2 (21 Dec 2023), which is what the card's numbers were read from. Crossref's issued date is June 2024; the DOI suffix carries 2023, the online-first year.}
+}
+
+@article{azad-2025-construction-noise,
+  title        = {Single- and Multimodal Deep Learning of {EEG} and {EDA} Responses to Construction Noise: Performance and Ablation Analyses},
+  author       = {Azad, Md Samdani and Lee, Sungchan and Choi, Minji},
+  journal      = {Sensors},
+  volume       = {25},
+  number       = {21},
+  pages        = {6775},
+  year         = {2025},
+  publisher    = {MDPI},
+  doi          = {10.3390/s25216775},
+  url          = {https://doi.org/10.3390/s25216775}
+}
+
+@article{kumar-2026-attention-eeg-ecg-stress,
+  title        = {An attention-based multimodal deep learning framework integrating {EEG} and {ECG} for enhanced stress detection},
+  author       = {Kumar, Rakesh and Krishnan, Sivanesan Bala and Yadav, Rakesh Kumar and Saini, Dilip Kumar Jang Bahadur and Chakrabarti, Prasun and Balodi, Arun and V, Shwetha},
+  journal      = {Scientific Reports},
+  volume       = {16},
+  number       = {1},
+  pages        = {15188},
+  year         = {2026},
+  publisher    = {Nature Portfolio},
+  doi          = {10.1038/s41598-026-44499-0},
+  url          = {https://doi.org/10.1038/s41598-026-44499-0},
+  note         = {The seventh author is recorded by Crossref with given name ``Shwetha'' and family name ``V''; reproduced as given rather than normalised, since the mononym-plus-initial form is what the publisher deposited.}
+}
+
+@article{zheng-2018-emotionmeter,
+  title        = {{EmotionMeter}: A Multimodal Framework for Recognizing Human Emotions},
+  author       = {Zheng, Wei-Long and Liu, Wei and Lu, Yifei and Lu, Bao-Liang and Cichocki, Andrzej},
+  journal      = {IEEE Transactions on Cybernetics},
+  volume       = {49},
+  number       = {3},
+  pages        = {1110--1122},
+  year         = {2019},
+  publisher    = {IEEE},
+  doi          = {10.1109/TCYB.2018.2797176},
+  url          = {https://doi.org/10.1109/TCYB.2018.2797176},
+  note         = {Year discrepancy: the DOI suffix and the OpenAlex record give 2018 (early access), which is the year on the card and in the slug; Crossref's issue date is March 2019, volume 49 issue 3, which is the version of record cited here.}
+}
+
+@article{liu-2022-multimodal-robustness,
+  title        = {Comparing Recognition Performance and Robustness of Multimodal Deep Learning Models for Multimodal Emotion Recognition},
+  author       = {Liu, Wei and Qiu, Jie-Lin and Zheng, Wei-Long and Lu, Bao-Liang},
+  journal      = {IEEE Transactions on Cognitive and Developmental Systems},
+  volume       = {14},
+  number       = {2},
+  pages        = {715--729},
+  year         = {2022},
+  publisher    = {IEEE},
+  doi          = {10.1109/TCDS.2021.3071170},
+  url          = {https://doi.org/10.1109/TCDS.2021.3071170},
+  note         = {DOI suffix carries 2021, the online-first year; the issue of record is June 2022.}
+}
+
+@article{wang-2025-sedation-non-eeg,
+  title        = {A Machine Learning Approach for Real-Time Detection of Inadequate Sedation Using Non-{EEG} Physiological Signals},
+  author       = {Wang, Huiquan and Jiang, Chunliang and Liu, Guanjun and Yuan, Jing and Yu, Ming and Ma, Xin and Liu, Chong and Xiao, Jingyu and Zhang, Guang},
+  journal      = {Bioengineering},
+  volume       = {12},
+  number       = {10},
+  pages        = {1049},
+  year         = {2025},
+  publisher    = {MDPI},
+  doi          = {10.3390/bioengineering12101049},
+  url          = {https://doi.org/10.3390/bioengineering12101049}
+}
+
+@article{zeng-brain-heart-ccm,
+  title        = {Emotion effects on spatiotemporal brain-heart interactions with convergent cross mapping},
+  author       = {Zeng, Xiaqi and Zhang, Xianbin and Dong, Hanrui and Bian, Guibin and {de Albuquerque}, Victor Hugo C. and Wu, Wanqing},
+  journal      = {Physiological Measurement},
+  volume       = {47},
+  number       = {6},
+  pages        = {065005},
+  year         = {2026},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1361-6579/ae7c55},
+  url          = {https://doi.org/10.1088/1361-6579/ae7c55},
+  note         = {Identifier resolved by exact-title search against the OpenAlex REST interface; the strand brief supplied no identifier. Crossref splits the fifth author as given ``Victor'' / family ``Hugo C de Albuquerque''; the family name is braced here as ``de Albuquerque'' so BibTeX does not mis-sort the particle. The published title uses an en dash in ``brain-heart''; an ASCII hyphen is used here.}
+}
+
+% ---------------------------------------------------------------------------
+% 4. Artifact versus signal
+% ---------------------------------------------------------------------------
+
+@article{mostert-2018-eye-movement-confounds,
+  title        = {Eye Movement-Related Confounds in Neural Decoding of Visual Working Memory Representations},
+  author       = {Mostert, Pim and Albers, Anke Marit and Brinkman, Loek and Todorova, Larisa and Kok, Peter and {de Lange}, Floris P.},
+  journal      = {eNeuro},
+  volume       = {5},
+  number       = {4},
+  pages        = {ENEURO.0401--17.2018},
+  year         = {2018},
+  publisher    = {Society for Neuroscience},
+  doi          = {10.1523/ENEURO.0401-17.2018},
+  url          = {https://doi.org/10.1523/ENEURO.0401-17.2018},
+  note         = {eNeuro uses an article identifier rather than page numbers. ``de Lange'' braced so the particle is not treated as a given name.}
+}
+
+@article{rotaru-2024-auditory-attention-bias,
+  title        = {What are we really decoding? {U}nveiling biases in {EEG}-based decoding of the spatial focus of auditory attention},
+  author       = {Rotaru, Iustina and Geirnaert, Simon and Heintz, Nicolas and {Van de Ryck}, Iris and Bertrand, Alexander and Francart, Tom},
+  journal      = {Journal of Neural Engineering},
+  volume       = {21},
+  number       = {1},
+  pages        = {016017},
+  year         = {2024},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1741-2552/ad2214},
+  url          = {https://doi.org/10.1088/1741-2552/ad2214},
+  note         = {The published title italicises ``really''; the emphasis is dropped here. ``Van de Ryck'' braced as a multi-word family name. The archived source.pdf is the KU Leuven Lirias accepted author manuscript, not the version of record.}
+}
+
+@article{wibirama-cognitive-load-eye-movement,
+  title        = {Classification of Cognitive Load Using Deep Learning Based on Eye Movement Indices},
+  author       = {Wibirama, Sunu and {Abu Ishaq Alfarozi}, Syukron and Suhari, Ahmad Riznandi and Fristiana, Ayuningtyas Hari and Nurlatifa, Hafzatin and Santosa, Paulus Insap},
+  journal      = {IEEE Access},
+  volume       = {13},
+  pages        = {167324--167343},
+  year         = {2025},
+  publisher    = {IEEE},
+  doi          = {10.1109/ACCESS.2025.3613292},
+  url          = {https://doi.org/10.1109/ACCESS.2025.3613292},
+  note         = {Identifier resolved by web search and confirmed against Crossref; the strand brief supplied no identifier and both opencite and an OpenAlex title.search query returned nothing. Crossref's given/family split for the Indonesian names is unreliable (it yields family names such as ``Abu Ishaq Alfarozi'' and ``Riznandi Suhari''); the forms here follow the brief's abbreviations (Alfarozi SAI, Suhari AR, Fristiana AH, Nurlatifa H, Santosa PI), with the one genuinely multi-word family name braced. Not to be confused with the same group's Array 2026 paper, doi 10.1016/j.array.2025.100669.}
+}
+
+% ---------------------------------------------------------------------------
+% 5. Classical physiology feature baselines and methods
+% ---------------------------------------------------------------------------
+
+@article{makowski-2021-neurokit2,
+  title        = {{NeuroKit2}: A {Python} toolbox for neurophysiological signal processing},
+  author       = {Makowski, Dominique and Pham, Tam and Lau, Zen J. and Brammer, Jan C. and Lespinasse, Fran{\c c}ois and Pham, Hung and Sch{\"o}lzel, Christopher and Chen, S. H. Annabel},
+  journal      = {Behavior Research Methods},
+  volume       = {53},
+  number       = {4},
+  pages        = {1689--1696},
+  year         = {2021},
+  publisher    = {Springer},
+  doi          = {10.3758/s13428-020-01516-y},
+  url          = {https://doi.org/10.3758/s13428-020-01516-y},
+  note         = {Software paper; the package itself is at https://github.com/neuropsychology/NeuroKit under an MIT licence, which is separate from the article's status (Springer bronze, no Creative Commons statement).}
+}
+
+@article{haque-hrv-stress-review,
+  title        = {State-of-the-Art of Stress Prediction from Heart Rate Variability Using Artificial Intelligence},
+  author       = {Haque, Yeaminul and Zawad, Rahat Shahriar and Rony, Chowdhury Saleh Ahmed and {Al Banna}, Hasan and Ghosh, Tapotosh and Kaiser, M. Shamim and Mahmud, Mufti},
+  journal      = {Cognitive Computation},
+  volume       = {16},
+  number       = {2},
+  pages        = {455--481},
+  year         = {2023},
+  publisher    = {Springer},
+  doi          = {10.1007/s12559-023-10200-0},
+  url          = {https://doi.org/10.1007/s12559-023-10200-0},
+  note         = {Identifier resolved by exact-title search; the strand brief supplied no identifier. Year is 2023 (Crossref issued 12 Oct 2023); the print issue is 16(2), 2024. ``Al Banna'' braced as a two-word family name.}
+}
+
+@article{ahmad-2020-cognitive-load-framework,
+  title        = {A framework to estimate cognitive load using physiological data},
+  author       = {Ahmad, Muneeb Imtiaz and Keller, Ingo and Robb, David A. and Lohan, Katrin S.},
+  journal      = {Personal and Ubiquitous Computing},
+  volume       = {27},
+  number       = {6},
+  pages        = {2027--2041},
+  year         = {2020},
+  publisher    = {Springer},
+  doi          = {10.1007/s00779-020-01455-7},
+  url          = {https://doi.org/10.1007/s00779-020-01455-7},
+  note         = {Year discrepancy: Crossref's issued date is 27 September 2020 (online) but the print issue is 27(6), 2023. 2020 is used here and on the card, matching the strand brief.}
+}
+
+@inproceedings{schiecke-ccm-methods,
+  title        = {Convergent Cross Mapping: Basic concept, influence of estimation parameters and practical application},
+  author       = {Schiecke, Karin and Pester, Britta and Feucht, Martha and Leistritz, Lutz and Witte, Herbert},
+  booktitle    = {2015 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society ({EMBC})},
+  pages        = {7418--7421},
+  year         = {2015},
+  publisher    = {IEEE},
+  doi          = {10.1109/EMBC.2015.7320106},
+  url          = {https://doi.org/10.1109/EMBC.2015.7320106},
+  note         = {Identifier resolved by an OpenAlex title.search query; the strand brief supplied no identifier and keyword search did not find it. Crossref types this as proceedings-article, hence @inproceedings. OpenAlex reports first_page 7418 and last_page 21, a truncated PubMed-style range; expanded to 7418--7421 here.}
+}
+
+@article{schiecke-2019-brain-heart-ccm,
+  title        = {Brain-heart interactions considering complex physiological data: processing schemes for time-variant, frequency-dependent, topographical and statistical examination of directed interactions by convergent cross mapping},
+  author       = {Schiecke, Karin and Schumann, Andy and Benninger, Franz and Feucht, Martha and Baer, Karl-Juergen and Schlattmann, Peter},
+  journal      = {Physiological Measurement},
+  volume       = {40},
+  number       = {11},
+  pages        = {114001},
+  year         = {2019},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1361-6579/ab5050},
+  url          = {https://doi.org/10.1088/1361-6579/ab5050},
+  note         = {The published title uses an en dash in ``Brain-heart''; an ASCII hyphen is used here. Author list differs from the strand brief, which names only Schiecke and colleagues.}
+}

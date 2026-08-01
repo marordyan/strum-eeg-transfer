@@ -111,10 +111,13 @@ Supplied by the user. These are required entries, not suggestions.
   paper that cites it as though it did would be making an argument the source does not make. State
   that limit explicitly in the card's "Open questions / limitations" section.
 
-  Retrieval note: a PubMed Central copy exists, but availability there does not by itself establish
-  a redistribution license. Check the actual license on the PubMed Central record. If it is a
-  standard author manuscript deposit, `author-accepted-manuscript` applies and the PDF may be
-  archived. If the license is unclear, use `unknown`, which means markdown only.
+  Retrieval note, corrected during collection. An earlier version of this brief said that a standard
+  author manuscript deposit takes `author-accepted-manuscript` and may be archived. The collecting
+  agent checked and found the PubMed Central record is an NIHMS deposit carrying no license statement
+  at all, with Europe PMC reporting `isOpenAccess: N` and `license: null`. That is structurally the
+  same as the arXiv default: a grant running to the host, not to third parties. It was recorded
+  `unknown`, markdown only, which is correct. Read the license off the record; deposit in a
+  repository is not itself a license.
 
 - Alexander DM, Ball T, Schulze-Bonhage A, van Leeuwen C. Large-scale cortical travelling waves
   predict localized future cortical signals. PLOS Computational Biology, 2019. Digital object

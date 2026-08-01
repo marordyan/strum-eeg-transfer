@@ -202,9 +202,11 @@ rests on research-note fair use rather than on the license grant, which is the s
 paywalled paper's extraction. Where that applies, say so in `notes` rather than leaving it implied.
 The reasoning belongs on the record, because the person auditing this later will not reconstruct it.
 
-The vocabulary in the copied schema above has no token for CC-BY-NC-ND. Use the closest preprint or
-`CC-*` token as the leading token and put the real license in the qualifier, which the validator
-accepts by design.
+The vocabulary in the copied schema above has no token for CC-BY-NC-ND, CC-BY-SA, or CC-BY-NC-SA.
+This repository adds all three, because the workaround they replaced made cards assert something
+false: two Nature Scientific Data articles had to be recorded with a leading token of
+`preprint-cc-arxiv`, claiming an arXiv posting that does not exist. All three are redistributable, so
+a PDF may be archived under them.
 
 ### `md_quality` describes fidelity, not completeness
 

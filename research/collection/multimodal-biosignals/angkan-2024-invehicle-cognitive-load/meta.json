@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/TITS.2023.3345846",
+  "source_url": "https://arxiv.org/abs/2304.04273",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "ef8d36fcd2e414b794915bf6d39653796a73a570845446ad7fe7f9de1ae9f2dd",
+  "pdf_license": "preprint-cc-arxiv (CC BY-NC-SA 4.0, read from the abs-license block on the arXiv abs page)",
+  "redistribution_ok": true,
+  "notes": "TWO VERSIONS. The version of record is IEEE Transactions on Intelligent Transportation Systems 25(6), 5949-5964, 2024, DOI 10.1109/TITS.2023.3345846, which is paywalled. The archived PDF is the authors' arXiv posting 2304.04273 v2 (21 Dec 2023). Licence read directly from the arXiv abs page, which links http://creativecommons.org/licenses/by-nc-sa/4.0/, i.e. CC BY-NC-SA 4.0 -- not arXiv's default non-exclusive grant -- so verbatim redistribution is permitted and the PDF is archived. The card's numbers are from the arXiv version's Tables VIII-XI and were not diffed against the IEEE version, so a downstream reader quoting them should say which version they came from. Extraction: markitdown on a two-column IEEE preprint; unusually, the large result tables survived as readable inline rows, which is why per-modality numbers could be carded from the extraction at all."
+}

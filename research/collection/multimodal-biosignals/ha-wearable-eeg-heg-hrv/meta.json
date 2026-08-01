@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/TBCAS.2015.2504959",
+  "source_url": "https://doi.org/10.1109/TBCAS.2015.2504959",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (IEEE Transactions on Biomedical Circuits and Systems)",
+  "redistribution_ok": false,
+  "notes": "IDENTIFIER RESOLUTION -- the strand brief lists this seed with no resolved identifier. It resolved on exact-title search: `uvx opencite search \"A Wearable EEG-HEG-HRV Multimodal System With Simultaneous Monitoring of transcranial Electrical Stimulation for Mental Health Management\" --max 8` returned it as hit [1] from crossref, openalex and pubmed simultaneously: DOI 10.1109/tbcas.2015.2504959, OpenAlex W2276056294, PMID 26742142, 66 citations, Ha et al. The published title abbreviates the brief's 'transcranial Electrical Stimulation' to 'tES'; the record is otherwise an exact match. Year is 2016 (volume 9, issue 6) although the DOI suffix carries 2015, the online-first year. NO FULL TEXT: IEEE Xplore is paywalled and no repository or PMC copy exists, so source.md is a metadata and abstract snapshot from OpenAlex and no PDF was downloaded."
+}

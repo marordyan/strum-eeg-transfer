@@ -115,7 +115,13 @@ Record the citation count and test the claim that follows. At retrieval time Sem
 OpenAlex both reported 2 citations. If that holds it is a substantive finding rather than trivia,
 because it means there is almost no published modeling work on STRUM to baseline against, which
 changes what this project can claim. Run
-`opencite cite "10.1109/SMC.2018.00023" --direction backward` and card whatever it returns.
+`opencite cite "10.1109/SMC.2018.00023" --direction citing` and card whatever it returns. The
+argument takes `citing`, `references`, or `both`; an earlier version of this brief said `backward`,
+which is not a valid value and fails outright.
+
+Result, recorded during collection: 2 citing works, agreeing with both indexes. Both share an author
+with STRUM and neither trains or evaluates a model on it, so the finding holds. The 21 referenced
+works are a pre-2017 passive-BCI methods lineage with no dataset descriptor among them.
 
 ### Inferred leads, not given
 

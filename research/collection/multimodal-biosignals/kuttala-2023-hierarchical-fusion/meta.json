@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/ACCESS.2023.3237545",
+  "source_url": "https://doi.org/10.1109/ACCESS.2023.3237545",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "477e57f79a1b0d1cffcb81cb4f20d2296f73f697e46ce0ee00c0d2001acb0a7a",
+  "pdf_license": "CC-BY-4.0",
+  "redistribution_ok": true,
+  "notes": "Licence read from the PDF's own first-page footer: 'This work is licensed under a Creative Commons Attribution 4.0 License. For more information, see https://creativecommons.org/licenses/by/4.0/'. This resolves OpenAlex's less specific 'other-oa' value for the record. PDF fetched from the IEEE ielx path. Extraction: markitdown on a two-column IEEE template; body prose is readable but all result tables collapse, so per-dataset numbers were read from the PDF. SCOPE NOTE: despite surfacing in an EEG-adjacent search this paper uses no EEG at all -- only EDA and ECG -- which is why it is carded under category 2 and explicitly not counted toward the category 3 EEG-only versus combined criterion."
+}

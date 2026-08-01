@@ -1,0 +1,9 @@
+{
+  "doi": "10.1016/j.jneumeth.2015.01.010",
+  "source_url": "https://doi.org/10.1016/j.jneumeth.2015.01.010",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (Elsevier, Journal of Neuroscience Methods)",
+  "redistribution_ok": false,
+  "notes": "Full text is paywalled and no open-access copy exists. Retrieval attempted and failed as follows: Unpaywall (https://api.unpaywall.org/v2/10.1016/j.jneumeth.2015.01.010) reports is_oa false with zero oa_locations as of 2026-07-31; no arXiv, HAL or institutional-repository copy was located. Crossref confirms the bibliographic record: Journal of Neuroscience Methods volume 250, pages 126-136, July 2015, Elsevier, licences listed are the Elsevier text-and-data-mining user licences only, which are not redistribution grants. source.md therefore contains the publisher abstract as deposited in PubMed (PMID 25596422), retrieved 2026-07-31 via NCBI E-utilities efetch, together with a header recording that provenance. md_quality is abstract-only for that reason: the abstract and metadata were the only retrievable content. The consequence is recorded explicitly on the card -- the paper's tabulated empirical chance levels as a function of sample size, class count, cross-validation scheme and classifier are reported but not accessible, and are worth re-attempting if an institutional copy becomes available, since those tables are the part this project would use."
+}

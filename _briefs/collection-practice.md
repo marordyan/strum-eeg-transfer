@@ -40,6 +40,46 @@ Never construct an identifier that looks plausible. A card honestly recording a 
 correct and useful; a card carrying a well-formed wrong identifier is corpus poison, because
 everything downstream treats it as verified.
 
+## Endpoints and invocations, corrected by four strands
+
+Corrections found after the pilot, during the four-strand run. Each cost an agent time.
+
+- **`opencite cite --direction` takes `citing`, `references`, or `both`.** Not `backward`. An earlier
+  brief said `backward` and the invocation simply fails. `both` also emitted
+  `Citation query failed: 'NoneType' object is not iterable` while still returning merged results, so
+  run the two directions separately when the answer matters.
+- **`export.arxiv.org` is unreachable from this environment** and returns empty results *silently*,
+  which is the same failure shape as the grep trap below. `curl https://arxiv.org/abs/<id>` and
+  `https://arxiv.org/search/?searchtype=all&query=<exact title>` both work. The web search interface is
+  the third fallback when `opencite` and OpenAlex both return nothing, and it is what finally resolved
+  two entries.
+- **`opencite search` is unreliable enough that it should not be the primary route.** Semantic Scholar
+  rate-limits nearly every call, OSF returns HTTP 400 on any query containing a colon, and one query
+  ran past 120 seconds. `opencite lookup` on a known identifier is fine. For discovery, call the
+  OpenAlex and Crossref REST interfaces directly; they were faster and more complete in every strand.
+  PubMed `esearch` beat everything for psychophysiology and human-factors venues.
+- **Publishers that block automated fetches, with the endpoints that work.** IOP returns a captcha
+  page, PMC an interstitial, MDPI 403, eLife 406, ACM 403, all under a status that looks like success.
+  Working alternates: `europepmc.org/articles/<PMCID>?pdf=render`, `res.mdpi.com/d_attachment/...`,
+  `cdn.elifesciences.org/articles/<id>/elife-<id>-v2.pdf`, and the Europe PMC `fullTextXML` endpoint.
+  A naive `curl -o source.pdf` against a blocked endpoint writes HTML into a file named `.pdf`; the
+  validator now rejects any `source.pdf` without a `%PDF` header, so this fails loudly rather than
+  entering the corpus.
+- **Europe PMC free-text search prefers Publisher Corrections to the article itself.** Searching by
+  title, or even by the PMCID quoted inside a correction notice, can return the two-page correction.
+  Only a `DOI:"..."` query resolves reliably. This is silent wrong-record retrieval and easy to miss.
+
+## Discovery when the citation graph is empty
+
+The pilot brief said to traverse `opencite cite --direction both` from existing entries. For recent
+preprints this returns nothing: OpenAlex often has `referenced_works: []` and zero citations for a
+2025 or 2026 arXiv posting, so the graph is empty exactly where the newest work is.
+
+What worked instead, and produced most of the hardest entries in two strands: read the reference
+sections of the sources already archived in the corpus. A pretrained-model paper's related-work
+section is a curated list of the checkpoints and critiques the strand needs, and it is already on
+disk in `source.md`.
+
 ## Do not use grep on converted markdown
 
 This nearly poisoned a card in the pilot. Markitdown output can contain bytes that make BSD grep on
@@ -56,6 +96,27 @@ Search converted sources with `rg`, or with Python:
 ```bash
 python3 -c "print(open('<path>', encoding='utf-8', errors='replace').read().count('<needle>'))"
 ```
+
+Two related traps found later in the same run:
+
+- **Short uppercase acronyms need case-sensitive, word-boundary matching.** A case-insensitive search
+  for `STRUM` returns 38 hits on `instrument` and `instrumentation` and zero real ones. The reader
+  concludes the term appears throughout when it never appears at all.
+- **Normalize the minus sign before searching.** Several extractions render minus as U+2212 rather
+  than ASCII hyphen, so a search for `-0.5` misses `−0.5`. Four verification checks came back as
+  misses on that alone.
+
+## Second-hand text is a provenance category, and must be labelled
+
+One entry's only available method description came from search-engine snippets of a publisher
+abstract page, the paper being unreadable everywhere. The first snippet attributed a named
+architecture to the paper that a follow-up search showed belongs to a different article.
+
+If a card rests on text you did not read in the source, say so in the card and in `source.md`, name
+where the text came from, and do not let a snippet supply a specific claim such as a method name, an
+architecture, or a number. `md_quality: abstract-only` overstates such an entry, because there was no
+retrievable abstract either; state the truth in `notes` rather than letting the enum imply better
+sourcing than exists.
 
 ## BibTeX from opencite is not trustworthy
 

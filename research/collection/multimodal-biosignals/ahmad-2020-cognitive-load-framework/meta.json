@@ -1,0 +1,9 @@
+{
+  "doi": "10.1007/s00779-020-01455-7",
+  "source_url": "https://doi.org/10.1007/s00779-020-01455-7",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "a0213750ed4ca37ee22bc660a8a4b2018fa014a81d2c6e1a815f71b87c613a4c",
+  "pdf_license": "CC-BY-4.0",
+  "redistribution_ok": true,
+  "notes": "Licence read from the article's own Open Access block, which grants a Creative Commons Attribution 4.0 International License; OpenAlex reports cc-by for the primary location. PDF fetched from Springer's content endpoint. Extraction: markitdown on the Springer two-column template; prose, the licence block and the reference list extract cleanly, but result tables lose their column alignment. CROSS-STRAND: the brief directs that label validity for this work belongs to the candidate-datasets strand and that only the estimation method is carded here; no file was written into a sibling strand, since this agent must not write outside its own directory. YEAR: OpenAlex gives the print issue as 27(6), 2027-2041, 2023; the article was published online in 2020 and both the brief and this card use 2020."
+}

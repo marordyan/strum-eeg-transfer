@@ -78,3 +78,170 @@
   url          = {https://doi.org/10.1109/BCI69045.2026.11435102},
   note         = {opencite returned @Conference with booktitle = {Balkan Conference in Informatics}, which is wrong -- a Semantic Scholar venue-matching error. Corrected against Crossref, which gives the container title, IEEE as publisher, the event location, and pages 1--7. Surname diacritic and full given name of the third author restored (opencite had ``M. Alimardani'').}
 }
+
+% ---------------------------------------------------------------------------
+% Entries below added in the second collection pass (2026-07-31), taking the
+% strand from the pilot's 6 entries to its full quota of 18. Same rule as
+% above: every entry type, venue, year and author list was verified against
+% Crossref or against the PDF's own title block before being appended, and
+% the corrections are recorded per entry.
+% ---------------------------------------------------------------------------
+
+@article{muller-2024-transformers-cortical-waves,
+  title        = {Transformers and cortical waves: encoders for pulling in context across time},
+  author       = {Muller, Lyle and Churchland, Patricia S. and Sejnowski, Terrence J.},
+  journal      = {Trends in Neurosciences},
+  volume       = {47},
+  number       = {10},
+  pages        = {788--802},
+  year         = {2024},
+  publisher    = {Elsevier},
+  doi          = {10.1016/j.tins.2024.08.006},
+  url          = {https://doi.org/10.1016/j.tins.2024.08.006},
+  note         = {Verified against Crossref: journal-article, Trends in Neurosciences 47(10):788--802, published 2024-10, three authors. The copy read was the NIH author manuscript in PubMed Central (PMCID PMC11936488, NIHMSID NIHMS2066430), which paginates differently from the version of record; the pages above are the publisher's.}
+}
+
+@article{alexander-2019-cortical-waves,
+  title        = {Large-scale cortical travelling waves predict localized future cortical signals},
+  author       = {Alexander, David M. and Ball, Tonio and Schulze-Bonhage, Andreas and van Leeuwen, Cees},
+  journal      = {PLOS Computational Biology},
+  volume       = {15},
+  number       = {11},
+  pages        = {e1007316},
+  year         = {2019},
+  publisher    = {Public Library of Science},
+  doi          = {10.1371/journal.pcbi.1007316},
+  url          = {https://doi.org/10.1371/journal.pcbi.1007316},
+  note         = {Verified against Crossref: journal-article, PLOS Computational Biology 15(11):e1007316, published 2019-11-15, four authors. Crossref renders the fourth surname as ``van Leeuwen''; braces are not used because the lowercase particle is correct as printed.}
+}
+
+@article{banville-2021-self-supervised-eeg,
+  title        = {Uncovering the structure of clinical {EEG} signals with self-supervised learning},
+  author       = {Banville, Hubert and Chehab, Omar and Hyv{\"a}rinen, Aapo and Engemann, Denis-Alexander and Gramfort, Alexandre},
+  journal      = {Journal of Neural Engineering},
+  volume       = {18},
+  number       = {4},
+  pages        = {046020},
+  year         = {2021},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1741-2552/abca18},
+  eprint       = {2007.16104},
+  archiveprefix = {arXiv},
+  url          = {https://arxiv.org/abs/2007.16104},
+  note         = {Year corrected to 2021 against Crossref (published online 2021-03-31, print 2021-08-01, volume 18 issue 4 article 046020); opencite and OpenAlex both return 2020, which is the acceptance/early-posting date. The text read was the arXiv v1 preprint, whose eprint identifier is retained, because the IOP version of record is paywalled and carries the IOP standard licence rather than Creative Commons.}
+}
+
+@inproceedings{cbramod-2025,
+  title        = {{CBraMod}: A Criss-Cross Brain Foundation Model for {EEG} Decoding},
+  author       = {Wang, Jiquan and Zhao, Sha and Luo, Zhiling and Zhou, Yangxuan and Jiang, Haiteng and Li, Shijian and Li, Tao and Pan, Gang},
+  booktitle    = {The Thirteenth International Conference on Learning Representations ({ICLR} 2025)},
+  year         = {2025},
+  doi          = {10.48550/arXiv.2412.07236},
+  eprint       = {2412.07236},
+  archiveprefix = {arXiv},
+  primaryclass = {eess.SP},
+  url          = {https://arxiv.org/abs/2412.07236},
+  note         = {opencite returns @article with journal = {ArXiv} and year 2024; changed to @inproceedings and year 2025 because the PDF's running header states ``Published as a conference paper at ICLR 2025''. The eight-author list matches the PDF title block and the OpenAlex record. No proceedings DOI exists, so the arXiv DOI is retained.}
+}
+
+@article{bendr-2021,
+  title        = {{BENDR}: Using Transformers and a Contrastive Self-Supervised Learning Task to Learn From Massive Amounts of {EEG} Data},
+  author       = {Kostas, Demetres and Aroca-Ouellette, St{\'e}phane and Rudzicz, Frank},
+  journal      = {Frontiers in Human Neuroscience},
+  volume       = {15},
+  pages        = {653659},
+  year         = {2021},
+  publisher    = {Frontiers Media},
+  doi          = {10.3389/fnhum.2021.653659},
+  url          = {https://doi.org/10.3389/fnhum.2021.653659},
+  note         = {Verified against Crossref: journal-article, Frontiers in Human Neuroscience volume 15, article-number 653659 (no issue, no page range), published 2021-06-23, three authors. Article number placed in the pages field, following the convention used by the journal's own citation block.}
+}
+
+@inproceedings{biot-2023,
+  title        = {{BIOT}: Cross-data Biosignal Learning in the Wild},
+  author       = {Yang, Chaoqi and Westover, M. Brandon and Sun, Jimeng},
+  booktitle    = {Advances in Neural Information Processing Systems 36 ({NeurIPS} 2023)},
+  pages        = {78240--78260},
+  year         = {2023},
+  doi          = {10.48550/arXiv.2305.10351},
+  eprint       = {2305.10351},
+  archiveprefix = {arXiv},
+  primaryclass = {eess.SP},
+  url          = {https://arxiv.org/abs/2305.10351},
+  note         = {opencite returns @article with journal = {ArXiv}; changed to @inproceedings, since the work appears in NeurIPS 36. TITLE VARIES BETWEEN VERSIONS: the archived arXiv v1 title block reads ``BIOT: Cross-data Biosignal Learning in the Wild'' and is used here, matching the archived PDF; the proceedings version is titled ``BIOT: Biosignal Transformer for Cross-data Learning in the Wild''. Page range taken from the citing literature, as no proceedings DOI exists in Crossref or OpenAlex.}
+}
+
+@inproceedings{eegpt-2024,
+  title        = {{EEGPT}: Pretrained Transformer for Universal and Reliable Representation of {EEG} Signals},
+  author       = {Wang, Guagnyu and Liu, Wenchao and He, Yuhong and Xu, Cong and Ma, Lin and Li, Haifeng},
+  booktitle    = {Advances in Neural Information Processing Systems 37 ({NeurIPS} 2024)},
+  year         = {2024},
+  doi          = {10.52202/079017-1239},
+  url          = {https://proceedings.neurips.cc/paper_files/paper/2024/hash/4540d267eeec4e5dbd9dae9448f0b739-Abstract-Conference.html},
+  note         = {Not resolvable through opencite keyword search; located by string-matching the title in the NeurIPS 2024 proceedings index. OpenAlex lists six authorships but duplicates Haifeng Li and omits Wenchao Liu; the author list above is read from the PDF's own title block. ``Guagnyu'' is the spelling printed in the paper and is preserved rather than silently corrected to ``Guangyu''. The DOI is the Proceedings.com identifier, which is the only DOI registered for this paper.}
+}
+
+@article{guetschel-2024-representation-learning-review,
+  title        = {Review of deep representation learning techniques for brain--computer interfaces},
+  author       = {Guetschel, Pierre and Ahmadi, Sara and Tangermann, Michael},
+  journal      = {Journal of Neural Engineering},
+  volume       = {21},
+  number       = {6},
+  pages        = {061002},
+  year         = {2024},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1741-2552/ad8962},
+  eprint       = {2405.19345},
+  archiveprefix = {arXiv},
+  url          = {https://doi.org/10.1088/1741-2552/ad8962},
+  note         = {Verified against Crossref: journal-article, Journal of Neural Engineering 21(6):061002, published 2024-11-01, three authors, version of record CC BY 4.0. TITLE VARIES BETWEEN VERSIONS: the arXiv preprint is titled ``Review of Deep Representation Learning Techniques for Brain-Computer Interfaces and Recommendations''; the journal title above drops the trailing clause and is the one to cite. The archived PDF is the arXiv preprint, because the IOP version of record could not be downloaded. First author's surname is misprinted as ``Gueschel'' on the preprint title block; corrected here to ``Guetschel'' per Crossref, OpenAlex and the correspondence address.}
+}
+
+@article{adabrain-bench-2025,
+  title        = {{AdaBrain-Bench}: Benchmarking Brain Foundation Models for Brain-Computer Interface Applications},
+  author       = {Wu, Jiamin and Ren, Zichen and Wang, Junyu and Zhu, Pengyu and Song, Yonghao and Liu, Mianxin and Zheng, Qihao and Bai, Lei and Ouyang, Wanli and Song, Chunfeng},
+  journal      = {arXiv preprint arXiv:2507.09882},
+  year         = {2025},
+  eprint       = {2507.09882},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2507.09882},
+  note         = {No DOI exists and OpenAlex has no record; identifier confirmed by fetching the arXiv abs page directly. Ten-author list read from the PDF title block (arXiv v2, 5 Aug 2025). Kept as @article rather than @misc for consistency with the other unpublished preprints in this strand bib.}
+}
+
+@article{brookshire-2024-data-leakage,
+  title        = {Data leakage in deep learning studies of translational {EEG}},
+  author       = {Brookshire, Geoffrey and Kasper, Jake and Blauch, Nicholas M. and Wu, Yunan Charles and Glatt, Ryan and Merrill, David A. and Gerrol, Spencer and Yoder, Keith J. and Quirk, Colin and Lucero, Ch{\'e}},
+  journal      = {Frontiers in Neuroscience},
+  volume       = {18},
+  pages        = {1373515},
+  year         = {2024},
+  publisher    = {Frontiers Media},
+  doi          = {10.3389/fnins.2024.1373515},
+  url          = {https://doi.org/10.3389/fnins.2024.1373515},
+  note         = {Verified against Crossref: journal-article, Frontiers in Neuroscience volume 18, article-number 1373515, published 2024-05-03, ten authors. OpenAlex renders the fourth author with typographic quotes as Yunan ``Charles'' Wu; Crossref and the PDF title block both give ``Yunan Charles Wu'', used here. The article is a Brief Research Report; Frontiers registers that as a journal-article and no separate type is needed.}
+}
+
+@article{lee-2025-lbms-capable-yet,
+  title        = {Are Large Brainwave Foundation Models Capable Yet? {I}nsights from Fine-tuning},
+  author       = {Lee, Na and Barmpas, Konstantinos and Panagakis, Yannis and Adamos, Dimitrios and Laskaris, Nikolaos and Zafeiriou, Stefanos},
+  journal      = {arXiv preprint arXiv:2507.01196},
+  year         = {2025},
+  eprint       = {2507.01196},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2507.01196},
+  note         = {No DOI exists and OpenAlex has no record of this preprint. DISTINCT FROM, though closely related to, ``Assessing the Capabilities of Large Brainwave Foundation Models'' (Lee, Bakas, Barmpas, Panagakis, Adamos, Laskaris, Zafeiriou; MLSP 2025; doi 10.1109/mlsp62443.2025.11204282), which has a different title and adds Stylianos Bakas. Neither record states the relationship, so they are not merged here; this entry is the arXiv preprint, whose six-author list is read from its own title block.}
+}
+
+@article{kuruppu-2025-critical-review,
+  title        = {{EEG} Foundation Models: A Critical Review of Current Progress and Future Directions},
+  author       = {Kuruppu, Gayal and Wagh, Neeraj and Kremen, Vaclav and Pati, Sandipan and Worrell, Gregory and Varatharajah, Yogatheesan},
+  journal      = {arXiv preprint arXiv:2507.11783},
+  year         = {2025},
+  eprint       = {2507.11783},
+  archiveprefix = {arXiv},
+  primaryclass = {eess.SP},
+  url          = {https://arxiv.org/abs/2507.11783},
+  note         = {No DOI exists and OpenAlex has no record; identifier confirmed by fetching the arXiv abs page. Submitted 15 Jul 2025 (v1), last revised 24 Dec 2025 (v3); the archived PDF is v3 and the year is the first-posting year, following the convention this bib already uses for brainwave. Kuruppu and Wagh are marked as equal contributors on the paper; BibTeX has no way to record that, so it is noted here.}
+}

@@ -1,0 +1,9 @@
+{
+  "doi": "10.3758/s13428-020-01516-y",
+  "source_url": "https://doi.org/10.3758/s13428-020-01516-y",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "unknown (Springer 'bronze' free-to-read; no Creative Commons statement appears in the article)",
+  "redistribution_ok": false,
+  "notes": "The PDF is freely downloadable from link.springer.com and OpenAlex classifies the record as bronze open access, but bronze means free-to-read at the publisher's discretion, not licensed for reuse: a Python search of the converted text for 'Creative Commons' and for 'creativecommons.org' returns zero matches, and OpenAlex records no licence. Under deny-by-default the licence is 'unknown', redistribution_ok is false, and the PDF was downloaded, read, and then not committed. source.md is retained as internal research notes under fair use, the same footing as a paywalled paper's extraction. Extraction: markitdown on the Springer two-column template; this is a short tool paper and the prose, the code listings and the comparison table all survive legibly. The software is separately licensed (the repository at https://github.com/neuropsychology/NeuroKit is MIT); that licence covers the code, not this article."
+}

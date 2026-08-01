@@ -1,0 +1,9 @@
+{
+  "doi": "10.48550/arXiv.2312.07546",
+  "source_url": "https://arxiv.org/abs/2312.07546",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "3ab617b93fa831b130769be3fe17043925be7d968cc796a136f6f219ea8f5ffe",
+  "pdf_license": "CC-BY-4.0 (arXiv posting)",
+  "redistribution_ok": true,
+  "notes": "PAPER LICENCE read directly from the arXiv abs page rather than inferred from the host: the abs-license block links http://creativecommons.org/licenses/by/4.0/, i.e. CC BY 4.0, not arXiv's default non-exclusive licence. CC BY permits redistribution and derivative works, so both source.pdf and the markdown extraction rest on the licence grant. Verified by checking the same block on arXiv 1702.02510 (the AMIGOS preprint), which contains no creativecommons link at all -- the contrast confirms the check is reading a real per-paper field. DATA LICENCE: not applicable. The paper describes a proprietary in-house dataset of 43 participants collected at Intheon on a 3,198 dual-channel NIRS device; no public deposit, repository, or access route is described, so these data are not obtainable and there is no data licence to record. EXTRACTION: source.md is markitdown output from the arXiv PDF. md_quality is rough -- the paper is single-column but heavy with inline mathematics, and the extraction interleaves LaTeX-derived glyph soup into the methods paragraphs (the regularisation equations come out as sequences such as 'C_t = (1-lambda)C_t + lambda*diag' with doubled characters), while figure captions are inlined and the performance tables lose their structure. Prose describing the experimental design and the split protocol -- which is all this card quotes -- survives readable. The 71.5 +/- 9.2 per cent figure was read from a prose sentence, not from a table. NO PEER-REVIEWED VERSION located; Crossref has no record beyond the DataCite arXiv DOI."
+}

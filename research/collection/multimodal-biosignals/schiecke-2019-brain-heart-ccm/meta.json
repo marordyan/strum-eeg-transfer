@@ -1,0 +1,9 @@
+{
+  "doi": "10.1088/1361-6579/ab5050",
+  "source_url": "https://doi.org/10.1088/1361-6579/ab5050",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "unknown (OpenAlex records cc-by at the publisher; the IOP page could not be read)",
+  "redistribution_ok": false,
+  "notes": "RETRIEVAL FAILED despite an open licence being recorded upstream. Four routes were tried for the IOP PDF -- the /pdf path, the /ampdf path, a cookie-primed request after loading the article landing page, and `uvx opencite pdf` -- and all four returned the same 14 kB anti-bot interstitial. Europe PMC lists PMID 31661679 as subscription-only with no PMC copy, and a CORE lookup returned nothing. Because the project addendum requires the licence to be read rather than inferred and only OpenAlex's metadata (cc-by) could be seen, the value is 'unknown' with redistribution_ok false and no PDF committed. This is the strongest candidate in the strand for re-attempt with institutional access: the abstract is substantial (1984 characters) but the processing schemes the brief wants recorded are in the body. source.md is a metadata and abstract snapshot from OpenAlex."
+}

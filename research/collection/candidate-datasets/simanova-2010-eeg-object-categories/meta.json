@@ -1,0 +1,9 @@
+{
+  "doi": "10.1371/journal.pone.0014465",
+  "source_url": "https://doi.org/10.1371/journal.pone.0014465",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "68771fc75b88184906a54222bd71334c8f560b87559465c5c4a99b1bd2ba3fef",
+  "pdf_license": "CC-BY-4.0 (PLoS ONE gold open access)",
+  "redistribution_ok": true,
+  "notes": "PAPER LICENCE: CC BY. Unpaywall reports oa_status 'gold', best_oa_location licence 'cc-by' on the publisher host; Europe PMC records the licence for PMC3012689 as 'cc by'. PDF archived from the PLoS printable endpoint (15 pages). DATA LICENCE, separate: not applicable in the usual sense -- this is a methods and results paper, not a data release. No public deposit of the EEG recordings is described in the article, so the underlying data are not available and no data licence exists to record. EXTRACTION: source.md was built from the Europe PMC full-text XML, which for this single-column PLoS article reproduces the body prose as written; md_quality is clean. One caveat that did not warrant downgrading to rough: the two tables are rendered as pipe rows and survive readable (Table 1, the Dutch stimulus items with orthography and phonetics; Table 2, the transfer-learning performance figures), but their footnotes -- including the asterisked note defining the parenthesised second significance value in Table 2 -- are not attached to the table in the extraction. Those parenthesised values are therefore quoted on the card exactly as printed, without an interpretation. Table 2 numbers were read back against source.pdf."
+}
