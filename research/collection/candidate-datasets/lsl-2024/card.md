@@ -50,9 +50,11 @@ This entry sits in category 1 because synchronisation precision is what bounds a
 cross-participant analysis, and a two-person recording built on LSL inherits the numbers below
 as its floor. It also matters as the tooling context for STRUM: the strand brief flags that STRUM
 was plausibly recorded with this toolchain, and this paper is one of exactly two works that cite
-STRUM. That citation establishes only that LSL's authors cite STRUM — it does not establish that
-STRUM used LSL, and the STRUM methods could not be read to confirm it. The relationship is
-recorded as unresolved on `strum-2018`.
+STRUM. That citation on its own would establish only that LSL's authors cite STRUM. The STRUM
+methods, read in full on 2026-08-01, settle it directly: "Time synchronization was done using the
+Lab Streaming Layer", with each two-participant session written to a single time-synchronized XDF
+file. The relationship is recorded as confirmed on `strum-2018`, and this card's numbers therefore
+apply to STRUM rather than merely resembling its setup.
 
 The concrete value for this strand is that it supplies the reference numbers against which the
 two multi-person EEG datasets found here can be judged. Both `boa-actors-2025` and

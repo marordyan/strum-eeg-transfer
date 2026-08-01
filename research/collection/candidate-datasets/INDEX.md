@@ -102,7 +102,8 @@ is one of the dataset's own validation channels).
 
 - [simanova-2010-eeg-object-categories](./simanova-2010-eeg-object-categories/card.md): the same
   eight concepts presented as pictures, spoken words and written words; single-trial EEG decoding
-  reached 89% for pictures, but on a previously unseen exemplar the classifier failed, and the
+  reached a 0.79 group mean for pictures (0.89 was the best single subject), but on a previously
+  unseen exemplar the classifier failed, and the
   authors concluded it "could not distinguish the semantic classes, but only the exemplars,
   possibly through the use of perceptual differences between the exemplars" (`relevance: high`, 2010)
 - [deniz-2019-modality-invariant-semantics](./deniz-2019-modality-invariant-semantics/card.md):
