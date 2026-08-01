@@ -218,7 +218,11 @@ property the brief asks for under "agreement between label sources where more th
   exemplars and tested on a concept it had never seen, the classifier "failed to predict the semantic
   category of a previously unseen item", and the authors' own conclusion is that it "could not
   distinguish the semantic classes, but only the exemplars, possibly through the use of perceptual
-  differences between the exemplars". Above-chance accuracy on the intended label did not license the
+  differences between the exemplars". The scope matters and is easy to drop: that conclusion is drawn
+  "for these modalities", meaning audio and text. The generalization test succeeded in the visual
+  modality, where the paper reports a mean of 0.77. So the failure is specific to the two modalities
+  the project's own label contrast would use, which strengthens the entry rather than weakening it,
+  but the unscoped reading overstates what the paper says. Above-chance accuracy on the intended label did not license the
   intended interpretation, and only a held-out generalization test revealed it.
 
   Three further facts on the card bear directly on the project's contrast, and they are about the
@@ -1018,8 +1022,10 @@ worth carrying forward, because they bound what a later reader may conclude from
 
 ### 7.1 The friction ladder
 
-Recorded in `INDEX.md` as prose; restated here as an ordering because it is a property every entry
-has a value on, and because the ordering is what a reader would otherwise reconstruct by hand.
+The ordering itself is already in `INDEX.md`, least to most friction, and review found this table
+reproduced it rung for rung. It is kept only because the three refinements below are not in the
+index and depend on having the rungs in view; the table is the index's ordering, not new structure,
+and a reader who has the index can skip to §7.2.
 
 | friction | entries |
 |---|---|

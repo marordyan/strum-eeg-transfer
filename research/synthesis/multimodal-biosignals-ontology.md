@@ -276,9 +276,12 @@ to something other than the peripheral signal, and the cards say so themselves.
 
 The relation between the two rightmost columns and the delta column is the structure this table
 exists to make visible, and it is a relation between entries rather than a verdict about the field.
-The three entries whose split geometry is stated and subject-disjoint or harder — the LOSO grid, the
-GroupKFold study, and the within-subject temporal split designed to avoid time-dependence inflation —
-report +5.84 / +6.21, +0.002, and a difference their own authors call not significant. The two
+The three entries whose split geometry is stated and either subject-disjoint or otherwise designed
+against inflation — the LOSO grid, the GroupKFold study, and a within-subject temporal split — report
++5.84 / +6.21, +0.002, and a difference their own authors call not significant. The third is not
+subject-disjoint and its card says so explicitly, every model being personal; it earns its place here
+because its temporal split is designed against time-dependence inflation, which is a different
+protection rather than a weaker version of the same one. The two
 entries reporting double-digit gains are the two whose denominators the cards flag as unverifiable:
 one has three mutually inconsistent split descriptions, the other attributes its EEG stream to
 datasets that contain no EEG.

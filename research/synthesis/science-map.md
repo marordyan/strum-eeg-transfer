@@ -157,13 +157,14 @@ the strand that designs against it calls it *manipulation geometry*
 `candidate-datasets`.
 
 The corpus contains the same failure mode at six levels of granularity, described by cards in four
-strands, in four vocabularies, with only one citation between any two of them.
+strands, in four vocabularies, and almost no citations between them: of the pairs checked, only
+two are connected.
 
 | level of identity | what was measured | card |
 |---|---|---|
 | dataset / site | a linear probe separates dataset pairs from frozen REVE embeddings at AUROC 1.000, holding after projection to 50 principal components and at 0.9998 band-limited, while the same PCA-50 pipeline decodes the 3-way diagnosis at 0.528 | [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) |
 | subject | frozen embeddings of LaBraM, CBraMod and REVE dominated by subject identity at 13–89× a random-Gaussian null in 12 of 12 model-by-dataset pairs, rising under fine-tuning in all 12 by 10–63 points | [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) |
-| subject (independently) | t-SNE embeddings cluster by participant; two transformations that artificially reduce inter-participant variability raise proper-protocol accuracy (0.50 → 0.80) and do nothing under the improper one | [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md) |
+| subject (independently) | t-SNE embeddings cluster by participant; of two transformations that artificially reduce inter-participant variability, shifting to the median raises proper-protocol accuracy (0.50 → 0.80) while a shifted Heaviside does not help; neither changes the improper protocol | [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md) |
 | session | not measured anywhere; named as its own limit by three critiques (§1) | — |
 | segment | segments of EEG from one subject resemble each other more than segments from different subjects; 46.8 points of inflation | [brookshire-2024-data-leakage](../collection/eeg-models/brookshire-2024-data-leakage/card.md) |
 | trial | the same CSP pipeline retrained to predict *which trial* a segment came from reaches median 100%, 99.9%, 99.7% and 99.6% across four conditions, significantly above the attention accuracies it was built to report | [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md) |
@@ -585,7 +586,7 @@ use.
 **Strands crossed:** `eeg-models`, `datasets-benchmarks`, `multimodal-biosignals`,
 `candidate-datasets`.
 
-**In the models strand, "artifact" is the name of a downstream task and never a step in an input
+**In the models strand, "artifact" is almost always the name of a downstream task rather than a step in an input
 contract.** Across the 22 entries the word appears as a benchmark name in
 [femba-2025](../collection/eeg-models/femba-2025/card.md) and
 [luna-2025](../collection/eeg-models/luna-2025/card.md) (TUAR, artifact recognition and detection),
@@ -776,7 +777,10 @@ label-permutation control at 0.500), and only one entry reports more than one of
 
 **Strands crossed:** `eeg-models`, `datasets-benchmarks`, `multimodal-biosignals`.
 
-**Six measured observations in the models strand, agreeing in direction.**
+**Six measured observations in the models strand, agreeing in direction.** These are set out in
+full in [eeg-models-ontology](./eeg-models-ontology.md) §2.5 and are summarized here only so the
+cross-modal claim below has its within-strand half in view; the theme's own contribution starts with
+the PPG result that follows.
 [labram-2024](../collection/eeg-models/labram-2024/card.md)'s Base model trained on 500 hours exceeds
 the same model trained on 2,500 hours on TUAB, the authors concluding "2,500 hours is not the answer".
 [femba-2025](../collection/eeg-models/femba-2025/card.md): eight times the parameters for 0.77 points

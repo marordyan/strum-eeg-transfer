@@ -98,7 +98,7 @@ defect of a dataset and not a defect of a checkpoint: it is **two roles held by 
 the two role-holders separated in time**. That is why the remedy from theme 1 does not reach it, and
 [tuab](../collection/datasets-benchmarks/tuab/card.md) says so directly — a patient-disjoint
 fine-tuning split is chosen at the *preparation* level, while the contamination happened at the
-*acquisition* level, one archive up and one stage earlier.
+*acquisition* level, at the same release, not one archive up and one stage earlier.
 
 The same vocabulary makes the corpus's two dual-carded recordings legible as design rather than as
 filing error. [sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md) and
@@ -647,10 +647,14 @@ licence, including all three Temple entries under most of the field's pretrainin
 named in [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)'s Table 7 — PREST,
 CHB-MIT, IIIC Seizure, HGD, TSU, M3CV, BCI-IV-1, Emobrain, SPIS, Grasp and Lift, Inria P300 — no
 further specification is given on any card in the corpus. For AdaBrain-Bench's nine uncarded
-evaluation sets the five fields that exist are the preparation's, not the recording's. **[boundary]**
-Stated as a property of the set rather than as an enumeration of the individual entries: the
-specification fields are populated in inverse proportion to how much of the field's pretraining and
-evaluation rests on the recording.
+evaluation sets the five fields that exist are the preparation's, not the recording's. An earlier version of this passage stated an inverse
+proportion between how well a recording is specified and how much of the field rests on it. Review
+found that overstated: no per-recording usage measure exists for the 140 named-only recordings, the
+field counts cover only the 14 carded, and this document's own tables hold counterexamples, with
+PhysioNet-MI among the most-consumed recordings and also one of only two carrying electrode
+coordinates. What the evidence supports is narrower and still worth stating: the eleven pretraining
+corpora named in AdaBrain-Bench Table 7 carry no specification on any card, while the recordings this
+corpus cards in full are mostly ones a project would fine-tune on rather than pretrain from.
 
 ### 3.6 Reported-but-unread against never-reported
 
@@ -778,14 +782,14 @@ Structure, stated as counts rather than as a complaint.
 
 ### 5.1 What the pretraining rests on
 
-Of the nine checkpoints in the corpus that state a pretraining corpus at all, **six rest on Temple
-University Hospital data**: [bendr-2021](../collection/eeg-models/bendr-2021/card.md),
+Of the nine checkpoints in the corpus that state a pretraining corpus at all, **seven rest on Temple
+University Hospital data**, counting BIOT, whose TUAB and TUEV are Temple releases and which an
+earlier version of this passage listed separately as though it were not: [bendr-2021](../collection/eeg-models/bendr-2021/card.md),
 [cbramod-2025](../collection/eeg-models/cbramod-2025/card.md),
 [femba-2025](../collection/eeg-models/femba-2025/card.md),
 [luna-2025](../collection/eeg-models/luna-2025/card.md) (99.4% of its hours),
 [labram-2024](../collection/eeg-models/labram-2024/card.md) (its two largest constituents) and
-[reve-2025](../collection/eeg-models/reve-2025/card.md) (26,847 of 61,415 hours). BIOT rests on TUAB
-and TUEV plus a proprietary corpus.
+[reve-2025](../collection/eeg-models/reve-2025/card.md) (26,847 of 61,415 hours). BIOT is the seventh, resting on TUAB and TUEV plus a proprietary corpus.
 [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) is the explicit exception, with 22
 sources and no TUEG. [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md) has
 zero by design.

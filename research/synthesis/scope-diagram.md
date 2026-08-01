@@ -502,12 +502,16 @@ Two facts sit either side of this. The brief's own seed material introduced
 `wibirama-cognitive-load-eye-movement` and instructed the collector to "record which indices carry
 the classification, whether they were derived from eye tracking or from electrooculography", so the
 brief anticipated eye tracking in the corpus while its out-of-scope section excluded camera-based
-measurement. And [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) records the
-consequence at tag level: the strand's controlled `eog` tag covers both instruments, six cards
+measurement. And [science-map](./science-map.md) records the
+consequence at tag level: the strand's controlled `eog` tag covers both instruments, eight cards
 record the substitution, and "three levels of specificity, one tag". The exclusion as written and
 the corpus as built do not agree; the cards are individually honest about it, and the boundary has since been
 restated: the brief now records the exception actually in force, and the count is eight entries
 rather than six.
+
+**Remote photoplethysmography and camera-based respiration** remain excluded with no exception,
+per the amended strand B brief. Vacuously honoured: no entry in the corpus estimates physiology from
+a camera without contact. Recorded here so the register matches the brief after the amendment.
 
 ### 7.2 Strand A's imaging-modality exclusion has one entry outside its stated exception
 

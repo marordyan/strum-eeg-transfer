@@ -67,7 +67,7 @@ axis that changes the ordering of the models without changing a single model.
 
 The question this node answers: for each entry, what does the model need to know about an
 electrode before it can encode that electrode's signal, and what happens when the electrode set is
-one the model never saw. The five mechanisms below are mutually exclusive; each entry sits in
+one the model never saw. The five mechanisms below are mutually exclusive; each entry that ships a checkpoint sits in
 exactly one.
 
 ### 1.1 Bound to a learned per-channel parameter
