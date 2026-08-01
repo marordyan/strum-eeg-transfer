@@ -273,8 +273,10 @@ item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
   failed to state.** Video and infrared eye tracking is admitted where it bears on the ocular
   question in category 4, because the seed material in this same brief introduced an eye-movement
   entry and asked the collector to record whether indices came from eye tracking or from
-  electrooculography. Six entries carry eye-tracked signal on that basis, each stating its instrument
-  on the card. The exclusion as originally written contradicted the brief's own seeds; it is amended
+  electrooculography. Eight entries carry eye-tracked signal on that basis, each stating its instrument on the
+  card: wibirama, mostert-2018, zheng-2018, ahmad-2020, angkan-2024, ding-2025,
+  liu-2022-multimodal-robustness and hogervorst-2014-workload-comparison. An earlier count of six
+  omitted the last two, which qualify on identical grounds. The exclusion as originally written contradicted the brief's own seeds; it is amended
   here rather than applied retroactively, and the amendment is why those entries are in scope.
   Remote photoplethysmography and camera-based respiration remain excluded with no exception.
 - Comparing or ranking entries against each other. Collection only.

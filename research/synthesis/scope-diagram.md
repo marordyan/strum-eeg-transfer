@@ -186,7 +186,7 @@ criterion, admitted by an explicit scoping decision recorded in the brief and re
 | EEG-only pretraining and architecture work | "That is the `eeg-models` strand" | partition |
 | Dataset characterization beyond naming which signals a dataset carries | "That is the `datasets-benchmarks` strand" | partition |
 | Cardiology, sleep medicine and critical-care prediction as clinical endpoints | two stated exceptions: the paper is the primary reference for a peripheral foundation model, or "the clinical setting is the only one in which a physiology-only decoding arm is reported". In the second case, "card the decoding evidence and leave the clinical claim alone" | scope judgment, amended in the brief itself |
-| Camera-based or contactless physiology estimation | stated flatly, with no exception | scope judgment — **see §7.1** |
+| Camera-based or contactless physiology estimation | stated flatly, with no exception at the time of collection | scope judgment — **see §7.1** |
 | Consumer wearable stress or recovery products with no published evaluation | an evidential standard rather than a topical one | scope judgment |
 | Medical diagnosis from ECG alone with no representation-learning or transfer angle | inclusion requires modelling at scale, fusion, an ablation, or an engineered-feature baseline | scope judgment |
 | Comparing or ranking entries against each other | "Collection only" | phase boundary |
@@ -471,6 +471,8 @@ An absence in none of the three has not been checked against this document.
 
 ## 7. Exclusions the corpus does not match, filed as defects
 
+**Status note, added after review.** All three defects below were filed by this document and corrected in the same phase: strand B's camera exclusion was amended to record the exception actually in force, strand D's window was amended for the two pre-2015 label-validity entries, and the `eeg-models` index family count was corrected. They are retained as the record of what was found and what changed, not as live defects. A Phase 4 reader should treat the boundaries as the amended briefs state them.
+
 Recorded because an exclusion that was not honoured is a defect worth filing, and because a later
 reader comparing the briefs against the corpus will otherwise find these unexplained. Nothing here
 is a judgment about whether the exclusion should have been drawn where it was.
@@ -478,7 +480,7 @@ is a judgment about whether the exclusion should have been drawn where it was.
 ### 7.1 Camera-based physiology is excluded by strand B and is present in six of its entries
 
 [strand-multimodal-biosignals](../../_briefs/strand-multimodal-biosignals.md) excludes "camera-based
-or contactless physiology estimation" with no stated exception. Six entries carry a signal that is
+or contactless physiology estimation" with no stated exception at the time this document was written. Six entries carry a signal that is
 video eye tracking rather than electrooculography, and every one of the six states the substitution
 on its own card:
 
@@ -503,8 +505,9 @@ brief anticipated eye tracking in the corpus while its out-of-scope section excl
 measurement. And [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) records the
 consequence at tag level: the strand's controlled `eog` tag covers both instruments, six cards
 record the substitution, and "three levels of specificity, one tag". The exclusion as written and
-the corpus as built do not agree; the cards are individually honest about it and the boundary was
-never restated.
+the corpus as built do not agree; the cards are individually honest about it, and the boundary has since been
+restated: the brief now records the exception actually in force, and the count is eight entries
+rather than six.
 
 ### 7.2 Strand A's imaging-modality exclusion has one entry outside its stated exception
 

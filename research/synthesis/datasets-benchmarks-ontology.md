@@ -595,8 +595,9 @@ balanced accuracy, as its card records. The TUAB row is what
 [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md) listing pathology among the
 tasks near saturation. And
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) reports no interval for
-any cell in that table, so the corpus does not contain the statistic that would separate the +0.46
-row from the +15.00 row as evidence.
+any cell in that table. Whether the +0.46 row and the +15.00 row can be separated as evidence is a
+question about what the corpus as a whole supports, which §3.1 of this document declines to answer
+and which belongs to Phase 4; recorded here only as the property of that one table.
 
 ---
 
@@ -827,13 +828,15 @@ channels versus "about 2,500 hours ... supporting 137 EEG channels". So the hour
 that the mapping propagates are exactly the figures the source disagrees with itself about. §8.1 and
 §8.2 record the resulting disagreements.
 
-A third observation, of the same shape, sits on the parameter side. The parameter counts over which
-[omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) computes its log-parameter
-correlation (ρ = −0.21 with per-dataset rank) are not recoverable from what was read of that paper —
-the per-dataset tables are in supplementary material outside the main text (§7) — and where this
-corpus holds independent tabulations of the same checkpoints they disagree, by up to three orders of
-magnitude for BENDR (§8.1). Which counts the correlation was computed over is therefore not
-checkable from the sources here.
+A third observation, of a related but weaker shape, sits on the parameter side. An earlier version
+of this section held that the counts behind
+[omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md)'s log-parameter correlation
+(ρ = −0.21 with per-dataset rank) were unrecoverable. **That was wrong, and review caught it**: the
+retrieved source carries Supplementary Table 2, "Summary of 10 EEG foundation models included in the
+benchmark", with a `#Params` column for all ten, so the correlation is checkable and its inputs are
+on the record. What remains true, and is the weaker claim, is that those counts sit alongside
+independent tabulations elsewhere in this corpus that disagree with each other by up to three orders
+of magnitude for BENDR (§8.1). The suite is internally consistent; the corpus around it is not.
 
 ---
 

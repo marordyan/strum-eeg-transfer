@@ -184,7 +184,8 @@ label per trial, the label and the trial identity are the same variable — whic
 coarser.
 
 **Five remedies, none compared against another.** The corpus holds five procedures for the same
-problem, in four strands, and no entry runs two of them.
+problem, in three strands (`eeg-models`, `candidate-datasets`, `multimodal-biosignals`), and no
+entry runs two of them.
 
 - Post-hoc erasure of a linearly removable axis: closed-form LEACE drives a subject probe to chance
   in all 12 pairs, and where the label varies within subject, erasing identity *improves* label
@@ -1064,9 +1065,14 @@ carries four identifiers in two strands each, and **all four pairs diverge**:
 | OpenNeuro | the abstract's rounded figures ([openneuro-2021](../collection/candidate-datasets/openneuro-2021/card.md)) against exact figures plus three flagged internal inconsistencies including the unreconciled 604-versus-502 gap ([openneuro](../collection/datasets-benchmarks/openneuro/card.md)) | `candidate-datasets` §9.1a |
 | Sleep-EDF | "roughly 3,450 hours by arithmetic" ([sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md)) against an explicit refusal to compute a total ([sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md)) | `candidate-datasets` §9.1a |
 
-The pattern within the pattern: in every one of the four, the divergence is not two cards asserting
-different facts but **one card flagging an ambiguity in the source and the other not**, and in three
-of the four the unflagging card is the one whose strand builds an argument on the value. A synthesis
+The pattern within the pattern, stated more carefully after review. In **three** of the four the
+divergence is not two cards asserting different facts but **one card flagging an ambiguity in the
+source and the other not**. Sleep-EDF is the exception and is a different shape: both cards flag,
+and they applied opposite conventions to the same non-figure, one computing a total by arithmetic
+and one declining to. Of the three that do share the shape, the sub-claim that the unflagging card
+is the one whose strand builds an argument on the value is attested for EEG-BIDS; for AdaBrain the
+argument rests on an undisputed value, and for OpenNeuro the second card is used for licence and
+access rather than scale. A synthesis
 document cannot fix a card; the entries are named so they can be filed.
 
 **How far a single disputed quantity propagates.** BENDR's parameter count is 0.39M

@@ -497,6 +497,46 @@ def test_distinct_identifiers_do_not_warn(tmp_path: Path) -> None:
     assert not any("carded in" in w for w in warnings)
 
 
+def test_synthesis_link_rot_is_a_violation(tmp_path: Path) -> None:
+    """A synthesis document citing an entry that no longer exists.
+
+    The synthesis layer holds ~1800 card paths and Phase 4 keeps editing
+    cards underneath it, so a renamed or removed entry would otherwise rot
+    silently.
+    """
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+    syn = tmp_path / "research" / "synthesis"
+    syn.mkdir(parents=True)
+    (syn / "some-ontology.md").write_text(
+        "See [paper-one](../collection/strand-a/paper-one/card.md) and "
+        "[ghost](../collection/strand-a/ghost/card.md).\n",
+        encoding="utf-8",
+    )
+
+    violations, _, _, _ = vc.run_validation(tmp_path)
+
+    assert any("ghost" in v and "does not resolve" in v for v in violations)
+    assert not any("paper-one/card.md' does not resolve" in v for v in violations)
+
+
+def test_synthesis_link_with_anchor_resolves(tmp_path: Path) -> None:
+    """A link carrying a #section anchor still points at a real file."""
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+    syn = tmp_path / "research" / "synthesis"
+    syn.mkdir(parents=True)
+    (syn / "some-ontology.md").write_text(
+        "See [paper-one](../collection/strand-a/paper-one/card.md#summary).\n", encoding="utf-8"
+    )
+
+    violations, _, _, _ = vc.run_validation(tmp_path)
+
+    assert violations == []
+
+
 def test_relevance_high_share_warning(tmp_path: Path) -> None:
     slugs = [f"paper-{i}" for i in range(6)]
     for i, slug in enumerate(slugs):

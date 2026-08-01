@@ -1044,8 +1044,12 @@ none runs it.
   modalities", is the card's reading of "the argument for bolting a head onto frozen encoders rather
   than training end to end", but the paper trains its branches rather than freezing pretrained ones.
 
-**[boundary]** No entry pairs a frozen pretrained EEG encoder with a frozen pretrained peripheral
-encoder, which is the exact configuration the project's third comparison describes.
+Removed during review: this paragraph previously asserted that no entry pairs two frozen pretrained
+encoders, and tied that to the project's third comparison. It was marked `[boundary]` and kept, but
+`_briefs/synthesis-practice.md` gives that exact sentence as its illustration of what belongs to
+Phase 4, so the mark was functioning as a permission slip rather than a flag. The Phase 3 statement
+is the enumeration above: four entries speak to the configuration, each declaring its own limit, and
+none runs it.
 
 ### 7.6 Missing and corrupted channels
 

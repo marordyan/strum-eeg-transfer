@@ -127,3 +127,47 @@ The pilot named copied baselines. Two more turned up, and they have different ha
 
 The comparator-graph rule is not universal. A dataset strand has no copied-baseline chain, because
 datasets do not re-report each other's numbers. Do not manufacture a node to satisfy the rule.
+
+## What the cross-cutting documents changed
+
+The second pilot was the science map, and two rules above turned out to be within-strand
+instruments rather than universal ones.
+
+**The mandatory coverage table does not transfer.** A cross-cutting document has no strand whose
+entries it must exhaust, and an entry participating in no cross-strand theme is correctly absent
+rather than dropped. Substitute a matrix over whatever the document does have to exhaust: the
+science map uses theme by strand, the scope diagram exhausts the briefs' out-of-scope sections.
+
+**The value test needs its comparand swapped.** For an ontology it is "does this say anything the
+strand's `INDEX.md` does not". For a cross-cutting document it is "anything the four *ontologies* do
+not", which is a much harder bar and the reason several candidate themes were correctly rejected.
+
+**A fourth kind of contradiction exists at cross-strand level**, which the three kinds above do not
+name: one entry's method assessed against another entry's standard. Two ontologies hit it
+independently and had no slot for it. It is neither a disagreement about a quantity nor a source
+contradicting itself; record it separately so it is not promoted into kind 1.
+
+## The `[boundary]` mark, and how it fails
+
+Documents in this phase mark borderline phase-boundary sentences inline with `[boundary]`. Two
+things about it, both learned from review.
+
+It is a **flag, not a permission slip**. Review found the mark being used to keep a sentence that
+`synthesis-practice.md` itself gives as the illustration of Phase 4 work. If a marked sentence would
+survive deletion because the Phase 3 version is already on the page, delete it; the mark is for
+sentences the register genuinely needs, not for conclusions that want to sneak past.
+
+It is also **applied unevenly**: nine uses in one document, two in two others, none in the remaining
+four, and several of the unmarked documents contain the breaches. An inconsistent convention gives
+false assurance, since a reader takes the absence of marks for the absence of borderline cases.
+Either mark everywhere or nowhere.
+
+## The layer below keeps moving
+
+Every wave of this phase found defects in the layer beneath it, and every fix to that layer left the
+citing text stale. The synthesis documents quote cards verbatim; when a card is corrected, the
+quotation becomes a claim about a file that no longer says it.
+
+`tools/validate_corpus.py` now fails on any unresolvable link from `research/synthesis/`, which
+catches renames and removals. It does **not** catch a quotation that no longer matches its source.
+After correcting any card, grep the synthesis directory for the entry's slug and re-read every hit.

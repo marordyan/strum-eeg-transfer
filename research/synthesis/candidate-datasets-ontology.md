@@ -1198,23 +1198,23 @@ the strand's one clean kind-1 disagreement and it is a staleness rather than a d
 2026-08-01, states: "Lab Streaming Layer, with each two-participant session written to a single
 time-synchronized XDF file. The Lab Streaming Layer lead recorded in this strand's brief as an
 inference is therefore confirmed by the primary source."
-[lsl-2024](../collection/candidate-datasets/lsl-2024/card.md) still states the pre-retrieval position:
-"That citation establishes only that LSL's authors cite STRUM — it does not establish that STRUM used
-LSL, and the STRUM methods could not be read to confirm it. The relationship is recorded as unresolved
-on `strum-2018`." The second sentence is a claim about the first card that the first card no longer
-supports. Both are recorded; neither is picked. **This is a defect in the corpus rather than a fact
-about the field, and a synthesis document cannot fix a card. It should be filed against
-`lsl-2024`.**
+[lsl-2024](../collection/candidate-datasets/lsl-2024/card.md) formerly stated the pre-retrieval
+position, that the citation established only that LSL's authors cite STRUM and that the STRUM methods
+"could not be read to confirm it", with the relationship "recorded as unresolved on `strum-2018`".
+**That defect was filed by this document and fixed in the same phase**: the card now quotes the STRUM
+methods directly and records the relationship as confirmed. Retained here as the record of a
+resolved disagreement, not a live one.
 
 **Simanova's headline accuracy — 0.79 or 0.89, and the strand's own index takes the higher one.**
 [simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)
 records both figures and instructs which to carry: "the highest classification accuracy reached over
 all subjects was 0.89", with "a mean value of 0.79 (SD = 0.07)", and "0.89 is the best single subject,
 not the group result; quoting it alone overstates the paper, and the mean is the number synthesis
-should carry". The strand's `INDEX.md` line for the entry states "single-trial EEG decoding reached
-89% for pictures" without the mean. The card and the index are the same record at two levels of
-detail, and the index takes the reading the card warns against. **Recorded as a corpus defect against
-`INDEX.md`, not against the card, which is correct.** This document carries 0.79.
+should carry". The strand's `INDEX.md` line for the entry formerly stated "single-trial EEG decoding
+reached 89% for pictures" without the mean, taking the reading the card warns against. **That defect
+was filed by this document and fixed in the same phase**; the index now carries the 0.79 group mean
+with 0.89 marked as the best single subject. Retained as the record of a resolved disagreement. This
+document carries 0.79.
 
 **The count of EEG datasets carrying a peripheral modality — six, seven, or eight.** §5 above. The
 index states six in its category-2 paragraph and again in its acceptance-criteria table; the

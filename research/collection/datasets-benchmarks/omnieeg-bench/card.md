@@ -128,10 +128,12 @@ stimulus contrast.
 - The suite does not state whether any of the ten checkpoints was pretrained on any of the 54
   evaluation datasets. `neuralbench` explicitly flags such overlap for its own model set and finds
   it common; the same risk applies here and is unaddressed.
-- The paper's own abstract contains a typographical error ("nconsistent task protocols"), and the
-  detailed per-dataset accuracies live in supplementary tables 5, 6 and 7 that are not part of the
-  main text, so only average ranks and a handful of named values are verifiable from the retrieved
-  document.
+- Correction, made during review. An earlier version of this card stated that the abstract carried
+  the typo "nconsistent task protocols" and that supplementary tables 5 to 7 were outside the
+  retrieved document. Both were wrong: the extraction reads "inconsistent", and Supplementary Tables
+  2, 5, 6 and 7 are all present, including the `#Params` column for all ten checkpoints. The
+  per-dataset accuracies and the parameter counts behind the log-parameter correlation are therefore
+  verifiable from this source.
 
 ## Citations
 
