@@ -105,6 +105,8 @@ DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 BIB_KEY_RE = re.compile(r"@\w+\{\s*([^,\s]+)\s*,")
 INDEX_LINK_RE = re.compile(r"\]\(\./([^)]+)\)")
 PDF_LICENSE_LEADING_RE = re.compile(r"[(;]")
+DOI_URL_PREFIX_RE = re.compile(r"^https?://(dx\.)?doi\.org/")
+ARXIV_ABS_RE = re.compile(r"arxiv\.org/abs/([0-9]+\.[0-9]+)")
 
 HIGH_RELEVANCE_CEILING = 0.40
 HIGH_RELEVANCE_MIN_ENTRIES = 5
@@ -308,6 +310,21 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
 
     pdf_path = entry_dir / "source.pdf"
     pdf_exists = pdf_path.is_file()
+
+    # A committed source.pdf must actually be a PDF. Several publishers
+    # (IOP, PMC, MDPI, eLife) answer automated fetches with an HTML challenge
+    # or interstitial page under HTTP 200, so a naive download writes HTML to
+    # a file named source.pdf. The sha256 would match its own garbage and
+    # every other check would pass.
+    if pdf_exists:
+        head, read_error = _read_bytes_safe(pdf_path)
+        if read_error is not None:
+            violations.append(f"source.pdf {read_error}")
+        elif not head.startswith(b"%PDF"):
+            violations.append(
+                "source.pdf is not a PDF (no %PDF header); a publisher challenge or "
+                "interstitial page was probably saved under HTTP 200"
+            )
 
     meta: object = _UNSET
     meta_path = entry_dir / "meta.json"
@@ -550,6 +567,70 @@ def iter_strands(collection_root: Path) -> list[Path]:
     return sorted(p for p in collection_root.iterdir() if p.is_dir() and not p.name.startswith("_"))
 
 
+def _entry_identifier(entry_dir: Path) -> str | None:
+    """Return a normalized identifier for an entry, or None if it has none.
+
+    Prefers meta.json's doi, falling back to an arXiv id parsed out of
+    source_url, so that a DOI-registered arXiv paper and a bare abs link to
+    the same preprint collapse to one key.
+    """
+    meta_path = entry_dir / "meta.json"
+    if not meta_path.is_file():
+        return None
+    text, read_error = _read_text_safe(meta_path)
+    if read_error is not None:
+        return None
+    try:
+        meta = json.loads(text)
+    except json.JSONDecodeError:
+        return None
+    if not isinstance(meta, dict):
+        return None
+
+    doi = meta.get("doi")
+    if isinstance(doi, str) and doi.strip():
+        key = DOI_URL_PREFIX_RE.sub("", doi.strip().lower())
+        return key.replace("10.48550/arxiv.", "arxiv:")
+
+    url = meta.get("source_url")
+    if isinstance(url, str):
+        match = ARXIV_ABS_RE.search(url)
+        if match:
+            return f"arxiv:{match.group(1)}"
+    return None
+
+
+def _cross_strand_duplicate_warnings(collection_root: Path, root: Path) -> list[str]:
+    """Warn when one identifier is carded in more than one strand.
+
+    The per-strand duplicate-key check cannot see across strands, so the same
+    paper carded twice passes clean and becomes two bibliography entries for
+    one identifier at synthesis time. Dual-carding is legitimate when each
+    card answers its own strand's question, so this warns rather than fails;
+    the point is that it be deliberate and visible.
+    """
+    by_identifier: dict[str, list[str]] = {}
+    for strand_dir in iter_strands(collection_root):
+        for entry_dir in sorted(p for p in strand_dir.iterdir() if p.is_dir()):
+            if entry_dir.name.startswith("_"):
+                continue
+            identifier = _entry_identifier(entry_dir)
+            if identifier is None:
+                continue
+            by_identifier.setdefault(identifier, []).append(
+                str(entry_dir.relative_to(root / "research" / "collection"))
+            )
+
+    warnings: list[str] = []
+    for identifier, locations in sorted(by_identifier.items()):
+        if len(locations) > 1:
+            warnings.append(
+                f"WARNING identifier '{identifier}' is carded in {len(locations)} strands: "
+                f"{', '.join(locations)}"
+            )
+    return warnings
+
+
 def run_validation(root: Path) -> tuple[list[str], list[str], int, dict[str, int]]:
     """Validate the whole corpus under root/research/collection/.
 
@@ -589,6 +670,8 @@ def run_validation(root: Path) -> tuple[list[str], list[str], int, dict[str, int
                     f"WARNING {strand_name}: relevance=high share is {share * 100:.1f}%, "
                     f"above the 40% ceiling"
                 )
+
+    warnings.extend(_cross_strand_duplicate_warnings(collection_root, root))
 
     return violations, warnings, total_entries, strand_counts
 

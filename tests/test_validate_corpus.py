@@ -307,6 +307,98 @@ def test_archived_pdf_sha256_mismatch(tmp_path: Path) -> None:
     assert any("pdf_sha256 mismatch" in v for v in violations)
 
 
+def test_source_pdf_must_have_a_pdf_header(tmp_path: Path) -> None:
+    """An HTML challenge page saved as source.pdf must be caught.
+
+    Several publishers answer automated fetches with an interstitial page
+    under HTTP 200, so a naive download writes HTML into a file named
+    source.pdf. Its sha256 then matches its own garbage and every other
+    check passes.
+    """
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        with_pdf=True,
+        pdf_bytes=b"<!DOCTYPE html>\n<html><body>Checking your browser</body></html>\n",
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("source.pdf is not a PDF" in v for v in violations)
+
+
+def test_real_pdf_header_raises_no_header_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", with_pdf=True, pdf_bytes=b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert not any("is not a PDF" in v for v in violations)
+
+
+def test_same_identifier_in_two_strands_warns(tmp_path: Path) -> None:
+    """Dual-carding is legitimate, but it has to be visible.
+
+    The per-strand duplicate-key check cannot see across strands, so without
+    this the same paper carded twice becomes two bibliography entries for one
+    identifier at synthesis time, with nothing having flagged it.
+    """
+    for strand in ("strand-a", "strand-b"):
+        write_entry(tmp_path, strand, "paper-one", meta_overrides={"doi": "10.1234/shared"})
+        write_strand_index(tmp_path, strand, ["paper-one"])
+        write_strand_bib(tmp_path, strand, ["paper-one"])
+
+    violations, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert violations == []
+    assert any(
+        "10.1234/shared" in w and "strand-a/paper-one" in w and "strand-b/paper-one" in w
+        for w in warnings
+    )
+
+
+def test_arxiv_doi_and_abs_url_collapse_to_one_identifier(tmp_path: Path) -> None:
+    """A DOI-registered arXiv paper and a bare abs link to the same preprint
+    are one work, so the duplicate check must pair them."""
+    write_entry(
+        tmp_path, "strand-a", "paper-one", meta_overrides={"doi": "10.48550/arXiv.2510.21585"}
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    write_entry(
+        tmp_path,
+        "strand-b",
+        "paper-two",
+        meta_overrides={"doi": None, "source_url": "https://arxiv.org/abs/2510.21585"},
+    )
+    write_strand_index(tmp_path, "strand-b", ["paper-two"])
+    write_strand_bib(tmp_path, "strand-b", ["paper-two"])
+
+    _, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert any("arxiv:2510.21585" in w for w in warnings)
+
+
+def test_distinct_identifiers_do_not_warn(tmp_path: Path) -> None:
+    for strand, doi in (("strand-a", "10.1234/one"), ("strand-b", "10.1234/two")):
+        write_entry(tmp_path, strand, "paper-one", meta_overrides={"doi": doi})
+        write_strand_index(tmp_path, strand, ["paper-one"])
+        write_strand_bib(tmp_path, strand, ["paper-one"])
+
+    _, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert not any("carded in" in w for w in warnings)
+
+
 def test_relevance_high_share_warning(tmp_path: Path) -> None:
     slugs = [f"paper-{i}" for i in range(6)]
     for i, slug in enumerate(slugs):
