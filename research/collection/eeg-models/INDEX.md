@@ -6,8 +6,12 @@ each entry's full record is its `card.md`.
 **Collection status: COMPLETE, 22 of at least 18 entries.** The first 6 were a deliberately small
 pilot pass run to expose process problems; 12 more were collected on 2026-07-31; 4 were added on
 2026-08-01. All five categories hold at least 3 entries, category 5 holds 7, and 12 distinct model
-families are represented (REVE, LaBraM, BrainWave, CBraMod, BENDR, BIOT, EEGPT, NeuroGPT,
-BrainOmni, FEMBA, LUNA, EEG Conformer). An entry appears under more than one heading where its
+families are represented (REVE, LaBraM, BrainWave, CBraMod, BENDR, BIOT, EEGPT, BrainOmni,
+FEMBA, LUNA, EEG Conformer). That is eleven, not twelve: an earlier count included NeuroGPT, which
+this strand does not card. NeuroGPT appears only inside
+[lee-2025-lbms-capable-yet](./lee-2025-lbms-capable-yet/card.md)'s evaluation, and the validator's
+checkpoint-coverage check lists it among the six checkpoints named by benchmark cards with no entry
+here. An entry appears under more than one heading where its
 evidence genuinely serves both, and the cross-listing is marked. Nothing here is a synthesis or a
 ranking; that is Phase 3.
 

@@ -565,7 +565,7 @@ split to condition on". STRUM has one. That is a relation between two cards that
 The question this node answers: what would a checkpoint have to be given, and what would it have to
 approximate. The `eeg-models` strand established that spatial identity is the hard admissibility
 condition and that a derivation is not a position; this node sorts the strand's datasets on those
-terms. Only the eleven `type: dataset` entries have values here.
+terms. Only the nine `type: dataset` entries have values here.
 
 ### 4.1 Derivation scheme
 
@@ -782,7 +782,7 @@ source's own analysis did with the channel*, not by what a channel could in prin
 strand's `INDEX.md` states six. The discrepancy has two components and both are recorded here rather
 than resolved: STRUM is not counted, because it is filed under category 5 rather than category 2; and
 the index's own enumeration in that paragraph lists seven EEG datasets while the sentence following it
-says six. Counting the eleven `type: dataset` cards, the eight are
+says six. Counting the nine `type: dataset` cards, the eight are
 [strum-2018](../collection/candidate-datasets/strum-2018/card.md),
 [deap-2012](../collection/candidate-datasets/deap-2012/card.md),
 [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md),

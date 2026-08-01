@@ -269,5 +269,12 @@ item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
   setting is the only one in which a physiology-only decoding arm is reported, as with the sedation
   entry in Seed material. In the second case, card the decoding evidence and leave the clinical
   claim alone.
-- Camera-based or contactless physiology estimation.
+- Camera-based or contactless physiology estimation, **with one exception this brief originally
+  failed to state.** Video and infrared eye tracking is admitted where it bears on the ocular
+  question in category 4, because the seed material in this same brief introduced an eye-movement
+  entry and asked the collector to record whether indices came from eye tracking or from
+  electrooculography. Six entries carry eye-tracked signal on that basis, each stating its instrument
+  on the card. The exclusion as originally written contradicted the brief's own seeds; it is amended
+  here rather than applied retroactively, and the amendment is why those entries are in scope.
+  Remote photoplethysmography and camera-based respiration remain excluded with no exception.
 - Comparing or ranking entries against each other. Collection only.

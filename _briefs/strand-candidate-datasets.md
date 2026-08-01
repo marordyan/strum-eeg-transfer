@@ -144,8 +144,7 @@ Verify relevance before carding; drop any that does not bear on this strand.
 Sources: arXiv, OpenAlex, Crossref, PubMed, plus direct registry browsing. PubMed matters here
 because label-validity work often appears in psychophysiology and human factors venues.
 
-Window: no lower bound for datasets, which stay current long after publication. For label-validity
-papers, 2015 onward.
+Window: no lower bound for datasets, which stay current long after publication. For label-validity papers, 2015 onward, except where an older result is the one that demonstrates the failure: Simanova 2010 and 2012 are both admitted below the window and are both load-bearing for the strand's central question.
 
 Representative queries:
 
