@@ -76,8 +76,15 @@ weaker half of this feature set.
 ## Notable details
 
 - **Physiology-only number**: LGBM AUROC 0.825 (95% CI 0.823–0.826), accuracy 0.741 (0.740–0.742)
-  at a 2 s window; roughly 0.837 / 0.753 at 20 s (per the ROC-figure caption values 0.837, 0.737,
+  at a 2 s window; AUROC roughly 0.837 at 20 s (per the ROC-figure caption values 0.837, 0.737,
   0.809, 0.739 across the four models at that window). Chance AUROC is 0.5.
+
+  The paired accuracy at 20 s is **not verifiable**. An earlier version of this card gave 0.753,
+  which appears nowhere in the source and is contradicted by this card's own quoted caption list.
+  The re-extracted figure text recovers 0.835, 0.837, 0.837, 0.825, 0.804, 0.805, 0.809, 0.794,
+  0.741, 0.739, 0.738, 0.737, 0.730, 0.725 and 0.716; 0.753 is not among them. It was most likely
+  misread off a plotted bar. The value is left unstated rather than replaced with a guess, since
+  reading it needs the figure itself and not the extraction.
 - **EEG-only number**: **not reported, by design.** The paper's whole point is to avoid EEG; the
   EEG-derived bispectral index is the label, not an input. There is no EEG arm and no combined arm.
 - **Combined number**: not reported, same reason.

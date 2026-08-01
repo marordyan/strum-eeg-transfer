@@ -5,5 +5,5 @@
   "pdf_sha256": "ba6e13bd8e1c0749fa7862d6e7cc88041e559183520f708c74ab9b724105332f",
   "pdf_license": "CC-BY-4.0",
   "redistribution_ok": true,
-  "notes": "Licence read from the PDF's own first-page block: 'This is an open-access article distributed under the terms of the Creative Commons Attribution 4.0 International license'. PDF fetched from eneuro.org. Extraction: markitdown on the eNeuro two-column template; the copyright block and the methods prose are readable but figure captions and the decoding time-course panels are images and did not extract, so the card quotes only values stated in the running text."
+  "notes": "Licence read from the PDF's own first-page block: 'This is an open-access article distributed under the terms of the Creative Commons Attribution 4.0 International license'. PDF fetched from eneuro.org. Extraction: markitdown on the eNeuro two-column template; the copyright block and the methods prose are readable but figure captions and the decoding time-course panels are images and did not extract, so the card quotes only values stated in the running text. EXTRACTION UPDATE 2026-08-01 -- source.md was regenerated with pymupdf4llm, which preserves markdown tables and inter-word spacing that the earlier markitdown conversion destroyed, and md_quality was reassessed against the new extraction as clean (was rough)."
 }

@@ -1,2103 +1,1067 @@
-PublishedasaconferencepaperatICLR2025
-|         | PAPAGEI: |               | OPEN |     | FOUNDATION |         | MODELS |     | FOR |     |
-| ------- | -------- | ------------- | ---- | --- | ---------- | ------- | ------ | --- | --- | --- |
-| OPTICAL |          | PHYSIOLOGICAL |      |     |            | SIGNALS |        |     |     |     |
-ArvindPillai2∗,DimitrisSpathis1,3,FahimKawsar1,4,MohammadMalekzadeh1
-1NokiaBellLabs,Cambridge,UK,2DartmouthCollege,NH,USA,
-3UniversityofCambridge,UK,4UniversityofGlasgow,Scotland,UK
-ABSTRACT
-5202 beF 5  ]GL.sc[  2v24502.0142:viXra
-Photoplethysmography(PPG)istheleadingnon-invasivetechniqueformonitor-
-|     | ing                                                       | biosignals  | and             | cardiovascular |                                           | health, with | widespread               | adoption        | in            | both clin- |
-| --- | --------------------------------------------------------- | ----------- | --------------- | -------------- | ----------------------------------------- | ------------ | ------------------------ | --------------- | ------------- | ---------- |
-|     | ical                                                      | settings    | and consumer    |                | wearable                                  | devices.     | While                    | machine         | learning      | models     |
-|     | trained                                                   | on PPG      | signals         | have           | shown                                     | promise,     | they tend                | to be           | task-specific | and        |
-|     | struggle                                                  | with        | generalization. |                | Current                                   | research     | is limited               | by              | the use       | of single- |
-|     | device                                                    | datasets,   | insufficient    |                | exploration                               | of           | out-of-domain            | generalization, |               | and a      |
-|     | lack                                                      | of publicly | available       |                | models,                                   | which        | hampers reproducibility. |                 | To            | address    |
-|     | theselimitations,wepresent                                |             |                 |                | PAPAGEI,thefirstopenfoundationmodelforPPG |              |                          |                 |               |            |
-|     | signals.                                                  | The         | model           | is pre-trained |                                           | on over      | 57,000 hours             | of data,        | comprising    | 20         |
-|     | millionunlabeledPPGsegmentsfrompubliclyavailabledatasets. |             |                 |                |                                           |              |                          |                 | Weintroducea  |            |
-novelrepresentationlearningapproachthatleveragesdomainknowledgeofPPG
-|     | signal | morphology |     | across | individuals, | enabling | the capture | of  | richer representa- |     |
-| --- | ------ | ---------- | --- | ------ | ------------ | -------- | ----------- | --- | ------------------ | --- |
-tionscomparedtotraditionalcontrastivelearningmethods.WeevaluatePAPAGEI
-|     | against | state-of-the-art |     | time-series |     | foundation | models | and self-supervised |     | learn- |
-| --- | ------- | ---------------- | --- | ----------- | --- | ---------- | ------ | ------------------- | --- | ------ |
-ingbenchmarksacross20tasksfrom10diversedatasets,spanningcardiovascular
-|     | health, | sleep        | disorders, | pregnancy |              | monitoring, | and wellbeing |                | assessment. | Our     |
-| --- | ------- | ------------ | ---------- | --------- | ------------ | ----------- | ------------- | -------------- | ----------- | ------- |
-|     | model   | demonstrates |            | superior  | performance, |             | improving     | classification | and         | regres- |
-sionmetricsby6.3%and2.9%respectivelyinatleast14tasks.Notably,PAPAGEI
-achievestheseresultswhilebeingmoredata-andparameter-efficient,outperform-
-|     | ingmodelsthatare70×larger. |     |     |     | Beyondaccuracy,weexaminemodelrobustness |     |     |     |     |     |
-| --- | -------------------------- | --- | --- | --- | --------------------------------------- | --- | --- | --- | --- | --- |
-acrossdifferentskintones,establishingabenchmarkforbiasevaluationinfuture
-|     | models. | PAPAGEIcanserveasbothafeatureextractorandanencoderformulti- |     |     |     |     |     |     |     |     |
-| --- | ------- | ----------------------------------------------------------- | --- | --- | --- | --- | --- | --- | --- | --- |
-modalmodels,openingupnewopportunitiesformultimodalhealthmonitoring1.
-1 INTRODUCTION
-Photoplethysmography(PPG),anon-invasiveopticalsensingtechnique,iswidelyusedtomonitor
-cardiovascular health and physiological signals in both clinical and consumer health applications
-(Charlton et al., 2023). From hospital pulse oximeters to smartwatches, PPG enables continuous
-health monitoring in various settings, bridging acute medical care and long-term health manage-
-ment. PPG signals help in tracking a diverse range of health indicators, including cardiovascular
-health,bloodpressure,mood,andsleepdisorders(Sadadetal.,2022;Aveetal.,2015;Reissetal.,
-2019;Liangetal.,2018a;Haddadetal.,2021;Schrumpfetal.,2021). Despiteitswidespreadadop-
-tion,PPGposessubstantialchallengesformachinelearningapplications. Aprimaryobstacleisthe
-highcostofdataannotation,whichrequiresspecializeddomainexpertise. Thischallengeispartic-
-ularly pronounced in consumer health applications, where varying sensing conditions and diverse
-userpopulationscreateadditionalcomplexity. PPGsignalsaresusceptibletonoiseandmotionarti-
-facts(AfandizadehZargarietal.,2023),aswellasinherentvariabilityduetofactorslikeskintone
-andbodycomposition(Bentetal.,2020). ThesecomplicatethedevelopmentofgeneralizableML
-modelsforPPG.Consequently,existingPPGdatasetsareoftensmall,task-specific,andlimitedin
-their generalizability, posing a major obstacle to the development of robust and widely applicable
-modelsthatcouldfullyleveragethepotentialofPPGtechnology.
-∗Workhasbeendoneduringtheauthor’sinternshipatNokiaBellLabs.
-1Models,data,andcodeareavailableat:github.com/nokia-bell-labs/papagei-foundation-model
-1
+Published as a conference paper at ICLR 2025 
 
-PublishedasaconferencepaperatICLR2025
-Figure1: PAPAGEIOverview. WecuratepublicdatasetsofdiversePPGsignals,andtrainafounda-
-tionmodelleveraginganovelmorphology-awarecontrastivelearningapproach. Toevaluateitsef-
-fectiveness,weapplytheembeddingsgeneratedbyPAPAGEIto20tasksfrom10differentdatasets.
-The PPG domain, unlike language or vision domains, lacks general-purpose foundation models
-(FMs),withmostcurrentworksfocusedonsingle-datasettask-specificmodels. AlthoughPPGcan
-detectvitalsignslikeheartratevariabilityandbloodoxygensaturation,theabsenceofgeneralizable
-pre-trainedmodelslimitsprogress(Abbaspourazadetal.,2023). Despitetheongoingchallengesof
-acquiringlarge-scale,high-qualitydata,recentexpansionsindiversePPGdatasetshavecreatednew
-opportunities(Johnsonetal.,2016;Zhangetal.,2018;Leeetal.,2022).Toaddressthesechallenges,
-we introduce PAPAGEI, a set of robust, pre-trained models capable of serving as a backbone for
-variousPPG-relatedtasks,capturingrichPPGrepresentationsthroughlarge-scalepre-training.
-ThekeycontributionsofPAPAGEIare:
-(1)Large-scalepre-trainingforPPGsignals: Toourknowledge,PAPAGEIisthefirstopenfoun-
-dationmodelpre-trainedonPPGsignals,using57,000hoursofdatafrom20millionsignalssourced
-entirelyfrompublicdatasets. Thisestablishesanewbenchmarkforlarge-scalemodeldevelopment
-inwearableandclinicalhealthmonitoring.
-(2)PPG-awareself-supervisedlearning(SSL)framework:WeintroduceanovelSSLframework
-with a unique PPG signal morphology augmentation module. Our approach optimizes agreement
-betweenPPGsignalswithsimilarbloodvolumechangeswhilepointingthemodeltopayattention
-tothechangesaroundthesystolicpeakanddicroticnotch(keyPPGmarkers).
-(3)Comprehensiveevaluationacrossdiverseout-of-domainhealthtasks:WeevaluatePAPAGEI
-across20tasks,includingcardiovascularhealth,sleepdisorders,pregnancymonitoring,andoverall
-well-being. Our results show that the model embeddings contain rich and predictive information
-applicabletovarioushealthconditions,outperformingexistingbenchmarks.
-(4)Extensiverobustnessstudies: Weconductablationstudiestoassesstheimpactofkeycompo-
-nents,includingsignalmorphologyaugmentation,comparisonswithestablishedcontrastivelearning
-approaches,modelsize,dataefficiency,andtheeffectofskintone.
-2 RELATED WORK
-Self-supervisedlearninghasbecomeaprominentparadigmforlearninggeneralrepresentationsfrom
-unlabeleddatasets, withapplicationsinphysiologicalsignalanalysisincludinghealth, fitness, and
-brain signals (Tonekaboni et al., 2021; Zhang et al., 2022; Chen et al., 2021; Ye`che et al., 2021;
-Spathisetal.,2021;Chengetal.,2020;Kiyassehetal.,2021;Sarkar&Etemad,2020). Despiteits
-popularity,therearenowidelyusedmodelsforPPGsignalspre-trainedthroughSSL.Recently,Ab-
-baspourazadetal.(2023)demonstratedthatembeddingsderivedfromPPGsignalscanpredictover
-45 diverse downstream health-related tasks using proprietary Apple Watch data. Their approach
-uses an SSL framework based on patient-level positive pair contrastive learning. Similarly, (Yun
-etal.,2024)showedthatembeddingPPGsignalscanimprovegeneticdiscoveryandriskprediction
-outcomesusingtheUKBiobankdataset. Otherworks(Wengetal.,2024;Dingetal.,2024;Zhou
-etal.,2024)exploredPPGembeddingsforvariousapplications. However,thesestudiesoftenused
-proprietarydatasets, didnotexploreout-of-domaingeneralization, ordidnotreleasetheirmodels,
-highlightingtheneedforopenlyavailable,pre-trainedPPGFMs(Table17).Forexample,incontrast
-to(Abbaspourazadetal.,2023),ourworkexclusivelyusespublicdatasetsforlarge-scalePPGtrain-
-ingandintroducesanovelSSLframeworktoincorporatePPGmorphology. WhileAbbaspourazad
-et al. (2023) evaluate a single proprietary dataset, we validate on 10 diverse downstream datasets,
-showcasinggreatergeneralizabilityandrobustnessacrossvariedreal-worldscenarios.
-2
 
-PublishedasaconferencepaperatICLR2025
-IPA
-SVRI
-SQI
-Similar Dissimilar Inflection Point Loss Contrastive Loss Signal Quality Loss
-Figure 2: Overview of PAPAGEI-S. The process begins by computing three morphology metrics
-(IPA,SVRI,andSQI)foreachPPGsegment. TherawPPGsignalsarethenprocessedthroughan
-encoder(E)togenerateembeddings(H).Thesesameembeddingsfeedintothreespecializedheads:
-aprojectionhead(P)thatcontrastsPPGsignalsbasedonsVRIvalues,andtwomixture-of-expert
-heads(M andM )thatrefinetheembeddingsbypredictingIPAandSQIvalues.
-1 2
-Generic time-series FMs, like Chronos (Ansari et al., 2024) and Moment (Goswami et al., 2024),
-lackphysiologicaldatarepresentation. Thereisgrowinginterestinmodality-specificFMstailored
-tophysiologicalsignals(Songetal.,2024;Laietal.,2023)andhumanactivity(Yuanetal.,2024a).
-Knowledgetransferfromtime-seriesFMsmightbenefitPPGtasks,buttheirperformanceislimited
-comparedtoPPG-specificFMs. Adaptingotherdomain-specificmodels,likeECG(McKeenetal.,
-2024;Songetal.,2024)orEEG(Yuanetal.,2024b),ischallengingduetodistinctsignalcharacter-
-istics. WespecificallydesignFMsforPPGsignals, contributingtothegrowingmovementtoward
-foundationmodelstailoredtoindividualmodalities. SeeAppendix§Hforanextendeddiscussion.
-3 METHODS
-Given a dataset D = {p1,p2,··· ,pS} representing diverse PPG signals from S participants, a
-PPG signal ps ∈ Rn is defined as a time-series that captures variations in light intensity caused
-byarterialbloodflow. TomodelgranularchangesinPPGsignalofeachsubjects,wesegmentps
-without overlap to obtain Xs = {xs,xs,···xs }. Here, the number of segments N depends on
-1 2 N
-thesamplingfrequency(f)andthedesiredlengthoftimewindow. Totrainourfoundationmodels,
-PAPAGEI-PemploysapatientcontrastiveSSLapproachthatmaximizesagreementbetweensignals
-fromthesamesubject. Importantly,wepropose PAPAGEI-S,amorphology-awareself-supervised
-approachthatmaximizesagreementbetweenPPGsegmentswithsimilarmorphology.
-3.1 PARTICIPANT-AWAREOBJECTIVE: PAPAGEI-P
-In PAPAGEI-P, we train an SSL model to maximize agreement between the embeddings of PPG
-signals from the same subject. While previous studies have demonstrated the effectiveness of this
-strategy for physiological signals (Kiyasseh et al., 2021; Abbaspourazad et al., 2023), our work
-represents the first attempt to train and evaluate a foundation model using publicly available PPG
-datasets.
-Training. We define a positive pair as any two distinct segments of PPG signals from the same
-subject, denoted as {(xs,xs)|i ̸= j}. Next, we apply a series of time-series augmentations such
-i j
-as random cropping, adding Gaussian noise, time flipping, negation, and magnitude scaling (Tang
-et al., 2020), each applied with a predefined probability during training. Each augmentation in-
-cludes hyper-parameters that control the intensity of the data transformation. During training, the
-augmentedversionofarandomlysampledpositivepair(xs,xs)ispassedthroughtheencoderE,
-i j
-and subsequently projection P, to obtain an embeddings pair denoted by (zs,zs). Given a batch
-i j
-of embeddings from N positive pairs of the form (z ,z ), the model optimizes the normalized
-i j
-temperature-scaledcrossentropy(NT-Xent)loss(Sohn,2016;Oordetal.,2018;Chenetal.,2020)
-3
 
-PublishedasaconferencepaperatICLR2025
-givenby:L = 1(ℓ (i,j)+ℓ (j,i)),whereℓ (i,j)=−1 (cid:80)N log exp(sim(zu i ,zu j )/τ)
-p 2 p p p N u=1 (cid:80)2N 1[v̸=u]exp(sim(zu,zv)/τ)
-v=1 i j
-andsim(·,·)isthecosinesimilarity.Incontrast,vanillaSimCLR(Chenetal.,2020)wouldusepos-
-itivepairsasaugmentedversionsofrandomlysampledPPGsegments.
-3.2 MORPHOLOGY-AWAREOBJECTIVE: PAPAGEI-S
-InPAPAGEI-S,weleveragethePPGsignalmorphologytotrainaSSLmodelthatmaximizesagree-
-mentbetweensimilarphysiologicalfeaturesofPPGsignalsacrossparticipants.
-PPGMorphology.Totalperipheralresistance(TPR)—theforceexertedbythebody’sbloodvessels
-on circulating blood—varies under certain medical conditions, such as hypertension and diabetes
-(Trammel & Sapra, 2020). Variations in TPR are reflected in PPG signals, presenting as distinct
-regionswithinthewaveform. Tocapturethesevariations,weintroduceamorphologyaugmentation
-modulebeforetraining,whichcomputesthreekeyPPGmetrics(Figure2,left): (1)stress-induced
-VascularResponseIndex(sVRI)(Lyuetal.,2015;Zhangetal.,2019): theratioofmeanPPGsig-
-nalbetweenpost-topre-systolicphases,(2)InflectionPointArearatio(IPA)(Wangetal.,2009):
-the ratio of systolic to diastolic areas defined by the dicrotic notch, and (3) Signal Quality Index
-(SQI):skewnessofthesignalasanindicatorofquality(Elgendi,2016). Priorstudieshaveshown
-thatincorporatingthePPGsignalqualityduringtrainingyieldspositiveresults(Dingetal.,2024).
-We selected these metrics for their complementary nature: sVRI captures variations in amplitude,
-whileIPAmeasuressignalwidth.ToaddressscenarioswherecomputingIPAischallengingbecause
-ofnoisysignalsordifferentmorphology,weincorporateSQI.Inparticular,weempiricallyfindthat
-SQIissignificantlylarger(p<0.05)insignalswithadicroticnotch(Appendix§D.5).
-sVRI(x)= sys (cid:80)n i=sys x i , IPA(x)= (cid:82) 0 nˆ xdn , and SQI(x)= 1 (cid:88) m 3 , (1)
-(n−sys) (cid:80)s
-i=
-ys
-1
-x
-i
-(cid:82)
-nˆ
-n xdn W
-w
-m3
-2
-/2
-wherex ∈ RN isthePPGsegment,sysisthesystolicpeak,nisthelengthoftimeseries,andnˆ is
-thedicroticnotch.ForSQI,wedividexinto5secondwindows(w;totalwindowsW)andcompute
-theskewnessm = 1 (cid:80)5×f(x[j]−µ [j])i,whichgivesthebestsignalqualitydiscrimination.
-i 5×f j=1 x
-Training. Before training, the morphology augmentation module takes an augmented input, by
-applying Gaussian noise and cropping to time series x, and outputs y = {ysvri,yipa,ysqi} ∈ R3
-(Figure 2 middle). Next, we discretize ysvri into a predefined set of b = 8 bins to denote pos-
-itive pairs, where ysvri ∈ {1,...,b}. We define positive pairs based on the sVRI labels as
-{(x ,x )|ysvri =ysvri,i̸=j}. Notethatpositivepairsarenotdefinedbasedonparticipants.
-i j i j
-exp(sim(z ,z )/τ)
-ℓ (i,j)=−log i j (2)
-s (cid:80)2N 1[k ̸=i]exp(sim(z ,z )/τ)
-k=1 i k
-N
-1 (cid:88)
-L = [ℓ(2k−1,2k)+ℓ(2k,2k−1)] (3)
-svri 2N
-k=1
-1 (cid:88) N (cid:12) (cid:12) 1 (cid:88) N (cid:12) (cid:12)
-L = (cid:12)yipa−yˆipa(cid:12) L = (cid:12)ysqi−yˆsqi(cid:12) (4)
-ipa N (cid:12) i i (cid:12) sqi N (cid:12) i i (cid:12)
-i=1 i=1
-L =αL +(1−α)(L +L ),whereα∈[0,1] (5)
-s svri ipa sqi
-GivenabatchofN PPGsignalsandtheirmorphology,weoptimizethreeheadsusingtheencoder
-(E)embeddingsH = {h ,h ,··· ,h }. First,weextracttheembeddingsZ = {z ,z ,··· ,z }
-1 2 N 1 2 N
-fromtheprojection(P),andcomputethecontrastivelossforsVRI(equation3). Next,weusethe
-embeddingsH topredicttheIPA(yˆipa ∈ RN)andSQI(yˆsqi ∈ RN)usingthemixtureofexpert
-(MoE) heads M and M . Each MoE head is composed of three fully connected neural networks
-1 2
-(FCNNs), with the head’s output calculated as a weighted sum of the FCNNs, using softmax to
-determinetheweights. Theseheadsareoptimizedusingthemeanabsoluteerror(equation4). The
-morphologyindicesencapsulatevariousPPGcharacteristics. OurrationaleforutilizingMoEisthat
-eachexpertcanspecializeinlearningdistinctpropertiesthatcontributetotheoverallindex. Finally,
-theoverallPAPAGEI-Strainingobjectiveisgiveninequation5.
-4
+# PAPAGEI: OPEN FOUNDATION MODELS FOR OPTICAL PHYSIOLOGICAL SIGNALS 
 
-PublishedasaconferencepaperatICLR2025
-4 EXPERIMENTS
-4.1 PRE-TRAINING
-Datasets. Wepre-train PAPAGEI onthreedatasets: (1)VitalDB(Leeetal.,2022),whichincludes
-PPGsignalscollectedduringsurgeryfromthepatient’sfinger(f=500Hz),(2)theMIMIC-IIIwave-
-form database matched subset (Johnson et al., 2016), where finger-tip PPG data is collected from
-anICUmonitor(f=125Hz),and(3)theMulti-EthnicStudyofAtherosclerosis(MESA)sleepsub-
-study(Zhangetal.,2018;Chenetal.,2015),whichprovidesPPGdataobtainedthroughfinger-tip
-polysomnography(f=256Hz). Intotal,wehave13.5Kparticipantswith20Msegments(Table1).
-| Pre-processing. |     | To  | curate single-channel |     |     | PPG sig- |     |     |
-| --------------- | --- | --- | --------------------- | --- | --- | -------- | --- | --- |
-nals across all datasets, we perform the following Table1: PAPAGEI’spre-trainingdatasets.
-| steps: (1)         | Apply   | a 4th-order | Chebyshev     |            | bandpass | fil-      |               |                  |
-| ------------------ | ------- | ----------- | ------------- | ---------- | -------- | --------- | ------------- | ---------------- |
-| ter with           | low and | high        | pass cut-offs |            | set at   | 0.5Hz and |               |                  |
-|                    |         |             |               |            |          | Dataset   | #Participants | #Segments Hours  |
-| 12Hz, respectively |         | (Lapitan    | et            | al., 2024; | Liang    | et al.,   |               |                  |
-|                    |         |             |               |            |          | VitalDB   | 5,866         | 6,248,100 17,355 |
-2018c); (2) Segment the signal into 10-second win- MIMIC-III 5,596 7,196,401 19,990
-dows ((Orphanidou, 2018; Koteska et al., 2022) use MESA 2,055 7,306,705 20,296
-| 10s windows   |          | whereas  | larger        | studies    | use    | 30s (Ding |        |                   |
-| ------------- | -------- | -------- | ------------- | ---------- | ------ | --------- | ------ | ----------------- |
-|               |          |          |               |            |        | Total     | 13,517 | 20,751,206 57,641 |
-| et al., 2024) | and      | 60s      | Abbaspourazad |            | et al. | (2023));  |        |                   |
-| (3) Detect    | flatline | segments |               | and remove |        | any seg-  |        |                   |
-ment where more than 25% of the data is flat (BioBSS Documentation, 2023); (4) Nor-
-malize the segments using Z-score (Temko, 2017; Zhou et al., 2017); and (5) Resample
-the segments to 125Hz (the lowest sampling rate of our pre-training datasets, MIMIC-III).
-| Implementation. |     |     | We adopt |     |     |     |     |     |
-| --------------- | --- | --- | -------- | --- | --- | --- | --- | --- |
-a ResNet-style CNN encoder, Table 2: PAPAGEI’s evaluation datasets. Gray lines are unseen
-following (Ding et al., 2024). duringtraining(out-of-domain). Forthoseusedforpre-training,
-Abbaspourazad et al. (2023) we keep a held-out test-sets and use labels. Task Types are:
-alsoutilizeanEfficientNet-style
-B=binary,R=regression,M-#classes=muticlassclassification.
-CNN.Ourmodelhas18convo-
-| lutional | blocks, | starting | with | a   |         |     |                |                |
-| -------- | ------- | -------- | ---- | --- | ------- | --- | -------------- | -------------- |
-|          |         |          |      | #ID | Dataset |     | Task(TaskType) | #Subj.(#Samp.) |
-filter size of 32, which doubles T1 VitalDB(Leeetal.,2022) ICUadmission(B) 5866
-| every 4 | blocks. | The | projection | T2  |                            |     | OperationType(M-9) | 5866 |
-| ------- | ------- | --- | ---------- | --- | -------------------------- | --- | ------------------ | ---- |
-|         |         |     |            | T3  | MIMIC-III(Moodyetal.,2020) |     | Mortality(B)       | 5596 |
-layerisasingleFClayer,gener-
-|                       |          |       |            | T4  | MESA(Zhangetal.,2018)    |     | Smoker(B)             | 2055       |
-| --------------------- | -------- | ----- | ---------- | --- | ------------------------ | --- | --------------------- | ---------- |
-| atinga512-dembedding. |          |       | Inthe      | T5  |                          |     | AHI>3%OxygenDesat.(R) | 2055       |
-| PAPAGEI-S             | variant, |       | the expert | T6  |                          |     | AHI>4%OxygenDesat.(R) | 2055       |
-|                       |          |       |            | T7  | nuMom2B(Faccoetal.,2015) |     | Pregnancystage(B)     | 3163(5337) |
-| block (M              | 1 &      | M 2 ) | uses three | T8  |                          |     | GestationAge(R)       | 3163(5337) |
-|                       |          |       |            | T9  | VV(SkinTone)(Toye,2023)  |     | SystolicBP*(R)        | 231        |
-| parallel              | FCNNs,   | each  | with two   |     |                          |     |                       |            |
-|                       |          |       |            | T10 |                          |     | DiastolicBP*(R)       | 231        |
-FC layers, resulting in a 128- T11 PPG-BP(Liangetal.,2018a) SystolicBP(R) 219
-| d embedding. |     | For | augmenta- | T12 |     |     | DiastolicBP(R)      | 219 |
-| ------------ | --- | --- | --------- | --- | --- | --- | ------------------- | --- |
-|              |     |     |           | T13 |     |     | AverageHeartRate(R) | 219 |
-tions,PAPAGEI-Pusescropping
-|                  |     |         |          | T14 |                      |     | Hypertension(B)             | 219 |
-| ---------------- | --- | ------- | -------- | --- | -------------------- | --- | --------------------------- | --- |
-|                  |     |         |          | T15 | SDB(Gardeetal.,2014) |     | SleepDisorderedBreathing(B) | 146 |
-| (0.50), negation |     | (0.20), | flipping |     |                      |     |                             |     |
-|                  |     |         |          | T16 | ECSMP(Gaoetal.,2021) |     | MoodDisturbance(B)          | 89  |
-(0.20), and scaling (0.40). PA- T17 WESAD(Schmidtetal.,2018) Valence(B) 15(4497)
-| PAGEI-S      | uses   | cropping      | (0.25) | T18 |                            |     | Arousal(B)    | 15(4497)  |
-| ------------ | ------ | ------------- | ------ | --- | -------------------------- | --- | ------------- | --------- |
-|              |        |               |        | T19 | PPG-DaLiA(Reissetal.,2019) |     | HeartRate(R)  | 15(64697) |
-| and Gaussian | noise  | (0.25).       | PA-    |     |                            |     |               |           |
-|              |        |               |        | T20 |                            |     | Activity(M-9) | 15(64697) |
-| PAGEI-S      | avoids | augmentations |        |     |                            |     |               |           |
-| that alter   | PPG’s  | morphology.   |        |     |                            |     |               |           |
-10−4),
-We set α = 0.6 and train on eight V100 GPUs for 15,000 steps (lr= with PAPAGEI-P
-and PAPAGEI-S having 5M and 5.7M parameters, respectively, while previous works use model
-sizesof3.3M(Abbaspourazadetal.,2023)(westudyscalinginSection5.2).
-4.2 DOWNSTREAMTASKS
-Toevaluatetheeffectivenessof PAPAGEI,webenchmarkitagainstadiversesetofdatasets,tasks,
-andbaselines,chosenfortheirlargesizeandclinicalrelevance(whereapplicable)2.Adescriptionof
-thetaskswiththeircorresponding#IDisprovidedinTable2,withfurtherdetailsinAppendix§B.
-As a motivation, identifying patient risk factors is crucial for hospitals to allocate resources ef-
-fectively. To address this, we evaluate several indicators, including ICU admission (T1), type of
-operation(T2), mortality(T3), andsmokingstatus(T4). Forsleepapneadiagnosis, theAmerican
-2https://peterhcharlton.github.io/post/ppg_datasets/
-5
+**Arvind Pillai**<sup>2</sup><sup>_∗_</sup> **, Dimitris Spathis**<sup>1</sup><sup>_,_3</sup> **, Fahim Kawsar**<sup>1</sup><sup>_,_4</sup> **, Mohammad Malekzadeh**<sup>1</sup> 1Nokia Bell Labs, Cambridge, UK, 2Dartmouth College, NH, USA, 
 
-PublishedasaconferencepaperatICLR2025
-REGLE Chronos Moment Stat. Features
-Smoker Smoker Smoker Smoker
-Pregnancy Pregnancy Pregnancy Pregnancy
-0.82 0.64Mortality 0.82 0.64Mortality 0.82 0.64Mortality 0.82 0.64Mortality
-Hypertension 0.7 Hypertension 0.7 Hypertension 0.7 Hypertension 0.7
-0.78 0.78 0.78 0.78
-0.8ICU 0.8ICU 0.8ICU 0.8ICU
-0.7 0.7 0.7 0.7
-Apnea 0.6 Apnea 0.6 Apnea 0.6 Apnea 0.6
-0.6 0.58 Arousal 0.6 0.58 Arousal 0.6 0.58 Arousal 0.6 0.58 Arousal
-Mood Valence Mood Valence Mood Valence Mood Valence
-SimCLR BYOL TF-C PaPaGei (Ours)
-Smoker Smoker Smoker Smoker
-Pregnancy Pregnancy Pregnancy Pregnancy
-0.82 0.64Mortality 0.82 0.64Mortality 0.82 0.64Mortality 0.82 0.64Mortality
-Hypertension 0.7 Hypertension 0.7 Hypertension 0.7 Hypertension 0.7
-0.78 0.78 0.78 0.78
-0.8ICU 0.8ICU 0.8ICU 0.8ICU
-0.7 0.7 0.7 0.7
-Apnea 0.6 Apnea 0.6 Apnea 0.6 Apnea 0.6
-0.6 0.58 Arousal 0.6 0.58 Arousal 0.6 0.58 Arousal 0.6 0.58 Arousal
-Mood Valence Mood Valence Mood Valence Mood Valence
-REGLE Chronos Moment Stat. Features
-Gestation Gestation Gestation Gestation
-Sys. BP* Sys. BP* Sys. BP* Sys. BP*
-18.0 8.0AHI > 4% 18.0 8.0AHI > 4% 18.0 8.0AHI > 4% 18.0 8.0AHI > 4%
-13.0 13.0 13.0 13.0
-Dia. BP*12.0 Dia. BP*12.0 Dia. BP*12.0 Dia. BP*12.0
-16.0AHI > 3% 16.0AHI > 3% 16.0AHI > 3% 16.0AHI > 3%
-18.0 18.0 18.0 18.0
-Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0
-12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR
-Dia. BPAvg. HR Dia. BPAvg. HR Dia. BPAvg. HR Dia. BPAvg. HR
-SimCLR BYOL TF-C PaPaGei (Ours)
-Gestation Gestation Gestation Gestation
-Sys. BP* Sys. BP* Sys. BP* Sys. BP*
-18.0 8.0AHI > 4% 18.0 8.0AHI > 4% 18.0 8.0AHI > 4% 18.0 8.0AHI > 4%
-13.0 13.0 13.0 13.0
-Dia. BP*12.0 Dia. BP*12.0 Dia. BP*12.0 Dia. BP*12.0
-16.0AHI > 3% 16.0AHI > 3% 16.0AHI > 3% 16.0AHI > 3%
-18.0 18.0 18.0 18.0
-Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0
-12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR
-Dia. BPAvg. HR Dia. BPAvg. HR Dia. BPAvg. HR Dia. BPAvg. HR
-Figure3: Radarchartsofdownstreamtasks. (Top)ClassificationperformanceinAUROC(larger
-area is better). (Bottom) Regression performance in MAE (smaller area is better). Pre-trained
-modelsinpurple: REGLE,Chronos,&Moment. Statisticalfeaturebaselineingray. SSLmethods
-ingreen: SimCLR,BYOL,&TF-C.PAPAGEI(ours),inpink. DetailsareinTables3&4.
-AcademyofSleepMedicinerecommendsusingtheApnea/HypopneaIndex(AHI)withatleast3%
-or4%oxygendesaturationasakeymetric(Ruehlandetal.,2009). Thus,wepredictAHIat3%and
-4%desaturationthresholds(T5&T6)andclassifysleep-disorderedbreathing(T15). Forpregnancy
-outcomes,changesingestationalageandpregnancystagearelinkedtoriskslikehypertensivedis-
-orders and small-for-gestational-age delivery (Bouariu et al., 2022; Wu et al., 2020; Crump et al.,
-2023),enablingustoclassifypregnancystage(T7)andpredictgestationalage(T8).Incardiovascu-
-larhealth,weestimatesystolic(T9&T11)anddiastolic(T10&T12)bloodpressure(BP)usingtwo
-datasets. WhilePPG-BP(T11&T12)provideshigh-frequency,shortPPGsignals,theVVdataset
-helps explore skin tone’s influence on BP estimation. We also assess hypertension classification
-(T14),averageseatedheartrate(T13),andcontinuousheartrateduringactivities(T19),alongwith
-activityclassification(T20). Intheemotiondomain,weclassifyPPGsignalsintomooddisturbance
-levels(T16),valence(T17),andarousal(T18).
-4.3 BASELINES
-We benchmark PAPAGEI’s performance against competitive baselines. As open-source founda-
-tion models designed for physiological signals, PAPAGEI is compared to recent time-series FMs:
-Chronos (Ansari et al., 2024) and MOMENT (Goswami et al., 2024). To evaluate the merits of
-ourSSLframework,wealsocomparePAPAGEIwithcommonSSLmethods(trainedfromscratch)
-such as SimCLR (Chen et al., 2020), BYOL (Grill et al., 2020), and TF-C (Zhang et al., 2022).
-Inaddition,toassessmodelgeneralizabilityonPPGsignals,wecompareagainstREGLE,amodel
-pre-trainedonUKBiobank’sPPGsignals(Yunetal.,2024).Asasimplebaseline,weemployaran-
-domforesttrainedonstatisticalfeaturesextractedfromthePPGsignal,includingmean,median,
-maximum,minimum,andthe25th,50th,and75thpercentiles(”Stat. Features”). Thistask-specific
-approachservesasabenchmarkforcomparisonwithmoreadvancedtechniques.
-6
+3University of Cambridge, UK, 4University of Glasgow, Scotland, UK 
 
-PublishedasaconferencepaperatICLR2025
-Table3: Downstreamcomparisonagainstpre-trainedmodels. Featureextractionparametersare
-indicatednexttoeachname. 95%CIsarereportedinsquarebracketsandthebestvalueisbolded.
-|                         |     | REGLE(0.07M)    |     | Chronos(200M)      | Moment(385M)        | PAPAGEI-P(5M) | PAPAGEI-S(5M) |
-| ----------------------- | --- | --------------- | --- | ------------------ | ------------------- | ------------- | ------------- |
-| Classification-AUROC(↑) |     | (Yunetal.,2024) |     | (Ansarietal.,2024) | (Goswamietal.,2024) |               |               |
-ICUAdmission 0.57[0.52-0.62] 0.73[0.68-0.80] 0.72[0.70-0.80] 0.73[0.67-0.78] 0.79[0.75-0.82]
-Mortality 0.55[0.52-0.59] 0.68[0.65-0.71] 0.67[0.63-0.71] 0.67[0.63-0.71] 0.67[0.63-0.70]
-Smoker 0.54[0.47-0.59] 0.62[0.57-0.67] 0.62[0.56-0.67] 0.64[0.58-0.69] 0.61[0.56-0.66]
-Pregnancystage 0.64[0.57-0.63] 0.81[0.79-0.82] 0.76[0.74-0.78] 0.74[0.72-0.76] 0.78[0.75-0.80]
-Hypertension 0.47[0.34-0.58] 0.57[0.43-0.71] 0.75[0.64-0.85] 0.74[0.55-0.90] 0.77[0.68-0.87]
-SleepDisorderedBreathing 0.45[0.30-0.61] 0.58[0.35-0.82] 0.45[0.23-0.66] 0.54[0.23-0.66] 0.70[0.57-0.84]
-MoodDisturbance 0.41[0.16-0.66] 0.43[0.21-0.68] 0.55[0.33-0.78] 0.53[0.27-0.78] 0.56[0.33-0.77]
-Valence 0.55[0.52-0.57] 0.56[0.53-0.59] 0.57[0.54-0.59] 0.53[0.51-0.56] 0.56[0.54-0.59]
-Arousal 0.51[0.52-0.58] 0.57[0.54-0.60] 0.56[0.53-0.58] 0.58[0.55-0.61] 0.55[0.52-0.57]
-| Average |     | 0.52±0.06 |     | 0.62±0.10 | 0.63±0.09 | 0.63±0.08 | 0.67±0.09 |
-| ------- | --- | --------- | --- | --------- | --------- | --------- | --------- |
-Regression-MAE(↓)
-Apnea/HypopneaIndex>3% 15.54[14.20-16.69] 14.06[13.05-15.16] 14.23[13.04-15.42] 13.85[12.43-15.49] 12.97[11.87-14.05]
-Apnea/HypopneaIndex>4% 12.64[11.47-13.78] 11.57[10.51-12.72] 11.80[10.79-12.93] 11.24[9.71-12.87] 10.56[9.59-11.62]
-GestationAge 7.28[7.16-7.39] 5.69[5.54-5.85] 6.24[6.10-6.37] 6.40[6.21-6.59] 6.05[5.91-6.17]
-SystolicBP(VV) 15.88[13.67-18.36] 17.24[14.57-20.13] 14.71[12.38-17.29] 19.11[16.26-22.23] 14.65[12.50-16.78]
-DiastolicBP(VV) 8.65[7.16-10.27] 10.53[8.91-12.19] 10.53[8.91-12.19] 10.87[9.10-12.98] 8.29[6.61-10.22]
-SystolicBP(PPG-BP) 16.32[13.87-19.13] 16.91[13.31-19.34] 14.50[11.98-17.31] 13.60[10.65-16.51] 14.39[12.53-16.45]
-DiastolicBP(PPG-BP) 9.30[7.94-10.87] 10.26[8.13-12.57] 9.53[8.28-10.96] 8.88[7.33-10.76] 8.71[7.18-10.01]
-AverageHR 6.88[5.81-8.12] 8.51[7.05-10.07] 4.41[3.48-5.48] 3.47[2.74-4.32] 4.00[3.34-4.67]
-HR 16.35[16.20-16.50] 9.65[9.50-9.79] 8.82[8.68-8.96] 10.92[10.80-11.04] 11.53[11.40-11.66]
-AverageMAE(sMAPE) 12.09±3.83(15.23%) 11.60±3.60(14.20%) 10.43±3.46(13.82%) 10.92±4.25(14.09%) 10.12±3.47(13.34%)
-4.4 LINEAREVALUATION
-Initially, we split the in-domain and out-of-domain datasets into training, validation, and test sets
-at80/10/10and60/20/20ratios. Thesplittingisperformedatthesubjectlevelensuringnooverlap
-betweenindividualsacrossthesets. Themodelsareevaluatedbyextractingfeaturerepresentations
-from resampled data (125Hz) and applying linear probing for each task. For binary classification
-tasks, we employ a logistic regression model, with performance measured by the AUROC score.
-Forregressiontasks,ridgeregressionisused,andperformanceisevaluatedbasedonthemeanab-
-soluteerror(MAE).Regressiontasksareaggregatedusingthesymmetricmeanabsolutepercentage
-error(sMAPE).Multi-classclassificationtasksaretrainedusingarandomforestmodel,withaccu-
-racyastheevaluationmetric. Toensurerobustness,wecompute95%confidenceintervalsthrough
-bootstrapping(500samplingrunswithreplacement).MoredetailsareprovidedintheAppendix§A.
-5 RESULTS
-5.1 OVERALLPERFORMANCE
-Ingeneral,fromFigure3,weobservethat PAPAGEI ismoreaccurateacrossmanytasksindicated
-by the larger AUROC area and smaller MAE area. Table 3 presents a more detailed comparison
-betweenPAPAGEIandotherpre-trainedmodels.
-| Forclassificationtasks, |     | PaPaGei-Sachievesthe |     |     |     |                |        |
-| ----------------------- | --- | -------------------- | --- | --- | --- | -------------- | ------ |
-|                         |     |                      |     |     |     | PaPaGei-S TF-C | Moment |
-highestaverageAUROCof0.67,outperforming
-|                  |            |           |              |              | 0.66    | 12.5         |              |
-| ---------------- | ---------- | --------- | ------------ | ------------ | ------- | ------------ | ------------ |
-| other models     | across     | several   | tasks,       | particularly | CORUA   | EAM          |              |
-|                  |            |           |              |              | 0.64    | 11.5         |              |
-|                  |            |           |              |              | 0.62    | 10.5         |              |
-| in ICU Admission |            | (0.79),   | Hypertension | (0.77),      |         |              |              |
-|                  |            |           |              |              | 0.60    | 9.5          |              |
-| and Sleep        | Disordered | Breathing | (0.70).      | In re-       |         |              |              |
-|                  |            |           |              |              | 25% 50% | 75% 100% 25% | 50% 75% 100% |
-gression tasks, PaPaGei-S again demonstrates Downstream labelled data Downstream labelled data
-| strong performance, |     | achieving | the | lowest aver- |                      |                 |           |
-| ------------------- | --- | --------- | --- | ------------ | -------------------- | --------------- | --------- |
-|                     |     |           |     |              | Figure 4: Downstream | data-efficiency | analysis. |
-ageMAE(10.12),particularlyintasksrelatedto
-Resultsareaveragedoverallbinaryclassification
-| Apnea/Hypopnea |         | Index | and BP measurements. |             |                       |                |           |
-| -------------- | ------- | ----- | -------------------- | ----------- | --------------------- | -------------- | --------- |
-|                |         |       |                      |             | (left) and regression | tasks (right). | PAPAGEI-S |
-| REGLE,         | a small | model | trained on           | a large PPG |                       |                |           |
-performsbetterwithincreasedlabelavailability.
-| dataset, generally |            | underperforms |             | compared | to  |     |     |
-| ------------------ | ---------- | ------------- | ----------- | -------- | --- | --- | --- |
-| other models,      | suggesting |               | its compact | size may |     |     |     |
-limit learning complex patterns. Chronos obtains good performance in predicting mortality, preg-
-nancystage,andsmoking,likelyduetotheirslowerrateofchangeandreducedrelianceongranular
-PPG-specific features. General-purpose models suffice for these high-level outcomes. However,
-tasksrequiringfinerPPG-specificgranularity,suchasheartrateprediction,bloodpressureestima-
-tion, or sleep apnea, benefit from PAPAGEI’s specialized feature extraction. Notably, PAPAGEI-S
-consistentlyoutperforms PAPAGEI-P,highlightingtheadvantagesofsignalmorphologyobjectives
-inenhancingpredictiveaccuracy.
-7
+## ABSTRACT 
 
-PublishedasaconferencepaperatICLR2025
-Table4: DownstreamcomparisonagainstbaselineandSSLmethods. Featureextractionparam-
-etersareindicatednexttoeachname. 95%CIsarereportedinsquarebracketsandthebestvalueis
-bolded. ImplementationdetailsareinAppendix§A.
-Stat.Features SimCLR(5M) BYOL(5M) TF-C(10M) PAPAGEI-P(5M) PAPAGEI-S(5M)
-Classification-AUROC(↑) (Chenetal.,2020) (Grilletal.,2020) (Zhangetal.,2022)
-ICUAdmission 0.71[0.65-0.78] 0.75[0.72-0.79] 0.78[0.73-0.81] 0.71[0.67-0.75] 0.73[0.67-0.78] 0.79[0.75-0.82]
-Mortality 0.57[0.54-0.61] 0.67[0.63-0.70] 0.67[0.64-0.71] 0.67[0.63-0.70] 0.67[0.63-0.71] 0.67[0.63-0.70]
-Smoker 0.63[0.58-0.67] 0.62[0.57-0.68] 0.62[0.57-0.68] 0.61[0.56-0.67] 0.64[0.58-0.69] 0.61[0.56-0.66]
-Pregnancystage 0.64[0.62-0.67] 0.74[0.72-0.75] 0.62[0.57-0.68] 0.74[0.72-0.76] 0.74[0.72-0.76] 0.78[0.75-0.80]
-Hypertension 0.66[0.47-0.83] 0.75[0.64-0.86] 0.74[0.64-0.84] 0.76[0.63-0.86] 0.74[0.55-0.90] 0.77[0.68-0.87]
-SDB 0.32[0.14-0.55] 0.61[0.46-0.76] 0.59[0.42-0.74] 0.58[0.44-0.73] 0.54[0.23-0.66] 0.70[0.57-0.84]
-MoodDisturbance 0.54[0.31-0.77] 0.32[0.12-0.55] 0.46[0.21-0.71] 0.59[0.33-0.84] 0.53[0.27-0.78] 0.56[0.33-0.77]
-Valence 0.52[0.49-0.55] 0.52[0.49-0.55] 0.53[0.50-0.56] 0.57[0.54-0.59] 0.53[0.51-0.56] 0.56[0.54-0.59]
-Arousal 0.55[0.53-0.58] 0.55[0.52-0.58] 0.54[0.30-0.78] 0.55[0.52-0.58] 0.58[0.55-0.61] 0.55[0.52-0.57]
-Average 0.57±0.11 0.61±0.13 0.62±0.10 0.64±0.07 0.63±0.08 0.67±0.09
-Regression-MAE(↓)
-Apnea/HypopneaIndex>3% 15.31[13.63-17.14] 14.17[13.04-15.38] 14.26[13.10-15.57] 15.10[13.84-16.40] 13.85[12.43-15.49] 12.97[11.87-14.05]
-Apnea/HypopneaIndex>4% 12.52[10.92-14.14] 11.76[10.65-12.89] 11.88[10.71-13.05] 12.41[11.33-13.49] 11.24[9.71-12.87] 10.56[9.59-11.62]
-GestationAge 7.15[6.99-7.34] 6.28[6.21-6.49] 6.24[6.09-6.38] 6.35[6.21-6.49] 6.40[6.21-6.59] 6.05[5.91-6.17]
-SystolicBP(VV) 15.76[13.67-18.36] 16.18[13.73-18.85] 15.01[12.32-17.80] 15.70[13.23-18.13] 19.11[16.26-22.23] 14.65[12.50-16.78]
-DiastolicBP(VV) 9.75[7.16-11.27] 9.15[7.65-10.65] 8.91[7.48-10.43] 9.15[7.65-10.65] 10.87[9.10-12.98] 8.29[6.61-10.22]
-SystolicBP(PPG-BP) 15.50[11.68-20.25] 14.38[11.80-16.88] 14.99[13.03-17.38] 14.45[12.20-17.00] 13.60[10.65-16.51] 14.39[12.53-16.45]
-DiastolicBP(PPG-BP) 9.35[7.44-11.66] 9.01[7.90-10.60] 9.16[8.00-10.50] 9.20[7.90-10.60] 8.88[7.33-10.76] 8.71[7.18-10.01]
-AverageHR 7.01[5.48-8.89] 4.65[3.99-5.39] 4.78[3.88-5.93] 3.58[2.90-4.21] 3.47[2.74-4.32] 4.00[3.34-4.67]
-HR 13.07[12.90-13.23] 11.59[11.46-11.72] 12.80[12.66-12.94] 9.99[9.86-10.12] 10.92[10.80-11.04] 11.53[11.40-11.66]
-AverageMAE(sMAPE) 11.60±3.41(15.12%) 10.79±3.63(13.91%) 10.89±3.58(14.05%) 10.65±3.88(14.07%) 10.92±4.25(14.09%) 10.12±3.47(13.34%)
-Table4presentsacomparisonagainstthreeSSLmethodsandabaselinemodeltrainedonstatistical
-features.Inclassificationtasks,PaPaGei-SagainshowsthehighestaverageAUROC,outperforming
-allothers. SimCLR,BYOL,andTF-Cgenerallyoutperformthestatisticalfeaturebaselinebutfall
-short of PaPaGei-S’s performance. TF-C shows competitive results in some tasks, achieving the
-highestAUROCforMoodDisturbanceandValence.Forregressiontasks,PaPaGei-Sagainachieves
-thelowestaverageMAE.SimCLR,BYOL,andTF-Cshowmixedresults,aseachexcelsindifferent
-tasks.SimCLRcomessecondinestimatingAvgHR,whileBYOLdoessoinSystolicBP(VV).The
-statisticalfeaturebaselinegenerallyunderperformscomparedtotheadvancedmethodsacrossmost
-tasks. PaPaGei-P, while not consistently outperforming PaPaGei-S, shows strong results that are
-often competitive with or better than other contrastive learning methods. Overall, both PaPaGei
-variantsofferrobustperformanceacrossawiderangeoftasks.
-5.2 ABLATIONSTUDIES
-Pre-training data ablation. We evaluate PAPAGEI-S using different pre-training data
-0.8
-0.6
-V M M-III
-V
-+
-M
-+
-M-III
-+
-M-IIIAll
-V M
-CORUA 0*.6*2 0*.6*2 0*.6*1 0*.6*4 0.64 0*.6*4 0.67 15
-10
-5
-V M M-III
-V
-+
-M
-+
-M-III
-+
-M-IIIAll
-V M
-EAM
-combinations. As shown in Fig-
-ure 5, performance on downstream
-tasks improves with more upstream 12*.*29 11 * . * 60 12*.*01 11*.*61 11*.*69 11*.*36 10.13
-data, with the best results achieved
-when using all three datasets. No-
-tably, MESA outperforms the oth-
-ers despite having the fewest par-
-ticipants but the highest number of
-segments. This supports findings Figure 5: Ablation on pre-training data. Average perfor-
-from language models (Dubey et al., manceacrosstasksformodelstrainedon: V(VitalDB),M
-2024)andwearablesensingresearch (MESA), and M-III (MIMIC-III). The mean value is dis-
-(Narayanswamy et al., 2024), indi- played above the plots. The Wilcoxon signed rank test is
-cating that the volume of segments appliedtoevaluatesignificancebetweentheAlldatasetand
-or hours contributes more to perfor- therest(∗∗:p<0.05and∗:0.05≤p<0.10).
-mancethanthenumberofusers.
-PAPAGEI-S component ablation. We assess the impact of PAPAGEI-S components. Figure 6
-shows that the full model (0.67, 10.12) consistently outperforms individual components in both
-meanandmedianmetrics. Onaverage,sVRI(0.64,10.35)outperformsthecombinationsofsVRI+
-SQI(0.62,10.80)andsVRI+IPA(0.64,10.73). OurresultsindicatethatcombiningSQIandIPA
-yieldsgreaterbenefitscomparedtotheirindividualcontributions.
-Downstream data-efficiency analysis. For limited-data scenarios, we assess the performance of
-downstreamlinearprobingacrossvaryinglevelsoflabeleddataavailability. Wecomparetothesec-
-ondbest-performingbaselinesfromTables3&4,namelyTF-CandMoment. AsshowninFigure
-4, the classification performance of PAPAGEI-S steadily improves as more labeled data becomes
-8
+Photoplethysmography (PPG) is the leading non-invasive technique for monitoring biosignals and cardiovascular health, with widespread adoption in both clinical settings and consumer wearable devices. While machine learning models trained on PPG signals have shown promise, they tend to be task-specific and struggle with generalization. Current research is limited by the use of singledevice datasets, insufficient exploration of out-of-domain generalization, and a lack of publicly available models, which hampers reproducibility. To address these limitations, we present PAPAGEI, the first open foundation model for PPG signals. The model is pre-trained on over 57,000 hours of data, comprising 20 million unlabeled PPG segments from publicly available datasets. We introduce a novel representation learning approach that leverages domain knowledge of PPG signal morphology across individuals, enabling the capture of richer representations compared to traditional contrastive learning methods. We evaluate PAPAGEI against state-of-the-art time-series foundation models and self-supervised learning benchmarks across 20 tasks from 10 diverse datasets, spanning cardiovascular health, sleep disorders, pregnancy monitoring, and wellbeing assessment. Our model demonstrates superior performance, improving classification and regression metrics by 6.3% and 2.9% respectively in at least 14 tasks. Notably, PAPAGEI achieves these results while being more data- and parameter-efficient, outperforming models that are 70 _×_ larger. Beyond accuracy, we examine model robustness across different skin tones, establishing a benchmark for bias evaluation in future models. PAPAGEI can serve as both a feature extractor and an encoder for multimodal models, opening up new opportunities for multimodal health monitoring<sup>1</sup> . 
 
-PublishedasaconferencepaperatICLR2025
-available. WhileTF-CandMomentalsoshowperformancegainsbetween25%and100%labeled
-data,theirimprovementsarelessconsistentandsmallerthan PAPAGEI-S.Inregressiontasks, PA-
-PAGEI-S achieves the lowest MAE at both 25% and 100% data availability, consistently reducing
-errors. Atthemiddlebreakpoints,theresultsaremixedwithTF-CandMomentbeingcompetitive.
-**
-|     |     | *   |     |     | **  |              |     |     |     | Rank 1 |
-| --- | --- | --- | --- | --- | --- | ------------ | --- | --- | --- | ------ |
-|     |     | **  | 20  |     | **  | PaPaGei-S-5M |     |     |     | Rank 2 |
-|     |     | **  |     |     |     | **           |     |     |     |        |
-0.64 0.62 0.64 0.67 10.35 10.80 10.73 10.12 PaPaGei-S-35M Rank 3
-15
-| CORUA 0.7 |     |     | EAM |     |     | PaPaGei-S-139M |     |     |     |     |
-| --------- | --- | --- | --- | --- | --- | -------------- | --- | --- | --- | --- |
-10
-0.6 UCI ytilatroM rekomS ycnangerP noisnetrepyH BDS dooM ecnelaV lasuorA %3 > IHA %4 > IHA noitatseG *PB .syS *PB .aiD PB .syS PB .aiD RH .gvA RH
-| 0.5  |                      |     |      | 5                         |     |      |     |     |     |     |
-| ---- | -------------------- | --- | ---- | ------------------------- | --- | ---- | --- | --- | --- | --- |
-| 0.4  |                      |     |      | 0                         |     |      |     |     |     |     |
-| sVRI | sVRI + SQIsVRI + IPA |     | Full | sVRI sVRI + SQIsVRI + IPA |     | Full |     |     |     |     |
-|      | PaPaGei Components   |     |      | PaPaGei Components        |     |      |     |     |     |     |
-|      | (a)                  |     |      |                           | (b) |      |     | (c) |     |     |
-Figure6: PAPAGEI-Scomponentablationstudy(a,b)andscalinganalysis(c). (Left)Theboxplot
-showstheperformanceofPAPAGEI-Scomponentsacrossalltasks. TheWilcoxonsignedranktest
-is applied to evaluate pair-wise significance (∗∗ : p < 0.05 and ∗ : 0.05 ≤ p < 0.10). (Right)
-Heatmap ranks of PAPAGEI-S models with 5M, 35M, and 139M parameters (rank 1 denotes the
-| bestperformance). |     | DetailedresultsinTable13. |     |     |     |     |     |     |     |     |
-| ----------------- | --- | ------------------------- | --- | --- | --- | --- | --- | --- | --- | --- |
-Model size and scaling analysis. We investigated the impact of model size on performance by
-training PAPAGEI-S-35M and PAPAGEI-S-139M with 35M and 139M parameters, respectively.
-| Both models |          | share the | same        | number     | of       | layers, but |     |     |        |     |
-| ----------- | -------- | --------- | ----------- | ---------- | -------- | ----------- | --- | --- | ------ | --- |
-| the 35M     | model    | uses      | a 32-filter | size       | while    | the 139M    |     |     |        |     |
-| model       | uses 64. | As shown  |             | in 6c, the | smallest | model       | 0.8 |     | SimCLR |     |
-(5M parameters) consistently outperformed larger ytisneD 0.6 BYOL
-TF-C
-0.4
-| models | on all | but one | task. | This | suggests | the 5M |     |     | PaPaGei-S |     |
-| ------ | ------ | ------- | ----- | ---- | -------- | ------ | --- | --- | --------- | --- |
-0.2
-| model | is better | suited | for | our pre-training |     | datasets, |     |     |     |     |
-| ----- | --------- | ------ | --- | ---------------- | --- | --------- | --- | --- | --- | --- |
-0.0
-aligning with prior findings on the proportionality 0 2 4 6 8 10 12
-Pair-wise distances across participants in SDB
-| between | data | and model | size | (Narayanswamy |     | et al., |     |     |     |     |
-| ------- | ---- | --------- | ---- | ------------- | --- | ------- | --- | --- | --- | --- |
-2024). Whilethe139Mmodelsurpassedthe35M,it Figure7:Pair-wiseinter-participantembed-
-| stilllaggedbehindthe5M,indicatingthatwidermod- |         |             |     |                   |     | dingdistancesforSDB. |     |     |     |     |
-| ---------------------------------------------- | ------- | ----------- | --- | ----------------- | --- | -------------------- | --- | --- | --- | --- |
-| els may                                        | improve | performance |     | in classification |     | tasks,               |     |     |     |     |
-likely due to the contrastive learning objective. Nevertheless, our scaling analysis shows a non-
-monotonictrend,indicatingotherfactorsstronglyinfluenceperformance.
-EffectofDemographics. Weevaluatetheeffectofdemographics(age,sex)andPPG-specificfea-
-tures(sVRI,IPA,SQI)inAppendix§E.Indemographicsprediction(Table16),PAPAGEI-Sachieves
-7.78MAEinageregression, 0.85accuracyinageclassification, and0.79accuracyinsexclassifi-
-cation. While our results trail larger closed studies (Abbaspourazad et al., 2023) by 2.18, 0.05,
-and0.13forsegment-levelSSL,andby5.59,0.12,and0.25forpatient-levelSSL,theymarkanad-
-vancementinopen-sourceefforts.Thesefindingsindicatethatpatient-levelpositivepairselectionin
-SSLbettercapturesdemographic-relatedfeaturesfordownstreamprediction.Moreover,thereduced
-performanceofPAPAGEI-Scanbeattributedtoevaluationsconductedondiversedevicesetups,as
-opposedtoasingledeviceconfiguration. Ourablationstudy(Table15)showsthatPAPAGEI-Sout-
-performsthedemo+PPGin14outof18tasks,particularlyintaskswithreal-timedependencesuch
-as heart rate estimation. Importantly, including demographics in addition to PAPAGEI-S creates a
-stronger model. These findings emphasize that demographic features complement rather than
-compete with PAPAGEI-S, showcasing the potential of integrating PAPAGEI’s advanced feature
-extractioncapabilitieswithdemographiccontexttoimprovetaskoutcomes.
-5.3 CASESTUDIES
-Inter-participantembeddings. Figure7showsthedistributionofpair-wiseembeddingdistances
-acrossparticipantsintheSDBdataset(Kiyassehetal.,2021). SimCLRandBYOLexhibitsharper
-peaksatlowerdistances, indicatingthatparticipantsaremorecloselyclusteredwithintheembed-
-ding space. This could be interpreted as a mild form of mode collapse, where the model does not
-fully capture the individual differences between participants. TF-C demonstrates a more balanced
-distribution,withbothlargeandsmallpeaks,suggestingitcapturesbothsimilaritiesandsomevari-
-ationbetweenparticipants. Incontrast, PAPAGEI-Sprovidesthewidestdispersionofembeddings,
-9
+## 1 INTRODUCTION 
 
-PublishedasaconferencepaperatICLR2025
-|     | %3 > IHA detciderP | Chronos |     | SimCLR |     |            | PaPaGei-S |     |     |     |
-| --- | ------------------ | ------- | --- | ------ | --- | ---------- | --------- | --- | --- | --- |
-|     | 100 m=0.18         |         | 100 | m=0.19 |     | 100 m=0.28 |           |     |     |     |
-R2=0.18
-|     | 75  |     | 75  | R2=0.16 |     | 75 R2=0.29 |     |      |     | True AHI > 3% |
-| --- | --- | --- | --- | ------- | --- | ---------- | --- | ---- | --- | ------------- |
-|     |     |     |     |         |     |            |     | 0.04 |     | Chronos       |
-ytisneD
-|     | 50  |     | 50  |     |     | 50  |     |      |     | SimCLR    |
-| --- | --- | --- | --- | --- | --- | --- | --- | ---- | --- | --------- |
-|     |     |     |     |     |     |     |     | 0.02 |     | PaPaGei-S |
-|     | 25  |     | 25  |     |     | 25  |     |      |     |           |
-0
-|     |               |     | 0   |               |        | 0             |        | 0.00 |             |         |
-| --- | ------------- | --- | --- | ------------- | ------ | ------------- | ------ | ---- | ----------- | ------- |
-|     | 0             | 50  | 100 | 0             | 50 100 | 0             | 50 100 | 20 0 | 20 40 60 80 | 100 120 |
-|     | True AHI > 3% |     |     | True AHI > 3% |        | True AHI > 3% |        |      | AHI > 3%    |         |
-Figure8: Regressionplotsandpredictiondistributionofdifferentmodelscomparedtogroundtruth
-| forAHI>3%. |     | R2isthecoefficientofdeterminationandmisthecorrelationslope. |     |     |     |     |     |     |     |     |
-| ---------- | --- | ----------------------------------------------------------- | --- | --- | --- | --- | --- | --- | --- | --- |
-highlightingitsabilitytocaptureabroaderrangeoffeaturesthatmaybevaluablefordistinguishing
-betweenparticipants’medicalconditions.
-Regressionpredictions. FromFigure8,comparedtothepre-trainedandSSLbaseline,PAPAGEI-
-S demonstrates steeper slopes (m) and higher R2 values, reflecting a stronger alignment between
-predictionsandtruevalues. Additionally,thepredictiondistributionforAHIindicatesthatSimCLR
-andChronostendtoregressmoretowardthemean,whilePAPAGEI-Sachievesawiderdistribution
-base,highlightingitscapacitytocapturelefttailbetter. AdditionalplotsareshowninAppendix§F.
-Skintoneanalysis. WeexamineBPestimationperformanceacrossskintonesbecauseitiscrucial
-forpracticaluse(Bentetal.,2020). AsshowninFigure9(MoredetailsinFigure26),PAPAGEI-S
-achieves the best BP estimation across light tones. Across dark tones, we notice that BYOL and
-REGLE obtain the lowest MAE for Systolic BP and Diastolic BP. However, identifying a single
-modelthatperformsbestacrossallskintonesremainschallenging. While PAPAGEI-Sobtainsthe
-bestoverallperformance,additionalworkisnecessarytoimproverobustnessondarkerskintones.
-| 6   | DISCUSSION |           | &            | CONCLUSION     |             |     |            |       |             |           |
-| --- | ---------- | --------- | ------------ | -------------- | ----------- | --- | ---------- | ----- | ----------- | --------- |
-| Our | results    | show      | that PAPAGEI |                | outperforms |     | baselines  |       |             |           |
-| in  | at least   | 14 tasks, | with         | classification |             | and | regression |       |             |           |
-|     |            |           |              |                |             |     |            | REGLE | Moment BYOL | PaPaGei-P |
-improvements of 4.7%-6.3% and 2.9%-4.9%, respec- Chronos SimCLR TF-C PaPaGei-S
-tively. PAPAGEI-Sexcelledincardiovasculartaskslike Systolic BP (VV)
-| BP, | Hypertension, |     | and | HR, which | can | be attributed | to  |     |     |     |
-| --- | ------------- | --- | --- | --------- | --- | ------------- | --- | --- | --- | --- |
-20
-| the | sVRI | and IPA | objectives, |     | and PAPAGEI-P |     | outper- |     |     |     |
-| --- | ---- | ------- | ----------- | --- | ------------- | --- | ------- | --- | --- | --- |
-EAM
-| formedbaselineslikeMoment,excellingintaskssuchas |       |              |           |          |            |           |       | 10  |     |     |
-| ------------------------------------------------ | ----- | ------------ | --------- | -------- | ---------- | --------- | ----- | --- | --- | --- |
-| Smoking                                          |       | and Arousal. |           | Ablation | studies    | confirmed | that  |     |     |     |
-| the                                              | model | with         | all three | SSL      | objectives | performs  | best, | 0   |     |     |
-withsVRIhighlightedasakeycomponentandIPAand Diastolic BP (VV)
-| SQIprovidingpositiveknowledgetransferinmulti-task |     |     |     |     |     |     |     | 12  |     |     |
-| ------------------------------------------------- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-EAM 9
-| setups. | To  | assess | performance |     | under | class imbalance, |     |     |     |     |
-| ------- | --- | ------ | ----------- | --- | ----- | ---------------- | --- | --- | --- | --- |
-6
-| we  | examined | the | F1-score. | PaPaGei | achieves |     | the high- |     |     |     |
-| --- | -------- | --- | --------- | ------- | -------- | --- | --------- | --- | --- | --- |
-3
-| est | F1 in | 6 out of | 9 classification |     | tasks, | demonstrating |     |     |     |     |
-| --- | ----- | -------- | ---------------- | --- | ------ | ------------- | --- | --- | --- | --- |
-0
-itseffectivenessinhandlingdataimbalance. Forregres- Light Tones (<=3) Dark Tones (>3)
-sion,PaPaGei-SachievesthehighestR2 in7tasks(Ap- Fitzpatrick Skin Tone
-pendix§D),reflectingbetteralignmentwiththetruedis- Figure 9: Skin tone analysis for Blood
-tribution. Theseresultshighlighttherobustnessandver- Pressureestimation(VVdataset)
-| satilityofPaPaGei-Sacrossclassificationandregression |         |     |         |       |                    |     |       |     | .   |     |
-| ---------------------------------------------------- | ------- | --- | ------- | ----- | ------------------ | --- | ----- | --- | --- | --- |
-| tasks.                                               | PAPAGEI |     | is both | data- | and size-efficient |     | (5M), |     |     |     |
-making it ideal for medical applications where large models (200M+) are impractical due to on-
-devicelimitationsordataprivacyconcernswithcloudmodelinference.WhilecombiningPAPAGEI-
-PandPAPAGEI-Sobjectivesintoonemodelmightseemintuitive,itisimpracticalbecauseitwould
-constrainpositivepairsonbothsVRIandthenumberofparticipants,resultingintoomanyunique
-labelswithlimitedsamplesperlabel. Ourcasestudiesalsoshowedthat PAPAGEI-Scapturedper-
-sonalmedicalinformationduetowell-dispersedembeddings,comparedtobaselines. Futurework
-shouldfocusondiversifyingtrainingdata,investigatingsamplingrateeffects,andexploringmulti-
-modalapproachesoralternativearchitectures. Additionally,asextractingPPGfeaturesfordifferent
-morphologies is non-trivial, future work benefit from systematic evaluation of PPG features and
-modeling. Inconclusion, PAPAGEI representsasignificantadvancementinfoundationmodelsfor
-analyzing PPG signals in resource-constrained medical environments, with its open-source nature
-encouragingfurtherresearchanddevelopmentinhealthcareapplications.
-10
+Photoplethysmography (PPG), a non-invasive optical sensing technique, is widely used to monitor cardiovascular health and physiological signals in both clinical and consumer health applications (Charlton et al., 2023). From hospital pulse oximeters to smartwatches, PPG enables continuous health monitoring in various settings, bridging acute medical care and long-term health management. PPG signals help in tracking a diverse range of health indicators, including cardiovascular health, blood pressure, mood, and sleep disorders (Sadad et al., 2022; Ave et al., 2015; Reiss et al., 2019; Liang et al., 2018a; Haddad et al., 2021; Schrumpf et al., 2021). Despite its widespread adoption, PPG poses substantial challenges for machine learning applications. A primary obstacle is the high cost of data annotation, which requires specialized domain expertise. This challenge is particularly pronounced in consumer health applications, where varying sensing conditions and diverse user populations create additional complexity. PPG signals are susceptible to noise and motion artifacts (Afandizadeh Zargari et al., 2023), as well as inherent variability due to factors like skin tone and body composition (Bent et al., 2020). These complicate the development of generalizable ML models for PPG. Consequently, existing PPG datasets are often small, task-specific, and limited in their generalizability, posing a major obstacle to the development of robust and widely applicable models that could fully leverage the potential of PPG technology. 
 
-PublishedasaconferencepaperatICLR2025
-REPRODUCIBILITY STATEMENT
-Models,data,andcodearepubliclyavailableforreproducibilityandfutureresearch.Weexclusively
-utilizepubliclyaccessibledatasets,whichcanberequestedordownloadedfromtherespectivestudy
-group websites, allowing others to easily obtain the data for their own analyses. In §4 and Ap-
-pendix §B, we provide comprehensive descriptions of the datasets, ground-truth annotations, and
-data pre-processing methods used in our experiments, ensuring transparency in our data handling
-procedures. Thecodetorunourmodelispublishedwithuser-friendlyexamples. Wehaveprovided
-adetailedoverviewofthemodelarchitectureanditshyperparametersin§3,§4.1,andAppendix§A.
-Thus,ourworkisdesignedtobereproducible,enablingfutureresearchtobuilduponourfindings.
-ETHICS STATEMENT
-Ourresearchon PAPAGEI,utilizingpubliclyavailablePPGdatasets,adherestodataprivacyregu-
-lationsandpromotestransparencythroughopen-sourcereleases. Weacknowledgepotentialbiases
-in the training data and have evaluated performance across diverse datasets, particularly regarding
-skin tone variations. While PaPaGei offers significant potential for improving non-invasive health
-monitoring,werecognizetheneedtoaddresspotentialmisuse(Perez-Pozueloetal.,2021). Exam-
-plesofmisusecouldincludeunauthorizedhealthmonitoring,discriminatorypracticesininsurance
-oremployment,unfaircreditscoring,orexploitingpersonalhealthdatafortargetedmarketing. We
-stronglyadvocateresponsibleusesolelyforbeneficialhealthcareapplications. Ourstudyfollowed
-established research ethics guidelines, and we declare no conflicts of interest. We encourage on-
-goinginterdisciplinarydialoguetoaddresspotentialrisksandensureresponsibledevelopmentand
-deploymentofsuchtechnologies,recognizingthebroadersocietalimpactsofAIinhealthcare. We
-remaincommittedtoethicalAIadvancementandwelcomefurtherdiscussiononthecriticalissues,
-includingthedevelopmentofgovernanceframeworkstopreventmisuseandprotectdataprivacy.
-REFERENCES
-SalarAbbaspourazad,OussamaElachqar,AndrewCMiller,SabaEmrani,UdhyakumarNallasamy,
-and Ian Shapiro. Large-scale training of foundation models for wearable biosignals. arXiv
-preprintarXiv:2312.05409,2023.
-Amir Hosein Afandizadeh Zargari, Seyed Amir Hossein Aqajari, Hadi Khodabandeh, Amir Rah-
-mani,andFadiKurdahi. Anaccuratenon-accelerometer-basedppgmotionartifactremovaltech-
-niqueusingcyclegan. ACMTransactionsonComputingforHealthcare,4(1):1–14,2023.
-AbdulFatirAnsari,LorenzoStella,CanerTurkmen,XiyuanZhang,PedroMercado,HuibinShen,
-OleksandrShchur,SyamaSundarRangapuram,SebastianPinedaArango,ShubhamKapoor,etal.
-Chronos: Learningthelanguageoftimeseries. arXivpreprintarXiv:2403.07815,2024.
-ArrozaqAve, HamdanFauzan, SRhandyAdhitya, andHasballahZakaria. Earlydetectionofcar-
-diovasculardiseasewithphotoplethysmogram(ppg)sensor. In2015internationalconferenceon
-electricalengineeringandinformatics(ICEEI),pp.676–681.IEEE,2015.
-AnastasiyaBelyaeva,JustinCosentino,FarhadHormozdiari,KrishEswaran,ShravyaShetty,Greg
-Corrado,AndrewCarroll,CoryYMcLean,andNicholasAFurlotte. Multimodalllmsforhealth
-groundedinindividual-specificdata. InWorkshoponMachineLearningforMultimodalHealth-
-careData,pp.86–102.Springer,2023.
-BrinnaeBent,BenjaminAGoldstein,WarrenAKibbe,andJessilynPDunn. Investigatingsources
-ofinaccuracyinwearableopticalheartratesensors. NPJdigitalmedicine,3(1):18,2020.
-BioBSS Documentation. Biobss: Biosignal processing toolbox. https://biobss.
-readthedocs.io/en/latest/,2023. Accessed: 2024-09-10.
-Alexandra Bouariu, Anca Maria Panaitescu, and Kypros H Nicolaides. First trimester prediction
-of adverse pregnancy outcomes—identifying pregnancies at risk from as early as 11–13 weeks.
-Medicina,58(3):332,2022.
-11
+> _∗_ Work has been done during the author’s internship at Nokia Bell Labs. 
 
-PublishedasaconferencepaperatICLR2025
-Margaret M Bradley and Peter J Lang. Measuring emotion: the self-assessment manikin and the
-semantic differential. Journal of behavior therapy and experimental psychiatry, 25(1):49–59,
-1994.
-PeterHCharlton,JohnAllen,RaquelBailo´n,StephanieBaker,JoachimABehar,FeiChen,GariD
-Clifford,DavidAClifton,HarryJDavies,ChengDing,etal. The2023wearablephotoplethys-
-mographyroadmap. Physiologicalmeasurement,44(11):111001,2023.
-Hugh Chen, Scott M Lundberg, Gabriel Erion, Jerry H Kim, and Su-In Lee. Forecasting adverse
-surgical events using self-supervised transfer learning for physiological signals. NPJ Digital
-Medicine,4(1):167,2021.
-TingChen,SimonKornblith,MohammadNorouzi,andGeoffreyHinton. Asimpleframeworkfor
-contrastivelearningofvisualrepresentations. Internationalconferenceonmachinelearning,pp.
-1597–1607,2020.
-Xiaoli Chen, Rui Wang, Phyllis Zee, Pamela L Lutsey, Sogol Javaheri, Carmela Alca´ntara, Chan-
-draLJackson, MichelleAWilliams, andSusanRedline. Racial/ethnicdifferencesinsleepdis-
-turbances: themulti-ethnicstudyofatherosclerosis(mesa). Sleep,38(6):877–888,2015.
-Joseph Y Cheng, Hanlin Goh, Kaan Dogrusoz, Oncel Tuzel, and Erdrin Azemi. Subject-aware
-contrastivelearningforbiosignals. arXivpreprintarXiv:2007.04871,2020.
-Wei-ShengChung,Pei-TsengKung,Hui-YunChang,andWen-ChenTsai. Demographicsandmed-
-icaldisordersassociatedwithsmoking: apopulation-basedstudy. BMCPublicHealth, 20:1–8,
-2020.
-Casey Crump, Jan Sundquist, Mary Ann McLaughlin, Siobhan M Dolan, Usha Govindarajulu,
-WeivaSieh,andKristinaSundquist. Adversepregnancyoutcomesandlongtermriskofischemic
-heartdiseaseinmothers: nationalcohortandco-siblingstudy. bmj,380,2023.
-JanezDemsˇar. Statisticalcomparisonsofclassifiersovermultipledatasets. TheJournalofMachine
-learningresearch,7:1–30,2006.
-Cheng Ding, Zhicheng Guo, Zhaoliang Chen, Randall J Lee, Cynthia Rudin, and Xiao Hu.
-Siamquality:aconvnet-basedfoundationmodelforphotoplethysmographysignals.Physiological
-Measurement,45(8):085004,2024.
-AbhimanyuDubey,AbhinavJauhri,AbhinavPandey,AbhishekKadian,AhmadAl-Dahle,Aiesha
-Letman,AkhilMathur,AlanSchelten,AmyYang,AngelaFan,etal. Thellama3herdofmodels.
-arXivpreprintarXiv:2407.21783,2024.
-MohamedElgendi. Optimalsignalqualityindexforphotoplethysmogramsignals. Bioengineering,
-3(4):21,2016.
-FrancescaLFacco,CoretteBParker,UmaMReddy,RobertMSilver,JudetteMLouis,RobertC
-Basner, Judith H Chung, Frank P Schubert, Grace W Pien, Susan Redline, et al. Numom2b
-sleep-disordered breathing study: objectives and methods. American journal of obstetrics and
-gynecology,212(4):542–e1,2015.
-Mohammad Feli, Iman Azimi, Fatemeh Sarhaddi, Zahra Sharifi-Heris, Hannakaisa Niela-Vilen,
-Pasi Liljeberg, Anna Axelin, and Amir M Rahmani. Preterm birth risk stratification through
-longitudinalheartrateandhrvmonitoringindailylife. 2024.
-Zhilin Gao, Xingran Cui, Wang Wan, Wenming Zheng, and Zhongze Gu. Ecsmp: A dataset on
-emotion, cognition, sleep, and multi-model physiological signals. Data in Brief, 39:107660,
-2021.
-Ainara Garde, Parastoo Dehkordi, Walter Karlen, David Wensley, J Mark Ansermino, and Guy A
-Dumont. Development of a screening tool for sleep disordered breathing in children using the
-phoneoximeter™. PloSone,9(11):e112959,2014.
-12
+> 1Models, data, and code are available at: github.com/nokia-bell-labs/papagei-foundation-model 
 
-PublishedasaconferencepaperatICLR2025
-Mononito Goswami, Konrad Szafer, Arjun Choudhry, Yifu Cai, Shuo Li, and Artur Dubrawski.
-Moment: A family of open time-series foundation models. arXiv preprint arXiv:2402.03885,
-2024.
-Jean-Bastien Grill, Florian Strub, Florent Altche´, Corentin Tallec, Pierre H Richemond, Elena
-Buchatskaya,CarlDoersch,BernardoAvilaPires,ZhaohanDanielGuo,MohammadGheshlaghi
-Azar, etal. Bootstrapyourownlatent-anewapproachtoself-supervisedlearning. Advancesin
-neuralinformationprocessingsystems,33:21271–21284,2020.
-NateGruver,MarcFinzi,ShikaiQiu,andAndrewGWilson. Largelanguagemodelsarezero-shot
-timeseriesforecasters. AdvancesinNeuralInformationProcessingSystems,36,2024.
-Serj Haddad, Assim Boukhayma, and Antonino Caizzone. Continuous ppg-based blood pressure
-monitoringusingmulti-linearregression. IEEEjournalofbiomedicalandhealthinformatics,26
-(5):2096–2105,2021.
-Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick. Momentum contrast for
-unsupervised visual representation learning. In Proceedings of the IEEE/CVF conference on
-computervisionandpatternrecognition,pp.9729–9738,2020.
-Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Dolla´r, and Ross Girshick. Masked
-autoencodersarescalablevisionlearners. ProceedingsoftheIEEE/CVFconferenceoncomputer
-visionandpatternrecognition,pp.16000–16009,2022.
-Alistair EW Johnson, Tom J Pollard, Lu Shen, Li-wei H Lehman, Mengling Feng, Mohammad
-Ghassemi,BenjaminMoody,PeterSzolovits,LeoAnthonyCeli,andRogerGMark. Mimic-iii,
-afreelyaccessiblecriticalcaredatabase. Scientificdata,3(1):1–9,2016.
-Dani Kiyasseh, Girmaw Abebe Tadesse, Louise Thwaites, Tingting Zhu, David Clifton, et al.
-Plethaugment:Gan-basedppgaugmentationformedicaldiagnosisinlow-resourcesettings.IEEE
-journalofbiomedicalandhealthinformatics,24(11):3226–3235,2020.
-DaniKiyasseh,TingtingZhu,andDavidAClifton. Clocs: Contrastivelearningofcardiacsignals
-across space, time, and patients. In International Conference on Machine Learning, pp. 5606–
-5615.PMLR,2021.
-BojanaKoteska,AnaMadevskaBodanova,HristinaMitrova,MarijaSidorenko,andFedorLehocki.
-Adeeplearningapproachtoestimatespo2fromppgsignals. InProceedingsofthe9thInterna-
-tionalConferenceonBioinformaticsResearchandApplications,pp.142–148,2022.
-JieweiLai,HuixinTan,JinliangWang,LeiJi,JunGuo,BaoshiHan,YajunShi,QianjinFeng,and
-WeiYang. Practicalintelligentdiagnosticalgorithmforwearable12-leadecgviaself-supervised
-learningonlarge-scaledataset. NatureCommunications,14(1):3741,2023.
-DenisGLapitan,DmitryARogatkin,ElizavetaAMolchanova,andAndreyPTarasov. Estimation
-ofphasedistortionsofthephotoplethysmographicsignalindigitaliirfiltering. ScientificReports,
-14(1):6546,2024.
-Hyung-ChulLee,YoonsangPark,SooBinYoon,SeongMiYang,DongnyeokPark,andChul-Woo
-Jung. Vitaldb,ahigh-fidelitymulti-parametervitalsignsdatabaseinsurgicalpatients. Scientific
-Data,9(1):279,2022.
-Yongbo Liang, Zhencheng Chen, Guiyong Liu, and Mohamed Elgendi. A new, short-recorded
-photoplethysmogram dataset for blood pressure monitoring in china. Scientific data, 5(1):1–7,
-2018a.
-Yongbo Liang, Zhencheng Chen, Rabab Ward, and Mohamed Elgendi. Hypertension assessment
-using photoplethysmography: a risk stratification approach. Journal of clinical medicine, 8(1):
-12,2018b.
-YongboLiang, MohamedElgendi, ZhenchengChen, andRababWard. Anoptimalfilterforshort
-photoplethysmogramsignals. Scientificdata,5(1):1–12,2018c.
-13
+1 
 
-PublishedasaconferencepaperatICLR2025
-YongqiangLyu,XiaominLuo,JunZhou,ChunYu,CongcongMiao,TongWang,YuanchunShi,and
-Ken-ichi Kameyama. Measuring photoplethysmogram-based stress-induced vascular response
-indextoassesscognitiveloadandstress. InProceedingsofthe33rdannualACMconferenceon
-humanfactorsincomputingsystems,pp.857–866,2015.
-KadenMcKeen,LauraOliva,SameerMasood,AugustinToma,BarryRubin,andBoWang.Ecg-fm:
-Anopenelectrocardiogramfoundationmodel. arXivpreprintarXiv:2408.05178,2024.
-Benjamin Moody, George Moody, Mauricio Villarroel, Gari D. Clifford, and Ikaro Silva. Mimic-
-iii waveform database matched subset (version 1.0), 2020. URL https://doi.org/10.
-13026/c2294b.
-SeungwhanMoon,AndreaMadotto,ZhaojiangLin,TusharNagarajan,MattSmith,ShashankJain,
-Chun-Fu Yeh, Prakash Murugesan, Peyman Heidari, Yue Liu, et al. Anymal: An efficient and
-scalableany-modalityaugmentedlanguagemodel. arXivpreprintarXiv:2309.16058,2023.
-GirishNarayanswamy,XinLiu,KumarAyush,YuzheYang,XuhaiXu,ShunLiao,JakeGarrison,
-ShyamTailor,JakeSunshine,YunLiu,etal. Scalingwearablefoundationmodels. arXivpreprint
-arXiv:2410.13638,2024.
-AaronvandenOord,YazheLi,andOriolVinyals. Representationlearningwithcontrastivepredic-
-tivecoding. arXivpreprintarXiv:1807.03748,2018.
-ChristinaOrphanidou. Qualityassessmentforthephotoplethysmogram(ppg). SignalQualityAs-
-sessmentinPhysiologicalMonitoring: StateoftheArtandPracticalConsiderations,pp.41–63,
-2018.
-Nisha I Parikh, Juan M Gonzalez, Cheryl AM Anderson, Suzanne E Judd, Kathryn M Rexrode,
-MarkAHlatky,EricaPGunderson,JenniferJStuart,DhananjayVaidya,AmericanHeartAsso-
-ciationCouncilonEpidemiology,ThrombosisPrevention;CouncilonArteriosclerosis,Vascular
-Biology; Council on Cardiovascular, Stroke Nursing;, and the Stroke Council. Adverse preg-
-nancyoutcomesandcardiovasculardiseaserisk: uniqueopportunitiesforcardiovasculardisease
-preventioninwomen:ascientificstatementfromtheamericanheartassociation.Circulation,143
-(18):e902–e916,2021.
-AdamPaszke,SamGross,FranciscoMassa,AdamLerer,JamesBradbury,GregoryChanan,Trevor
-Killeen,ZemingLin,NataliaGimelshein,LucaAntiga,etal. Pytorch: Animperativestyle,high-
-performancedeeplearninglibrary. Advancesinneuralinformationprocessingsystems,32,2019.
-Ignacio Perez-Pozuelo, Dimitris Spathis, Jordan Gifford-Moore, Jessica Morley, and Josh Cowls.
-Digitalphenotypingandsensitivehealthdata: Implicationsfordatagovernance. Journalofthe
-AmericanMedicalInformaticsAssociation,28(9):2002–2008,2021.
-Attila Reiss, Ina Indlekofer, Philip Schmidt, and Kristof Van Laerhoven. Deep ppg: Large-scale
-heartrateestimationwithconvolutionalneuralnetworks. Sensors,19(14):3079,2019.
-Ken Rice. Linear Models and Generalized Linear Models, 2008. URL https://faculty.
-washington.edu/kenrice/sisg/SISG-08-06.pdf. SISG-08.
-WarrenRRuehland,PeterDRochford,FergalJO’Donoghue,RobertJPierce,ParmjitSingh,and
-AndrewTThornton.Thenewaasmcriteriaforscoringhypopneas:impactontheapneahypopnea
-index. sleep,32(2):150–157,2009.
-TariqSadad,SyedAhmadChanBukhari,AsimMunir,AnwarGhani,AhmedMEl-Sherbeeny,and
-Hafiz Tayyab Rauf. Detection of cardiovascular disease based on ppg signals using machine
-learningwithcloudcomputing. ComputationalIntelligenceandNeuroscience,2022(1):1672677,
-2022.
-PritamSarkarandAliEtemad. Self-supervisedecgrepresentationlearningforemotionrecognition.
-IEEETransactionsonAffectiveComputing,13(3):1541–1554,2020.
-PhilipSchmidt, AttilaReiss, RobertDuerichen, ClausMarberger, andKristofVanLaerhoven. In-
-troducingwesad,amultimodaldatasetforwearablestressandaffectdetection. InProceedingsof
-the20thACMinternationalconferenceonmultimodalinteraction,pp.400–408,2018.
-14
+Published as a conference paper at ICLR 2025 
 
-PublishedasaconferencepaperatICLR2025
-FabianSchrumpf,PatrickFrenzel,ChristophAust,GeorgOsterhoff,andMircoFuchs. Assessment
-of deep learning based blood pressure prediction from ppg and rppg signals. In Proceedings of
-theIEEE/CVFconferenceoncomputervisionandpatternrecognition,pp.3820–3830,2021.
-Kihyuk Sohn. Improved deep metric learning with multi-class n-pair loss objective. Advances in
-neuralinformationprocessingsystems,29,2016.
-JunhoSong,Jong-HwanJang,ByeongTakLee,DongGyunHong,Joon-myoungKwon,andYong-
-YeonJo. Foundationmodelsforelectrocardiograms. arXivpreprintarXiv:2407.07110,2024.
-DimitrisSpathisandFahimKawsar. Thefirststepisthehardest: Pitfallsofrepresentingandtok-
-enizingtemporaldataforlargelanguagemodels. JournaloftheAmericanMedicalInformatics
-Association,31(9):2151–2158,2024.
-DimitrisSpathis, IgnacioPerez-Pozuelo, SorenBrage, NicholasJWareham, andCeciliaMascolo.
-Self-supervisedtransferlearningofphysiologicalrepresentationsfromfree-livingwearabledata.
-InProceedingsoftheConferenceonHealth,Inference,andLearning,pp.69–78,2021.
-DimitrisSpathis, IgnacioPerez-Pozuelo, TomasIGonzales,YuWu, SorenBrage, NicholasWare-
-ham,andCeciliaMascolo. Longitudinalcardio-respiratoryfitnesspredictionthroughwearables
-infree-livingenvironments. NPJDigitalMedicine,5(1):176,2022.
-ChiIanTang,IgnacioPerez-Pozuelo,DimitrisSpathis,andCeciliaMascolo. Exploringcontrastive
-learninginhumanactivityrecognitionforhealthcare. arXivpreprintarXiv:2011.11542,2020.
-AndriyTemko. Accurateheartratemonitoringduringphysicalexercisesusingppg. IEEETransac-
-tionsonBiomedicalEngineering,64(9):2016–2024,2017.
-Sana Tonekaboni, Danny Eytan, and Anna Goldenberg. Unsupervised representation learning for
-timeserieswithtemporalneighborhoodcoding. arXivpreprintarXiv:2106.00750,2021.
-Pieter-JanToye. Vitalvideos: Adatasetofvideoswithppgandbloodpressuregroundtruths. arXiv
-preprintarXiv:2306.11891,2023.
-JacobETrammelandAmitSapra. Physiology,systemicvascularresistance. 2020.
-LWang,EmmaPickwell-MacPherson,YPLiang,andYuanTingZhang.Noninvasivecardiacoutput
-estimationusinganovelphotoplethysmogramindex. In2009annualinternationalconferenceof
-theIEEEengineeringinmedicineandbiologysociety,pp.1746–1749.IEEE,2009.
-Wei-HungWeng,SebastienBaur,MayankDaswani,ChristinaChen,LaurenHarrell,SujayKakar-
-math,MariamJabara,BabakBehsaz,CoryYMcLean,YossiMatias,etal. Predictingcardiovas-
-culardiseaseriskusingphotoplethysmographyanddeeplearning. PLOSGlobalPublicHealth,
-4(6):e0003204,2024.
-YuelinWu,ShengWan,ShengyiGu,ZhengqianMou,LinglingDong,ZhongchengLuo,JunZhang,
-andXiaolinHua. Gestationalweightgainandadversepregnancyoutcomes: aprospectivecohort
-study. BMJopen,10(9):e038187,2020.
-HugoYe`che, GideonDresdner, FrancescoLocatello, MatthiasHu¨ser, andGunnarRa¨tsch. Neigh-
-borhood contrastive learning applied to online patient monitoring. In International Conference
-onMachineLearning,pp.11964–11974.PMLR,2021.
-HangYuan,ShingChan,AndrewPCreagh,CatherineTong,AidanAcquah,DavidAClifton,and
-Aiden Doherty. Self-supervised learning for human activity recognition using 700,000 person-
-daysofwearabledata. NPJdigitalmedicine,7(1):91,2024a.
-ZhizhangYuan,DaozeZhang,JunruChen,GeifeiGu,andYangYang. Brant-2: Foundationmodel
-forbrainsignals. arXivpreprintarXiv:2402.10251,2024b.
-TaedongYun,JustinCosentino,BabakBehsaz,ZacharyRMcCaw,DavinHill,RobertLuben,Dong-
-bingLai,JohnBates,HowardYang,Tae-HwiSchwantes-An,etal. Unsupervisedrepresentation
-learning on high-dimensional clinical data improves genomic discovery and prediction. Nature
-Genetics,pp.1–10,2024.
-15
 
-PublishedasaconferencepaperatICLR2025
-Guo-QiangZhang,LicongCui,RemoMueller,ShiqiangTao,MatthewKim,MichaelRueschman,
-SaraMariani,DanielMobley,andSusanRedline. Thenationalsleepresearchresource: towards
-asleepdatacommons. JournaloftheAmericanMedicalInformaticsAssociation,25(10):1351–
-1358,2018.
-Xiang Zhang, Ziyuan Zhao, Theodoros Tsiligkaridis, and Marinka Zitnik. Self-supervised con-
-trastivepre-trainingfortimeseriesviatime-frequencyconsistency. AdvancesinNeuralInforma-
-tionProcessingSystems,35:3988–4003,2022.
-XiaoZhang,YongqiangLyu,TongQu,PengfeiQiu,XiaominLuo,JingyuZhang,ShunjieFan,and
-YuanchunShi. Photoplethysmogram-basedcognitiveloadassessmentusingmulti-featurefusion
-model. ACMTransactionsonAppliedPerception(TAP),16(4):1–17,2019.
-JianlongZhou,SyedZArshad,SimonLuo,KunYu,ShlomoBerkovsky,andFangChen. Indexing
-cognitive load using blood volume pulse features. In Proceedings of the 2017 CHI Conference
-ExtendedAbstractsonHumanFactorsinComputingSystems,pp.2269–2275,2017.
-YuchenZhou,JustinCosentino,TaedongYun,MahanteshIBiradar,JacquelineShreibati,Dongbing
-Lai, Tae-HwiSchwantes-An, RobertLuben, ZacharyMcCaw, JorgenEngmann, etal. Utilizing
-multimodalaitoimprovegeneticanalysesofcardiovasculartraits. medRxiv,2024.
-16
 
-PublishedasaconferencepaperatICLR2025
-APPENDIX
-| A TRAINING | INFERENCE | DETAILS |     |     |
-| ---------- | --------- | ------- | --- | --- |
-AND
-Architecture & Pre-training. The architecture of our ResNet 18-block encoder is described in
-Tables 5, 6, and 7. Each 1D convolution layer is configured with a kernel size of 3 and a stride
-of 2, while the max-pooling layer utilizes a kernel size of 3 with a stride of 1. We start with a
-filter size of 32, which doubles every 4 blocks to capture progressively more complex features.
-Dropout is applied with a probability of 0.5 to prevent overfitting. This backbone architecture is
-used across different methods in our experiments to ensure consistency and make for a fair com-
-parison during evaluation. Additionally, our SSL baselines use the same batch size, learning rate,
-inputsamplingfrequency,andtrainingstepsasPAPAGEI. Weusethesameaugmentationtypesand
-intensityforBYOL(Grilletal.,2020),SimCLRChenetal.(2020),andPAPAGEI-P.Furthermore,
-we investigated 0.07 and 0.5 temperatures as MoCo (He et al., 2020) and SimCLR (Chen et al.,
-2020), respectively. In contrast to a smaller embedding size of 256 adopted by (Abbaspourazad
-etal.,2023),weprojectthelearnedrepresentationstoa512-dimensionalembeddingafterthecon-
-volutional block (we investigated larger embedding sizes of 768 and 1024 and found no signifi-
-cantperformancechanges). ThisembeddingisthenpassedthroughtwoMixtureofExperts(MoE)
-blocks, each containing three experts. Each expert block consists of two sequential linear layers,
-with sizes 256 and 1, which are used for IPA and SQI prediction tasks. It is noteworthy that both
-BYOLandTF-Crequiremultipleencodersanddifferentprojectionheads,resultinginvariationsin
-Forthesemethods,weuseexistingimplementationsavailableonline34,butapplyour
-modelsizes.
-encoderasthebackbonetoensureconsistency. Ourmodelsarepre-trainedfor15,000stepsusing
-the Adam optimizer, with a learning rate of 10−4. We use a batch size of 128 for training since
-aftervarioustrialswedidnotobservesignificantdifferencesinperformancewithbatchsizesof64
-and 256. We performed five iterations of pre-training and selected the best-performing model for
-eachdownstreamtask. ForSimCLRandPAPAGEI-P,asinglemodelconsistentlyachievesthebest
-performance across all tasks. For BYOL, we select two models that perform best across all tasks.
-Similarly,forTF-CandPAPAGEI-S,wechoosethreemodelswiththehighestperformance. Weuse
-this approach as some models excel in certain task groups while others perform better in the rest.
-Note that a more robust approach would involve broader hyperparameter tuning with k-fold vali-
-dationtoobtaintheoptimalmodel. However,thisrequiressubstantialcomputationalresourcesfor
-pre-training. Additionally, we did not perform an exhaustive evaluation of different augmentation
-settingsbutinsteadusedtransformationsandvaluesbasedonpriorresearch(Abbaspourazadetal.,
-2023;Tangetal.,2020). Formodeltraining,weprimarilyusedPyTorch(Paszkeetal.,2019). The
-NTXentLossimplementationwassourcedfromthePyTorchMetricLearningpackage5.
-| Table 5: ResNet-style | CNN encoder | architec- |     |     |
-| --------------------- | ----------- | --------- | --- | --- |
-tureusedinPAPAGEI.
-Table 7: Basic Block
-Type2
-| Layer | OutputShape |     |     |     |
-| ----- | ----------- | --- | --- | --- |
-Table 6: Basic Block
-Type1
-| Conv1     | [32,32,1250] |     |     | Layer |
-| --------- | ------------ | --- | --- | ----- |
-| BatchNorm | [32,32,1250] |     |     |       |
-BatchNorm
-| ReLU | [32,32,1250] |     | Layer |     |
-| ---- | ------------ | --- | ----- | --- |
-ReLU
-| BasicBlockType1     | [32,32,1250] |     |           |           |
-| ------------------- | ------------ | --- | --------- | --------- |
-|                     |              |     | Conv1D    | Dropout   |
-| (BasicBlockType2)×3 | [32,32,313]  |     |           |           |
-|                     |              |     | BatchNorm | Conv1D    |
-| (BasicBlockType2)×4 | [32,64,79]   |     |           |           |
-|                     |              |     | ReLU      | BatchNorm |
-| (BasicBlockType2)×4 | [32,128,20]  |     |           |           |
-|                     |              |     | Dropout   | ReLU      |
-| (BasicBlockType2)×4 | [32,256,5]   |     |           |           |
-|                     |              |     | Conv1D    | Dropout   |
-| (BasicBlockType2)×2 | [32,512,3]   |     |           |           |
-Conv1D
-| BatchNorm | [32,512,3] |     |     |     |
-| --------- | ---------- | --- | --- | --- |
-Maxpool
-| ReLU   | [32,512,3] |     |     |     |
-| ------ | ---------- | --- | --- | --- |
-| Linear | [32,512]   |     |     |     |
-3https://github.com/chengding0713/SiamQuality
-4https://github.com/mims-harvard/TFC-pretraining
-5https://github.com/KevinMusgrave/pytorch-metric-learning
-17
+Figure 1: PAPAGEI Overview. We curate public datasets of diverse PPG signals, and train a foundation model leveraging a novel morphology-aware contrastive learning approach. To evaluate its effectiveness, we apply the embeddings generated by PAPAGEI to 20 tasks from 10 different datasets. 
 
-PublishedasaconferencepaperatICLR2025
-Parameters: TrainingandInference. Thissectionoutlinesthetrainingandinferenceparameters
-| usedinourmethods. | Inferenceparametersarethoseutilizedforfeatureextraction. |     |     |     |
-| ----------------- | -------------------------------------------------------- | --- | --- | --- |
-• PAPAGEI-P(5M)andSimCLR(5M):Bothtrainingandinferenceinvolve5Mparameters.
-ForSimCLR,itisworthnotingthatweusetheprojectionfeaturesduringinferenceinstead
-ofusingtheencoderonly.
-• BYOL(5M):Duringtraining,theonlineandtargetencoderseachhave5Mparameters,and
-theprojectoris800K.Atinference,onlytheonlineencoderisusedforfeatureextraction,
-totaling5Mparameters.
-• TF-C (10M): The time and frequency encoders each have 5M parameters, followed by a
-smallerprojector(<100K).Sincebothencodersandprojectorsarerequiredforinference,
-thetotalparametercountis10M.
-• PAPAGEI-S (5M): The encoder consists of 5M parameters, while the expert heads con-
-tributeapproximately400Keach. Astheexpertheadsarenotusedforfeatureextraction,
-theinferenceparametertotalremains5M.
-Feature Extraction & Linear Evaluation We extracted the projected embedding for linear eval-
-uation. For Moment and Chronos, we extract the default embedding size, which is 1024 and 768,
-respectively.Weusecross-validatedgridsearchtoidentifythebestparametersforourlinearprobes.
-The hyperparameters chosen for each model are as follows: (1) Logistic Regression: {’penalty’:
-[’l1’, ’l2’], ’C’: [0.01, 0.1, 1, 10, 100], ’solver’: [’lbfgs’], ’max iter’: [100, 200]}. (2) Linear Re-
-gression: {’alpha’: [0.1,1.0,10.0,100.0],’solver’: [’auto’,’cholesky’,’sparse cg’]}. (3)Random
-Forest: {’n estimators’: [100, 200], ’max features’: [’sqrt’, ’log2’], ’max depth’: [10, 20, 30],
-| ’min samples | split’: [2,5],’min | samples leaf’: | [1,2]} |     |
-| ------------ | ------------------ | -------------- | ------ | --- |
-| B DATASETS   | AND                | TASKS          |        |     |
-Table8:ThetaskevaluationbenchmarkofPAPAGEI.Datasetshighlightedingrayareunseenduring
-training, thus, the corresponding tasks are out-of-domain. The rest were used for pre-training but
-theirtestsetsandlabelsareheldout.Fortasktype,B/M/RrefertoBinaryclassification,Multi-class
-classification(#classes),andRegression,respectively.
-#ID Dataset SR(Hz) Collectedby Task TaskType #Participants(#Samples)
-T1 VitalDB(Leeetal.,2022) 500 ICUmonitor ICUadmission(Yes/No) B 5866
-| T2  |     |     | OperationType | M(11) 5866 |
-| --- | --- | --- | ------------- | ---------- |
-T3 MIMIC-III(Moodyetal.,2020) 125 ICUMonitor Mortality B 5596
-T4 MESA(Zhangetal.,2018) 256 Polysomnographyfinger Smoker B 2055
-| T5  |     |     | AHI>3%OxygenDesat. | R 2055 |
-| --- | --- | --- | ------------------ | ------ |
-| T6  |     |     | AHI>4%OxygenDesat. | R 2055 |
-T7 nuMom2B(Faccoetal.,2015) 75 Polysomnographyfinger Pregnancystage(early/late) B 3163(5337)
-| T8                         |     |           | GestationAge | R 3163(5337) |
-| -------------------------- | --- | --------- | ------------ | ------------ |
-| T9 VV(SkinTone)(Toye,2023) |     | 60 Finger | SystolicBP   | R 231        |
-| T10                        |     |           | DiastolicBP  | R 231        |
-T11 PPG-BP(Liangetal.,2018a) 1000 FingerPulseOx SystolicBP R 219
-| T12 |     |     | DiastolicBP      | R 219 |
-| --- | --- | --- | ---------------- | ----- |
-| T13 |     |     | AverageHeartRate | R 219 |
-| T14 |     |     | Hypertension     | B 219 |
-T15 SDB(Gardeetal.,2014) 62.5 FingerPulseOx SleepDisorderedBreathing B 146
-| T16 ECSMP(Gaoetal.,2021)     |     | 64 Wrist | MoodDisturbance | B 89       |
-| ---------------------------- | --- | -------- | --------------- | ---------- |
-| T17 WESAD(Schmidtetal.,2018) |     | 64 Wrist | Valence         | B 15(4497) |
-| T18                          |     |          | Arousal         | B 15(4497) |
-T19 PPG-DaLiA(Reissetal.,2019) 64 Wrist HeartRate R 15(64697)
-| T20 |     |     | Activity | M(9) 15(64697) |
-| --- | --- | --- | -------- | -------------- |
-VitalDB.TheVitalDBdatasetprovidescomprehensivemonitoringofvitalsignsandphysiological
-parametersfrom6,388surgicalcases. Thishigh-resolutiondatasetincludesawiderangeofintraop-
-erativemonitoringvariablessuchasheartrate,bloodpressure,oxygensaturation,andothercritical
-physiologicalsignals,collectedatfrequentintervalsthroughoutsurgery. Thesurgicaloperationbe-
-longstooneoftheelevencategories: colorectal,biliary/pancreas,stomach,majorresection,minor
-resection,breast,transplantation,thyroid,hepatic,vascular,andothers. Afterthedatacleaningpro-
-cess,wenarrowedthedatasetdownto5,866participantswithcompleteandusableinformation. As
-depicted in Figure 10, we observe that the gender distribution is relatively balanced, with nearly
-equalrepresentationofmaleandfemalepatients. Additionally,themajorityoftheparticipantsfall
-18
+The PPG domain, unlike language or vision domains, lacks general-purpose foundation models (FMs), with most current works focused on single-dataset task-specific models. Although PPG can detect vital signs like heart rate variability and blood oxygen saturation, the absence of generalizable pre-trained models limits progress (Abbaspourazad et al., 2023). Despite the ongoing challenges of acquiring large-scale, high-quality data, recent expansions in diverse PPG datasets have created new opportunities (Johnson et al., 2016; Zhang et al., 2018; Lee et al., 2022). To address these challenges, we introduce **PAPAGEI** , a set of robust, pre-trained models capable of serving as a backbone for various PPG-related tasks, capturing rich PPG representations through large-scale pre-training. 
 
-PublishedasaconferencepaperatICLR2025
-withintheagerangeof50to70,withasignificantproportionbeingaround60yearsold. TheICU
-labelcorrespondstowhetherthepersonwasadmittedtotheICUornot.
-VitalDB
-500
-| 400 |     |     | VitalDB | VitalDB |
-| --- | --- | --- | ------- | ------- |
-tnuoC
-3000
-300
-4000
-tnuoC 2000 tnuoC
-200
-2000
-100 1000
-0
-|      |       | 0   | 0   |     |
-| ---- | ----- | --- | --- | --- |
-| 0 20 | 40 60 | 80  |     |     |
-|      |       |     | M F | 0 1 |
-age
-|     |           |                                      | sex | ICU |
-| --- | --------- | ------------------------------------ | --- | --- |
-|     | Figure10: | VitalDBdatasetdescriptivestatistics. |     |     |
-MIMIC-III.Inouranalysis, weutilizetheMIMIC-IIIwaveformdatabasematchedsubset, which
-comprises data from 10,282 ICU patients. From this dataset, we focus specifically on extracting
-photoplethysmogram(PPG)data,provideditisavailableforeachpatient. Toensurethequalityof
-the data, we set a criterion of at least 1 minute of usable PPG signal that must be present. After
-performing a thorough data cleaning process, we end up with a cohort of 5,596 participants with
-reliablePPGdata. AsillustratedinFigure11,thedatasetshowsagenderimbalance,withahigher
-proportionofmalepatientscomparedtofemalepatients. Additionally,themajorityofparticipants
-are aged 60 years or older, reflecting a typical ICU population that often includes elderly patients
-withcriticalhealthconditions.
-MESA. The Multi-Ethnic Study of Atherosclerosis (MESA) sleep sub-study gathered data from
-2,237participantsthroughovernight,unattendedpolysomnographytoassessvarioussleepparame-
-ters.Afterthedatacleaningprocess,weretained2,055participantsforanalysis.AsshowninFigure
-12,thedatasetshowsaslightlylargerproportionoffemaleparticipants. Theagedistributionreveals
-thatmostparticipantsarebetween60and80yearsold,reflectinganolderadultpopulation,which
-iscommonlystudiedconcerningsleepdisordersandcardiovascularrisks.
-Inthisstudy,weusetheApnea-HypopneaIndex(AHI)withatleast3%and4%oxygendesaturation
-astheprimarymeasurefordiagnosingsleepapnea,asrecommendedbytheAmericanAcademyof
-SleepMedicine(Ruehlandetal.,2009). Thesethresholdsindicatetheseverityofsleepapnea,with
-oxygendesaturationduringapneas/hypopneasbeingacriticalfactor. WepredicttheseAHIvalues
-directlyinourregressionmodels.Additionally,weclassifyparticipantswithanyhistoryofsmoking
-as smokers. This approach allows us to account for both current and former smokers, capturing a
-broaderrangeofsmoking-relatedhealthriskswithinouranalysis.
-NuMoM2B.Changesingestationalageandpregnancystageareriskfactorsassociatedwithadverse
-pregnancyoutcomessuchashypertensivedisordersandsmall-for-gestational-agedelivery(Bouariu
-et al., 2022; Parikh et al., 2021; Wu et al., 2020; Crump et al., 2023). These diseases affect heart
-MIMIC-III
-400
-MIMIC-III
-| 300 |     |     | 3000 |     |
-| --- | --- | --- | ---- | --- |
-tnuoC
-tnuoC
-| 200  |           |                                        | 2000 |     |
-| ---- | --------- | -------------------------------------- | ---- | --- |
-| 100  |           |                                        | 1000 |     |
-| 0    |           |                                        | 0    |     |
-| 0 20 | 40 60     | 80                                     | M    | F   |
-|      | age       |                                        | sex  |     |
-|      | Figure11: | MIMIC-IIIdatasetdescriptivestatistics. |      |     |
-19
+### The key **contributions** of PAPAGEI are: 
 
-PublishedasaconferencepaperatICLR2025
-150
-100
-50
-0
-60 70 80 90
-age
-tnuoC
-MESA
-200
-150
-100
-50
-0
-0 25 50 75 100
-AHI > 3%
-tnuoC
-MESA
-400
-300
-200
-100
-0
-0 20 40 60 80 100
-AHI > 4%
-tnuoC
-MESA
-1000
-500
-0
-female male
-sex
-tnuoC
-MESA
-1000
-500
-0
-yes no not reported
-Smoking
-tnuoC
-MESA
-Figure12: MESAdatasetdescriptivestatistics.
-300
-200
-100
-0
-20 30 40
-age
-tnuoC
-NuMoM2B
-1250
-1000
-750
-500
-250
-0
-10 20 30
-Gestation Age
-tnuoC
-NuMoM2B
-3000
-2000
-1000
-0
-1 3
-Pregnancy Stage
-tnuoC
-NuMoM2B
-Figure13: NuMoM2Bdatasetdescriptivestatistics.
-functionthatcanbemeasuredusingthePPGsensor(Felietal.,2024). TheNulliparousPregnancy
-Outcomes Study: monitoring mothers-to-be (nuMoM2B) sub-study examines the relationship be-
-tweenadversepregnancyoutcomesandsleepdisorders. Inparticular,anovernightpolysomnograph
-thatcollectsPPGdataisadministeredtothewomenattheirhomesduring6-15weeks(early)and
-22-31 weeks (late) of pregnancy. Therefore, our tasks are to classify between early and late-stage
-pregnancyaswellaspredictthegestationageofthefetus. InFigure13,weobservethatmaternal
-agepeaksaround28years. Thegestationalagedistributionisbimodal,whichweuseasapredictor
-inourregressiontask. Forpregnancystage,weclassifyvisit1asearlyandvisit3aslate.
-VitalVideos (VV) (Skin Tone). The Vital Videos study is an ongoing project that collects data
-on vital signs, videos, and blood pressure across a variety of conditions, including variations in
-lighting,background,andskintone. Forouranalysis,weuseddatafromtwogroups,totalling231
-participants,fromEuropeandSub-SaharanAfrica. AsshowninFigure14,mostparticipantshavea
-Fitzpatrickskintoneof5or6,indicatingdarkerskin. Thedatasetisprimarilycomposedoffemale
-participants,withanagerangebetween40and60years. Additionally,themajorityofparticipants
-had asystolic bloodpressure ofaround 125and a diastolic pressure ofaround 80, suggesting that
-mostindividualsinthestudywererelativelyhealthy.
-PPG-BP.ThePPG-BPconsistsofshortPPGrecordingsfrom219participantscollectedat1000Hz.
-For each subject, there are three 2.1s recordings. For our analysis, we zero pad them to 10s. In
-Figure15, theagedistributionshowsthatmostparticipantsarebetween40and80yearsold, with
-fewerparticipantsunder40. Furthermore, themajorityofindividualshavehypertension. Interms
-of gender, the dataset has slightly more females than males. The distribution of systolic blood
-pressure is centered around 120-140, indicating a population with normal to moderately elevated
-blood pressure, while diastolic blood pressure predominantly falls between 70 and 90. Lastly, the
-averageheartrateformostparticipantsrangesbetween70and90beatsperminute.
-20
+**(1) Large-scale pre-training for PPG signals** : To our knowledge, PAPAGEI is the first open foundation model pre-trained on PPG signals, using 57,000 hours of data from 20 million signals sourced entirely from public datasets. This establishes a new benchmark for large-scale model development in wearable and clinical health monitoring. 
 
-PublishedasaconferencepaperatICLR2025
-Vital Videos (VV)
-Vital Videos (VV)
-40
-75
-30
-| tnuoC |     |     |     |     |     |     |     | tnuoC |     |     |
-| ----- | --- | --- | --- | --- | --- | --- | --- | ----- | --- | --- |
-50
-20
-25
-10
-0
-0
-|     | 20  | 40  | 60  | 80  |     |     |     |     | 1 2               | 3 4 5 6 |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | ----------------- | ------- |
-|     |     |     | age |     |     |     |     |     | Fitzpatrick Scale |         |
-Vital Videos (VV)
-150
-| tnuoC |     |     |     |     | Vital Videos (VV) |     |     |     |                   |     |
-| ----- | --- | --- | --- | --- | ----------------- | --- | --- | --- | ----------------- | --- |
-| 100   |     |     |     | 40  |                   |     |     |     | Vital Videos (VV) |     |
-40
-30
-|     |     |     |     | tnuoC |     |     | tnuoC |     |     |     |
-| --- | --- | --- | --- | ----- | --- | --- | ----- | --- | --- | --- |
-| 50  |     |     |     |       |     |     |       | 30  |     |     |
-20
-20
-10
-| 0   |     |           |     |                                          |             |         |     | 10  |              |             |
-| --- | --- | --------- | --- | ---------------------------------------- | ----------- | ------- | --- | --- | ------------ | ----------- |
-|     |     | F         | M   | 0                                        |             |         |     | 0   |              |             |
-|     |     |           |     |                                          | 100 125 150 | 175 200 |     |     |              |             |
-|     |     | sex       |     |                                          |             |         |     | 60  | 80           | 100 120 140 |
-|     |     |           |     |                                          | Systolic BP |         |     |     | Diastolic BP |             |
-|     |     | Figure14: |     | VitalVideosdatasetdescriptivestatistics. |             |         |     |     |              |             |
-PPG-BP
-|     |     |     |     |     | PPG-BP |     |     |     |     | PPG-BP |
-| --- | --- | --- | --- | --- | ------ | --- | --- | --- | --- | ------ |
-30
-| tnuoC |     |     |     |           |     |     |       | 100 |     |     |
-| ----- | --- | --- | --- | --------- | --- | --- | ----- | --- | --- | --- |
-|       |     |     |     | tnuoC 100 |     |     | tnuoC |     |     |     |
-20
-|     |     |     |     | 50  |     |     |     | 50  |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-10
-| 0     |     |        |     | 0        |              |     |       | 0   |        |      |
-| ----- | --- | ------ | --- | -------- | ------------ | --- | ----- | --- | ------ | ---- |
-| 20    | 40  | 60     | 80  |          |              |     |       |     |        |      |
-|       |     |        |     |          | 0            | 1   |       |     | Female | Male |
-|       |     | age    |     |          | Hypertension |     |       |     |        | sex  |
-|       |     | PPG-BP |     |          | PPG-BP       |     |       |     | PPG-BP |      |
-| 30    |     |        |     | 40       |              |     |       | 30  |        |      |
-| tnuoC |     |        |     | tnuoC 30 |              |     | tnuoC |     |        |      |
-20
-20
-20
-| 10  |     |     |     |     |     |     |     | 10  |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-10
-| 0        |                  |         |           | 0                                   |                  |     |     | 0     |         |           |
-| -------- | ---------------- | ------- | --------- | ----------------------------------- | ---------------- | --- | --- | ----- | ------- | --------- |
-| 80       | 100 120          | 140 160 | 180       |                                     | 60 80            | 100 |     | 50 60 | 70      | 80 90 100 |
-|          | Systolic BP      |         |           |                                     | Diastolic BP     |     |     |       | Avg. HR |           |
-|          |                  |         | Figure15: | PPG-BPdatasetdescriptivestatistics. |                  |     |     |       |         |           |
-| SDB. The | sleep-disordered |         | breathing |                                     | dataset includes |     |     |       |         |           |
-SDB
-| data from | 146 | children, | collected | through | polysomnog- |     |     |     |     |     |
-| --------- | --- | --------- | --------- | ------- | ----------- | --- | --- | --- | --- | --- |
-75
-| raphy with | finger | recordings |     | lasting | over three hours. |     | tnuoC |     |     |     |
-| ---------- | ------ | ---------- | --- | ------- | ----------------- | --- | ----- | --- | --- | --- |
-50
-GroundtruthlabelsareprovidedasApnea-HypopneaIn-
-| dex (AHI)                                    | values, | categorized |     | into four | levels: 0 (nor- |     | 25  |     |     |     |
-| -------------------------------------------- | ------- | ----------- | --- | --------- | --------------- | --- | --- | --- | --- | --- |
-| mal),1(mild,AHIbetween5and15),2(moderate,AHI |         |             |     |           |                 |     |     | 0   |     |     |
-|                                              |         |             |     |           |                 |     |     | 0   | 1   | 2 3 |
-Sleep Disordered Breathing
-between15and30),and3(severe,AHIover30)asshown
-| inFigure16. | Forourclassificationtask,wegroupAHI0 |     |     |     |     |        |     |     |         |             |
-| ----------- | ------------------------------------ | --- | --- | --- | --- | ------ | --- | --- | ------- | ----------- |
-|             |                                      |     |     |     |     | Figure | 16: | SDB | dataset | descriptive |
-asindicatingnosleepbreathingdisorder,whileAHIlev-
-statistics.
-| els 1 through | 3   | are classified |     | as the presence | of a sleep |     |     |     |     |     |
-| ------------- | --- | -------------- | --- | --------------- | ---------- | --- | --- | --- | --- | --- |
-breathingdisorder.
-21
+**(2) PPG-aware self-supervised learning (SSL) framework** : We introduce a novel SSL framework with a unique PPG signal morphology augmentation module. Our approach optimizes agreement between PPG signals with similar blood volume changes while pointing the model to pay attention to the changes around the systolic peak and dicrotic notch (key PPG markers). 
 
-PublishedasaconferencepaperatICLR2025
-ECSMP. The ECSMP dataset was gathered to study the relationship between emotion, cognition,
-and sleep in 89 participants. As shown in Figure 17, the majority of the participants are young
-adult females, with an average age of around 25 years. Mood disturbances were measured using
-the Profile of Mood States (POMS) scale, which captures various aspects of emotional states. To
-classifyparticipantsintohighversuslowmooddisturbancecategories,webinarizedtheTotalMood
-Disturbance(TMD)valuesbyusingthemedianasthecutoffpoint.
-|     | ECSMP |     | ECSMP |     |     |       |
-| --- | ----- | --- | ----- | --- | --- | ----- |
-| 20  |       |     |       |     |     | ECSMP |
-15
-40
-| tnuoC 15 |     |     | tnuoC |     |       |     |
-| -------- | --- | --- | ----- | --- | ----- | --- |
-|          |     |     | 10    |     | tnuoC |     |
-10
-20
-| 5     |       |           | 5                                  |             |     |     |
-| ----- | ----- | --------- | ---------------------------------- | ----------- | --- | --- |
-| 0     |       |           | 0                                  |             | 0   |     |
-| 18 20 | 22 24 | 26 28     | 100 120                            | 140 160 180 | F   | M   |
-|       | age   |           | Mood Disturbance                   |             |     | sex |
-|       |       | Figure17: | ECSMPdatasetdescriptivestatistics. |             |     |     |
-WESAD. The wearable stress and affect detection dataset is a multi-modal dataset collected from
-15 participants using various sensor modalities. In this study, participants were exposed to videos
-designed to elicit different affective states, such as amusement, meditation, stress, and baseline
-conditions. Following each session, participants completed the Self-Assessment Manikins (SAM)
-questionnaire (Bradley & Lang, 1994), which provided the ground-truth values for valence and
-arousal. In our analysis, we binarized these values by categorizing valence and arousal as low (1)
-when less than 5 and high (0) otherwise. Then, we perform regression at the segment level. As
-showninFigure18,arousallevelsaregenerallylow,whilevalencetendstobehighinmostcases.
-|            |     | WESAD |     |       | WESAD |     |
-| ---------- | --- | ----- | --- | ----- | ----- | --- |
-| 1500       |     |       |     | 1500  |       |     |
-| tnuoC 1000 |     |       |     | tnuoC |       |     |
-1000
-| 500 |     |     |     | 500 |     |     |
-| --- | --- | --- | --- | --- | --- | --- |
-| 0   |     |     |     | 0   |     |     |
-1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
-|     |     | Arousal   |                                    |     | Valence |     |
-| --- | --- | --------- | ---------------------------------- | --- | ------- | --- |
-|     |     | Figure18: | WESADdatasetdescriptivestatistics. |     |         |     |
-PPG-DaLiA.ThisdatasetcollectsPPGsignalsfrom15participantsforheartrateestimationwhile
-performing various daily activities. These activities include sitting, ascending/descending stairs,
-tablesoccer,cycling,driving,lunchbreak,walking,andworking. Asaresult,thedatasetcapturesa
-widerangeofheartrates,varyingfrom60to150beatsperminute,dependingonthespecificactivity
-beingperformed. ToalignthePPGsignalwiththeactivitylabels,weusea8swindowwith6sand
-2soverlapandshift,respectively. Afterthis,weresampleandpadthesignaltofacilitatemodeling.
-DaLiA
-2000
-1500
-|       |     | DaLiA |     | tnuoC |     |     |
-| ----- | --- | ----- | --- | ----- | --- | --- |
-| 15000 |     |       |     | 1000  |     |     |
-tnuoC
-10000
-500
-5000
-0
-0
-|     |         |             |                                        |     | 50 100 | 150 |
-| --- | ------- | ----------- | -------------------------------------- | --- | ------ | --- |
-| 0.0 | 1.0 2.0 | 3.0 4.0 5.0 | 6.0 7.0 8.0                            |     |        |     |
-|     |         | Activity    |                                        |     |        | HR  |
-|     |         | Figure19:   | PPG-DaLiAdatasetdescriptivestatistics. |     |        |     |
-22
+**(3) Comprehensive evaluation across diverse out-of-domain health tasks** : We evaluate PAPAGEI across 20 tasks, including cardiovascular health, sleep disorders, pregnancy monitoring, and overall well-being. Our results show that the model embeddings contain rich and predictive information applicable to various health conditions, outperforming existing benchmarks. 
 
-PublishedasaconferencepaperatICLR2025
-| C REPRESENTATIVE | SIGNALS | PRE-TRAINING | DATASETS |     |
-| ---------------- | ------- | ------------ | -------- | --- |
-FROM
-VitalDB @ 500Hz
-25
-0
-|     | 0 1000 | 2000 | 3000 4000 | 5000 |
-| --- | ------ | ---- | --------- | ---- |
-MESA @ 256Hz
-0
-250
-|     | 0 500 | 1000 | 1500 2000 | 2500 |
-| --- | ----- | ---- | --------- | ---- |
-MIMIC-III @ 125Hz
-0.25
-0.00
-|     | 0 200 | 400 600 | 800 1000 | 1200 |
-| --- | ----- | ------- | -------- | ---- |
-Figure20:Representative10-secondrawPPGsegmentsfromVitalDB,MESA,andMIMIC-III.We
-observethateachsignal’samplitude(y-axis)andsamplingratediffer.
-VitalDB @ 125Hz
-2.5
-0.0
-|     | 0 200 | 400 600 | 800 1000 | 1200 |
-| --- | ----- | ------- | -------- | ---- |
-MESA @ 125Hz
-0
-2
-|     | 0 200 | 400 600 | 800 1000 | 1200 |
-| --- | ----- | ------- | -------- | ---- |
-MIMIC-III @ 125Hz
-2
-0
-|     | 0 200 | 400 600 | 800 1000 | 1200 |
-| --- | ----- | ------- | -------- | ---- |
-Figure 21: Normalized and resampled 10-second pre-processed PPG segments from VitalDB,
-MESA, and MIMIC-III. These signals represent the final form before being fed to our models.
-Weobservethatthesignalcharacteristicsacrossdatasetsaremoreconsistent.
-23
+**(4) Extensive robustness studies** : We conduct ablation studies to assess the impact of key components, including signal morphology augmentation, comparisons with established contrastive learning approaches, model size, data efficiency, and the effect of skin tone. 
 
-PublishedasaconferencepaperatICLR2025
-| D ADDITIONAL | RESULTS |     |     |     |     |
-| ------------ | ------- | --- | --- | --- | --- |
-D.1 MULTI-CLASSCLASSIFICATION
-Table 9: Multi-class classification comparison against pre-trained models. Feature extraction
-parametersareindicatednexttoeachname.. 95%CIsarereportedinsquarebracketsandthebest
-valueisbolded.
-|                       | REGLE(0.07M)    | Chronos(200M)      | Moment(385M)        | PAPAGEI-P(5M) | PAPAGEI-S(5M) |
-| --------------------- | --------------- | ------------------ | ------------------- | ------------- | ------------- |
-| Classification-ACC(↑) | (Yunetal.,2024) | (Ansarietal.,2024) | (Goswamietal.,2024) |               |               |
-OperationType 0.21[0.18-0.23] 0.25[0.22-0.29] 0.27[0.23-0.31] 0.30[0.26-0.33] 0.30[0.27-0.32]
-Activity 0.29[0.28-0.29] 0.41[0.40-0.42] 0.41[0.40-0.42] 0.38[0.37-0.39] 0.37[0.36-0.37]
-|     | 0.25±0.04 | 0.33±0.08 | 0.34±0.07 | 0.34±0.04 | 0.33±0.03 |
-| --- | --------- | --------- | --------- | --------- | --------- |
-Average
-Table10: Multi-classclassificationcomparisonagainstCLmethods. Featureextractionparame-
-tersareindicatednexttoeachname.. 95%CIsarereportedinsquarebracketsandthebestvalueis
-bolded.
-|                       | Stat.Features | SimCLR(5M) BYOL(5M)                | TF-C(10M)         | PAPAGEI-P(5M) | PAPAGEI-S(5M) |
-| --------------------- | ------------- | ---------------------------------- | ----------------- | ------------- | ------------- |
-| Classification-ACC(↑) |               | (Chenetal.,2020) (Grilletal.,2020) | (Zhangetal.,2022) |               |               |
-OperationType 0.27[0.24-0.32] 0.27[0.24-0.29] 0.310.27-0.34 0.27[0.27-0.29] 0.30[0.26-0.33] 0.30[0.27-0.32]
-Activity 0.37[0.36-0.38] 0.36[0.35-0.37] 0.34[0.33-0.35] 0.37[0.36-0.38] 0.38[0.37-0.39] 0.37[0.36-0.37]
-Average 0.32±0.05 0.31±0.04 0.32±0.01 0.32±0.05 0.34±0.04 0.33±0.03
-| D.2 F1-SCOREANDR2 | EVALUATIONMETRICS. |     |     |     |     |
-| ----------------- | ------------------ | --- | --- | --- | --- |
-Table 11: Downstream comparison against pre-trained models (additional metrics: F1-score
-andR2).
-Featureextractionparametersareindicatednexttoeachname. 95%CIsarereportedin
-squarebracketsandthebestvalueisbolded.
-|     | REGLE(0.07M) | Chronos(200M) | Moment(385M) | PAPAGEI-P(5M) | PAPAGEI-S(5M) |
-| --- | ------------ | ------------- | ------------ | ------------- | ------------- |
-Classification-F1-Score(↑)
-|     | (Yunetal.,2024) | (Ansarietal.,2024) | (Goswamietal.,2024) |     |     |
-| --- | --------------- | ------------------ | ------------------- | --- | --- |
-ICUAdmission 0.00[0.00-0.00] 0.20[0.11-0.30] 0.12[0.04-0.20] 0.12[0.04-0.20] 0.26[0.18-0.33]
-Mortality 0.00[0.00-0.00] 0.14[0.09-0.19] 0.16[0.11-0.21] 0.22[0.16-0.27] 0.17[0.13-0.22]
-Smoker 0.16[0.10-0.23] 0.51[0.44-0.58] 0.40[0.33-0.47] 0.45[0.38-0.51] 0.45[0.37-0.50]
-Pregnancystage 0.49[0.47-0.52] 0.69[0.67-0.71] 0.63[0.60-0.65] 0.62[0.59-0.64] 0.65[0.62-0.67]
-Hypertension 0.77[0.70-0.84] 0.68[0.58-0.77] 0.75[0.66-0.84] 0.84[0.72-0.92] 0.78[0.70-0.86]
-SleepDisorderedBreathing 0.00[0.00-0.00] 0.33[0.00-0.60] 0.22[0.00-0.47] 0.32[0.00-0.60] 0.47[0.23-0.67]
-MoodDisturbance 0.00[0.00-0.00] 0.36[0.10-0.59] 0.23[0.00-0.47] 0.37[0.00-0.66] 0.32[0.00-0.58]
-Valence 0.00[0.00-0.00] 0.10[0.07-0.14] 0.12[0.09-0.16] 0.17[0.13-0.21] 0.03[0.01-0.04]
-Arousal 0.83[0.81-0.84] 0.82[0.80-0.83] 0.81[0.79-0.82] 0.81[0.79-0.82] 0.83[0.81-0.84]
-| Average | 0.25±0.33 | 0.42±0.24 | 0.38±0.26 | 0.43±0.25 | 0.44±0.25 |
-| ------- | --------- | --------- | --------- | --------- | --------- |
-Regression-R2(↑)
-Apnea/HypopneaIndex>3% 0.02[0.00-0.03] 0.18[0.08-0.26] 0.14[0.06-0.22] 0.15[0.05-0.24] 0.29[0.22-0.36]
-Apnea/HypopneaIndex>4% 0.01[0.00-0.03] 0.16[0.08-0.22] 0.13[0.05-0.20] 0.12[0.03-0.22] 0.28[0.20-0.34]
-GestationAge 0.04[0.02-0.06] 0.28[0.24-0.31] 0.20[0.17-0.23] 0.18[0.14-0.22] 0.22[0.19-0.25]
-SystolicBP(VV) -0.03[-0.18-0.01] -0.24[-0.72-0.03] 0.06[-0.25-0.28] -0.41[-0.77-(-0.15)] 0.15[-0.09-0.30]
-DiastolicBP(VV) 0.01[-0.09-0.06] -0.29[-0.87-(-0.01)] 0.01[-0.25-0.14] -0.48[-1.02-(-0.20)] 0.10[-0.11-0.23]
-SystolicBP(PPG-BP) -0.07[-0.21-0.04] -0.13[-0.36-0.06] 0.07[-0.31-0.31] 0.36[0.16-0.49] 0.20[0.02-0.31]
-DiastolicBP(PPG-BP) 0.01[-0.05-0.02] -0.10[-0.45-0.07] -0.03[-0.31-0.13] 0.22[-0.13-0.40] 0.08[-0.07-0.17]
-AverageHR 0.37[0.17-0.51] 0.02[-0.16-0.17] 0.68[0.45-0.80] 0.79[0.57-0.90] 0.78[0.69-0.83]
-HR 0.00[0.00-0.01] 0.57[0.56-0.59] 0.63[0.61-0.64] 0.52[0.51-0.53] 0.48[0.42-0.46]
-| Average | 0.04±0.12 | 0.05±0.25 | 0.21±0.24 | 0.16±0.38 | 0.28±0.20 |
-| ------- | --------- | --------- | --------- | --------- | --------- |
-D.3 ABLATIONRESULTS
-In this section, weprovide the numeric results for thescaling analysis (Table 13) and PAPAGEI-S
-componentanalysis(Table14).
-24
+## 2 RELATED WORK 
 
-PublishedasaconferencepaperatICLR2025
-Table12: DownstreamcomparisonagainstCLmodels(additionalmetrics: F1-scoreandR2).
-Feature extraction parameters are indicated next to each name. 95% CIs are reported in square
-bracketsandthebestvalueisbolded.
-| Stat.Features | SimCLR(5M) BYOL(5M) | TF-C(10M) | PAPAGEI-P(5M) | PAPAGEI-S(5M) |
-| ------------- | ------------------- | --------- | ------------- | ------------- |
-Classification-F1-Score(↑)
-ICUAdmission 0.30[0.18-0.40] 0.19[0.12-0.26] 0.17[0.11-0.22] 0.10[0.05-0.16] 0.12[0.04-0.20] 0.26[0.18-0.33]
-Mortality 0.03[0.01-0.06] 0.15[0.10-0.20] 0.13[0.08-0.17] 0.15[0.10-0.20] 0.22[0.16-0.27] 0.17[0.13-0.22]
-Smoker 0.47[0.40-0.53] 0.43[0.35-0.49] 0.49[0.42-0.56] 0.37[0.30-0.44] 0.45[0.38-0.51] 0.45[0.37-0.50]
-Pregnancystage 0.43[0.41-0.47] 0.60[0.57-0.63] 0.60[0.57-0.63] 0.59[0.56-0.62] 0.62[0.59-0.64] 0.65[0.62-0.67]
-Hypertension 0.73[0.58-0.85] 0.82[0.73-0.89] 0.81[0.73-0.88] 0.81[0.72-0.89] 0.84[0.72-0.92] 0.78[0.70-0.86]
-SleepDisorderedBreathing 0.00[0.00-0.00] 0.46[0.21-0.64] 0.45[0.23-0.62] 0.19[0.00-0.36] 0.32[0.00-0.60] 0.47[0.23-0.67]
-MoodDisturbance 0.21[0.00-0.47] 0.21[0.00-0.44] 0.37[0.00-0.67] 0.56[0.27-0.80] 0.37[0.00-0.66] 0.32[0.00-0.58]
-Valence 0.04[0.02-0.07] 0.09[0.06-0.12] 0.01[0.00-0.03] 0.07[0.04-0.09] 0.17[0.13-0.21] 0.03[0.01-0.04]
-Arousal 0.82[0.81-0.83] 0.81[0.79-0.82] 0.83[0.81-0.84] 0.81[0.80-0.83] 0.81[0.79-0.82] 0.83[0.81-0.84]
-Average 0.33±0.28 0.42±0.26 0.43±0.27 0.40±0.27 0.43±0.25 0.44±0.25
-Regression-R2(↑)
-Apnea/HypopneaIndex>3% -0.00[-0.06-0.03] 0.16[0.07-0.23] 0.16[0.08-0.22] 0.06[-0.00-0.13] 0.15[0.05-0.24] 0.29[0.22-0.36]
-Apnea/HypopneaIndex>4% -0.01[-0.07-0.03] 0.13[0.06-0.21] 0.13[0.05-0.19] 0.13[-0.06-0.26] 0.12[0.03-0.22] 0.28[0.20-0.34]
-GestationAge 0.07[0.04-0.10] 0.19[0.15-0.21] 0.19[0.15-0.22] 0.18[0.15-0.21] 0.18[0.14-0.22] 0.22[0.19-0.25]
-SystolicBP(VV) -0.10[-0.51-0.10] -0.05[-0.44-0.21] -0.03[-0.37-0.18] -0.05[-0.36-0.12] -0.41[-0.77-(-0.15)] 0.15[-0.09-0.30]
-DiastolicBP(VV) -0.15[-0.31-0.11] -0.14[-0.29-0.08] -0.01[-0.40-0.20] -0.09[-0.45-0.16] -0.48[-1.02-(-0.20)] 0.10[-0.11-0.23]
-SystolicBP(PPG-BP) 0.12[-0.04-0.21] 0.09[-0.20-0.31] 0.10[-0.16-0.30] 0.13[-0.06-0.26] 0.36[0.16-0.49] 0.20[0.02-0.31]
-DiastolicBP(PPG-BP) 0.01[-0.18-0.14] 0.00[-0.20-0.18] 0.05[-0.11-0.17] 0.02[-0.15-0.12] 0.22[-0.13-0.40] 0.08[-0.07-0.17]
-AverageHR 0.15[-0.10-0.33] 0.74[0.64-0.80] 0.65[0.50-0.77] 0.82[0.73-0.88] 0.79[0.57-0.90] 0.78[0.69-0.83]
-HR 0.34[0.32-0.36] 0.45[0.44-0.47] 0.36[0.35-0.37] 0.54[0.53-0.55] 0.52[0.51-0.53] 0.48[0.42-0.46]
-Average 0.05±0.14 0.17±0.25 0.18±0.20 0.19±0.28 0.16±0.38 0.28±0.20
-Table 13: Scaling: Downstream comparison for different PAPAGEI-S models. 95% CIs are
-reportedinsquarebracketsandthebestvalueisbolded.
-|     | PAPAGEI-S-5M | PAPAGEI-S-35M | PAPAGEI-S-139M |     |
-| --- | ------------ | ------------- | -------------- | --- |
-Classification-AUROC(↑)
-| ICUAdmission             | 0.79[0.75-0.82] | 0.72[0.68-0.75] | 0.77[0.73-0.80] |     |
-| ------------------------ | --------------- | --------------- | --------------- | --- |
-| Mortality                | 0.67[0.63-0.70] | 0.66[0.63-0.70] | 0.66[0.63-0.69] |     |
-| Smoker                   | 0.61[0.56-0.66] | 0.58[0.52-0.64] | 0.59[0.54-0.65] |     |
-| Pregnancystage           | 0.78[0.75-0.80] | 0.77[0.75-0.79] | 0.76[0.74-0.78] |     |
-| Hypertension             | 0.77[0.68-0.87] | 0.75[0.64-0.85] | 0.77[0.65-0.87] |     |
-| SleepDisorderedBreathing | 0.70[0.57-0.84] | 0.59[0.44-0.74] | 0.62[0.46-0.78] |     |
-| MoodDisturbance          | 0.56[0.33-0.77] | 0.53[0.30-0.73] | 0.54[0.29-0.78] |     |
-| Valence                  | 0.56[0.54-0.59] | 0.53[0.50-0.56] | 0.54[0.51-0.56] |     |
-| Arousal                  | 0.55[0.52-0.57] | 0.52[0.49-0.55] | 0.55[0.52-0.58] |     |
-| Average                  | 0.67±0.09       | 0.63±0.09       | 0.63±0.10       |     |
-Regression-MAE(↓)
-| Apnea/HypopneaIndex>3% | 12.97[11.87-14.05] | 13.07[11.92-14.25] | 12.86[11.79-13.94] |     |
-| ---------------------- | ------------------ | ------------------ | ------------------ | --- |
-| Apnea/HypopneaIndex>4% | 10.56[9.59-11.62]  | 10.79[9.85-11.83]  | 10.65[9.62-11.68]  |     |
-| GestationAge           | 6.05[5.91-6.17]    | 6.10[5.94-6.24]    | 6.17[6.02-6.30]    |     |
-| SystolicBP(VV)         | 14.65[12.50-16.78] | 15.10[13.10-17.21] | 14.95[12.87-17.01] |     |
-| DiastolicBP(VV)        | 8.29[6.61-10.22]   | 9.20[6.93-11.12]   | 8.95[6.72-10.95]   |     |
-| SystolicBP(PPG-BP)     | 14.39[12.53-16.45] | 16.70[14.25-19.38] | 16.20[13.73-18.85] |     |
-| DiastolicBP(PPG-BP)    | 8.71[7.18-10.01]   | 9.48[8.24-10.90]   | 9.32[7.90-10.69]   |     |
-| AverageHR              | 4.00[3.34-4.67]    | 4.76[3.94-5.86]    | 4.71[3.86-5.60]    |     |
-| HR                     | 11.53[11.40-11.66] | 12.86[12.73-12.99] | 12.20[12.07-12.34] |     |
-| Average                | 10.12±3.47         | 10.89±3.73         | 10.76±3.57         |     |
-D.4 STATISTICALSIGNIFICANCEOFMODELCOMPARISON
-Inadditiontoconfidenceintervals,weperformthefollowingstepstoevaluatethesignificanceacross
-modelsonapertaskbasis(Tables3&4).First,werantheFriedmannChiSquaretest,andidentified
-statistically significant differences across PAPAGEI and the baseline models at p < 0.05. Next,
-we created critical difference (CD) diagrams to rank the best performing models, as suggested by
-the literature to compare models over multiple datasets6 (Demsˇar, 2006). The CDs indicate that
-PAPAGEI performs the best across both classification and regression tasks. Furthermore, it has a
-statisticallysignificantaveragerankasindicatedbythelackofhorizontalline.
-6https://scikit-posthocs.readthedocs.io/en/latest/tutorial.html#
-critical-difference-diagrams
-25
+Self-supervised learning has become a prominent paradigm for learning general representations from unlabeled datasets, with applications in physiological signal analysis including health, fitness, and brain signals (Tonekaboni et al., 2021; Zhang et al., 2022; Chen et al., 2021; Y`eche et al., 2021; Spathis et al., 2021; Cheng et al., 2020; Kiyasseh et al., 2021; Sarkar & Etemad, 2020). Despite its popularity, there are no widely used models for PPG signals pre-trained through SSL. Recently, Abbaspourazad et al. (2023) demonstrated that embeddings derived from PPG signals can predict over 45 diverse downstream health-related tasks using proprietary Apple Watch data. Their approach uses an SSL framework based on patient-level positive pair contrastive learning. Similarly, (Yun et al., 2024) showed that embedding PPG signals can improve genetic discovery and risk prediction outcomes using the UK Biobank dataset. Other works (Weng et al., 2024; Ding et al., 2024; Zhou et al., 2024) explored PPG embeddings for various applications. However, these studies often used proprietary datasets, did not explore out-of-domain generalization, or did not release their models, highlighting the need for openly available, pre-trained PPG FMs (Table 17). For example, in contrast to (Abbaspourazad et al., 2023), our work exclusively uses public datasets for large-scale PPG training and introduces a novel SSL framework to incorporate PPG morphology. While Abbaspourazad et al. (2023) evaluate a single proprietary dataset, we validate on 10 diverse downstream datasets, showcasing greater generalizability and robustness across varied real-world scenarios. 
 
-PublishedasaconferencepaperatICLR2025
-| Table14: | PAPAGEIcomponentablationstudyresults. |      |          |          |      |
-| -------- | ------------------------------------- | ---- | -------- | -------- | ---- |
-|          |                                       | sVRI | sVRI+SQI | sVRI+IPA | Full |
-Classification-AUROC(↑)
-| ICUAdmission   |     | 0.79 | 0.75 | 0.78 | 0.79 |
-| -------------- | --- | ---- | ---- | ---- | ---- |
-| Mortality      |     | 0.67 | 0.65 | 0.67 | 0.67 |
-|                |     |      | 0.61 |      | 0.61 |
-| Smoker         |     | 0.59 |      | 0.60 |      |
-| Pregnancystage |     | 0.78 | 0.73 | 0.72 | 0.78 |
-| Hypertension   |     | 0.77 | 0.72 | 0.75 | 0.77 |
-0.70
-| SleepDisorderedBreathing |     | 0.62 | 0.53 | 0.64 |      |
-| ------------------------ | --- | ---- | ---- | ---- | ---- |
-| MoodDisturbance          |     | 0.53 | 0.56 | 0.55 | 0.56 |
-| Valence                  |     | 0.54 | 0.55 | 0.53 | 0.56 |
-| Arousal                  |     | 0.44 | 0.51 | 0.49 | 0.55 |
-Regression-MAE(↓)
-| Apnea/HypopneaIndex>3% |     | 13.36 | 13.74 | 13.42 | 12.97 |
-| ---------------------- | --- | ----- | ----- | ----- | ----- |
-| Apnea/HypopneaIndex>4% |     | 11.01 | 11.43 | 11.29 | 10.56 |
-| GestationAge           |     | 6.18  | 6.32  | 6.15  | 6.05  |
-| SystolicBP(VV)         |     | 14.62 | 15.97 | 15.33 | 14.65 |
-| DiastolicBP(VV)        |     | 8.32  | 8.76  | 9.04  | 8.29  |
-| SystolicBP(PPG-BP)     |     | 15.03 | 14.39 | 16.15 | 14.39 |
-| DiastolicBP(PPG-BP)    |     | 9.12  | 8.76  | 9.06  | 8.71  |
-| AverageHR              |     | 4.00  | 5.88  | 4.26  | 4.00  |
-| HR                     |     | 11.51 | 11.97 | 11.88 | 11.53 |
-Classification: Critical difference diagram of average score ranks
-| 0.2 0.3      | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 0.9       |
-| ------------ | --- | --- | --- | --- | ------------- |
-| Regle (0.22) |     |     |     |     | (0.9) PaPaGei |
-Stat. Features (0.4) (0.66) Chronos
-| BYOL (0.51)   |     |     |     |     | (0.65) Moment |
-| ------------- | --- | --- | --- | --- | ------------- |
-| SimCLR (0.54) |     |     |     |     | (0.62) TF-C   |
-Figure22: CriticalDifferenceDiagramforClassificationTasks. Theaxisrepresentstheaverage
-rank of the model. The horizontal connector lines indicate no significant differences between the
-models.
-From the critical difference diagrams we observe that PAPAGEI is significantly better across clas-
-sification(Figure22)andregression(Figure23)tasks. ThisarisesbecausePAPAGEIisthehighest
-rankingmodelacrossmosttasks. Furthermore,weobserveMomentisastrongmodelacrossboth
-classificationandregressiontasks. WhereasChronosandTF-Cperformwellforclassificationtasks
-only.
-We conduct additional statistical significance comparisons using a structured approach. First, we
-randomlysampleascorefromwithintheconfidenceintervalsforeachtaskacrossallmodels. Next,
-Regression: Critical difference diagram of average score ranks
-| 0.2 0.3 | 0.4 | 0.5 | 0.6 | 0.7 | 0.8 |
-| ------- | --- | --- | --- | --- | --- |
-PaPaGei (0.19) (0.81) Stat. Features
-SimCLR (0.48) (0.81) Regle
-Moment (0.5) (0.65) Chronos
-BYOL (0.53) (0.53) TF-C
-Figure 23: Critical Difference Diagram for Regression Tasks. The axis represents the average
-rank of the model. The horizontal connector lines indicate no significant differences between the
-models.
-26
+2 
 
-PublishedasaconferencepaperatICLR2025
-weapplytheCDrankingproceduretothesampledscores.Thisprocessisrepeated1,000times,and
-theranksareaveraged. TheentireexperimentisconductedfivetimesforTables3and4, withthe
-results presented in Figure 24. The colored cells indicate that PAPAGEI is statistically significant
-comparedtotherespectivemodelatp<0.05.OurfindingsshowthatPaPaGeiconsistentlyachieves
-the best average rank, ranging between 0.82-0.90 for AUROC and 0.19-0.25 for MAE. Across 35
-comparisons(PaPaGeivs. theothermodels,repeatedfivetimes),PaPaGeidemonstratessignificant
-improvementsin30outof35AUROCcomparisonsand32outof35MAEcomparisons. Among
-the baseline models, we acknowledge that Chronos and TF-C are strong competitors capable of
-performingcomparablytoPAPAGEI.
-serutaeF
-.tatS
-ELGER sonorhC tnemoM RLCmiS LOYB C-FT ieGaPaP
-Methods (AUROC)
-stnemirepxE
-I
-II
-III
-VI
-V
-0.46 0.26 0.57 0.53 0.54 0.6 0.65 0.89
-0.38 0.21 0.67 0.58 0.5 0.69 0.65 0.84
-0.34 0.23 0.77 0.65 0.56 0.54 0.5 0.87
-0.54 0.19 0.63 0.61 0.54 0.45 0.61 0.9
-0.47 0.26 0.68 0.57 0.5 0.51 0.68 0.82
-serutaeF
-.tatS
-ELGER sonorhC tnemoM RLCmiS LOYB C-FT ieGaPaP
-Methods (MAE)
-stnemirepxE
-I
-II
-III
-VI
-V
-0.61 0.76 0.65 0.57 0.56 0.51 0.61 0.19
-0.61 0.77 0.68 0.59 0.58 0.59 0.4 0.25
-0.67 0.81 0.47 0.47 0.51 0.72 0.6 0.25
-0.58 0.8 0.6 0.53 0.6 0.61 0.53 0.25
-0.65 0.78 0.65 0.56 0.56 0.64 0.43 0.24
-Figure24: Bootstraprankingrepeatedforfiveexperiments: AUROC(left)andMAE(right). Col-
-oredcellsindicatethatPAPAGEIissignificanttothebaselineatp<0.05.
-D.5 STATISTICALASSESSMENTBETWEENIPAANDSQI
-Recall that we incorporate SQI to handle situations where the dicrotic notch cannot be computed
-duetopoor-signalqualityordifferentmorphologies. Weperformedapermutationtest(Rice,2008)
-to statistically evaluate PPG segments where IPA is unavailable. By splitting SQI values into no
-IPAandIPAgroupsandtestingsignificanceover1000permutations,weobservedstatisticallysig-
-nificantdifferences(p < 0.05)inbothmean(+0.18)andmedian(+0.32)SQIvalues,withtheIPA
-group having larger SQI. These findings empirically motivate SQI’s ability to handle limited PPG
-morphology.
-E ADDITIONAL BASELINES: DEMOGRAPHICS & PPG MORPHOLOGY
-FEATURES
-In this section, we evaluate the effectiveness of demographics (Demo: age, sex) and PPG mor-
-phology(sVRI,IPA,SQI)topredictbothregression(ridge)andclassification(logisticregression)
-tasks: (1)AblationStudy: WecomparedPaPaGeiwiththreebaselines—demographicsalone,PPG
-features alone, and demographics + PPG features. Our results show that while demographics is a
-stronger baseline than statistical features, PaPaGei outperforms the demographics + PPG baseline
-in14outof18tasks. (2)EffectofDemographics: WetrainedamodelcombiningPaPaGei-Swith
-demographics. TheresultsindicatethatincorporatingdemographicfeatureswithPaPaGei-Screates
-astrongermodelthanusingPaPaGei-Salone.
-From Table 15, we observe the following classification performance (Positive is better): ICU
-(+0.13), Mortality (+0.01), Smoker (-0.02), Pregnancy Stage (+0.22), Hypertension (0.00), SDB
-(nodemographics),MoodDisturbance(-0.08),Valence(-0.01),Arousal(+0.04). RegressionTasks
-(Negativeisbetter): AHI>3%(-1.43),AHI>4%(-1.61),gestationage(-1.54),SBP-VV(-0.31),
-DBP-VV (-0.46), SBP (-0.11) , DBP (-0.65), Avg. HR (-4.07), HR (-2.93). PaPaGei-S performs
-better for real-time sleep and cardiovascular outcomes such as sleep apnea, heart rate and blood
-pressure,respectively. Inparticular,wenoticethatoutcomessuchasheartratebenefitsubstantially
-from PPG rather than demographics. Demographics are useful in tasks without real-time depen-
-dencesuchassmoking,whichisestablishedtobeassociatedwithageandsex(Chungetal.,2020).
-27
+Published as a conference paper at ICLR 2025 
 
-PublishedasaconferencepaperatICLR2025
-Table15: Demographics&PPGMorphologyBaselineResults.
-Stat.Features Demo PPG Demo+PPG PAPAGEI-Sor-P PAPAGEI-S+Demo
-Classification-AUROC(↑)
-ICUAdmission 0.71[0.65-0.78] 0.64[0.60-0.68] 0.59[0.54-0.64] 0.66[0.61-0.70] 0.79[0.75-0.82] 0.77[0.74-0.81]
-Mortality 0.57[0.54-0.61] 0.66[0.61-0.69] 0.57[0.53-0.61] 0.66[0.61-0.69] 0.67[0.63-0.70] 0.70[0.67-0.74]
-Smoker 0.63[0.58-0.67] 0.64[0.59-0.70] 0.56[0.52-0.62] 0.66[0.61-0.71] 0.64[0.58-0.69] 0.62[0.56-0.68]
-Pregnancystage 0.64[0.62-0.67] 0.52[0.50-0.55] 0.55[0.53-0.57] 0.56[0.53-0.58] 0.78[0.75-0.80] 0.78[0.76-0.80]
-Hypertension 0.66[0.47-0.83] 0.77[0.65-0.88] 0.53[0.40-0.68] 0.77[0.65-0.88] 0.77[0.68-0.87] 0.80[0.70-0.89]
-SDB 0.32[0.14-0.55] – 0.46[0.31-0.62] – 0.70[0.57-0.84] –
-MoodDisturbance 0.54[0.31-0.77] 0.54[0.30-0.80] 0.64[0.42-0.85] 0.63[0.36-0.87] 0.56[0.33-0.77] 0.52[0.25-0.78]
-Valence 0.52[0.49-0.55] 0.57[0.54-0.60] 0.44[0.41-0.47] 0.57[0.54-0.60] 0.56[0.54-0.59] 0.55[0.53-0.58]
-Arousal 0.55[0.53-0.58] 0.54[0.52-0.58] 0.51[0.48-0.54] 0.54[0.52-0.58] 0.58[0.55-0.61] 0.58[0.54-0.59]
-Regression-MAE(↓)
-Apnea/HypopneaIndex>3% 15.31[13.63-17.14] 14.53[13.29-15.84] 15.09[14.01-16.54] 14.40[13.12-15.61] 12.97[11.87-14.05] 12.35[11.27-13.46]
-Apnea/HypopneaIndex>4% 12.52[10.92-14.14] 12.28[11.19-13.39] 12.65[11.57-13.83] 12.17[11.10-13.39] 10.56[9.59-11.62] 10.47[9.53-11.50]
-GestationAge 7.15[6.99-7.34] 7.69[7.61-7.77] 7.61[7.51-7.70] 7.59[7.51-7.68] 6.05[5.91-6.17] 6.02[5.88-6.17]
-SystolicBP(VV) 15.76[13.67-18.36] 14.96[13.21-17.35] 15.82[13.48-18.31] 15.01[13.30-17.86] 14.65[12.50-16.78] 14.27[11.92-16.44]
-DiastolicBP(VV) 9.75[7.16-11.27] 8.75[6.48-9.77] 9.20[7.21-10.71] 8.78[7.10-10.25] 8.29[6.61-10.22] 8.26[6.64-10.16]
-SystolicBP(PPG-BP) 15.50[11.68-20.25] 13.71[11.33-15.95] 15.76[13.36-18.30] 13.74[11.37-16.09] 13.60[10.65-16.51] 13.20[11.47-15.66]
-DiastolicBP(PPG-BP) 9.35[7.44-11.66] 9.26[7.89-10.68] 9.36[7.95-10.92] 9.28[8.00-10.56] 8.71[7.18-10.01] 8.61[7.34-9.88]
-AverageHR 7.01[5.48-8.89] 9.12[7.86-10.61] 8.07[6.60-9.71] 8.23[6.82-9.78] 3.47[2.74-4.32] 4.00[3.35-4.73]
-HR 13.07[12.90-13.23] 15.18[15.03-15.33] 16.75[16.60-16.90] 14.46[14.32-14.62] 10.92[10.80-11.04] 12.38[11.90-12.96]
-Importantly, demographics do not add much to already homogeneous populations. For example,
-consider the NuMoM2B dataset which has women within a specific age range. Here, we observe
-thatPaPaGeiobtainsmuchhigherAUROCandMAEthanthesupervisedbaselines.
-Furthermore, We observe that adding demographics to PaPaGei-S embeddings improves over Pa-
-PaGeiinthefollowingtasks: Mortality(+0.03),Hypertension(+0.03),AHI>3%(-0.62),AHI>
-4%(-0.09),gestationage(-0.03),SBPVV(-0.38),DBPVV(-0.03),SBP(0.40),DBP(0.10).Based
-on these results, PaPaGei-S + Demois a stronger modelin many cases. Importantly, these results
-indicatethatPaPaGei-Sembeddingslearnfeaturesthatarecomplementarytodemographicsarenot
-simplyproxiesforageorsex. However,itisimportanttonotethatwhiledemographicfeaturescan
-bevaluableforpersonalization,theymaynotalwaysbereadilyavailable,andinreality,wecannot
-usetheminisolationtopredictreal-timeoutcomessuchasbloodpressureorheartrate. Therefore,
-ourPaPaGeimodelsaredesignedtofunctioneffectivelywithreal-timesensordataalone,ensuring
-theirapplicabilityinsituationswherecompletedemographicinformationisnotaccessible.
-Thesefindingsunderscoreanimportantpoint: demographicfeaturesarenotcompetingwithPa-
-PaGeibutrathercomplementit,aspreviouslyestablishedinstudiesincludingdemographicswith
-sensordata(Spathisetal.,2022). ThishighlightsthesynergisticpotentialofcombiningPaPaGei’s
-advancedfeatureextractionwithdemographiccontextforimprovedtaskperformance.
-Predicting Demographics Targets. Using the PAPAGEI features, we predict downstream demo-
-graphics such as age and sex (Table 16). PAPAGEI-S achieves 7.78 MAE in age regression, 0.85
-accuracy in age classification, and 0.79 accuracy in sex classification. Although our results trail
-larger closed studies (Abbaspourazad et al., 2023) by 2.18, 0.05, and 0.13 for segment-level SSL,
-and by 5.59, 0.12, and 0.25 for patient-level SSL, they mark an advancement in open-source ef-
-forts. The superior performance of Abbaspourazad et al. (2023) can be attributed to two primary
-factors. First,thepatient-levelpositivepairstrategyachievesthebestperformanceacrossalltasks.
-This approach encourages the model to form distinct clusters for each patient, effectively captur-
-ing demographic factors such as age and sex. In contrast, a segment-level approach pushes the
-modeltoclustersimilarsegmentsacrossindividualswithvaryingdemographics,potentiallymixing
-demographic-specific information. Second, the single-device setup with a larger dataset is useful
-foreffectivemodeltraining(Table17). Conversely, ourevaluation, whichspansthreedevicesand
-utilizessmallerdatasets,musthandlegreaterdataheterogeneity,thusmakingitmorechallenging.
-F ADDITIONAL PREDICTION PLOTS
-TheregressionplotstoevaluatetheagreementbetweentrueandpredictedvaluesinshowninFigure
-25. FromtheFigure,weobservethatPAPAGEI’spredictionsaremorealignedtothetruevaluesfor
-AHI > 3% (R2 = 0.28), Avg. HR (R2 = 0.79), gestation age (R2 = 0.28), SBP (R2 = 0.36),
-andDBP(R2 =0.22). Moreover,fromthedistributionplotsinFigure25,wenoticethatPAPAGEI
-hasstrongeroverlapforAHI>4%,Avg. HRandDBP,indicatingitsabilitytocapturethetailsfor
-28
 
-PublishedasaconferencepaperatICLR2025
-Table16: Predictingpersonalcharacteristicswithembeddings. Downstreampredictiononage
-regression, age classification, and sex classification in our pre-training datasets (VitalDB, MESA,
-MIMIC-III).TheregressionandclassificationtasksarereportedusingMAEandAUROC,respec-
-tively. Note: trainingandtestingareconductedwithcompletelydifferentcohortsinthetwostudies,
-hencecomparisonsaredifficult.
-Study AgeRegression(↓) AgeClassification(↑) SexClassification(↑)
-| Abbaspourazadetal.(2023)(Patient) |     | 3.19 | 0.97 | 0.99 |
-| --------------------------------- | --- | ---- | ---- | ---- |
-| Abbaspourazadetal.(2023)(Segment) |     | 6.60 | 0.90 | 0.87 |
-PAPAGEI-S(Ours) 8.78[8.47-8.09] 0.85[0.83-0.87] 0.74[0.72-0.76]
-Table17:Comparisonoflarge-scalePPGstudies. *indicatespartialavailability. Theparticipants
-andhoursindicatepre-trainingdata.
-Study #Participants(#Hours) #Devices(Types) OpenData OpenWeights OpenCode #Tasks(#Datasets)
-|                          |                   |                                  | ✗ ✗  | ✗        |
-| ------------------------ | ----------------- | -------------------------------- | ---- | -------- |
-| Abbaspourazadetal.(2023) | 141,207(333K)     | 1(Smartwatch)                    |      | >46(1)   |
-| Dingetal.(2024)          | 28,539(300K)      | 5-6(ICU,Smartwatch)              | ✗* ✗ | ✓ 4(7)   |
-| Yunetal.(2024)           | 170,714(Varying)7 | 1(Finger)                        | ✗ ✓  | ✓* 2(4)  |
-|                          |                   | 7 ( I C U , S m a rt w at c h    | ,    |          |
-| PAPAGEI(Ours)            | 13,517(57K)       |                                  | ✓ ✓  | ✓ 20(10) |
-|                          |                   | F i n g e r, ” P ho n e O x . ”) |      |          |
-thesetasks. Interestingly,wenoticethatallmodelsareunabletocapturethebi-modalnatureofthe
-gestationagemeasurements. Here,Chronosperformsbetterthanothermethodstocapturereadings
-fromthefirstvisit.
-| G EFFECT OF | SKIN TONE |     |     |     |
-| ----------- | --------- | --- | --- | --- |
-We present the skin tone analysis in a more granular way in Figure 26. Here, PAPAGEI-S clearly
-performs better than PAPAGEI-P in most cases. Overall, we notice that PAPAGEI-S is good for
-lighter skin tones in the 1-2 range for SBP and 2-3 range for DBP. While PAPAGEI-S does not
-performthebestfordarkerskintones,it’sperformanceiscomparabletoothermodelsforskintone
-ratings of 4 and 5. Overall, these results indicate that PAPAGEI-S is relatively robust to skin tone
-variations,andthatadditionalfutureworkisneededtomakeitbetterdarkerskintones.
-| H EXTENDED | RELATED WORK |     |     |     |
-| ---------- | ------------ | --- | --- | --- |
-Self-supervisedlearning(SSL)isthemostprominentparadigmforlearninggeneralrepresentations
-from large unlabeled datasets, including methods like SimCLR (Chen et al., 2020), BYOL (Grill
-etal.,2020),andmaskedautoencoders(MAE)(Heetal.,2022). Timeseries-specificobjectiveslike
-TNC and TF-C have also shown promise (Tonekaboni et al., 2021; Zhang et al., 2022). SSL has
-gained traction in the domain of physiological signal analysis, with applications to health records
-(Chenetal.,2021;Ye`cheetal.,2021),fitnessandpersonalization(Spathisetal.,2021),aswellas
-brain(Chengetal.,2020)andheartsignals(Kiyassehetal.,2021;Sarkar&Etemad,2020).
-However, despite the popularity of SSL, there are no widely used FMs for PPG data. While (Ab-
-baspourazad et al., 2023) showcased the potential of foundation models for physiological signals,
-it was based on a single proprietary dataset and device (Apple Watch) while the models were not
-released,limitingitspracticaluseintheresearchcommunity. Similarly,REGLE’swork(Yunetal.,
-2024)ontheUKBiobankdatasetshowedthatembeddingPPGsignalscanimprovegeneticdiscov-
-eryandriskpredictionoutcomes.Althoughpartsofthatmodelandpipelinearepublic,thedatasetis
-notopenlyaccessible,andtheprimarygoalwasnottocreateafoundationmodelforPPGbutrather
-tofocusongenetics. AnotherworkonthesamedatashowedthatPPGembeddingsarepromising
-forcardiovascularriskprediction(Wengetal.,2024). SiamQuality(Dingetal.,2024)alsotrained
-anunreleasedmodelon36millionPPGsignalsusingproprietarydata. Importantly, mostofthese
-workspre-trainedonasingle-devicedatasetanddidnotexploreout-of-domaindatasetsorconduct
-transferlearningexperiments,whicharecrucialforassessingthetruegeneralizabilityoffoundation
-7https://biobank.ndph.ox.ac.uk/crystal/field.cgi?id=4205
-29
 
-PublishedasaconferencepaperatICLR2025
-|     | Chronos |     | SimCLR |     | PaPaGei-S |     |     |     |     |     |     |
-| --- | ------- | --- | ------ | --- | --------- | --- | --- | --- | --- | --- | --- |
-%4 > IHA detciderP
-100
-|     |     |     | 100 |     | 100 |     | 0.06 |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | ---- | --- | --- | --- | --- |
-AHI > 4%
-|     | m=0.16     |     | m=0.14  |     | m=0.27  |     |              |     |     |     | Chronos |
-| --- | ---------- | --- | ------- | --- | ------- | --- | ------------ | --- | --- | --- | ------- |
-|     | 50 R2=0.16 |     | R2=0.13 |     | R2=0.28 |     | ytisneD 0.04 |     |     |     |         |
-|     |            |     | 50      |     | 50      |     |              |     |     |     | SimCLR  |
-PaPaGei-S
-0.02
-|     | 0   |     | 0   |     | 0   |     |     |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-0.00
-|     | 0 50          | 100 | 0             | 50 100 | 0             | 50 100 | 20  | 0 20 | 40 60    | 80 100 | 120 |
-| --- | ------------- | --- | ------------- | ------ | ------------- | ------ | --- | ---- | -------- | ------ | --- |
-|     | True AHI > 4% |     | True AHI > 4% |        | True AHI > 4% |        |     |      | AHI > 4% |        |     |
-(a)AHI>4%predictions
-Moment
-| RH .gva detciderP | 100     |     | 100 BYOL |     | 100 PaPaGei-P |     |              |     |     |     |         |
-| ----------------- | ------- | --- | -------- | --- | ------------- | --- | ------------ | --- | --- | --- | ------- |
-|                   | m=0.68  |     | m=0.67   |     | m=0.92        |     |              |     |     |     |         |
-|                   | R2=0.68 |     |          |     |               |     | 0.04         |     |     |     | Avg. HR |
-|                   |         |     | R2=0.65  |     | R2=0.79       |     |              |     |     |     |         |
-|                   | 80      |     | 80       |     | 80            |     | ytisneD 0.03 |     |     |     | Moment  |
-BYOL
-|     |     |     |     |     |     |     | 0.02 |     |     |     | PaPaGei-P |
-| --- | --- | --- | --- | --- | --- | --- | ---- | --- | --- | --- | --------- |
-|     | 60  |     | 60  |     | 60  |     | 0.01 |     |     |     |           |
-0.00
-|     | 60           | 80 100 | 60           | 80 100 | 60           | 80  | 100 40 | 50 60 | 70 80   | 90  | 100 110 |
-| --- | ------------ | ------ | ------------ | ------ | ------------ | --- | ------ | ----- | ------- | --- | ------- |
-|     | True avg. HR |        | True avg. HR |        | True avg. HR |     |        |       | Avg. HR |     |         |
-(b)Avg.HRpredictions
-|                         |         |     | BYOL    |     | PaPaGei-S |               |     |     |     |     |               |
-| ----------------------- | ------- | --- | ------- | --- | --------- | ------------- | --- | --- | --- | --- | ------------- |
-| egA noitatseG detciderP |         | 50  |         | 50  |           |               |     |     |     |     |               |
-| 50                      | Chronos |     | m=0.22  |     | m=0.25    |               |     |     |     |     |               |
-|                         | m=0.31  | 40  |         | 40  |           |               |     |     |     |     |               |
-| 40                      |         |     | R2=0.19 |     | R2=0.28   |               |     |     |     |     |               |
-|                         | R2=0.28 | 30  |         | 30  |           | 0.100         |     |     |     |     | Gestation Age |
-| 30                      |         |     |         |     |           |               |     |     |     |     | Chronos       |
-|                         |         | 20  |         | 20  |           | ytisneD 0.075 |     |     |     |     |               |
-| 20                      |         |     |         |     |           |               |     |     |     |     | BYOL          |
-|                         |         | 10  |         | 10  |           | 0.050         |     |     |     |     | PaPaGei-S     |
-10
-0.025
-|     | 0                  | 0   |                    | 0   |                    | 0.000 |                    |       |     |     |     |
-| --- | ------------------ | --- | ------------------ | --- | ------------------ | ----- | ------------------ | ----- | --- | --- | --- |
-|     | 0 20               | 40  | 0 20               | 40  | 0 20 40            |       |                    |       |     |     |     |
-|     | True Gestation Age |     | True Gestation Age |     | True Gestation Age |       | 10 0 Gestation Age | 10 20 | 30  | 40  |     |
-(c)GestationAge
-| )PB-GPP( PBS detciderP | Moment            |     |                   |      |                   |     |              |                      |     |                      |     |
-| ---------------------- | ----------------- | --- | ----------------- | ---- | ----------------- | --- | ------------ | -------------------- | --- | -------------------- | --- |
-|                        | 180               |     | 180               | TF-C | 180 PaPaGei-P     |     |              |                      |     |                      |     |
-|                        | 160 m=0.31        |     | 160               |      | 160               |     |              |                      |     |                      |     |
-|                        |                   |     | m=0.19            |      | m=0.29            |     | 0.04         |                      |     | Systolic BP (PPG-BP) |     |
-|                        | 140 R2=0.07       |     | R2=0.13           |      | R2=0.36           |     |              |                      |     |                      |     |
-|                        |                   |     | 140               |      | 140               |     | ytisneD 0.03 |                      |     | Moment               |     |
-|                        | 120               |     |                   |      |                   |     |              |                      |     | TF-C                 |     |
-|                        |                   |     | 120               |      | 120               |     | 0.02         |                      |     | PaPaGei-S            |     |
-|                        | 100               |     | 100               |      | 100               |     | 0.01         |                      |     |                      |     |
-|                        | 80                |     | 80                |      | 80                |     | 0.00         |                      |     |                      |     |
-|                        | 100               | 150 | 100               | 150  | 100               | 150 |              |                      |     |                      |     |
-|                        | True SBP (PPG-BP) |     |                   |      |                   |     | 60           | 80 100 120           | 140 | 160 180              | 200 |
-|                        |                   |     | True SBP (PPG-BP) |      | True SBP (PPG-BP) |     |              | Systolic BP (PPG-BP) |     |                      |     |
-(d)SystolicBP(PPG-BP)
-)PB-GPP( PBD detciderP
-|     | 120 Moment |      | BYOL    |     | PaPaGei-P |     |       |     |     |                       |     |
-| --- | ---------- | ---- | ------- | --- | --------- | --- | ----- | --- | --- | --------------------- | --- |
-|     |            |      | 120     |     | 120       |     |       |     |     |                       |     |
-|     | m=0.15     |      | m=0.08  |     | m=0.25    |     |       |     |     |                       |     |
-|     | 100 R2=    | 0.03 | R2=0.05 |     | R2=0.22   |     | 0.100 |     |     |                       |     |
-|     |            |      | 100     |     | 100       |     |       |     |     | Diastolic BP (PPG-BP) |     |
-|     |            |      |         |     |           |     | 0.075 |     |     | Moment                |     |
-ytisneD
-|     | 80  |     | 80  |     | 80  |     | 0.050 |     |     | BYOL |     |
-| --- | --- | --- | --- | --- | --- | --- | ----- | --- | --- | ---- | --- |
-PaPaGei-P
-|     | 60  |     | 60  |     | 60  |     | 0.025 |     |     |     |     |
-| --- | --- | --- | --- | --- | --- | --- | ----- | --- | --- | --- | --- |
-0.000
-|     | 50 75             | 100 | 50 75             | 100 | 50 75             | 100 | 40  | 60                    | 80  | 100 | 120 |
-| --- | ----------------- | --- | ----------------- | --- | ----------------- | --- | --- | --------------------- | --- | --- | --- |
-|     | True DBP (PPG-BP) |     | True DBP (PPG-BP) |     | True DBP (PPG-BP) |     |     | Diastolic BP (PPG-BP) |     |     |     |
-(e)DiastolicBP(PPG-BP)
-Figure 25: Regression plots and prediction distribution of different models compared to ground
-truthfor(a)Apnea/HypopneaIndex>4%,(b)AverageHeartRate,(c)GestationAge,(d)Systolic
-BP(PPG-BP),and(e)DiastolicBP(PPG-BP).R2
-isthecoefficientofdeterminationandmisthe
-correlationslope.
-30
 
-PublishedasaconferencepaperatICLR2025
-30
-25
-20
-15
-10
-5
-0
-1 (Pale white) 2 (Fair) 3 (Darker White)4 (Light Brown) 5 (Brown) 6 (Black)
-Fitzpatrick Skin Tone Scale
-EAM
-Systolic BP (VV)
-REGLE
-Chronos
-Moment
-SimCLR
-BYOL
-TF-C
-PaPaGei-P
-PaPaGei-S
-12.5
-10.0
-7.5
-5.0
-2.5
-0.0
-1 (Pale white) 2 (Fair) 3 (Darker White)4 (Light Brown) 5 (Brown) 6 (Black)
-Fitzpatrick skin tone scale
-EAM
-Diastolic BP (VV)
-REGLE
-Chronos
-Moment
-SimCLR
-BYOL
-TF-C
-PaPaGei-P
-PaPaGei-S
-Figure26: DetailedskintoneanalysisforBloodPressureestimation(VVdataset).
-models. ThesestudieshighlightthepotentialofPPG-basedfoundationmodelsbutalsounderscore
-theneedforopenlyavailable,pre-trainedmodelsthatcanbewidelyusedandadaptedbytheresearch
-community.
-Ontheotherhand,generictimeseriesfoundationmodelshavebeguntogainpopularity,mirroring
-thetrendseeninLargeLanguageModels(LLMs).Thesemodelsarepre-trainedonmassivecorpora
-of diverse time series data, aiming to learn universal representations that can be applied across
-variousdomains.Forinstance,Chronos(Ansarietal.,2024)wastrainedonanimpressive84billion
-observations (analogous to tokens in NLP) from 28 distinct datasets. However, it’s notable that
-this diverse collection does not include physiological data. Similarly, Moment (Goswami et al.,
-2024) was trained on billions of observations from a wide-ranging dataset that includes weather,
-traffic,energy,andotherdomains. WhileMomentdoesincorporateasmallamountofECGdata,it
-comprisesonlyatinypercentageoftheoveralldatapool.
-Incontrasttothesegenericapproaches,ourworktakesadomain-specificfocus. Wecuratealarge
-pre-trainingandevaluationbenchmarkdedicatedexclusivelytoPPGdata. Whileknowledgegained
-from generic time series foundation models may transfer to domain-specific tasks like PPG, we
-expect the performance to be limited compared to a model trained specifically on PPG data. Fur-
-thermore,foundationmodelsforECG(McKeenetal.,2024;Songetal.,2024)orEEG(Yuanetal.,
-2024b)haveshownpromisebuttransferringfromonedomain-specificmodel(e.g.,ECG)toanother
-(PPG) is likely to be even more challenging, as the underlying signal characteristics can be quite
-different. Forinstance, Laietal.(2023)trainedalarge-scale12-leadECGmodelfordetecting60
-diagnostic terms, while McKeen et al. (2024) developed an open-source ECG FM using 1.6 mil-
-lion12-leadsignals. Inbrainsignalanalysis, Yuanetal.(2024b)introducedBrant-2, anEEGand
-SEEG model supporting tasks like sleep staging and seizure detection. Building on this progress,
-weadoptadomain-specificapproachfocusedonphotoplethysmography(PPG)signals.Buildingon
-the increasing interest in modality-specific foundation models, our specialized approach allows us
-tocapturenuancesandcomplexitiesspecifictoPPGsignals.
-An increasingly popular approach involves feeding timeseries data and prompts directly to Large
-LanguageModels(LLMs)(Gruveretal.,2024). However,despitepromisingresults,LLMsstrug-
-glewithhigh-dimensionalsignalsduetotheirtext-basedprocessing(Spathis&Kawsar,2024). A
-modality-specific encoder like PAPAGEI addresses this limitation by providing representations of
-31
 
-PublishedasaconferencepaperatICLR2025
-raw signals (Belyaeva et al., 2023), which can be combined with text and fed into more powerful
-multimodalfoundationmodels,suchasAnyMAL(Moonetal.,2023). Thisapproachoffersseveral
-advantages: computational efficiency through a fixed LLM, flexibility due to the modular design
-ofencoder,adapter,andLLMcomponents,andinteroperabilitywithotherhigh-performingmodels
-(e.g., a state-of-the-art IMU encoder (Yuan et al., 2024a)). Crucially, this encoder-LLM approach
-doesnotrequirepaireddatawithothermodalitiestotrainasinglemultimodalmodel. However,it
-may introduce complexity by limiting end-to-end gradient propagation and reduce interpretability
-in encoder-LLM communication compared to natural language prompts. Despite these trade-offs,
-PAPAGEIservesdualpurposes: asagenericfeatureextractorforvariousPPGsignalsandapplica-
-tions,andasamodalityencoderinnext-generationfrontiermodels. Thisversatilitypositionsitasa
-valuabletoolforadvancingmultimodalsensoryAIsystems.
-I EXTENDED DISCUSSION
-In§5.1,weobservedthatPAPAGEIoutperformsbaselinesinatleast14outof20tasks,withaverage
-classificationandregressionimprovementsof4.7%-6.3%and2.9%-4.9%,respectively. PAPAGEI-
-S performed best for cardiovascular parameters like BP, Hypertension, and Avg. HR, which are
-closely linked to metrics such as sVRI and IPA (Liang et al., 2018b). Additionally, PAPAGEI-P
-surpassedbaselinesFMslikeMomentandiswell-suitedfortaskssuchasSmokingandArousal.
-By ablating different components of PAPAGEI-S (Section 5.2), we found that the full model per-
-forms best, with sVRI contributing the most. Adding IPA or SQI separately did not improve per-
-formance, suggesting that (a) IPA and SQI positively transfer in a multi-task setup, and (b) our
-designchoicetoincludebothtocompensateforsituationswhereIPAcannotbecomputediseffec-
-tive(Section3.2). WhilecombiningPAPAGEI-PandPAPAGEI-Smayseemintuitive,constraining
-positivepairsonbothsVRIandparticipantsleadstotoomanyuniquelabelswithlimitedsamples.In
-ourscalabilityanalysis,weobservedthatthesmallestmodel(5Mparameters)outperformedothers,
-aligningwithotherstudiesusingCNNswith3.3Mparametersforbiosignals(Abbaspourazadetal.,
-2023),likelyduetothesizeofPPGdatasets.LargermodelslikeChronosorMomentareimpractical
-forwearablesduetotheirsizeandprivacyconcernswithcloud-basedinferenceforhealthdata. Ad-
-ditionally,PAPAGEI-Sismoredata-efficientforlinearprobing,showinggreaterperformancegains
-withincreaseddataavailability,makingitapromisingbackboneforsmallstudiesinfutureresearch.
-Our studies in Section 5.3 reveal that PAPAGEI-S embeddings are more dispersed across partici-
-pants,enhancingperformance,whileregressionpredictionsmoreaccuratelyreflectthetruedistribu-
-tion. Weattributethistoourpositivepairselection,whichchoosespositivepairsacrossindividuals
-basedonsVRI.Moreover,ourskintoneanalysisshowsthatthemethodperformsbetteronlighter
-skintones,likelyduetothemodelbeingtrainedpredominantlyonsuchdata. Fordarkerskintones,
-performancewassimilaracrossmodelsfordiastolicBP,withREGLEandBYOLperformingbest,
-highlightingtheneedforfutureworkcreatingmorerobustmodelsfordiverseskintones.
-To provide future direction regarding the use of PAPAGEI, we provide some suggestions. For in-
-stance,let’sconsiderthenuMoM2Bdatasetwhichconsistsofpregnantwomen. PAPAGEI-Sobtains
-anAUROCof0.78inpregnancystageclassificationand6.05isgestationageclassification. Com-
-paredtothepre-trainingpopulationwithdiverseageandgender,thenuMoM2Bconsistsofwomen
-generallyagedbetween20-35. Furthermore,thegestationagereadingsarecollectedapproximately
-aroundthefirstandthirdtrimester. Giventhesefactors,thetargetnuMoM2Bdatasethasmanyvari-
-ablescontributingtowarddistributionshift. Therefore,PaPaGei-Scanbefine-tunedtoaddressthe
-shiftinthefollowingways: (1)Wecanalignthepre-trainedembeddingstothenuMoM2Bembed-
-dingusingunsupervisedorsemi-superviseddomainadaptation. (2)DomainGeneralizationisalso
-anoptionduringthetrainingphasetoimprovegeneralizationrobustness. (3)Newermethodssuch
-asLoRAcanprovideanotherwaytoquicklyfine-tune. (4)Importantly,giventhatmorewomenare
-present in the first visit compared to the third visit, we can optimize different metrics to improve
-accuracyundertheimbalance. Forexample,AUPRCcanbeoptimizedinsteadofAUROC.Fairness
-ofclassificationacrossgenderscanalsobeconsideredduringtraining. Exploringtheseavenuesto
-further enhance the performance and applicability of PaPaGei is a promising direction for future
-studies. Moreover, future work may benefit from exploring PPG specific augmentations such as
-GAN-basedapproaches(Kiyassehetal.,2020); andsystematicallyevaluatingdifferentaugmenta-
-tionstoprovideinsightsintousefulPPGaugmentations.
-32
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Start of picture text -->
+SQI<br><!-- End of picture text -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Figure 2: Overview of PAPAGEI-S. The process begins by computing three morphology metrics (IPA, SVRI, and SQI) for each PPG segment. The raw PPG signals are then processed through an encoder ( _E_ ) to generate embeddings ( _H_ ). These same embeddings feed into three specialized heads: a projection head ( _P_ ) that contrasts PPG signals based on sVRI values, and two mixture-of-expert heads ( _M_ 1 and _M_ 2) that refine the embeddings by predicting IPA and SQI values. 
+
+Generic time-series FMs, like Chronos (Ansari et al., 2024) and Moment (Goswami et al., 2024), lack physiological data representation. There is growing interest in modality-specific FMs tailored to physiological signals (Song et al., 2024; Lai et al., 2023) and human activity (Yuan et al., 2024a). Knowledge transfer from time-series FMs might benefit PPG tasks, but their performance is limited compared to PPG-specific FMs. Adapting other domain-specific models, like ECG (McKeen et al., 2024; Song et al., 2024) or EEG (Yuan et al., 2024b), is challenging due to distinct signal characteristics. We specifically design FMs for PPG signals, contributing to the growing movement toward foundation models tailored to individual modalities. See Appendix §H for an extended discussion. 
+
+## 3 METHODS 
+
+Given a dataset _D_ = _{_ **p**<sup>1</sup> _,_ **p**<sup>2</sup> _, · · · ,_ **p**<sup>_S_</sup> _}_ representing diverse PPG signals from _S_ participants, a PPG signal **p**<sup>_s_</sup> _∈_ R<sup>_n_</sup> is defined as a time-series that captures variations in light intensity caused by arterial blood flow. To model granular changes in PPG signal of each subject _s_ , we segment **p**<sup>_s_</sup> without overlap to obtain _X_<sup>_s_</sup> = _{_ **x**<sup>_s_</sup> 1<sup>_,_</sup><sup>**x**</sup><sup>_s_</sup> 2<sup>_, · · ·_</sup><sup>**x**</sup><sup>_s_</sup> _N_<sup>_}_.Here,thenumberofsegments</sup><sup>_N_dependson</sup> the sampling frequency ( _f_ ) and the desired length of time window. To train our foundation models, PAPAGEI-P employs a _patient contrastive_ SSL approach that maximizes agreement between signals from the same subject. Importantly, we propose PAPAGEI-S, a _morphology-aware_ self-supervised approach that maximizes agreement between PPG segments with similar morphology. 
+
+### 3.1 PARTICIPANT-AWARE OBJECTIVE: PAPAGEI-P 
+
+In PAPAGEI-P, we train an SSL model to maximize agreement between the embeddings of PPG signals from the same subject. While previous studies have demonstrated the effectiveness of this strategy for physiological signals (Kiyasseh et al., 2021; Abbaspourazad et al., 2023), our work represents the first attempt to train and evaluate a foundation model using publicly available PPG datasets. 
+
+**Training.** We define a _positive pair_ as any two distinct segments of PPG signals from the same subject, denoted as _{_ ( **x**<sup>_s_</sup> _i_<sup>_,_</sup><sup>**x**</sup><sup>_s_</sup> _j_<sup>)</sup><sup>_|i_=</sup><sup>_j}_.Next,weapplyaseriesoftime-seriesaugmentationssuch</sup> as random cropping, adding Gaussian noise, time flipping, negation, and magnitude scaling (Tang et al., 2020), each applied with a predefined probability during training. Each augmentation includes hyper-parameters that control the intensity of the data transformation. During training, the augmented version of a randomly sampled positive pair ( **x**<sup>_s_</sup> _i_<sup>_,_</sup><sup>**x**</sup><sup>_s_</sup> _j_<sup>) is passed through the encoder</sup><sup>_E_,</sup> and subsequently projection _P_ , to obtain an _embeddings_ pair denoted by ( **z**<sup>_s_</sup> _i_<sup>_,_</sup><sup>**z**</sup><sup>_s_</sup> _j_<sup>).Givenabatch</sup> of embeddings from _N_ positive pairs of the form ( **z** _i,_ **z** _j_ ), the model optimizes the normalized temperature-scaled cross entropy (NT-Xent) loss (Sohn, 2016; Oord et al., 2018; Chen et al., 2020) 
+
+3 
+
+Published as a conference paper at ICLR 2025 
+
+given by: _Lp_ =<sup><u>1</u></sup> 2<sup>(</sup><sup>_ℓp_(</sup><sup>_i, j_)+</sup><sup>_ℓp_(</sup><sup>_j, i_)), where</sup><sup>_ℓp_(</sup><sup>_i, j_) =</sup><sup>_−_</sup> _N_<sup><u>1</u></sup> � _Nu_ =1<sup>log</sup> <u>�2</u> _vN_ =1<sup>1</sup> exp(<sup>[</sup><sup>_v_=</sup> _sim_<sup>_u_] exp(</sup> ( **z**<sup>_u_</sup> _i_<sup>_sim,_</sup><sup>**z**</sup><sup>_u_</sup> _<u>j</u>_<sup>)(</sup><sup>_/τ_</sup><sup>**z**</sup><sup>_u_</sup> _i_<sup>)</sup><sup>_,_</sup><sup>**z**</sup><sup>_v_</sup> _j_<sup>)</sup><sup>_/τ_)</sup> and _sim_ ( _·, ·_ ) is the cosine similarity. In contrast, vanilla SimCLR (Chen et al., 2020) would use positive pairs as augmented versions of randomly sampled PPG segments. 
+
+### 3.2 MORPHOLOGY-AWARE OBJECTIVE: PAPAGEI-S 
+
+In PAPAGEI-S, we leverage the PPG signal morphology to train a SSL model that maximizes agreement between similar physiological features of PPG signals across participants. 
+
+**PPG Morphology.** Total peripheral resistance (TPR)—the force exerted by the body’s blood vessels on circulating blood—varies under certain medical conditions, such as hypertension and diabetes (Trammel & Sapra, 2020). Variations in TPR are reflected in PPG signals, presenting as distinct regions within the waveform. To capture these variations, we introduce a morphology augmentation module before training, which computes three key PPG metrics (Figure 2, left): (1) **stress-induced Vascular Response Index (sVRI)** (Lyu et al., 2015; Zhang et al., 2019): the ratio of mean PPG signal between post- to pre-systolic phases, (2) **Inflection Point Area ratio (IPA)** (Wang et al., 2009): the ratio of systolic to diastolic areas defined by the dicrotic notch, and (3) **Signal Quality Index (SQI)** : skewness of the signal as an indicator of quality (Elgendi, 2016). Prior studies have shown that incorporating the PPG signal quality during training yields positive results (Ding et al., 2024). We selected these metrics for their complementary nature: sVRI captures variations in amplitude, while IPA measures signal width. To address scenarios where computing IPA is challenging because of noisy signals or different morphology, we incorporate SQI. In particular, we empirically find that SQI is significantly larger ( _p <_ 0 _._ 05) in signals with a dicrotic notch (Appendix §D.5). 
+
+
+
+where **x** _∈_ R<sup>_N_</sup> is the PPG segment, _sys_ is the systolic peak, _n_ is the length of time series, and _n_ ˆ is the dicrotic notch. For _SQI_ , we divide **x** into 5 second windows ( _w_ ; total windows _W_ ) and compute the skewness _mi_ = 5 _×_ <u>1</u> _f_ �5 _j_ =1 _×f_<sup>(</sup><sup>_x_[</sup><sup>_j_]</sup><sup>_−µx_[</sup><sup>_j_])</sup><sup>_i_, which gives the best signal quality discrimination.</sup> 
+
+**Training.** Before training, the morphology augmentation module takes an augmented input, by applying Gaussian noise and cropping to time series **x** , and outputs _y_ = _{y_<sup>_svri_</sup> _, y_<sup>_ipa_</sup> _, y_<sup>_sqi_</sup> _} ∈_ R<sup>3</sup> (Figure 2 middle). Next, we discretize _y_<sup>_svri_</sup> into a predefined set of _b_ = 8 bins to denote positive pairs, where _y_<sup>_svri_</sup> _∈{_ 1 _, . . . , b}_ . We define positive pairs based on the sVRI labels as _{_ ( **x** _i,_ **x** _j_ ) _|yi_<sup>_svri_</sup> = _yj_<sup>_svri_</sup> _, i_ = _j}_ . Note that positive pairs are not defined based on participants. 
+
+
+
+
+
+Given a batch of _N_ PPG signals and their morphology, we optimize three heads using the encoder ( _E_ ) embeddings _H_ = _{_ **h** 1 _,_ **h** 2 _, · · · ,_ **h** _N }_ . First, we extract the embeddings _Z_ = _{_ **z** 1 _,_ **z** 2 _, · · · ,_ **z** _N }_ from the projection ( _P_ ), and compute the contrastive loss for sVRI (equation 3). Next, we use the embeddings _H_ to predict the IPA ( **ˆy**<sup>_ipa_</sup> _∈_ R<sup>_N_</sup> ) and SQI ( **ˆy**<sup>_sqi_</sup> _∈_ R<sup>_N_</sup> ) using the mixture of expert (MoE) heads _M_ 1 and _M_ 2. Each MoE head is composed of three fully connected neural networks (FCNNs), with the head’s output calculated as a weighted sum of the FCNNs, using softmax to determine the weights. These heads are optimized using the mean absolute error (equation 4). The morphology indices encapsulate various PPG characteristics. Our rationale for utilizing MoE is that each expert can specialize in learning distinct properties that contribute to the overall index. Finally, the overall PAPAGEI-S training objective is given in equation 5. 
+
+4 
+
+Published as a conference paper at ICLR 2025 
+
+## 4 EXPERIMENTS 
+
+### 4.1 PRE-TRAINING 
+
+**Datasets.** We pre-train PAPAGEI on three datasets: (1) VitalDB (Lee et al., 2022), which includes PPG signals collected during surgery from the patient’s finger ( _f_ =500Hz), (2) the MIMIC-III waveform database matched subset (Johnson et al., 2016), where finger-tip PPG data is collected from an ICU monitor ( _f_ = 125Hz), and (3) the Multi-Ethnic Study of Atherosclerosis (MESA) sleep substudy (Zhang et al., 2018; Chen et al., 2015), which provides PPG data obtained through finger-tip polysomnography ( _f_ = 256Hz). In total, we have 13.5K participants with 20M segments (Table 1). 
+
+**Pre-processing.** To curate single-channel PPG signals across all datasets, we perform the following steps: (1) Apply a 4th-order Chebyshev bandpass filter with low and high pass cut-offs set at 0.5Hz and 12Hz, respectively (Lapitan et al., 2024; Liang et al., 2018c); (2) Segment the signal into 10-second windows ((Orphanidou, 2018; Koteska et al., 2022) use 10s windows whereas larger studies use 30s (Ding et al., 2024) and 60s Abbaspourazad et al. (2023)); (3) Detect flatline segments and remove any seg- 
+
+Table 1: PAPAGEI’s pre-training datasets. 
+
+|**Dataset**|**#Participants**|**#Segments**|**Hours**|
+|---|---|---|---|
+|VitalDB|5,866|6,248,100|17,355|
+|MIMIC-III|5,596|7,196,401|19,990|
+|MESA|2,055|7,306,705|20,296|
+|Total|13,517|20,751,206|57,641|
+
+
+
+ment where more than 25% of the data is flat (BioBSS Documentation, 2023); (4) Normalize the segments using Z-score (Temko, 2017; Zhou et al., 2017); and (5) Resample the segments to 125Hz (the lowest sampling rate of our pre-training datasets, MIMIC-III). 
+
+**Implementation.** We adopt a ResNet-style CNN encoder, following (Ding et al., 2024). Abbaspourazad et al. (2023) also utilize an EfficientNet-style CNN. Our model has 18 convolutional blocks, starting with a filter size of 32, which doubles every 4 blocks. The projection layer is a single FC layer, generating a 512-d embedding. In the PAPAGEI-S variant, the expert block ( _M_ 1 & _M_ 2) uses three parallel FCNNs, each with two FC layers, resulting in a 128d embedding. For augmentations, PAPAGEI-P uses cropping (0.50), negation (0.20), flipping (0.20), and scaling (0.40). PAPAGEI-S uses cropping (0.25) and Gaussian noise (0.25). PAPAGEI-S avoids augmentations that alter PPG’s morphology. 
+
+Table 2: PAPAGEI’s evaluation datasets. Gray lines are unseen during training (out-of-domain). For those used for pre-training, we keep a held-out test-sets and use labels. Task Types are: B=binary, R=regression, M-#classes= muticlass classification. 
+
+|**#ID**|**Dataset**|**Task (Task Type)**|**#Subj.(#Samp.)**|
+|---|---|---|---|
+|T1<br>|VitalDB (Lee et al., 2022)|ICU admission (B)<br>|5866<br>|
+|T2<br>||Operation Type (M-9)<br>|5866<br>|
+|T3<br>|MIMIC-III (Moody et al., 2020)<br>|Mortality (B)<br>|5596<br>|
+|T4<br>|MESA (Zhang et al., 2018)|Smoker (B)<br>|2055<br>|
+|T5||AHI_>_3% Oxygen Desat. (R)|2055<br>|
+|T6||AHI_>_4% Oxygen Desat. (R)|2055<br>|
+|T7<br>|nuMom2B (Facco et al., 2015)|Pregnancy stage (B)<br>|3163 (5337)<br>|
+|T8||Gestation Age (R)|3163 (5337)|
+|T9<br>|VV (Skin Tone) (Toye, 2023)|Systolic BP* (R)<br>|231<br>|
+|T10||Diastolic BP* (R)|231|
+|T11|PPG-BP (Liang et al., 2018a)|Systolic BP (R)<br>|219|
+|T12<br>||Diastolic BP (R)<br>|219<br>|
+|T13<br>||Average Heart Rate (R)<br>|219<br>|
+|T14<br>||Hypertension (B)<br>|219<br>|
+|T15<br>|SDB (Garde et al., 2014)<br>|Sleep Disordered Breathing (B)<br>|146<br>|
+|T16|ECSMP (Gao et al., 2021)|Mood Disturbance (B)|89|
+|T17|WESAD (Schmidt et al., 2018)|Valence (B)|15 (4497)|
+|T18||Arousal (B)|15 (4497)|
+|T19<br>|PPG-DaLiA (Reiss et al., 2019)|Heart Rate (R)<br>|15 (64697)<br>|
+|T20||Activity (M-9)|15 (64697)|
+
+
+
+We set _α_ = 0 _._ 6 and train on eight V100 GPUs for 15,000 steps (lr= 10<sup>_−_4</sup> ), with PAPAGEI-P and PAPAGEI-S having 5M and 5.7M parameters, respectively, while previous works use model sizes of 3.3M (Abbaspourazad et al., 2023) (we study scaling in Section 5.2). 
+
+### 4.2 DOWNSTREAM TASKS 
+
+To evaluate the effectiveness of PAPAGEI, we benchmark it against a diverse set of datasets, tasks, and baselines, chosen for their large size and clinical relevance (where applicable)<sup>2</sup> . A description of the tasks with their corresponding #ID is provided in Table 2, with further details in Appendix §B. As a motivation, identifying patient risk factors is crucial for hospitals to allocate resources effectively. To address this, we evaluate several indicators, including ICU admission (T1), type of operation (T2), mortality (T3), and smoking status (T4). For sleep apnea diagnosis, the American 
+
+> 2https://peterhcharlton.github.io/post/ppg_datasets/ 
+
+5 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+REGLE Chronos Moment Stat. Features<br>Smoker Smoker Smoker Smoker<br>Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality<br>Hypertension0.78 0.7 Hypertension0.78 0.7 Hypertension0.78 0.7 Hypertension0.78 0.7<br>0.8 ICU 0.8 ICU 0.8 ICU 0.8 ICU<br>0.7 0.7 0.7 0.7<br>Apnea 0.6 Apnea 0.6 Apnea 0.6 Apnea 0.6<br>0.6 0.58Arousal 0.6 0.58Arousal 0.6 0.58Arousal 0.6 0.58Arousal<br>Mood Valence Mood Valence Mood Valence Mood Valence<br>SimCLR BYOL TF-C PaPaGei (Ours)<br>Smoker Smoker Smoker Smoker<br>Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality Pregnancy0.82 0.64 Mortality<br>Hypertension0.78 0.7 Hypertension0.78 0.7 Hypertension0.78 0.7 Hypertension0.78 0.7<br>0.8 ICU 0.8 ICU 0.8 ICU 0.8 ICU<br>0.7 0.7 0.7 0.7<br>Apnea 0.6 Apnea 0.6 Apnea 0.6 Apnea 0.6<br>0.6 0.58Arousal 0.6 0.58Arousal 0.6 0.58Arousal 0.6 0.58Arousal<br>Mood Valence Mood Valence Mood Valence Mood Valence<br>REGLE Chronos Moment Stat. Features<br>Gestation Gestation Gestation Gestation<br>Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4%<br>13.0 13.0 13.0 13.0<br>Dia. BP* 12.0 Dia. BP* 12.0 Dia. BP* 12.0 Dia. BP* 12.0<br>16.0 AHI > 3% 16.0 AHI > 3% 16.0 AHI > 3% 16.0 AHI > 3%<br>18.0 18.0 18.0 18.0<br>Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0<br>12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR<br>Dia. BP Avg. HR Dia. BP Avg. HR Dia. BP Avg. HR Dia. BP Avg. HR<br>SimCLR BYOL TF-C PaPaGei (Ours)<br>Gestation Gestation Gestation Gestation<br>Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4% Sys. BP*18.0 8.0 AHI > 4%<br>13.0 13.0 13.0 13.0<br>Dia. BP* 12.0 Dia. BP* 12.0 Dia. BP* 12.0 Dia. BP* 12.0<br>16.0 AHI > 3% 16.0 AHI > 3% 16.0 AHI > 3% 16.0 AHI > 3%<br>18.0 18.0 18.0 18.0<br>Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0 Sys. BP 17.0<br>12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR 12.0 10.0 HR<br>Dia. BP Avg. HR Dia. BP Avg. HR Dia. BP Avg. HR Dia. BP Avg. HR<br><!-- End of picture text -->
+
+Figure 3: Radar charts of downstream tasks. (Top) _Classification_ performance in **AUROC (larger area is better)** . (Bottom) _Regression_ performance in **MAE (smaller area is better)** . Pre-trained models in purple: REGLE, Chronos, & Moment. Statistical feature baseline in gray. SSL methods in green: SimCLR, BYOL, & TF-C. PAPAGEI (ours), in pink. Details are in Tables 3 & 4. 
+
+Academy of Sleep Medicine recommends using the Apnea/Hypopnea Index (AHI) with at least 3% or 4% oxygen desaturation as a key metric (Ruehland et al., 2009). Thus, we predict AHI at 3% and 4% desaturation thresholds (T5 & T6) and classify sleep-disordered breathing (T15). For pregnancy outcomes, changes in gestational age and pregnancy stage are linked to risks like hypertensive disorders and small-for-gestational-age delivery (Bouariu et al., 2022; Wu et al., 2020; Crump et al., 2023), enabling us to classify pregnancy stage (T7) and predict gestational age (T8). In cardiovascular health, we estimate systolic (T9 & T11) and diastolic (T10 & T12) blood pressure (BP) using two datasets. While PPG-BP (T11 & T12) provides high-frequency, short PPG signals, the VV dataset helps explore skin tone’s influence on BP estimation. We also assess hypertension classification (T14), average seated heart rate (T13), and continuous heart rate during activities (T19), along with activity classification (T20). In the emotion domain, we classify PPG signals into mood disturbance levels (T16), valence (T17), and arousal (T18). 
+
+### 4.3 BASELINES 
+
+We benchmark PAPAGEI’s performance against competitive baselines. As open-source foundation models designed for physiological signals, PAPAGEI is compared to recent time-series FMs: **Chronos** (Ansari et al., 2024) and **MOMENT** (Goswami et al., 2024). To evaluate the merits of our SSL framework, we also compare PAPAGEI with common SSL methods (trained from scratch) such as **SimCLR** (Chen et al., 2020), **BYOL** (Grill et al., 2020), and **TF-C** (Zhang et al., 2022). In addition, to assess model generalizability on PPG signals, we compare against **REGLE** , a model pre-trained on UK Biobank’s PPG signals (Yun et al., 2024). As a simple baseline, we employ a random forest trained on **statistical features** extracted from the PPG signal, including mean, median, maximum, minimum, and the 25th, 50th, and 75th percentiles (”Stat. Features”). This task-specific approach serves as a benchmark for comparison with more advanced techniques. 
+
+6 
+
+Published as a conference paper at ICLR 2025 
+
+Table 3: **Downstream comparison against pre-trained models.** Feature extraction parameters are indicated next to each name. 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+||**REGLE** (0.07M)|**Chronos** (200M)|**Moment** (385M)|**PAPAGEI-P** (5M)|**PAPAGEI-S** (5M)|
+|---|---|---|---|---|---|
+|**Classifcation**- AUROC (_↑_)|(Yun et al., 2024)|(Ansari et al., 2024)|(Goswami et al., 2024)|||
+|ICU Admission|0.57 [0.52-0.62]|0.73 [0.68-0.80]|0.72 [0.70-0.80]|0.73 [0.67-0.78]|**0.79** [0.75-0.82]|
+|Mortality|0.55 [0.52-0.59]|**0.68** [0.65-0.71]|0.67 [0.63-0.71]|0.67 [0.63-0.71]|0.67 [0.63-0.70]|
+|Smoker|0.54 [0.47-0.59]|0.62 [0.57-0.67]|0.62 [0.56-0.67]|**0.64** [0.58-0.69]|0.61 [0.56-0.66]|
+|Pregnancy stage|0.64 [0.57-0.63]|**0.81** [0.79-0.82]|0.76 [0.74-0.78]|0.74 [0.72-0.76]|0.78 [0.75-0.80]|
+|<br>Hypertension|0.47 [0.34-0.58]|0.57 [0.43-0.71]|0.75 [0.64-0.85]|0.74 [0.55-0.90]|**0.77** [0.68-0.87]|
+|Sleep Disordered Breathing|0.45 [0.30-0.61]|0.58 [0.35-0.82]|0.45 [0.23-0.66]|0.54 [0.23-0.66]|**0.70** [0.57-0.84]|
+|<br>Mood Disturbance|0.41 [0.16-0.66]|0.43 [0.21-0.68]|0.55 [0.33-0.78]|0.53 [0.27-0.78]|**0.56** [0.33-0.77]|
+|Valence|0.55 [0.52-0.57]|0.56 [0.53-0.59]|**0.57** [0.54-0.59]|0.53 [0.51-0.56]|0.56 [0.54-0.59]|
+|Arousal|0.51 [0.52-0.58]|0.57 [0.54-0.60]|0.56 [0.53-0.58]|**0.58** [0.55-0.61]|0.55 [0.52-0.57]|
+|Average|0.52_±_0.06|0.62_±_0.10|0.63_±_0.09|0.63_±_0.08|**0.67**_±_**0.09**|
+|**Regression**- MAE (_↓_)||||||
+|Apnea/Hypopnea Index_>_3%|15.54 [14.20-16.69]|14.06 [13.05-15.16]|14.23 [13.04-15.42]|13.85 [12.43-15.49]|**12.97** [11.87-14.05]|
+|<br>Apnea/Hypopnea Index_>_4%|12.64 [11.47-13.78]|11.57 [10.51-12.72]|11.80 [10.79-12.93]|11.24 [9.71-12.87]|**10.56** [9.59-11.62]|
+|Gestation Age|7.28 [7.16-7.39]|**5.69** [5.54-5.85]|6.24 [6.10-6.37]|6.40 [6.21-6.59]|6.05 [5.91-6.17]|
+|<br>Systolic BP (VV)|15.88 [13.67-18.36]|17.24 [14.57-20.13]|14.71 [12.38-17.29]|19.11 [16.26-22.23]|**14.65** [12.50-16.78]|
+|<br>Diastolic BP (VV)|8.65 [7.16-10.27]|10.53 [8.91-12.19]|10.53 [8.91-12.19]|10.87 [9.10-12.98]|**8.29** [6.61-10.22]|
+|<br>Systolic BP (PPG-BP)|16.32 [13.87-19.13]|16.91 [13.31-19.34]|14.50 [11.98-17.31]|**13.60** [10.65-16.51]|14.39 [12.53-16.45]|
+|<br>Diastolic BP (PPG-BP)|9.30 [7.94-10.87]|10.26 [8.13-12.57]|9.53 [8.28-10.96]|8.88 [7.33-10.76]|**8.71** [7.18-10.01]|
+|<br>Average HR|6.88 [5.81-8.12]|8.51 [7.05-10.07]|4.41 [3.48-5.48]|**3.47** [2.74-4.32]|4.00 [3.34-4.67]|
+|<br>HR|16.35 [16.20-16.50]|9.65 [9.50-9.79]|**8.82** [8.68-8.96]|10.92 [10.80-11.04]|11.53 [11.40-11.66]|
+|Average MAE (sMAPE)|12.09_±_3.83 (15.23%)|11.60_±_3.60 (14.20%)|10.43_±_3.46 (13.82%)|10.92_±_4.25 (14.09%)|**10.12**_±_**3.47** (13.34%)|
+
+
+
+### 4.4 LINEAR EVALUATION 
+
+Initially, we split the in-domain and out-of-domain datasets into training, validation, and test sets at 80/10/10 and 60/20/20 ratios. The splitting is performed at the subject level ensuring no overlap between individuals across the sets. The models are evaluated by extracting feature representations from resampled data (125Hz) and applying linear probing for each task. For binary classification tasks, we employ a logistic regression model, with performance measured by the AUROC score. For regression tasks, ridge regression is used, and performance is evaluated based on the mean absolute error (MAE). Regression tasks are aggregated using the symmetric mean absolute percentage error (sMAPE). Multi-class classification tasks are trained using a random forest model, with accuracy as the evaluation metric. To ensure robustness, we compute 95% confidence intervals through bootstrapping (500 sampling runs with replacement). More details are provided in the Appendix §A. 
+
+## 5 RESULTS 
+
+### 5.1 OVERALL PERFORMANCE 
+
+In general, from Figure 3, we observe that PAPAGEI is more accurate across many tasks indicated by the larger AUROC area and smaller MAE area. Table 3 presents a more detailed comparison between PAPAGEI and other pre-trained models. For classification tasks, PaPaGei-S achieves the PaPaGei-S TF-C Moment highest average AUROC of 0.67, outperforming 0.66 12.5 other models across several tasks, particularly 0.64 11.5 in ICU Admission (0.79), Hypertension (0.77), 0.620.60 10.59.5 and Sleep Disordered Breathing (0.70). In re25% 50% 75% 100% 25% 50% 75% 100% gression tasks, PaPaGei-S again demonstrates Downstream labelled data Downstream labelled data strong performance, achieving the lowest averFigure 4: Downstream data-efficiency analysis. age MAE (10.12), particularly in tasks related to Results are averaged over all binary classification Apnea/Hypopnea Index and BP measurements. (left) and regression tasks (right). PAPAGEI-S REGLE, a small model trained on a large PPG performs better with increased label availability. dataset, generally underperforms compared to other models, suggesting its compact size may 
+
+limit learning complex patterns. Chronos obtains good performance in predicting mortality, pregnancy stage, and smoking, likely due to their slower rate of change and reduced reliance on granular PPG-specific features. General-purpose models suffice for these high-level outcomes. However, tasks requiring finer PPG-specific granularity, such as heart rate prediction, blood pressure estimation, or sleep apnea, benefit from PAPAGEI’s specialized feature extraction. Notably, PAPAGEI-S consistently outperforms PAPAGEI-P, highlighting the advantages of signal morphology objectives in enhancing predictive accuracy. 
+
+7 
+
+Published as a conference paper at ICLR 2025 
+
+Table 4: **Downstream comparison against baseline and SSL methods.** Feature extraction parameters are indicated next to each name. 95% CIs are reported in square brackets and the best value is **bolded** . Implementation details are in Appendix §A. 
+
+|**Classifcation**- AUROC (_↑_)|**Stat. Features**|**SimCLR** (5M)<br>(Chen et al., 2020)|**BYOL** (5M)<br>(Grill et al., 2020)|**TF-C** (10M)<br>(Zhang et al., 2022)|**PAPAGEI-P (5M)**|**PAPAGEI-S (5M)**|
+|---|---|---|---|---|---|---|
+|ICU Admission<br>Mortality|0.71 [0.65-0.78]<br>0.57 [0.54-0.61]|0.75 [0.72-0.79]<br>0.67 [0.63-0.70]|0.78 [0.73-0.81]<br>0.67 [0.64-0.71]|0.71 [0.67-0.75]<br>0.67 [0.63-0.70]|0.73 [0.67-0.78]<br>0.67 [0.63-0.71]|**0.79** [0.75-0.82]<br>0.67 [0.63-0.70]|
+|Smoker|0.63 [0.58-0.67]|0.62 [0.57-0.68]|0.62 [0.57-0.68]|0.61 [0.56-0.67]|**0.64** [0.58-0.69]|0.61 [0.56-0.66]|
+|Pregnancy stage|0.64 [0.62-0.67]|0.74 [0.72-0.75]|0.62 [0.57-0.68]|0.74 [0.72-0.76]|0.74 [0.72-0.76]|**0.78** [0.75-0.80]|
+|Hypertension|0.66 [0.47-0.83]|0.75 [0.64-0.86]|0.74 [0.64-0.84]|0.76 [0.63-0.86]|0.74 [0.55-0.90]|**0.77** [0.68-0.87]|
+|SDB|0.32 [0.14-0.55]|0.61 [0.46-0.76]|0.59 [0.42-0.74]|0.58 [0.44-0.73]|0.54 [0.23-0.66]|**0.70** [0.57-0.84]|
+|Mood Disturbance|0.54 [0.31-0.77]|0.32 [0.12-0.55]|0.46 [0.21-0.71]|**0.59** [0.33-0.84]|0.53 [0.27-0.78]|0.56 [0.33-0.77]|
+|Valence<br>Arousal|0.52 [0.49-0.55]<br>0.55 [0.53-0.58]|0.52 [0.49-0.55]<br>0.55 [0.52-0.58]|0.53 [0.50-0.56]<br>0.54 [0.30-0.78]|**0.57** [0.54-0.59]<br>0.55 [0.52-0.58]|0.53 [0.51-0.56]<br>**0.58** [0.55-0.61]|0.56 [0.54-0.59]<br>0.55 [0.52-0.57]|
+|Average|0.57_±_0.11|0.61_±_0.13|0.62_±_0.10|0.64_±_0.07|0.63_±_0.08|**0.67**_±_**0.09**|
+|**Regression**- MAE (_↓_)|||||||
+|Apnea/Hypopnea Index_>_3%<br>Apnea/Hypopnea Index_>_4%<br>Gestation Age|15.31 [13.63-17.14]<br>12.52 [10.92-14.14]<br>7.15 [6.99-7.34]|14.17 [13.04-15.38]<br>11.76 [10.65-12.89]<br>6.28 [6.21-6.49]|14.26 [13.10-15.57]<br>11.88 [10.71-13.05]<br>6.24 [6.09-6.38]|15.10 [13.84-16.40]<br>12.41 [11.33-13.49]<br>6.35 [6.21-6.49]|13.85 [12.43-15.49]<br>11.24 [9.71-12.87]<br>6.40 [6.21-6.59]|**12.97** [11.87-14.05]<br>**10.56** [9.59-11.62]<br>**6.05** [5.91-6.17]|
+|Systolic BP (VV)<br>Diastolic BP (VV)<br>Systolic BP (PPG-BP)<br>Diastolic BP (PPG-BP)|15.76 [13.67-18.36]<br>9.75 [7.16-11.27]<br>15.50 [11.68-20.25]<br>9.35 [7.44-11.66]|16.18 [13.73-18.85]<br>9.15 [7.65-10.65]<br>14.38 [11.80-16.88]<br>9.01 [7.90-10.60]|15.01 [12.32-17.80]<br>8.91 [7.48-10.43]<br>14.99 [13.03-17.38]<br>9.16 [8.00-10.50]|15.70 [13.23-18.13]<br>9.15 [7.65-10.65]<br>14.45 [12.20-17.00]<br>9.20 [7.90-10.60]|19.11 [16.26-22.23]<br>10.87 [9.10-12.98]<br>**13.60** [10.65-16.51]<br>8.88 [7.33-10.76]|**14.65** [12.50-16.78]<br>**8.29** [6.61-10.22]<br>14.39 [12.53-16.45]<br>**8.71** [7.18-10.01]|
+|Average HR|7.01 [5.48-8.89]|4.65 [3.99-5.39]|4.78 [3.88-5.93]|3.58 [2.90-4.21]|**3.47** [2.74-4.32]|4.00 [3.34-4.67]|
+|HR|13.07 [12.90-13.23]|11.59 [11.46-11.72]|12.80 [12.66-12.94]|**9.99** [9.86-10.12]|10.92 [10.80-11.04]|11.53 [11.40-11.66]|
+|Average MAE (sMAPE)|11.60_±_3.41 (15.12%)|10.79_±_3.63 (13.91%)|10.89_±_3.58 (14.05%)|10.65_±_3.88 (14.07%)|10.92_±_4.25 (14.09%)|**10.12**_±_**3.47** (13.34%)|
+
+
+
+Table 4 presents a comparison against three SSL methods and a baseline model trained on statistical features. In classification tasks, PaPaGei-S again shows the highest average AUROC, outperforming all others. SimCLR, BYOL, and TF-C generally outperform the statistical feature baseline but fall short of PaPaGei-S’s performance. TF-C shows competitive results in some tasks, achieving the highest AUROC for Mood Disturbance and Valence. For regression tasks, PaPaGei-S again achieves the lowest average MAE. SimCLR, BYOL, and TF-C show mixed results, as each excels in different tasks. SimCLR comes second in estimating Avg HR, while BYOL does so in Systolic BP (VV). The statistical feature baseline generally underperforms compared to the advanced methods across most tasks. PaPaGei-P, while not consistently outperforming PaPaGei-S, shows strong results that are often competitive with or better than other contrastive learning methods. Overall, both PaPaGei variants offer robust performance across a wide range of tasks. 
+
+### 5.2 ABLATION STUDIES 
+
+**Pre-training data ablation.** We evaluate PAPAGEI-S using different pre-training data combinations. As shown in Figuretasks5,improvesperformancewith onmoredownstreamupstream 0.8 0.62** 0.62** 0.61** 0.64** 0.64 0.64** 0.67 15 12.29** 11.60** 12.01** 11.61** 11.69** 11.36** 10.13 data, with the best results achieved 0.6 10 when using all three datasets. No5 tably, MESA outperforms the others despite having the fewest participants but the highest number of segments. This supports findings Figure 5: Ablation on pre-training data. Average perforfrom language models (Dubey et al., mance across tasks for models trained on: V (VitalDB), M 2024) and wearable sensing research (MESA), and M-III (MIMIC-III). The mean value is dis(Narayanswamy et al., 2024), indiplayed above the plots. The Wilcoxon signed rank test is cating that the volume of segments applied to evaluate significance between the All dataset and or hours contributes more to perforthe rest ( _∗∗_ : _p <_ 0 _._ 05 and and _∗_ : 0 _._ 05 _≤ p <_ 0 _._ 10).). mance than the number of users. 
+
+Figure 5: Ablation on pre-training data. Average performance across tasks for models trained on: V (VitalDB), M (MESA), and M-III (MIMIC-III). The mean value is displayed above the plots. The Wilcoxon signed rank test is applied to evaluate significance between the All dataset and the rest ( _∗∗_ : _p <_ 0 _._ 05 and and _∗_ : 0 _._ 05 _≤ p <_ 0 _._ 10).). 
+
+**PAPAGEI-S component ablation.** We assess the impact of PAPAGEI-S components. Figure 6 shows that the full model (0.67, 10.12) consistently outperforms individual components in both mean and median metrics. On average, sVRI (0.64, 10.35) outperforms the combinations of sVRI + SQI (0.62, 10.80) and sVRI + IPA (0.64, 10.73). Our results indicate that combining SQI and IPA yields greater benefits compared to their individual contributions. 
+
+**Downstream data-efficiency analysis.** For limited-data scenarios, we assess the performance of downstream linear probing across varying levels of labeled data availability. We compare to the second best-performing baselines from Tables 3 & 4, namely TF-C and Moment. As shown in Figure 4, the classification performance of PAPAGEI-S steadily improves as more labeled data becomes 
+
+8 
+
+Published as a conference paper at ICLR 2025 
+
+available. While TF-C and Moment also show performance gains between 25% and 100% labeled data, their improvements are less consistent and smaller than PAPAGEI-S. In regression tasks, PAPAGEI-S achieves the lowest MAE at both 25% and 100% data availability, consistently reducing errors. At the middle breakpoints, the results are mixed with TF-C and Moment being competitive. 
+
+
+
+<!-- Start of picture text -->
+* ** ** 20 ** ** ** ** PaPaGei-S-5M Rank 1Rank 2<br>0.64 0.62 0.64 0.67 10.35 10.80 10.73 10.12 PaPaGei-S-35M Rank 3<br>15<br>0.7 PaPaGei-S-139M<br>10<br>0.6<br>0.5 5<br>0.4 0<br>sVRI sVRI + SQI sVRI + IPA Full sVRI sVRI + SQI sVRI + IPA Full<br>PaPaGei Components PaPaGei Components<br>(a) (b) (c)<br>MAE<br>AUROC ICU Mortality Smoker Pregnancy Hypertension SDB Mood Valence Arousal AHI > 3% AHI > 4% Gestation Sys. BP* Dia. BP* Sys. BP Dia. BP Avg. HR HR<br><!-- End of picture text -->
+
+Figure 6: PAPAGEI-S component ablation study (a, b) and scaling analysis (c). (Left) The boxplot shows the performance of PAPAGEI-S components across all tasks. The Wilcoxon signed rank test is applied to evaluate pair-wise significance ( _∗∗_ : _p <_ 0 _._ 05 and _∗_ : 0 _._ 05 _≤ p <_ 0 _._ 10). (Right) Heatmap ranks of PAPAGEI-S models with 5M, 35M, and 139M parameters (rank 1 denotes the best performance). Detailed results in Table 13. 
+
+**Model size and scaling analysis.** We investigated the impact of model size on performance by training PAPAGEI-S-35M and PAPAGEI-S-139M with 35M and 139M parameters, respectively. Both models share the same number of layers, but themodel35Musesmodel64. usesAs showna 32-filterin 6c,sizethewhilesmallestthe model139M 0.8 SimCLRBYOL 0.6 (5Mmodelsparameters)on all but consistentlyone task. Thisoutperformedsuggests thelarger5M 0.40.2 TF-CPaPaGei-S model is better suited for our pre-training datasets, 0.0 aligning with prior findings on the proportionality Pair-wise distances across participants in SDB0 2 4 6 8 10 12 between data and model size (Narayanswamy et al., 2024). While the 139M model surpassed the 35M, it Figure 7: Pair-wise inter-participant embedstill lagged behind the 5M, indicating that wider modding distances for SDB. els may improve performance in classification tasks, 
+
+Figure 7: Pair-wise inter-participant embedding distances for SDB. 
+
+likely due to the contrastive learning objective. Nevertheless, our scaling analysis shows a nonmonotonic trend, indicating other factors strongly influence performance. 
+
+**Effect of Demographics.** We evaluate the effect of demographics (age, sex) and PPG-specific features (sVRI, IPA, SQI) in Appendix §E. In demographics prediction (Table 16), PAPAGEI-S achieves 7.78 MAE in age regression, 0.85 accuracy in age classification, and 0.79 accuracy in sex classification. While our results trail larger closed studies (Abbaspourazad et al., 2023) by 2.18, 0.05, and 0.13 for segment-level SSL, and by 5.59, 0.12, and 0.25 for patient-level SSL, they mark an advancement in open-source efforts. These findings indicate that patient-level positive pair selection in SSL better captures demographic-related features for downstream prediction. Moreover, the reduced performance of PAPAGEI-S can be attributed to evaluations conducted on diverse device setups, as opposed to a single device configuration. Our ablation study (Table 15) shows that PAPAGEI-S outperforms the demo + PPG in 14 out of 18 tasks, particularly in tasks with real-time dependence such as heart rate estimation. Importantly, including demographics in addition to PAPAGEI-S creates a stronger model. These findings emphasize that **demographic features complement rather than compete with PAPAGEI-S** , showcasing the potential of integrating PAPAGEI’s advanced feature extraction capabilities with demographic context to improve task outcomes. 
+
+### 5.3 CASE STUDIES 
+
+**Inter-participant embeddings.** Figure 7 shows the distribution of pair-wise embedding distances across participants in the SDB dataset (Kiyasseh et al., 2021). SimCLR and BYOL exhibit sharper peaks at lower distances, indicating that participants are more closely clustered within the embedding space. This could be interpreted as a mild form of mode collapse, where the model does not fully capture the individual differences between participants. TF-C demonstrates a more balanced distribution, with both large and small peaks, suggesting it captures both similarities and some variation between participants. In contrast, PAPAGEI-S provides the widest dispersion of embeddings, 
+
+9 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+100 m = 0.18Chronos 100 m = 0.19SimCLR 100 m = 0.28PaPaGei-S<br>75 R 2 = 0.18 75 R 2 = 0.16 75 R 2 = 0.29 0.04 True AHI > 3%Chronos<br>50 50 50 SimCLR<br>0.02 PaPaGei-S<br>25 25 25<br>0 0 0 0.00<br>0 50 100 0 50 100 0 50 100 20 0 20 40 60 80 100 120<br>True AHI > 3% True AHI > 3% True AHI > 3% AHI > 3%<br>Density<br>Predicted AHI > 3%<br><!-- End of picture text -->
+
+Figure 8: Regression plots and prediction distribution of different models compared to ground truth for AHI _>_ 3%. _R_<sup>2</sup> is the coefficient of determination and _m_ is the correlation slope. 
+
+highlighting its ability to capture a broader range of features that may be valuable for distinguishing between participants’ medical conditions. 
+
+**Regression predictions.** From Figure 8, compared to the pre-trained and SSL baseline, PAPAGEIS demonstrates steeper slopes ( _m_ ) and higher _R_<sup>2</sup> values, reflecting a stronger alignment between predictions and true values. Additionally, the prediction distribution for AHI indicates that SimCLR and Chronos tend to regress more toward the mean, while PAPAGEI-S achieves a wider distribution base, highlighting its capacity to capture left tail better. Additional plots are shown in Appendix §F. 
+
+**Skin tone analysis.** We examine BP estimation performance across skin tones because it is crucial for practical use (Bent et al., 2020). As shown in Figure 9 (More details in Figure 26), PAPAGEI-S achieves the best BP estimation across light tones. Across dark tones, we notice that BYOL and REGLE obtain the lowest MAE for Systolic BP and Diastolic BP. However, identifying a single model that performs best across all skin tones remains challenging. While PAPAGEI-S obtains the best overall performance, additional work is necessary to improve robustness on darker skin tones. 
+
+## 6 DISCUSSION & CONCLUSION 
+
+Our results show that PAPAGEI outperforms baselines in at least 14 tasks, with classification and regression improvements of 4.7%-6.3% and 2.9%-4.9%, respectively. PAPAGEI-S excelled in cardiovascular tasks like BP, Hypertension, and HR, which can be attributed to the sVRI and IPA objectives, and PAPAGEI-P outperformed baselines like Moment, excelling in tasks such as Smoking and Arousal. Ablation studies confirmed that the model with all three SSL objectives performs best, with sVRI highlighted as a key component and IPA and SQI providing positive knowledge transfer in multi-task setups. To assess performance under class imbalance, we examined the F1-score. PaPaGei achieves the highest F1 in 6 out of 9 classification tasks, demonstrating its effectiveness in handling data imbalance. For regression, PaPaGei-S achieves the highest _R_<sup>2</sup> in 7 tasks (Appendix §D), reflecting better alignment with the true distribution. These results highlight the robustness and versatility of PaPaGei-S across classification and regression tasks. PAPAGEI is both data- and size-efficient (5M), 
+
+
+
+<!-- Start of picture text -->
+REGLE Moment BYOL PaPaGei-P<br>Chronos SimCLR TF-C PaPaGei-S<br>Systolic BP (VV)<br>20<br>10<br>0<br>Diastolic BP (VV)<br>12<br>9<br>6<br>3<br>0<br>Light Tones (<=3) Dark Tones (>3)<br>Fitzpatrick Skin Tone<br>MAE<br>MAE<br><!-- End of picture text -->
+
+Figure 9: Skin tone analysis for Blood Pressure estimation (VV dataset) . 
+
+making it ideal for medical applications where large models (200M+) are impractical due to ondevice limitations or data privacy concerns with cloud model inference. While combining PAPAGEIP and PAPAGEI-S objectives into one model might seem intuitive, it is impractical because it would constrain positive pairs on both sVRI and the number of participants, resulting in too many unique labels with limited samples per label. Our case studies also showed that PAPAGEI-S captured personal medical information due to well-dispersed embeddings, compared to baselines. Future work should focus on diversifying training data, investigating sampling rate effects, and exploring multimodal approaches or alternative architectures. Additionally, as extracting PPG features for different morphologies is non-trivial, future work benefit from systematic evaluation of PPG features and modeling. In conclusion, PAPAGEI represents a significant advancement in foundation models for analyzing PPG signals in resource-constrained medical environments, with its open-source nature encouraging further research and development in healthcare applications. 
+
+10 
+
+Published as a conference paper at ICLR 2025 
+
+## REPRODUCIBILITY STATEMENT 
+
+Models, data, and code are publicly available for reproducibility and future research.We exclusively utilize publicly accessible datasets, which can be requested or downloaded from the respective study group websites, allowing others to easily obtain the data for their own analyses. In §4 and Appendix §B, we provide comprehensive descriptions of the datasets, ground-truth annotations, and data pre-processing methods used in our experiments, ensuring transparency in our data handling procedures. The code to run our model is published with user-friendly examples. We have provided a detailed overview of the model architecture and its hyperparameters in §3, §4.1, and Appendix §A. Thus, our work is designed to be reproducible, enabling future research to build upon our findings. 
+
+## ETHICS STATEMENT 
+
+Our research on PAPAGEI, utilizing publicly available PPG datasets, adheres to data privacy regulations and promotes transparency through open-source releases. We acknowledge potential biases in the training data and have evaluated performance across diverse datasets, particularly regarding skin tone variations. While PaPaGei offers significant potential for improving non-invasive health monitoring, we recognize the need to address potential misuse (Perez-Pozuelo et al., 2021). Examples of misuse could include unauthorized health monitoring, discriminatory practices in insurance or employment, unfair credit scoring, or exploiting personal health data for targeted marketing. We strongly advocate responsible use solely for beneficial healthcare applications. Our study followed established research ethics guidelines, and we declare no conflicts of interest. We encourage ongoing interdisciplinary dialogue to address potential risks and ensure responsible development and deployment of such technologies, recognizing the broader societal impacts of AI in healthcare. We remain committed to ethical AI advancement and welcome further discussion on the critical issues, including the development of governance frameworks to prevent misuse and protect data privacy. 
+
+## REFERENCES 
+
+- Salar Abbaspourazad, Oussama Elachqar, Andrew C Miller, Saba Emrani, Udhyakumar Nallasamy, and Ian Shapiro. Large-scale training of foundation models for wearable biosignals. _arXiv preprint arXiv:2312.05409_ , 2023. 
+
+- Amir Hosein Afandizadeh Zargari, Seyed Amir Hossein Aqajari, Hadi Khodabandeh, Amir Rahmani, and Fadi Kurdahi. An accurate non-accelerometer-based ppg motion artifact removal technique using cyclegan. _ACM Transactions on Computing for Healthcare_ , 4(1):1–14, 2023. 
+
+- Abdul Fatir Ansari, Lorenzo Stella, Caner Turkmen, Xiyuan Zhang, Pedro Mercado, Huibin Shen, Oleksandr Shchur, Syama Sundar Rangapuram, Sebastian Pineda Arango, Shubham Kapoor, et al. Chronos: Learning the language of time series. _arXiv preprint arXiv:2403.07815_ , 2024. 
+
+- Arrozaq Ave, Hamdan Fauzan, S Rhandy Adhitya, and Hasballah Zakaria. Early detection of cardiovascular disease with photoplethysmogram (ppg) sensor. In _2015 international conference on electrical engineering and informatics (ICEEI)_ , pp. 676–681. IEEE, 2015. 
+
+- Anastasiya Belyaeva, Justin Cosentino, Farhad Hormozdiari, Krish Eswaran, Shravya Shetty, Greg Corrado, Andrew Carroll, Cory Y McLean, and Nicholas A Furlotte. Multimodal llms for health grounded in individual-specific data. In _Workshop on Machine Learning for Multimodal Healthcare Data_ , pp. 86–102. Springer, 2023. 
+
+- Brinnae Bent, Benjamin A Goldstein, Warren A Kibbe, and Jessilyn P Dunn. Investigating sources of inaccuracy in wearable optical heart rate sensors. _NPJ digital medicine_ , 3(1):18, 2020. 
+
+- BioBSS Documentation. Biobss: Biosignal processing toolbox. https://biobss. readthedocs.io/en/latest/, 2023. Accessed: 2024-09-10. 
+
+- Alexandra Bouariu, Anca Maria Panaitescu, and Kypros H Nicolaides. First trimester prediction of adverse pregnancy outcomes—identifying pregnancies at risk from as early as 11–13 weeks. _Medicina_ , 58(3):332, 2022. 
+
+11 
+
+Published as a conference paper at ICLR 2025 
+
+Margaret M Bradley and Peter J Lang. Measuring emotion: the self-assessment manikin and the semantic differential. _Journal of behavior therapy and experimental psychiatry_ , 25(1):49–59, 1994. 
+
+- Peter H Charlton, John Allen, Raquel Bail´on, Stephanie Baker, Joachim A Behar, Fei Chen, Gari D Clifford, David A Clifton, Harry J Davies, Cheng Ding, et al. The 2023 wearable photoplethysmography roadmap. _Physiological measurement_ , 44(11):111001, 2023. 
+
+- Hugh Chen, Scott M Lundberg, Gabriel Erion, Jerry H Kim, and Su-In Lee. Forecasting adverse surgical events using self-supervised transfer learning for physiological signals. _NPJ Digital Medicine_ , 4(1):167, 2021. 
+
+- Ting Chen, Simon Kornblith, Mohammad Norouzi, and Geoffrey Hinton. A simple framework for contrastive learning of visual representations. _International conference on machine learning_ , pp. 1597–1607, 2020. 
+
+- Xiaoli Chen, Rui Wang, Phyllis Zee, Pamela L Lutsey, Sogol Javaheri, Carmela Alc´antara, Chandra L Jackson, Michelle A Williams, and Susan Redline. Racial/ethnic differences in sleep disturbances: the multi-ethnic study of atherosclerosis (mesa). _Sleep_ , 38(6):877–888, 2015. 
+
+- Joseph Y Cheng, Hanlin Goh, Kaan Dogrusoz, Oncel Tuzel, and Erdrin Azemi. Subject-aware contrastive learning for biosignals. _arXiv preprint arXiv:2007.04871_ , 2020. 
+
+- Wei-Sheng Chung, Pei-Tseng Kung, Hui-Yun Chang, and Wen-Chen Tsai. Demographics and medical disorders associated with smoking: a population-based study. _BMC Public Health_ , 20:1–8, 2020. 
+
+- Casey Crump, Jan Sundquist, Mary Ann McLaughlin, Siobhan M Dolan, Usha Govindarajulu, Weiva Sieh, and Kristina Sundquist. Adverse pregnancy outcomes and long term risk of ischemic heart disease in mothers: national cohort and co-sibling study. _bmj_ , 380, 2023. 
+
+- Janez Demˇsar. Statistical comparisons of classifiers over multiple data sets. _The Journal of Machine learning research_ , 7:1–30, 2006. 
+
+- Cheng Ding, Zhicheng Guo, Zhaoliang Chen, Randall J Lee, Cynthia Rudin, and Xiao Hu. Siamquality: a convnet-based foundation model for photoplethysmography signals. _Physiological Measurement_ , 45(8):085004, 2024. 
+
+- Abhimanyu Dubey, Abhinav Jauhri, Abhinav Pandey, Abhishek Kadian, Ahmad Al-Dahle, Aiesha Letman, Akhil Mathur, Alan Schelten, Amy Yang, Angela Fan, et al. The llama 3 herd of models. _arXiv preprint arXiv:2407.21783_ , 2024. 
+
+- Mohamed Elgendi. Optimal signal quality index for photoplethysmogram signals. _Bioengineering_ , 3(4):21, 2016. 
+
+- Francesca L Facco, Corette B Parker, Uma M Reddy, Robert M Silver, Judette M Louis, Robert C Basner, Judith H Chung, Frank P Schubert, Grace W Pien, Susan Redline, et al. Numom2b sleep-disordered breathing study: objectives and methods. _American journal of obstetrics and gynecology_ , 212(4):542–e1, 2015. 
+
+- Mohammad Feli, Iman Azimi, Fatemeh Sarhaddi, Zahra Sharifi-Heris, Hannakaisa Niela-Vilen, Pasi Liljeberg, Anna Axelin, and Amir M Rahmani. Preterm birth risk stratification through longitudinal heart rate and hrv monitoring in daily life. 2024. 
+
+- Zhilin Gao, Xingran Cui, Wang Wan, Wenming Zheng, and Zhongze Gu. Ecsmp: A dataset on emotion, cognition, sleep, and multi-model physiological signals. _Data in Brief_ , 39:107660, 2021. 
+
+- Ainara Garde, Parastoo Dehkordi, Walter Karlen, David Wensley, J Mark Ansermino, and Guy A Dumont. Development of a screening tool for sleep disordered breathing in children using the phone oximeter™. _PloS one_ , 9(11):e112959, 2014. 
+
+12 
+
+Published as a conference paper at ICLR 2025 
+
+Mononito Goswami, Konrad Szafer, Arjun Choudhry, Yifu Cai, Shuo Li, and Artur Dubrawski. Moment: A family of open time-series foundation models. _arXiv preprint arXiv:2402.03885_ , 2024. 
+
+- Jean-Bastien Grill, Florian Strub, Florent Altch´e, Corentin Tallec, Pierre H Richemond, Elena Buchatskaya, Carl Doersch, Bernardo Avila Pires, Zhaohan Daniel Guo, Mohammad Gheshlaghi Azar, et al. Bootstrap your own latent-a new approach to self-supervised learning. _Advances in neural information processing systems_ , 33:21271–21284, 2020. 
+
+- Nate Gruver, Marc Finzi, Shikai Qiu, and Andrew G Wilson. Large language models are zero-shot time series forecasters. _Advances in Neural Information Processing Systems_ , 36, 2024. 
+
+- Serj Haddad, Assim Boukhayma, and Antonino Caizzone. Continuous ppg-based blood pressure monitoring using multi-linear regression. _IEEE journal of biomedical and health informatics_ , 26 (5):2096–2105, 2021. 
+
+- Kaiming He, Haoqi Fan, Yuxin Wu, Saining Xie, and Ross Girshick. Momentum contrast for unsupervised visual representation learning. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_ , pp. 9729–9738, 2020. 
+
+- Kaiming He, Xinlei Chen, Saining Xie, Yanghao Li, Piotr Doll´ar, and Ross Girshick. Masked autoencoders are scalable vision learners. _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_ , pp. 16000–16009, 2022. 
+
+- Alistair EW Johnson, Tom J Pollard, Lu Shen, Li-wei H Lehman, Mengling Feng, Mohammad Ghassemi, Benjamin Moody, Peter Szolovits, Leo Anthony Celi, and Roger G Mark. Mimic-iii, a freely accessible critical care database. _Scientific data_ , 3(1):1–9, 2016. 
+
+- Dani Kiyasseh, Girmaw Abebe Tadesse, Louise Thwaites, Tingting Zhu, David Clifton, et al. Plethaugment: Gan-based ppg augmentation for medical diagnosis in low-resource settings. _IEEE journal of biomedical and health informatics_ , 24(11):3226–3235, 2020. 
+
+- Dani Kiyasseh, Tingting Zhu, and David A Clifton. Clocs: Contrastive learning of cardiac signals across space, time, and patients. In _International Conference on Machine Learning_ , pp. 5606– 5615. PMLR, 2021. 
+
+- Bojana Koteska, Ana Madevska Bodanova, Hristina Mitrova, Marija Sidorenko, and Fedor Lehocki. A deep learning approach to estimate spo2 from ppg signals. In _Proceedings of the 9th International Conference on Bioinformatics Research and Applications_ , pp. 142–148, 2022. 
+
+- Jiewei Lai, Huixin Tan, Jinliang Wang, Lei Ji, Jun Guo, Baoshi Han, Yajun Shi, Qianjin Feng, and Wei Yang. Practical intelligent diagnostic algorithm for wearable 12-lead ecg via self-supervised learning on large-scale dataset. _Nature Communications_ , 14(1):3741, 2023. 
+
+- Denis G Lapitan, Dmitry A Rogatkin, Elizaveta A Molchanova, and Andrey P Tarasov. Estimation of phase distortions of the photoplethysmographic signal in digital iir filtering. _Scientific Reports_ , 14(1):6546, 2024. 
+
+- Hyung-Chul Lee, Yoonsang Park, Soo Bin Yoon, Seong Mi Yang, Dongnyeok Park, and Chul-Woo Jung. Vitaldb, a high-fidelity multi-parameter vital signs database in surgical patients. _Scientific Data_ , 9(1):279, 2022. 
+
+- Yongbo Liang, Zhencheng Chen, Guiyong Liu, and Mohamed Elgendi. A new, short-recorded photoplethysmogram dataset for blood pressure monitoring in china. _Scientific data_ , 5(1):1–7, 2018a. 
+
+- Yongbo Liang, Zhencheng Chen, Rabab Ward, and Mohamed Elgendi. Hypertension assessment using photoplethysmography: a risk stratification approach. _Journal of clinical medicine_ , 8(1): 12, 2018b. 
+
+- Yongbo Liang, Mohamed Elgendi, Zhencheng Chen, and Rabab Ward. An optimal filter for short photoplethysmogram signals. _Scientific data_ , 5(1):1–12, 2018c. 
+
+13 
+
+Published as a conference paper at ICLR 2025 
+
+Yongqiang Lyu, Xiaomin Luo, Jun Zhou, Chun Yu, Congcong Miao, Tong Wang, Yuanchun Shi, and Ken-ichi Kameyama. Measuring photoplethysmogram-based stress-induced vascular response index to assess cognitive load and stress. In _Proceedings of the 33rd annual ACM conference on human factors in computing systems_ , pp. 857–866, 2015. 
+
+- Kaden McKeen, Laura Oliva, Sameer Masood, Augustin Toma, Barry Rubin, and Bo Wang. Ecg-fm: An open electrocardiogram foundation model. _arXiv preprint arXiv:2408.05178_ , 2024. 
+
+- Benjamin Moody, George Moody, Mauricio Villarroel, Gari D. Clifford, and Ikaro Silva. Mimiciii waveform database matched subset (version 1.0), 2020. URL https://doi.org/10. 13026/c2294b. 
+
+- Seungwhan Moon, Andrea Madotto, Zhaojiang Lin, Tushar Nagarajan, Matt Smith, Shashank Jain, Chun-Fu Yeh, Prakash Murugesan, Peyman Heidari, Yue Liu, et al. Anymal: An efficient and scalable any-modality augmented language model. _arXiv preprint arXiv:2309.16058_ , 2023. 
+
+- Girish Narayanswamy, Xin Liu, Kumar Ayush, Yuzhe Yang, Xuhai Xu, Shun Liao, Jake Garrison, Shyam Tailor, Jake Sunshine, Yun Liu, et al. Scaling wearable foundation models. _arXiv preprint arXiv:2410.13638_ , 2024. 
+
+- Aaron van den Oord, Yazhe Li, and Oriol Vinyals. Representation learning with contrastive predictive coding. _arXiv preprint arXiv:1807.03748_ , 2018. 
+
+- Christina Orphanidou. Quality assessment for the photoplethysmogram (ppg). _Signal Quality Assessment in Physiological Monitoring: State of the Art and Practical Considerations_ , pp. 41–63, 2018. 
+
+- Nisha I Parikh, Juan M Gonzalez, Cheryl AM Anderson, Suzanne E Judd, Kathryn M Rexrode, Mark A Hlatky, Erica P Gunderson, Jennifer J Stuart, Dhananjay Vaidya, American Heart Association Council on Epidemiology, Thrombosis Prevention; Council on Arteriosclerosis, Vascular Biology; Council on Cardiovascular, Stroke Nursing;, and the Stroke Council. Adverse pregnancy outcomes and cardiovascular disease risk: unique opportunities for cardiovascular disease prevention in women: a scientific statement from the american heart association. _Circulation_ , 143 (18):e902–e916, 2021. 
+
+- Adam Paszke, Sam Gross, Francisco Massa, Adam Lerer, James Bradbury, Gregory Chanan, Trevor Killeen, Zeming Lin, Natalia Gimelshein, Luca Antiga, et al. Pytorch: An imperative style, highperformance deep learning library. _Advances in neural information processing systems_ , 32, 2019. 
+
+- Ignacio Perez-Pozuelo, Dimitris Spathis, Jordan Gifford-Moore, Jessica Morley, and Josh Cowls. Digital phenotyping and sensitive health data: Implications for data governance. _Journal of the American Medical Informatics Association_ , 28(9):2002–2008, 2021. 
+
+- Attila Reiss, Ina Indlekofer, Philip Schmidt, and Kristof Van Laerhoven. Deep ppg: Large-scale heart rate estimation with convolutional neural networks. _Sensors_ , 19(14):3079, 2019. 
+
+- Ken Rice. _Linear Models and Generalized Linear Models_ , 2008. URL https://faculty. washington.edu/kenrice/sisg/SISG-08-06.pdf. SISG-08. 
+
+- Warren R Ruehland, Peter D Rochford, Fergal J O’Donoghue, Robert J Pierce, Parmjit Singh, and Andrew T Thornton. The new aasm criteria for scoring hypopneas: impact on the apnea hypopnea index. _sleep_ , 32(2):150–157, 2009. 
+
+- Tariq Sadad, Syed Ahmad Chan Bukhari, Asim Munir, Anwar Ghani, Ahmed M El-Sherbeeny, and Hafiz Tayyab Rauf. Detection of cardiovascular disease based on ppg signals using machine learning with cloud computing. _Computational Intelligence and Neuroscience_ , 2022(1):1672677, 2022. 
+
+- Pritam Sarkar and Ali Etemad. Self-supervised ecg representation learning for emotion recognition. _IEEE Transactions on Affective Computing_ , 13(3):1541–1554, 2020. 
+
+- Philip Schmidt, Attila Reiss, Robert Duerichen, Claus Marberger, and Kristof Van Laerhoven. Introducing wesad, a multimodal dataset for wearable stress and affect detection. In _Proceedings of the 20th ACM international conference on multimodal interaction_ , pp. 400–408, 2018. 
+
+14 
+
+Published as a conference paper at ICLR 2025 
+
+- Fabian Schrumpf, Patrick Frenzel, Christoph Aust, Georg Osterhoff, and Mirco Fuchs. Assessment of deep learning based blood pressure prediction from ppg and rppg signals. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_ , pp. 3820–3830, 2021. 
+
+- Kihyuk Sohn. Improved deep metric learning with multi-class n-pair loss objective. _Advances in neural information processing systems_ , 29, 2016. 
+
+- Junho Song, Jong-Hwan Jang, Byeong Tak Lee, DongGyun Hong, Joon-myoung Kwon, and YongYeon Jo. Foundation models for electrocardiograms. _arXiv preprint arXiv:2407.07110_ , 2024. 
+
+- Dimitris Spathis and Fahim Kawsar. The first step is the hardest: Pitfalls of representing and tokenizing temporal data for large language models. _Journal of the American Medical Informatics Association_ , 31(9):2151–2158, 2024. 
+
+- Dimitris Spathis, Ignacio Perez-Pozuelo, Soren Brage, Nicholas J Wareham, and Cecilia Mascolo. Self-supervised transfer learning of physiological representations from free-living wearable data. In _Proceedings of the Conference on Health, Inference, and Learning_ , pp. 69–78, 2021. 
+
+- Dimitris Spathis, Ignacio Perez-Pozuelo, Tomas I Gonzales, Yu Wu, Soren Brage, Nicholas Wareham, and Cecilia Mascolo. Longitudinal cardio-respiratory fitness prediction through wearables in free-living environments. _NPJ Digital Medicine_ , 5(1):176, 2022. 
+
+- Chi Ian Tang, Ignacio Perez-Pozuelo, Dimitris Spathis, and Cecilia Mascolo. Exploring contrastive learning in human activity recognition for healthcare. _arXiv preprint arXiv:2011.11542_ , 2020. 
+
+- Andriy Temko. Accurate heart rate monitoring during physical exercises using ppg. _IEEE Transactions on Biomedical Engineering_ , 64(9):2016–2024, 2017. 
+
+- Sana Tonekaboni, Danny Eytan, and Anna Goldenberg. Unsupervised representation learning for time series with temporal neighborhood coding. _arXiv preprint arXiv:2106.00750_ , 2021. 
+
+- Pieter-Jan Toye. Vital videos: A dataset of videos with ppg and blood pressure ground truths. _arXiv preprint arXiv:2306.11891_ , 2023. 
+
+Jacob E Trammel and Amit Sapra. Physiology, systemic vascular resistance. 2020. 
+
+- L Wang, Emma Pickwell-MacPherson, YP Liang, and Yuan Ting Zhang. Noninvasive cardiac output estimation using a novel photoplethysmogram index. In _2009 annual international conference of the IEEE engineering in medicine and biology society_ , pp. 1746–1749. IEEE, 2009. 
+
+- Wei-Hung Weng, Sebastien Baur, Mayank Daswani, Christina Chen, Lauren Harrell, Sujay Kakarmath, Mariam Jabara, Babak Behsaz, Cory Y McLean, Yossi Matias, et al. Predicting cardiovascular disease risk using photoplethysmography and deep learning. _PLOS Global Public Health_ , 4(6):e0003204, 2024. 
+
+- Yuelin Wu, Sheng Wan, Shengyi Gu, Zhengqian Mou, Lingling Dong, Zhongcheng Luo, Jun Zhang, and Xiaolin Hua. Gestational weight gain and adverse pregnancy outcomes: a prospective cohort study. _BMJ open_ , 10(9):e038187, 2020. 
+
+- Hugo Y`eche, Gideon Dresdner, Francesco Locatello, Matthias H¨user, and Gunnar R¨atsch. Neighborhood contrastive learning applied to online patient monitoring. In _International Conference on Machine Learning_ , pp. 11964–11974. PMLR, 2021. 
+
+- Hang Yuan, Shing Chan, Andrew P Creagh, Catherine Tong, Aidan Acquah, David A Clifton, and Aiden Doherty. Self-supervised learning for human activity recognition using 700,000 persondays of wearable data. _NPJ digital medicine_ , 7(1):91, 2024a. 
+
+- Zhizhang Yuan, Daoze Zhang, Junru Chen, Geifei Gu, and Yang Yang. Brant-2: Foundation model for brain signals. _arXiv preprint arXiv:2402.10251_ , 2024b. 
+
+- Taedong Yun, Justin Cosentino, Babak Behsaz, Zachary R McCaw, Davin Hill, Robert Luben, Dongbing Lai, John Bates, Howard Yang, Tae-Hwi Schwantes-An, et al. Unsupervised representation learning on high-dimensional clinical data improves genomic discovery and prediction. _Nature Genetics_ , pp. 1–10, 2024. 
+
+15 
+
+Published as a conference paper at ICLR 2025 
+
+- Guo-Qiang Zhang, Licong Cui, Remo Mueller, Shiqiang Tao, Matthew Kim, Michael Rueschman, Sara Mariani, Daniel Mobley, and Susan Redline. The national sleep research resource: towards a sleep data commons. _Journal of the American Medical Informatics Association_ , 25(10):1351– 1358, 2018. 
+
+- Xiang Zhang, Ziyuan Zhao, Theodoros Tsiligkaridis, and Marinka Zitnik. Self-supervised contrastive pre-training for time series via time-frequency consistency. _Advances in Neural Information Processing Systems_ , 35:3988–4003, 2022. 
+
+- Xiao Zhang, Yongqiang Lyu, Tong Qu, Pengfei Qiu, Xiaomin Luo, Jingyu Zhang, Shunjie Fan, and Yuanchun Shi. Photoplethysmogram-based cognitive load assessment using multi-feature fusion model. _ACM Transactions on Applied Perception (TAP)_ , 16(4):1–17, 2019. 
+
+- Jianlong Zhou, Syed Z Arshad, Simon Luo, Kun Yu, Shlomo Berkovsky, and Fang Chen. Indexing cognitive load using blood volume pulse features. In _Proceedings of the 2017 CHI Conference Extended Abstracts on Human Factors in Computing Systems_ , pp. 2269–2275, 2017. 
+
+- Yuchen Zhou, Justin Cosentino, Taedong Yun, Mahantesh I Biradar, Jacqueline Shreibati, Dongbing Lai, Tae-Hwi Schwantes-An, Robert Luben, Zachary McCaw, Jorgen Engmann, et al. Utilizing multimodal ai to improve genetic analyses of cardiovascular traits. _medRxiv_ , 2024. 
+
+16 
+
+Published as a conference paper at ICLR 2025 
+
+## APPENDIX 
+
+## A TRAINING AND INFERENCE DETAILS 
+
+**Architecture & Pre-training.** The architecture of our ResNet 18-block encoder is described in Tables 5, 6, and 7. Each 1D convolution layer is configured with a kernel size of 3 and a stride of 2, while the max-pooling layer utilizes a kernel size of 3 with a stride of 1. We start with a filter size of 32, which doubles every 4 blocks to capture progressively more complex features. Dropout is applied with a probability of 0.5 to prevent overfitting. This backbone architecture is used across different methods in our experiments to ensure consistency and make for a fair comparison during evaluation. Additionally, our SSL baselines use the same batch size, learning rate, input sampling frequency, and training steps as PAPAGEI. We use the same augmentation types and intensity for BYOL (Grill et al., 2020), SimCLR Chen et al. (2020), and PAPAGEI-P. Furthermore, we investigated 0.07 and 0.5 temperatures as MoCo (He et al., 2020) and SimCLR (Chen et al., 2020), respectively. In contrast to a smaller embedding size of 256 adopted by (Abbaspourazad et al., 2023), we project the learned representations to a 512-dimensional embedding after the convolutional block (we investigated larger embedding sizes of 768 and 1024 and found no significant performance changes). This embedding is then passed through two Mixture of Experts (MoE) blocks, each containing three experts. Each expert block consists of two sequential linear layers, with sizes 256 and 1, which are used for IPA and SQI prediction tasks. It is noteworthy that both BYOL and TF-C require multiple encoders and different projection heads, resulting in variations in model sizes. For these methods, we use existing implementations available online<sup>34</sup> , but apply our encoder as the backbone to ensure consistency. Our models are pre-trained for 15,000 steps using the Adam optimizer, with a learning rate of 10<sup>_−_4</sup> . We use a batch size of 128 for training since after various trials we did not observe significant differences in performance with batch sizes of 64 and 256. We performed five iterations of pre-training and selected the best-performing model for each downstream task. For SimCLR and PAPAGEI-P, a single model consistently achieves the best performance across all tasks. For BYOL, we select two models that perform best across all tasks. Similarly, for TF-C and PAPAGEI-S, we choose three models with the highest performance. We use this approach as some models excel in certain task groups while others perform better in the rest. Note that a more robust approach would involve broader hyperparameter tuning with k-fold validation to obtain the optimal model. However, this requires substantial computational resources for pre-training. Additionally, we did not perform an exhaustive evaluation of different augmentation settings but instead used transformations and values based on prior research (Abbaspourazad et al., 2023; Tang et al., 2020). For model training, we primarily used PyTorch (Paszke et al., 2019). The NTXentLoss implementation was sourced from the PyTorch Metric Learning package<sup>5</sup> . 
+
+Table 5: ResNet-style CNN encoder architecture used in PAPAGEI. 
+
+|.<br>**Layer**|**Output Shape**|Table 6: Basic Block|Table 7: Basic Block<br>Type 2|
+|---|---|---|---|
+|Conv1|[32, 32, 1250]|Type 1|**Layer**|
+|Batch Norm|[32, 32, 1250]||BatchNorm|
+|ReLU|[32, 32, 1250]|**Layer**|RLU|
+|Basic Block Type 1|[32, 32, 1250]|C1D|e<br>Dt|
+|(Basic Block Type 2)_×_3|[32, 32, 313]|onv<br>BhN|ropou<br>C1D|
+|(Basic Block Type 2)_×_4|[32, 64, 79]|atcorm<br>RLU|onv<br>BthN|
+|(Basic Block Type 2)_×_4|[32, 128, 20]|e<br>Droout|acorm<br>ReLU|
+|(Basic Block Type 2)_×_4|[32, 256, 5]|p<br>C1D|D|
+|(Basic Block Type 2)_×_2|[32, 512, 3]|onv|ropout<br>C1D|
+|BatchNorm|[32, 512, 3]||onv<br>Maxool|
+|ReLU|[32, 512, 3]||p|
+|Linear|[32, 512]|||
+
+
+
+- 3https://github.com/chengding0713/SiamQuality 
+
+- 4https://github.com/mims-harvard/TFC-pretraining 
+
+- 5https://github.com/KevinMusgrave/pytorch-metric-learning 
+
+17 
+
+Published as a conference paper at ICLR 2025 
+
+**Parameters: Training and Inference** . This section outlines the training and inference parameters used in our methods. Inference parameters are those utilized for feature extraction. 
+
+- PAPAGEI-P (5M) and SimCLR (5M): Both training and inference involve 5M parameters. For SimCLR, it is worth noting that we use the projection features during inference instead of using the encoder only. 
+
+- BYOL (5M): During training, the online and target encoders each have 5M parameters, and the projector is 800K. At inference, only the online encoder is used for feature extraction, totaling 5M parameters. 
+
+- TF-C (10M): The time and frequency encoders each have 5M parameters, followed by a smaller projector ( _<_ 100K). Since both encoders and projectors are required for inference, the total parameter count is 10M. 
+
+- PAPAGEI-S (5M): The encoder consists of 5M parameters, while the expert heads contribute approximately 400K each. As the expert heads are not used for feature extraction, the inference parameter total remains 5M. 
+
+**Feature Extraction & Linear Evaluation** We extracted the projected embedding for linear evaluation. For Moment and Chronos, we extract the default embedding size, which is 1024 and 768, respectively. We use cross-validated grid search to identify the best parameters for our linear probes. The hyperparameters chosen for each model are as follows: (1) Logistic Regression: _{_ ’penalty’: [’l1’, ’l2’], ’C’: [0.01, 0.1, 1, 10, 100], ’solver’: [’lbfgs’], ’max ~~i~~ ter’: [100, 200] _}_ . (2) Linear Regression: _{_ ’alpha’: [0.1, 1.0, 10.0, 100.0], ’solver’: [’auto’, ’cholesky’, ’sparse ~~c~~ g’] _}_ . (3) Random Forest: _{_ ’n ~~e~~ stimators’: [100, 200], ’max ~~f~~ eatures’: [’sqrt’, ’log2’], ’max ~~d~~ epth’: [10, 20, 30], ’min ~~s~~ amples ~~s~~ plit’: [2, 5], ’min ~~s~~ amples ~~l~~ eaf’: [1, 2] _}_ 
+
+## B DATASETS AND TASKS 
+
+Table 8: The task evaluation benchmark of PAPAGEI. Datasets highlighted in gray are unseen during training, thus, the corresponding tasks are out-of-domain. The rest were used for pre-training but their test sets and labels are held out. For task type, B/M/R refer to Binary classification, Multi-class classification (#classes), and Regression, respectively. 
+
+|**#ID**|**Dataset**|**SR (Hz)**|**Collected by**|**Task**|**Task Type**|**#Participants (#Samples)**|
+|---|---|---|---|---|---|---|
+|T1<br>|VitalDB (Lee et al., 2022)|500|ICU monitor|ICU admission (Yes/No)<br>|B<br>|5866<br>|
+|T2||||Operation Type|M (11)|5866|
+|T3|MIMIC-III (Moody et al., 2020)|125|ICU Monitor|Mortality|B|5596|
+|T4|MESA (Zhang et al., 2018)|256|Polysomnography fnger|Smoker|B|2055|
+|T5||||AHI_>_3% Oxygen Desat.|R|2055|
+|T6||||AHI_>_4% Oxygen Desat.|R|2055|
+|T7|nuMom2B (Facco et al., 2015)|75|Polysomnography fnger|Pregnancy stage (early/late)|B|3163 (5337)|
+|T8||||Gestation Age|R|3163 (5337)|
+|T9|VV (Skin Tone) (Toye, 2023)|60|Finger|Systolic BP|R|231|
+|T10||||Diastolic BP|R|231|
+|T11|PPG-BP (Liang et al., 2018a)|1000|Finger Pulse Ox|Systolic BP|R|219|
+|T12||||Diastolic BP|R|219|
+|T13||||Average Heart Rate|R|219|
+|T14||||Hypertension|B|219|
+|T15|SDB (Garde et al., 2014)|62.5|Finger Pulse Ox|Sleep Disordered Breathing|B|146|
+|T16|ECSMP (Gao et al., 2021)|64|Wrist|Mood Disturbance|B|89|
+|T17|WESAD (Schmidt et al., 2018)|64|Wrist|Valence|B|15 (4497)|
+|T18||||Arousal|B|15 (4497)|
+|T19|PPG-DaLiA (Reiss et al., 2019)|64|Wrist|Heart Rate|R|15 (64697)|
+|T20||||Activity|M (9)|15 (64697)|
+
+
+
+**VitalDB.** The VitalDB dataset provides comprehensive monitoring of vital signs and physiological parameters from 6,388 surgical cases. This high-resolution dataset includes a wide range of intraoperative monitoring variables such as heart rate, blood pressure, oxygen saturation, and other critical physiological signals, collected at frequent intervals throughout surgery. The surgical operation belongs to one of the eleven categories: colorectal, biliary/pancreas, stomach, major resection, minor resection, breast, transplantation, thyroid, hepatic, vascular, and others. After the data cleaning process, we narrowed the dataset down to 5,866 participants with complete and usable information. As depicted in Figure 10, we observe that the gender distribution is relatively balanced, with nearly equal representation of male and female patients. Additionally, the majority of the participants fall 
+
+18 
+
+Published as a conference paper at ICLR 2025 
+
+within the age range of 50 to 70, with a significant proportion being around 60 years old. The ICU label corresponds to whether the person was admitted to the ICU or not. 
+
+
+
+<!-- Start of picture text -->
+VitalDB<br>500<br>400 VitalDB VitalDB<br>3000<br>300<br>4000<br>200 2000<br>2000<br>100 1000<br>0<br>0 0<br>0 20 40 60 80 M F 0 1<br>age sex ICU<br>Count<br>Count Count<br><!-- End of picture text -->
+
+Figure 10: VitalDB dataset descriptive statistics. 
+
+**MIMIC-III.** In our analysis, we utilize the MIMIC-III waveform database matched subset, which comprises data from 10,282 ICU patients. From this dataset, we focus specifically on extracting photoplethysmogram (PPG) data, provided it is available for each patient. To ensure the quality of the data, we set a criterion of at least 1 minute of usable PPG signal that must be present. After performing a thorough data cleaning process, we end up with a cohort of 5,596 participants with reliable PPG data. As illustrated in Figure 11, the dataset shows a gender imbalance, with a higher proportion of male patients compared to female patients. Additionally, the majority of participants are aged 60 years or older, reflecting a typical ICU population that often includes elderly patients with critical health conditions. 
+
+**MESA.** The Multi-Ethnic Study of Atherosclerosis (MESA) sleep sub-study gathered data from 2,237 participants through overnight, unattended polysomnography to assess various sleep parameters. After the data cleaning process, we retained 2,055 participants for analysis. As shown in Figure 12, the dataset shows a slightly larger proportion of female participants. The age distribution reveals that most participants are between 60 and 80 years old, reflecting an older adult population, which is commonly studied concerning sleep disorders and cardiovascular risks. 
+
+In this study, we use the Apnea-Hypopnea Index (AHI) with at least 3% and 4% oxygen desaturation as the primary measure for diagnosing sleep apnea, as recommended by the American Academy of Sleep Medicine (Ruehland et al., 2009). These thresholds indicate the severity of sleep apnea, with oxygen desaturation during apneas/hypopneas being a critical factor. We predict these AHI values directly in our regression models. Additionally, we classify participants with any history of smoking as smokers. This approach allows us to account for both current and former smokers, capturing a broader range of smoking-related health risks within our analysis. 
+
+**NuMoM2B.** Changes in gestational age and pregnancy stage are risk factors associated with adverse pregnancy outcomes such as hypertensive disorders and small-for-gestational-age delivery (Bouariu et al., 2022; Parikh et al., 2021; Wu et al., 2020; Crump et al., 2023). These diseases affect heart 
+
+
+
+<!-- Start of picture text -->
+MIMIC-III<br>400<br>MIMIC-III<br>300 3000<br>200 2000<br>100 1000<br>0 0<br>0 20 40 60 80 M F<br>age sex<br>Count<br>Count<br><!-- End of picture text -->
+
+Figure 11: MIMIC-III dataset descriptive statistics. 
+
+19 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+MESA MESA MESA<br>150 200 400<br>150 300<br>100<br>100 200<br>50<br>50 100<br>0 0 0<br>60 70 80 90 0 25 50 75 100 0 20 40 60 80 100<br>age AHI > 3% AHI > 4%<br>MESA MESA<br>1000 1000<br>500 500<br>0 0<br>female male yes no not reported<br>sex Smoking<br>Figure 12: MESA dataset descriptive statistics.<br>NuMoM2B NuMoM2B<br>1250 NuMoM2B<br>3000<br>300 1000<br>200 750 2000<br>500<br>100 1000<br>250<br>0 0 0<br>20 30 40 10 20 30 1 3<br>age Gestation Age Pregnancy Stage<br>Count Count Count<br>Count Count<br>Count Count Count<br><!-- End of picture text -->
+
+Figure 13: NuMoM2B dataset descriptive statistics. 
+
+function that can be measured using the PPG sensor (Feli et al., 2024). The Nulliparous Pregnancy Outcomes Study: monitoring mothers-to-be (nuMoM2B) sub-study examines the relationship between adverse pregnancy outcomes and sleep disorders. In particular, an overnight polysomnograph that collects PPG data is administered to the women at their homes during 6-15 weeks (early) and 22-31 weeks (late) of pregnancy. Therefore, our tasks are to classify between early and late-stage pregnancy as well as predict the gestation age of the fetus. In Figure 13, we observe that maternal age peaks around 28 years. The gestational age distribution is bimodal, which we use as a predictor in our regression task. For pregnancy stage, we classify visit 1 as early and visit 3 as late. 
+
+**VitalVideos (VV) (Skin Tone).** The Vital Videos study is an ongoing project that collects data on vital signs, videos, and blood pressure across a variety of conditions, including variations in lighting, background, and skin tone. For our analysis, we used data from two groups, totalling 231 participants, from Europe and Sub-Saharan Africa. As shown in Figure 14, most participants have a Fitzpatrick skin tone of 5 or 6, indicating darker skin. The dataset is primarily composed of female participants, with an age range between 40 and 60 years. Additionally, the majority of participants had a systolic blood pressure of around 125 and a diastolic pressure of around 80, suggesting that most individuals in the study were relatively healthy. 
+
+**PPG-BP.** The PPG-BP consists of short PPG recordings from 219 participants collected at 1000Hz. For each subject, there are three 2.1s recordings. For our analysis, we zero pad them to 10s. In Figure 15, the age distribution shows that most participants are between 40 and 80 years old, with fewer participants under 40. Furthermore, the majority of individuals have hypertension. In terms of gender, the dataset has slightly more females than males. The distribution of systolic blood pressure is centered around 120-140, indicating a population with normal to moderately elevated blood pressure, while diastolic blood pressure predominantly falls between 70 and 90. Lastly, the average heart rate for most participants ranges between 70 and 90 beats per minute. 
+
+20 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+Vital Videos (VV)<br>Vital Videos (VV)<br>40<br>75<br>30<br>50<br>20<br>25<br>10<br>0 0<br>20 40 60 80 1 2 3 4 5 6<br>age Fitzpatrick Scale<br>Vital Videos (VV)<br>150<br>Vital Videos (VV)<br>Vital Videos (VV)<br>100 40<br>40<br>30<br>50 30<br>20<br>20<br>0 10 10<br>F M 0 0<br>100 125 150 175 200 60 80 100 120 140<br>sex Systolic BP Diastolic BP<br>Figure 14: Vital Videos dataset descriptive statistics.<br>PPG-BP<br>PPG-BP PPG-BP<br>30<br>100<br>100<br>20<br>50<br>10 50<br>0 0 0<br>20 40 60 80 0 1 Female Male<br>age Hypertension sex<br>PPG-BP PPG-BP PPG-BP<br>30 40 30<br>30<br>20 20<br>20<br>10 10<br>10<br>0 0 0<br>80 100 120 140 160 180 60 80 100 50 60 70 80 90 100<br>Systolic BP Diastolic BP Avg. HR<br>Count<br>Count<br>Count<br>Count Count<br>Count<br>Count Count<br>Count Count Count<br><!-- End of picture text -->
+
+Figure 15: PPG-BP dataset descriptive statistics. 
+
+**SDB.** The sleep-disordered breathing dataset includes data from 146 children, collected through polysomnography with finger recordings lasting over three hours. Ground truth labels are provided as Apnea-Hypopnea Index (AHI) values, categorized into four levels: 0 (normal), 1 (mild, AHI between 5 and 15), 2 (moderate, AHI between 15 and 30), and 3 (severe, AHI over 30) as shown in Figure 16. For our classification task, we group AHI 0 as indicating no sleep breathing disorder, while AHI levels 1 through 3 are classified as the presence of a sleep breathing disorder. 
+
+
+
+<!-- Start of picture text -->
+SDB<br>75<br>50<br>25<br>0<br>0 1 2 3<br>Sleep Disordered Breathing<br>Count<br><!-- End of picture text -->
+
+Figure 16: SDB dataset descriptive statistics. 
+
+21 
+
+Published as a conference paper at ICLR 2025 
+
+**ECSMP.** The ECSMP dataset was gathered to study the relationship between emotion, cognition, and sleep in 89 participants. As shown in Figure 17, the majority of the participants are young adult females, with an average age of around 25 years. Mood disturbances were measured using the Profile of Mood States (POMS) scale, which captures various aspects of emotional states. To classify participants into high versus low mood disturbance categories, we binarized the Total Mood Disturbance (TMD) values by using the median as the cutoff point. 
+
+
+
+<!-- Start of picture text -->
+ECSMP ECSMP<br>20 15 ECSMP<br>15 40<br>10<br>10<br>20<br>5 5<br>0 0 0<br>18 20 22 24 26 28 100 120 140 160 180 F M<br>age Mood Disturbance sex<br>Count Count<br>Count<br><!-- End of picture text -->
+
+Figure 17: ECSMP dataset descriptive statistics. 
+
+**WESAD.** The wearable stress and affect detection dataset is a multi-modal dataset collected from 15 participants using various sensor modalities. In this study, participants were exposed to videos designed to elicit different affective states, such as amusement, meditation, stress, and baseline conditions. Following each session, participants completed the Self-Assessment Manikins (SAM) questionnaire (Bradley & Lang, 1994), which provided the ground-truth values for valence and arousal. In our analysis, we binarized these values by categorizing valence and arousal as low (1) when less than 5 and high (0) otherwise. Then, we perform regression at the segment level. As shown in Figure 18, arousal levels are generally low, while valence tends to be high in most cases. 
+
+
+
+<!-- Start of picture text -->
+WESAD WESAD<br>1500 1500<br>1000 1000<br>500 500<br>0 0<br>1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0<br>Arousal Valence<br>Count Count<br><!-- End of picture text -->
+
+Figure 18: WESAD dataset descriptive statistics. 
+
+**PPG-DaLiA.** This dataset collects PPG signals from 15 participants for heart rate estimation while performing various daily activities. These activities include sitting, ascending/descending stairs, table soccer, cycling, driving, lunch break, walking, and working. As a result, the dataset captures a wide range of heart rates, varying from 60 to 150 beats per minute, depending on the specific activity being performed. To align the PPG signal with the activity labels, we use a 8s window with 6s and 2s overlap and shift, respectively. After this, we resample and pad the signal to facilitate modeling. 
+
+
+
+<!-- Start of picture text -->
+DaLiA<br>2000<br>1500<br>DaLiA<br>15000 1000<br>10000<br>500<br>5000<br>0<br>0<br>0.0 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 50 100 150<br>Activity HR<br>Count<br>Count<br><!-- End of picture text -->
+
+Figure 19: PPG-DaLiA dataset descriptive statistics. 
+
+22 
+
+Published as a conference paper at ICLR 2025 
+
+## C REPRESENTATIVE SIGNALS FROM PRE-TRAINING DATASETS 
+
+
+
+<!-- Start of picture text -->
+VitalDB @ 500Hz<br>25<br>0<br>0 1000 2000 3000 4000 5000<br>MESA @ 256Hz<br>0<br>250<br>0 500 1000 1500 2000 2500<br>MIMIC-III @ 125Hz<br>0.25<br>0.00<br>0 200 400 600 800 1000 1200<br><!-- End of picture text -->
+
+Figure 20: Representative 10-second _raw_ PPG segments from VitalDB, MESA, and MIMIC-III. We observe that each signal’s amplitude (y-axis) and sampling rate differ. 
+
+
+
+<!-- Start of picture text -->
+VitalDB @ 125Hz<br>2.5<br>0.0<br>0 200 400 600 800 1000 1200<br>MESA @ 125Hz<br>0<br>2<br>0 200 400 600 800 1000 1200<br>MIMIC-III @ 125Hz<br>2<br>0<br>0 200 400 600 800 1000 1200<br><!-- End of picture text -->
+
+Figure 21: Normalized and resampled 10-second _pre-processed_ PPG segments from VitalDB, MESA, and MIMIC-III. These signals represent the final form before being fed to our models. We observe that the signal characteristics across datasets are more consistent. 
+
+23 
+
+Published as a conference paper at ICLR 2025 
+
+## D ADDITIONAL RESULTS 
+
+### D.1 MULTI-CLASS CLASSIFICATION 
+
+Table 9: **Multi-class classification comparison against pre-trained models.** Feature extraction parameters are indicated next to each name.. 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+||**REGLE** (0.07M)|**Chronos** (200M)|**Moment** (385M)|**PAPAGEI-P** (5M)|**PAPAGEI-S** (5M)|
+|---|---|---|---|---|---|
+|**Classifcation**- ACC (_↑_)|(Yun et al., 2024)|(Ansari et al., 2024)|(Goswami et al., 2024)|||
+|Operation Type|0.21 [0.18-0.23]|0.25 [0.22-0.29]|0.27 [0.23-0.31]|0.30 [0.26-0.33]|**0.30** [0.27-0.32]|
+|Activity|0.29 [0.28-0.29]|**0.41** [0.40-0.42]|**0.41** [0.40-0.42]|0.38 [0.37-0.39]|0.37 [0.36-0.37]|
+|Average|0.25_±_0.04|0.33_±_0.08|**0.34**_±_**0.07**|**0.34**_±_**0.04**|0.33_±_0.03|
+
+
+
+Table 10: **Multi-class classification comparison against CL methods** . Feature extraction parameters are indicated next to each name.. 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+|**Classifcation**- ACC (_↑_)|**Stat. Features**|**SimCLR** (5M)<br>(Chen et al., 2020)|**BYOL** (5M)<br>(Grill et al., 2020)|**TF-C** (10M)<br>(Zhang et al., 2022)|**PAPAGEI-P** (5M)|**PAPAGEI-S** (5M)|
+|---|---|---|---|---|---|---|
+|Operation Type|0.27 [0.24-0.32]|0.27 [0.24-0.29]|**0.31** 0.27-0.34|0.27 [0.27-0.29]|0.30 [0.26-0.33]|0.30 [0.27-0.32]|
+|Activity|0.37 [0.36-0.38]|0.36 [0.35-0.37]|0.34 [0.33-0.35]|0.37 [0.36-0.38]|**0.38** [0.37-0.39]|0.37 [0.36-0.37]|
+|Average|0.32_±_0.05|0.31_±_0.04|0.32_±_0.01|0.32_±_0.05|**0.34**_±_**0.04**|0.33_±_0.03|
+
+
+
+### D.2 F1-SCORE AND _R_<sup>2</sup> EVALUATION METRICS. 
+
+Table 11: **Downstream comparison against pre-trained models (additional metrics: F1-score and** _R_<sup>2</sup> **).** Feature extraction parameters are indicated next to each name. 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+|**Classifcation**- F1-Score (_↑_)|**REGLE** (0.07M)<br>(Yun et al., 2024)|**Chronos** (200M)<br>(Ansari et al., 2024)|**Moment** (385M)<br>(Goswami et al., 2024)|**PAPAGEI-P** (5M)|**PAPAGEI-S** (5M)|
+|---|---|---|---|---|---|
+|ICU Admission|0.00 [0.00-0.00]|0.20 [0.11-0.30]|0.12 [0.04-0.20]|0.12 [0.04-0.20]|**0.26** [0.18-0.33]|
+|Mortality|0.00 [0.00-0.00]|0.14 [0.09-0.19]|0.16 [0.11-0.21]|**0.22** [0.16-0.27]|0.17 [0.13-0.22]|
+|Smoker|0.16 [0.10-0.23]|**0.51** [0.44-0.58]|0.40 [0.33-0.47]|0.45 [0.38-0.51]|0.45 [0.37-0.50]|
+|Pregnancy stage|0.49 [0.47-0.52]|**0.69** [0.67-0.71]|0.63 [0.60-0.65]|0.62 [0.59-0.64]|0.65 [0.62-0.67]|
+|Hypertension|0.77 [0.70-0.84]|0.68 [0.58-0.77]|0.75 [0.66-0.84]|**0.84** [0.72-0.92]|0.78 [0.70-0.86]|
+|Sleep Disordered Breathing|0.00 [0.00-0.00]|0.33 [0.00-0.60]|0.22 [0.00-0.47]|0.32 [0.00-0.60]|**0.47** [0.23-0.67]|
+|Mood Disturbance|0.00 [0.00-0.00]|0.36 [0.10-0.59]|0.23 [0.00-0.47]|**0.37** [0.00-0.66]|0.32 [0.00-0.58]|
+|Valence|0.00 [0.00-0.00]|0.10 [0.07-0.14]|0.12 [0.09-0.16]|**0.17** [0.13-0.21]|0.03 [0.01-0.04]|
+|Arousal|0.83 [0.81-0.84]|0.82 [0.80-0.83]|0.81 [0.79-0.82]|0.81 [0.79-0.82]|**0.83** [0.81-0.84]|
+|Average|0.25_±_0.33|0.42_±_0.24|0.38_±_0.26|0.43_±_0.25|**0.44**_±_**0.25**|
+|**Regression**-_R_<sup>2 </sup>(_↑_)||||||
+|Apnea/Hypopnea Index_>_3%|0.02 [0.00-0.03]|0.18 [0.08-0.26]|0.14 [0.06-0.22]|0.15 [0.05-0.24]|**0.29** [0.22-0.36]|
+|Apnea/Hypopnea Index_>_4%|0.01 [0.00-0.03]|0.16 [0.08-0.22]|0.13 [0.05-0.20]|0.12 [0.03-0.22]|**0.28** [0.20-0.34]|
+|Gestation Age|0.04 [0.02-0.06]|**0.28** [0.24-0.31]|0.20 [0.17-0.23]|0.18 [0.14-0.22]|0.22 [0.19-0.25]|
+|Systolic BP (VV)|-0.03 [-0.18-0.01]|-0.24 [-0.72-0.03]|0.06 [-0.25-0.28]|-0.41 [-0.77-(-0.15)]|**0.15** [-0.09-0.30]|
+|Diastolic BP (VV)|0.01 [-0.09-0.06]|-0.29 [-0.87-(-0.01)]|0.01 [-0.25-0.14]|-0.48 [-1.02-(-0.20)]|**0.10** [-0.11-0.23]|
+|Systolic BP (PPG-BP)|-0.07 [-0.21-0.04]|-0.13 [-0.36-0.06]|0.07 [-0.31 -0.31]|**0.36** [0.16-0.49]|0.20 [0.02-0.31]|
+|Diastolic BP (PPG-BP)|0.01 [-0.05-0.02]|-0.10 [-0.45-0.07]|-0.03 [-0.31-0.13]|**0.22** [-0.13-0.40]|0.08 [-0.07-0.17]|
+|Average HR|0.37 [0.17-0.51]|0.02 [-0.16-0.17]|0.68 [0.45-0.80]|**0.79** [0.57-0.90]|0.78 [0.69-0.83]|
+|HR|0.00 [0.00-0.01]|0.57 [0.56-0.59]|**0.63** [0.61-0.64]|0.52 [0.51-0.53]|0.48 [0.42-0.46]|
+|Average|0.04_±_0.12|0.05_±_0.25|0.21_±_0.24|0.16_±_0.38|**0.28**_±_**0.20**|
+
+
+
+### D.3 ABLATION RESULTS 
+
+In this section, we provide the numeric results for the scaling analysis (Table 13) and PAPAGEI-S component analysis (Table 14). 
+
+24 
+
+Published as a conference paper at ICLR 2025 
+
+Table 12: **Downstream comparison against CL models (additional metrics: F1-score and** _R_<sup>2</sup> **).** Feature extraction parameters are indicated next to each name. 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+|**Classifcation**- F1-Score (_↑_)|**Stat. Features**|**SimCLR** (5M)|**BYOL** (5M)|**TF-C** (10M)|**PAPAGEI-P** (5M)|**PAPAGEI-S** (5M)|
+|---|---|---|---|---|---|---|
+|ICU Admission<br>|**0.30** [0.18-0.40]|0.19 [0.12-0.26]<br>|0.17 [0.11-0.22]|0.10 [0.05-0.16]<br>|0.12 [0.04-0.20]<br>|0.26 [0.18-0.33]|
+|Mortality|0.03 [0.01-0.06]|0.15 [0.10-0.20]|0.13 [0.08-0.17]|0.15 [0.10-0.20]|**0.22** [0.16-0.27]|0.17 [0.13-0.22]|
+|Smoker|0.47 [0.40-0.53]|0.43 [0.35-0.49]|**0.49** [0.42-0.56]|0.37 [0.30-0.44]|0.45 [0.38-0.51]|0.45 [0.37-0.50]|
+|Pregnancy stage|0.43 [0.41-0.47]|0.60 [0.57-0.63]|0.60 [0.57-0.63]|0.59 [0.56-0.62]|0.62 [0.59-0.64]|**0.65** [0.62-0.67]|
+|Hypertension|0.73 [0.58-0.85]|0.82 [0.73-0.89]|0.81 [0.73-0.88]|0.81 [0.72-0.89]|**0.84** [0.72-0.92]|0.78 [0.70-0.86]|
+|Sleep Disordered Breathing|0.00 [0.00-0.00]|0.46 [0.21-0.64]|0.45 [0.23-0.62]|0.19 [0.00-0.36]|0.32 [0.00-0.60]|**0.47** [0.23-0.67]|
+|Mood Disturbance|0.21 [0.00-0.47]|0.21 [0.00-0.44]|0.37 [0.00-0.67]|**0.56** [0.27-0.80]|0.37 [0.00-0.66]|0.32 [0.00-0.58]|
+|Valence<br>Arousal|0.04 [0.02-0.07]<br>0.82 [0.81-0.83]|0.09 [0.06-0.12]<br>0.81 [0.79-0.82]|0.01 [0.00-0.03]<br>**0.83** [0.81-0.84]|0.07 [0.04-0.09]<br>0.81 [0.80-0.83]|**0.17** [0.13-0.21]<br>0.81 [0.79-0.82]|0.03 [0.01-0.04]<br>**0.83** [0.81-0.84]|
+|Average|0.33_±_0.28|0.42_±_0.26|0.43_±_0.27|0.40_±_0.27|0.43_±_0.25|**0.44**_±_**0.25**|
+|**Regression**-_R_<sup>2 </sup>(_↑_)|||||||
+|Apnea/Hypopnea Index_>_3%|-0.00 [-0.06-0.03]|0.16 [0.07-0.23]|0.16 [0.08-0.22]|0.06 [-0.00-0.13]|0.15 [0.05-0.24]|**0.29** [0.22-0.36]|
+|Apnea/Hypopnea Index_>_4%|-0.01 [-0.07-0.03]|0.13 [0.06-0.21]|0.13 [0.05-0.19]|0.13 [-0.06-0.26]|0.12 [0.03-0.22]|**0.28** [0.20-0.34]|
+|Gestation Age<br>Systolic BP (VV)|0.07 [0.04-0.10]<br>-0.10 [-0.51-0.10]|0.19 [0.15-0.21]<br>-0.05 [-0.44-0.21]|0.19 [0.15-0.22]<br>-0.03 [-0.37-0.18]|0.18 [0.15-0.21]<br>-0.05 [-0.36-0.12]|0.18 [0.14-0.22]<br>-0.41 [-0.77-(-0.15)]|**0.22** [0.19-0.25]<br>**0.15** [-0.09-0.30]|
+|Diastolic BP (VV)|-0.15 [-0.31-0.11]|-0.14 [-0.29-0.08]|-0.01 [-0.40-0.20]|-0.09 [-0.45-0.16]|-0.48 [-1.02-(-0.20)]|**0.10** [-0.11-0.23]|
+|Systolic BP (PPG-BP)|0.12 [-0.04-0.21]|0.09 [-0.20-0.31]|0.10 [-0.16-0.30]|0.13 [-0.06-0.26]|**0.36** [0.16-0.49]|0.20 [0.02-0.31]|
+|Diastolic BP (PPG-BP)|0.01 [-0.18-0.14]|0.00 [-0.20-0.18]|0.05 [-0.11-0.17]|0.02 [-0.15-0.12]|**0.22** [-0.13-0.40]|0.08 [-0.07-0.17]|
+|Average HR|0.15 [-0.10-0.33]|0.74 [0.64-0.80]|0.65 [0.50-0.77]|**0.82** [0.73-0.88]|0.79 [0.57-0.90]|0.78 [0.69-0.83]|
+|HR|0.34 [0.32-0.36]|0.45 [0.44-0.47]|0.36 [0.35-0.37]|**0.54** [0.53-0.55]|0.52 [0.51-0.53]|0.48 [0.42-0.46]|
+|Average|0.05_±_0.14|0.17_±_0.25|0.18_±_0.20|0.19_±_0.28|0.16_±_0.38|**0.28**_±_**0.20**|
+
+
+
+Table 13: **Scaling: Downstream comparison for different PAPAGEI-S models** . 95% CIs are reported in square brackets and the best value is **bolded** . 
+
+|**Classifcation**- AUROC (_↑_)|**PAPAGEI-S-5M**|**PAPAGEI-S-35M**|**PAPAGEI-S-139M**|
+|---|---|---|---|
+|ICU Admission|**0.79** [0.75-0.82]|0.72 [0.68-0.75]|0.77 [0.73-0.80]|
+|Mortality|**0.67** [0.63-0.70]|0.66 [0.63-0.70]|0.66 [0.63-0.69]|
+|Smoker|**0.61** [0.56-0.66]|0.58 [0.52-0.64]|0.59 [0.54-0.65]|
+|Pregnancy stage|**0.78** [0.75-0.80]|0.77 [0.75-0.79]|0.76 [0.74-0.78]|
+|Hypertension|**0.77** [0.68-0.87]|0.75 [0.64-0.85]|**0.77** [0.65-0.87]|
+|Sleep Disordered Breathing|**0.70** [0.57-0.84]|0.59 [0.44-0.74]|0.62 [0.46-0.78]|
+|Mood Disturbance|**0.56** [0.33-0.77]|0.53 [0.30-0.73]|0.54 [0.29-0.78]|
+|Valence|**0.56** [0.54-0.59]|0.53 [0.50-0.56]|0.54 [0.51-0.56]|
+|Arousal|**0.55** [0.52-0.57]|0.52 [0.49-0.55]|**0.55** [0.52-0.58]|
+|Average|**0.67**_±_**0.09**|0.63_±_0.09|0.63_±_0.10|
+|**Regression**- MAE (_↓_)||||
+|Apnea/Hypopnea Index_>_3%|12.97 [11.87-14.05]|13.07 [11.92-14.25]|**12.86** [11.79-13.94]|
+|Apnea/Hypopnea Index_>_4%|**10.56** [9.59-11.62]|10.79 [9.85-11.83]|10.65 [9.62-11.68]|
+|Gestation Age|**6.05** [5.91-6.17]|6.10 [5.94-6.24]|6.17 [6.02-6.30]|
+|Systolic BP (VV)|**14.65** [12.50-16.78]|15.10 [13.10-17.21]|14.95 [12.87-17.01]|
+|Diastolic BP (VV)|**8.29** [6.61-10.22]|9.20 [6.93-11.12]|8.95 [6.72-10.95]|
+|Systolic BP (PPG-BP)|**14.39** [12.53-16.45]|16.70 [14.25-19.38]|16.20 [13.73-18.85]|
+|Diastolic BP (PPG-BP)|**8.71** [7.18-10.01]|9.48 [8.24-10.90]|9.32 [7.90-10.69]|
+|Average HR|**4.00** [3.34-4.67]|4.76 [3.94-5.86]|4.71 [3.86-5.60]|
+|HR|**11.53** [11.40-11.66]|12.86 [12.73-12.99]|12.20 [12.07-12.34]|
+|Average|**10.12**_±_**3.47**|10.89_±_3.73|10.76_±_3.57|
+
+
+
+### D.4 STATISTICAL SIGNIFICANCE OF MODEL COMPARISON 
+
+In addition to confidence intervals, we perform the following steps to evaluate the significance across models on a per task basis (Tables 3 & 4). First, we ran the Friedmann Chi Square test, and identified statistically significant differences across PAPAGEI and the baseline models at _p <_ 0 _._ 05. Next, we created critical difference (CD) diagrams to rank the best performing models, as suggested by the literature to compare models over multiple datasets<sup>6</sup> (Demˇsar, 2006). The CDs indicate that PAPAGEI performs the best across both classification and regression tasks. Furthermore, it has a statistically significant average rank as indicated by the lack of horizontal line. 
+
+6https://scikit-posthocs.readthedocs.io/en/latest/tutorial.html# critical-difference-diagrams 
+
+25 
+
+Published as a conference paper at ICLR 2025 
+
+Table 14: **PAPAGEI component ablation study results.** 
+
+|**Classifcation**- AUROC (_↑_)|**sVRI**|**sVRI + SQI**|**sVRI + IPA**|**Full**|
+|---|---|---|---|---|
+|ICU Admission|**0.79**|0.75|0.78|**0.79**|
+|Mortality|**0.67**|0.65|**0.67**|**0.67**|
+|Smoker|0.59|**0.61**|0.60|**0.61**|
+|Pregnancy stage|**0.78**|0.73|0.72|**0.78**|
+|Hypertension|**0.77**|0.72|0.75|**0.77**|
+|Sleep Disordered Breathing|0.62|0.53|0.64|**0.70**|
+|Mood Disturbance|0.53|**0.56**|0.55|**0.56**|
+|Valence|0.54|0.55|0.53|**0.56**|
+|Arousal|0.44|0.51|0.49|**0.55**|
+|**Regression**- MAE (_↓_)|||||
+|Apnea/Hypopnea Index_>_3%|13.36|13.74|13.42|**12.97**|
+|Apnea/Hypopnea Index_>_4%|11.01|11.43|11.29|**10.56**|
+|Gestation Age|6.18|6.32|6.15|**6.05**|
+|Systolic BP (VV)|**14.62**|15.97|15.33|14.65|
+|Diastolic BP (VV)|8.32|8.76|9.04|**8.29**|
+|Systolic BP (PPG-BP)|15.03|**14.39**|16.15|**14.39**|
+|Diastolic BP (PPG-BP)|9.12|8.76|9.06|**8.71**|
+|Average HR|**4.00**|5.88|4.26|**4.00**|
+|HR|**11.51**|11.97|11.88|11.53|
+
+
+
+|0.2<br>0.3<br>0.4<br>0.5<br>0.6<br>0.7<br>0.8<br>0.9<br>Regle (0.22)<br>(0.9) PaPaGei<br>Classification: Critical difference diagram of average score ranks|
+|---|
+|Stat. Features (0.4)<br>BYOL (0.51)<br>SimCLR (0.54)<br>(0.66) Chronos<br>(0.65) Moment<br>(0.62) TF-C|
+
+
+
+Figure 22: **Critical Difference Diagram for Classification Tasks** . The axis represents the average rank of the model. The horizontal connector lines indicate no significant differences between the models. 
+
+From the critical difference diagrams we observe that PAPAGEI is significantly better across classification (Figure 22) and regression (Figure 23) tasks. This arises because PAPAGEI is the highest ranking model across most tasks. Furthermore, we observe Moment is a strong model across both classification and regression tasks. Whereas Chronos and TF-C perform well for classification tasks only. 
+
+We conduct additional statistical significance comparisons using a structured approach. First, we randomly sample a score from within the confidence intervals for each task across all models. Next, 
+
+|0.2<br>0.3<br>0.4<br>0.5<br>0.6<br>0.7<br>0.8<br>PaPaGei (0.19)<br>(0.81) Stat. Features<br>Regression: Critical difference diagram of average score ranks|
+|---|
+|SimCLR (0.48)<br>(0.81) Regle|
+|Moment (0.5)<br>(0.65) Chronos|
+|BYOL (0.53)<br>(0.53) TF-C|
+
+
+
+Figure 23: **Critical Difference Diagram for Regression Tasks** . The axis represents the average rank of the model. The horizontal connector lines indicate no significant differences between the models. 
+
+26 
+
+Published as a conference paper at ICLR 2025 
+
+we apply the CD ranking procedure to the sampled scores. This process is repeated 1,000 times, and the ranks are averaged. The entire experiment is conducted five times for Tables 3 and 4, with the results presented in Figure 24. The colored cells indicate that PAPAGEI is statistically significant compared to the respective model at _p <_ 0 _._ 05. Our findings show that PaPaGei consistently achieves the best average rank, ranging between 0.82-0.90 for AUROC and 0.19-0.25 for MAE. Across 35 comparisons (PaPaGei vs. the other models, repeated five times), PaPaGei demonstrates significant improvements in 30 out of 35 AUROC comparisons and 32 out of 35 MAE comparisons. Among the baseline models, we acknowledge that Chronos and TF-C are strong competitors capable of performing comparably to PAPAGEI. 
+
+
+
+<!-- Start of picture text -->
+0.46 0.26 0.57 0.53 0.54 0.6 0.65 0.89 0.61 0.76 0.65 0.57 0.56 0.51 0.61 0.19<br>0.38 0.21 0.67 0.58 0.5 0.69 0.65 0.84 0.61 0.77 0.68 0.59 0.58 0.59 0.4 0.25<br>0.34 0.23 0.77 0.65 0.56 0.54 0.5 0.87 0.67 0.81 0.47 0.47 0.51 0.72 0.6 0.25<br>0.54 0.19 0.63 0.61 0.54 0.45 0.61 0.9 0.58 0.8 0.6 0.53 0.6 0.61 0.53 0.25<br>0.47 0.26 0.68 0.57 0.5 0.51 0.68 0.82 0.65 0.78 0.65 0.56 0.56 0.64 0.43 0.24<br>Methods (AUROC) Methods (MAE)<br>I I<br>II II<br>III III<br>IV IV<br>Experiments Experiments<br>V V<br>Stat. Features REGLE Chronos Moment SimCLR BYOL TF-C PaPaGei Stat. Features REGLE Chronos Moment SimCLR BYOL TF-C PaPaGei<br><!-- End of picture text -->
+
+Figure 24: Bootstrap ranking repeated for five experiments: AUROC (left) and MAE (right). Colored cells indicate that PAPAGEI is significant to the baseline at _p <_ 0 _._ 05. 
+
+### D.5 STATISTICAL ASSESSMENT BETWEEN IPA AND SQI 
+
+Recall that we incorporate SQI to handle situations where the dicrotic notch cannot be computed due to poor-signal quality or different morphologies. We performed a permutation test (Rice, 2008) to statistically evaluate PPG segments where IPA is unavailable. By splitting SQI values into no IPA and IPA groups and testing significance over 1000 permutations, we observed statistically significant differences ( _p <_ 0 _._ 05) in both mean (+0.18) and median (+0.32) SQI values, with the IPA group having larger SQI. These findings empirically motivate SQI’s ability to handle limited PPG morphology. 
+
+## E ADDITIONAL BASELINES: DEMOGRAPHICS & PPG MORPHOLOGY FEATURES 
+
+In this section, we evaluate the effectiveness of demographics (Demo: age, sex) and PPG morphology (sVRI, IPA, SQI) to predict both regression (ridge) and classification (logistic regression) tasks: **(1) Ablation Study** : We compared PaPaGei with three baselines—demographics alone, PPG features alone, and demographics + PPG features. Our results show that while demographics is a stronger baseline than statistical features, PaPaGei outperforms the demographics + PPG baseline in 14 out of 18 tasks. **(2) Effect of Demographics** : We trained a model combining PaPaGei-S with demographics. The results indicate that incorporating demographic features with PaPaGei-S creates a stronger model than using PaPaGei-S alone. 
+
+From Table 15, we observe the following classification performance (Positive is better): ICU (+0.13), Mortality (+0.01), Smoker (-0.02), Pregnancy Stage (+0.22), Hypertension (0.00), SDB (no demographics), Mood Disturbance (-0.08), Valence (-0.01), Arousal (+0.04). Regression Tasks (Negative is better): AHI _>_ 3% (-1.43), AHI _>_ 4% (-1.61), gestation age (-1.54), SBP-VV (-0.31), DBP-VV (-0.46), SBP (-0.11) , DBP (-0.65), Avg. HR (-4.07), HR (-2.93). PaPaGei-S performs better for real-time sleep and cardiovascular outcomes such as sleep apnea, heart rate and blood pressure, respectively. In particular, we notice that outcomes such as heart rate benefit substantially from PPG rather than demographics. Demographics are useful in tasks without real-time dependence such as smoking, which is established to be associated with age and sex (Chung et al., 2020). 
+
+27 
+
+Published as a conference paper at ICLR 2025 
+
+Table 15: **Demographics & PPG Morphology Baseline Results.** 
+
+|**Classifcation**- AUROC (_↑_)|**Stat. Features**|**Demo**|**PPG**|**Demo + PPG**|**PAPAGEI-S or -P**|**PAPAGEI-S + Demo**|
+|---|---|---|---|---|---|---|
+|ICU Admission|0.71 [0.65-0.78]|0.64 [0.60-0.68]|0.59 [0.54-0.64]|0.66 [0.61-0.70]|**0.79 [0.75-0.82]**|0.77 [0.74-0.81]|
+|Mortality|0.57 [0.54-0.61]|0.66 [0.61-0.69]|0.57 [0.53-0.61]|0.66 [0.61-0.69]|0.67 [0.63-0.70]|**0.70 [0.67-0.74]**|
+|Smoker|0.63 [0.58-0.67]|0.64 [0.59-0.70]|0.56 [0.52-0.62]|**0.66 [0.61-0.71]**|0.64 [0.58-0.69]|0.62 [0.56-0.68]|
+|Pregnancy stage<br>Hypertension<br>SDB|0.64 [0.62-0.67]<br>0.66 [0.47-0.83]<br>0.32 [0.14-0.55]|0.52 [0.50-0.55]<br>0.77 [0.65-0.88]<br>–|0.55 [0.53-0.57]<br>0.53 [0.40-0.68]<br>0.46 [0.31-0.62]|0.56 [0.53-0.58]<br>0.77 [0.65-0.88]<br>–|0.78 [0.75-0.80]<br>0.77 [0.68-0.87]<br>0.70 [0.57-0.84]|**0.78 [0.76-0.80]**<br>**0.80 [0.70-0.89]**<br>–|
+|Mood Disturbance|0.54 [0.31-0.77]|0.54 [0.30-0.80]|**0.64 [0.42-0.85]**|0.63 [0.36-0.87]|0.56 [0.33-0.77]|0.52 [0.25-0.78]|
+|Valence<br>Arousal|0.52 [0.49-0.55]<br>0.55 [0.53-0.58]|0.57 [0.54-0.60]<br>0.54 [0.52-0.58]|0.44 [0.41-0.47]<br>0.51 [0.48-0.54]|**0.57 [0.54-0.60]**<br>0.54 [0.52-0.58]|0.56 [0.54-0.59]<br>0.58 [0.55-0.61]|0.55 [0.53-0.58]<br>**0.58 [0.54-0.59]**|
+|**Regression**- MAE (_↓_)|||||||
+|Apnea/Hypopnea Index_>_3%<br>Apnea/Hypopnea Index_>_4%<br>Gestation Age<br>Systolic BP (VV)|15.31 [13.63-17.14]<br>12.52 [10.92-14.14]<br>7.15 [6.99-7.34]<br>15.76 [13.67-18.36]|14.53 [13.29-15.84]<br>12.28 [11.19-13.39]<br>7.69 [7.61-7.77]<br>14.96 [13.21-17.35]|15.09 [14.01-16.54]<br>12.65 [11.57-13.83]<br>7.61 [7.51-7.70]<br>15.82 [13.48-18.31]|14.40 [13.12-15.61]<br>12.17 [11.10-13.39]<br>7.59 [7.51-7.68]<br>15.01 [13.30-17.86]|12.97 [11.87-14.05]<br>10.56 [9.59-11.62]<br>6.05 [5.91-6.17]<br>14.65 [12.50-16.78]|**12.35 [11.27-13.46]**<br>1**0.47 [9.53-11.50]**<br>**6.02 [5.88-6.17]**<br>**14.27 [11.92-16.44]**|
+|Diastolic BP (VV)<br>Systolic BP (PPG-BP)<br>Diastolic BP (PPG-BP)<br>Average HR|9.75 [7.16-11.27]<br>15.50 [11.68-20.25]<br>9.35 [7.44-11.66]<br>7.01 [5.48-8.89]|8.75 [6.48-9.77]<br>13.71 [11.33-15.95]<br>9.26 [7.89-10.68]<br>9.12 [7.86-10.61]|9.20 [7.21-10.71]<br>15.76 [13.36-18.30]<br>9.36 [7.95-10.92]<br>8.07 [6.60-9.71]|8.78 [7.10-10.25]<br>13.74 [11.37-16.09]<br>9.28 [8.00-10.56]<br>8.23 [6.82-9.78]|8.29 [6.61-10.22]<br>13.60 [10.65-16.51]<br>8.71 [7.18-10.01]<br>**3.47 [2.74-4.32]**|**8.26 [6.64-10.16]**<br>**13.20 [11.47-15.66]**<br>**8.61 [7.34-9.88]**<br>4.00 [3.35-4.73]|
+|HR|13.07 [12.90-13.23]|15.18 [15.03-15.33]|16.75 [16.60-16.90]|14.46 [14.32-14.62]|**10.92 [10.80-11.04]**|12.38 [11.90-12.96]|
+
+
+
+Importantly, demographics do not add much to already homogeneous populations. For example, consider the NuMoM2B dataset which has women within a specific age range. Here, we observe that PaPaGei obtains much higher AUROC and MAE than the supervised baselines. 
+
+Furthermore, We observe that adding demographics to PaPaGei-S embeddings improves over PaPaGei in the following tasks: Mortality (+0.03), Hypertension (+0.03), AHI _>_ 3% (-0.62), AHI _>_ 4% (-0.09), gestation age (-0.03), SBP VV (-0.38), DBP VV (-0.03), SBP (0.40), DBP (0.10). Based on these results, PaPaGei-S + Demo is a stronger model in many cases. Importantly, these results indicate that PaPaGei-S embeddings learn features that are complementary to demographics are not simply proxies for age or sex. However, it is important to note that while demographic features can be valuable for personalization, they may not always be readily available, and in reality, we cannot use them in isolation to predict real-time outcomes such as blood pressure or heart rate. Therefore, our PaPaGei models are designed to function effectively with real-time sensor data alone, ensuring their applicability in situations where complete demographic information is not accessible. 
+
+These findings underscore an important point: **demographic features are not competing with PaPaGei but rather complement it** , as previously established in studies including demographics with sensor data (Spathis et al., 2022). This highlights the synergistic potential of combining PaPaGei’s advanced feature extraction with demographic context for improved task performance. 
+
+**Predicting Demographics Targets.** Using the PAPAGEI features, we predict downstream demographics such as age and sex (Table 16). PAPAGEI-S achieves 7.78 MAE in age regression, 0.85 accuracy in age classification, and 0.79 accuracy in sex classification. Although our results trail larger closed studies (Abbaspourazad et al., 2023) by 2.18, 0.05, and 0.13 for segment-level SSL, and by 5.59, 0.12, and 0.25 for patient-level SSL, they mark an advancement in open-source efforts. The superior performance of Abbaspourazad et al. (2023) can be attributed to two primary factors. First, the patient-level positive pair strategy achieves the best performance across all tasks. This approach encourages the model to form distinct clusters for each patient, effectively capturing demographic factors such as age and sex. In contrast, a segment-level approach pushes the model to cluster similar segments across individuals with varying demographics, potentially mixing demographic-specific information. Second, the single-device setup with a larger dataset is useful for effective model training (Table 17). Conversely, our evaluation, which spans three devices and utilizes smaller datasets, must handle greater data heterogeneity, thus making it more challenging. 
+
+## F ADDITIONAL PREDICTION PLOTS 
+
+The regression plots to evaluate the agreement between true and predicted values in shown in Figure 25. From the Figure, we observe that PAPAGEI’s predictions are more aligned to the true values for AHI _>_ 3% ( _R_<sup>2</sup> = 0 _._ 28), Avg. HR ( _R_<sup>2</sup> = 0 _._ 79), gestation age ( _R_<sup>2</sup> = 0 _._ 28), SBP ( _R_<sup>2</sup> = 0 _._ 36), and DBP ( _R_<sup>2</sup> = 0 _._ 22). Moreover, from the distribution plots in Figure 25, we notice that PAPAGEI has stronger overlap for AHI _>_ 4%, Avg. HR and DBP, indicating its ability to capture the tails for 
+
+28 
+
+Published as a conference paper at ICLR 2025 
+
+Table 16: **Predicting personal characteristics with embeddings** . Downstream prediction on age regression, age classification, and sex classification in our pre-training datasets (VitalDB, MESA, MIMIC-III). The regression and classification tasks are reported using MAE and AUROC, respectively. Note: training and testing are conducted with completely different cohorts in the two studies, hence comparisons are difficult. 
+
+|Study|Age Regression (_↓_)|Age Classifcation (_↑_)|Sex Classifcation (_↑_)|
+|---|---|---|---|
+|Abbaspourazad et al. (2023)(Patient)|3.19|0.97|0.99|
+|Abbaspourazad et al. (2023)(Segment)|6.60|0.90|0.87|
+|PAPAGEI-S (Ours)|8.78 [8.47-8.09]|0.85 [0.83-0.87]|0.74 [0.72-0.76]|
+
+
+
+Table 17: **Comparison of large-scale PPG studies.** * indicates partial availability. The participants and hours indicate pre-training data. 
+
+|Study|#Participants (#Hours)|#Devices (Types)|Open Data|Open Weights|Open Code|#Tasks (#Datasets)|
+|---|---|---|---|---|---|---|
+|Abbaspourazad et al. (2023)|141,207 (333K)|1 (Smartwatch)|✗|✗|✗|_>_46 (1)|
+|Ding et al. (2024)|28,539 (300K)<br>|5-6 (ICU, Smartwatch)|✗*|✗|✓|4 (7)|
+|Yun et al. (2024)|170,714 (Varying)<sup>7</sup>|1 (Finger)|✗|✓|✓*|2 (4)|
+|PAPAGEI(Ours)|13,517 (57K)|7 (ICU, Smartwatch,<br>Finger, ”Phone Ox.”)|✓|✓|✓|20 (10)|
+
+
+
+these tasks. Interestingly, we notice that all models are unable to capture the bi-modal nature of the gestation age measurements. Here, Chronos performs better than other methods to capture readings from the first visit. 
+
+## G EFFECT OF SKIN TONE 
+
+We present the skin tone analysis in a more granular way in Figure 26. Here, PAPAGEI-S clearly performs better than PAPAGEI-P in most cases. Overall, we notice that PAPAGEI-S is good for lighter skin tones in the 1-2 range for SBP and 2-3 range for DBP. While PAPAGEI-S does not perform the best for darker skin tones, it’s performance is comparable to other models for skin tone ratings of 4 and 5. Overall, these results indicate that PAPAGEI-S is relatively robust to skin tone variations, and that additional future work is needed to make it better darker skin tones. 
+
+## H EXTENDED RELATED WORK 
+
+Self-supervised learning (SSL) is the most prominent paradigm for learning general representations from large unlabeled datasets, including methods like SimCLR (Chen et al., 2020), BYOL (Grill et al., 2020), and masked autoencoders (MAE) (He et al., 2022). Timeseries-specific objectives like TNC and TF-C have also shown promise (Tonekaboni et al., 2021; Zhang et al., 2022). SSL has gained traction in the domain of physiological signal analysis, with applications to health records (Chen et al., 2021; Y`eche et al., 2021), fitness and personalization (Spathis et al., 2021), as well as brain (Cheng et al., 2020) and heart signals (Kiyasseh et al., 2021; Sarkar & Etemad, 2020). 
+
+However, despite the popularity of SSL, there are no widely used FMs for PPG data. While (Abbaspourazad et al., 2023) showcased the potential of foundation models for physiological signals, it was based on a single proprietary dataset and device (Apple Watch) while the models were not released, limiting its practical use in the research community. Similarly, REGLE’s work (Yun et al., 2024) on the UK Biobank dataset showed that embedding PPG signals can improve genetic discovery and risk prediction outcomes. Although parts of that model and pipeline are public, the dataset is not openly accessible, and the primary goal was not to create a foundation model for PPG but rather to focus on genetics. Another work on the same data showed that PPG embeddings are promising for cardiovascular risk prediction (Weng et al., 2024). SiamQuality (Ding et al., 2024) also trained an unreleased model on 36 million PPG signals using proprietary data. Importantly, most of these works pre-trained on a single-device dataset and did not explore out-of-domain datasets or conduct transfer learning experiments, which are crucial for assessing the true generalizability of foundation 
+
+> 7https://biobank.ndph.ox.ac.uk/crystal/field.cgi?id=4205 
+
+29 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+Chronos SimCLR PaPaGei-S<br>100 100 100<br>0.06<br>AHI > 4%<br>m = 0.16 m = 0.14 m = 0.27 Chronos<br>50 R 2 = 0.16 50 R 2 = 0.13 50 R 2 = 0.28 0.04 SimCLR<br>PaPaGei-S<br>0.02<br>0 0 0<br>0.00<br>0 50 100 0 50 100 0 50 100 20 0 20 40 60 80 100 120<br>True AHI > 4% True AHI > 4% True AHI > 4% AHI > 4%<br>(a) AHI  >  4% predictions<br>100 Moment 100 BYOL 100 PaPaGei-P<br>m = 0.68 m = 0.67 m = 0.92<br>R 2 = 0.68 R 2 = 0.65 R 2 = 0.79 0.04 Avg. HR<br>80 80 80 0.03 Moment<br>BYOL<br>0.02 PaPaGei-P<br>60 60 60 0.01<br>0.00<br>60 80 100 60 80 100 60 80 100 40 50 60 70 80 90 100 110<br>True avg. HR True avg. HR True avg. HR Avg. HR<br>(b) Avg. HR predictions<br>BYOL PaPaGei-S<br>50 Chronos 50 m = 0.22 50 m = 0.25<br>40 mR 2  = 0.31= 0.28 4030 R 2 = 0.19 4030 R 2 = 0.28 0.100 Gestation Age<br>3020 20 20 0.075 ChronosBYOL<br>10 10 10 0.0500.025 PaPaGei-S<br>0 0True Gestation Age20 40 0 0True Gestation Age20 40 0 0True Gestation Age20 40 0.000 10 0 Gestation Age10 20 30 40<br>(c) Gestation Age<br>180 Moment 180 TF-C 180 PaPaGei-P<br>160 m = 0.31 160 m = 0.19 160 m = 0.29 0.04<br>140 R 2 = 0.07 140 R 2 = 0.13 140 R 2 = 0.36 0.03 Systolic BP (PPG-BP)Moment<br>120 120 120 0.02 TF-CPaPaGei-S<br>100 100 100 0.01<br>80 80 80 0.00<br>100 150 100 150 100 150 60 80 100 120 140 160 180 200<br>True SBP (PPG-BP) True SBP (PPG-BP) True SBP (PPG-BP) Systolic BP (PPG-BP)<br>(d) Systolic BP (PPG-BP)<br>120 Moment 120 BYOL 120 PaPaGei-P<br>m = 0.15 m = 0.08 m = 0.25<br>100 R 2 = 0.03 100 R 2 = 0.05 100 R 2 = 0.22 0.100 Diastolic BP (PPG-BP)<br>0.075 Moment<br>80 80 80 0.050 BYOLPaPaGei-P<br>60 60 60 0.025<br>0.000<br>50 75 100 50 75 100 50 75 100 40 60 80 100 120<br>True DBP (PPG-BP) True DBP (PPG-BP) True DBP (PPG-BP) Diastolic BP (PPG-BP)<br>(e) Diastolic BP (PPG-BP)<br>Density<br>Predicted AHI > 4%<br>Density<br>Predicted avg. HR<br>Density<br>Predicted Gestation Age<br>Density<br>Predicted SBP (PPG-BP)<br>Density<br>Predicted DBP (PPG-BP)<br><!-- End of picture text -->
+
+Figure 25: Regression plots and prediction distribution of different models compared to ground truth for (a) Apnea/Hypopnea Index _>_ 4%, (b) Average Heart Rate, (c) Gestation Age, (d) Systolic BP (PPG-BP), and (e) Diastolic BP (PPG-BP). _R_<sup>2</sup> is the coefficient of determination and _m_ is the correlation slope. 
+
+30 
+
+Published as a conference paper at ICLR 2025 
+
+
+
+<!-- Start of picture text -->
+Systolic BP (VV)<br>30 REGLE<br>25 Chronos<br>20 Moment<br>SimCLR<br>15<br>BYOL<br>10<br>TF-C<br>5 PaPaGei-P<br>0 PaPaGei-S<br>1 (Pale white) 2 (Fair) 3 (Darker White) 4 (Light Brown) 5 (Brown) 6 (Black)<br>Fitzpatrick Skin Tone Scale<br>Diastolic BP (VV)<br>12.5<br>REGLE<br>10.0 Chronos<br>7.5 Moment<br>SimCLR<br>5.0<br>BYOL<br>2.5 TF-C<br>PaPaGei-P<br>0.0<br>PaPaGei-S<br>1 (Pale white) 2 (Fair) 3 (Darker White)4 (Light Brown) 5 (Brown) 6 (Black)<br>Fitzpatrick skin tone scale<br>MAE<br>MAE<br><!-- End of picture text -->
+
+Figure 26: Detailed skin tone analysis for Blood Pressure estimation (VV dataset). 
+
+models. These studies highlight the potential of PPG-based foundation models but also underscore the need for openly available, pre-trained models that can be widely used and adapted by the research community. 
+
+On the other hand, generic time series foundation models have begun to gain popularity, mirroring the trend seen in Large Language Models (LLMs). These models are pre-trained on massive corpora of diverse time series data, aiming to learn universal representations that can be applied across various domains. For instance, Chronos (Ansari et al., 2024) was trained on an impressive 84 billion observations (analogous to tokens in NLP) from 28 distinct datasets. However, it’s notable that this diverse collection does not include physiological data. Similarly, Moment (Goswami et al., 2024) was trained on billions of observations from a wide-ranging dataset that includes weather, traffic, energy, and other domains. While Moment does incorporate a small amount of ECG data, it comprises only a tiny percentage of the overall data pool. 
+
+In contrast to these generic approaches, our work takes a domain-specific focus. We curate a large pre-training and evaluation benchmark dedicated exclusively to PPG data. While knowledge gained from generic time series foundation models may transfer to domain-specific tasks like PPG, we expect the performance to be limited compared to a model trained specifically on PPG data. Furthermore, foundation models for ECG (McKeen et al., 2024; Song et al., 2024) or EEG (Yuan et al., 2024b) have shown promise but transferring from one domain-specific model (e.g., ECG) to another (PPG) is likely to be even more challenging, as the underlying signal characteristics can be quite different. For instance, Lai et al. (2023) trained a large-scale 12-lead ECG model for detecting 60 diagnostic terms, while McKeen et al. (2024) developed an open-source ECG FM using 1.6 million 12-lead signals. In brain signal analysis, Yuan et al. (2024b) introduced Brant-2, an EEG and SEEG model supporting tasks like sleep staging and seizure detection. Building on this progress, we adopt a domain-specific approach focused on photoplethysmography (PPG) signals. Building on the increasing interest in modality-specific foundation models, our specialized approach allows us to capture nuances and complexities specific to PPG signals. 
+
+An increasingly popular approach involves feeding timeseries data and prompts directly to Large Language Models (LLMs) (Gruver et al., 2024). However, despite promising results, LLMs struggle with high-dimensional signals due to their text-based processing (Spathis & Kawsar, 2024). A modality-specific encoder like PAPAGEI addresses this limitation by providing representations of 
+
+31 
+
+Published as a conference paper at ICLR 2025 
+
+raw signals (Belyaeva et al., 2023), which can be combined with text and fed into more powerful multimodal foundation models, such as AnyMAL (Moon et al., 2023). This approach offers several advantages: computational efficiency through a fixed LLM, flexibility due to the modular design of encoder, adapter, and LLM components, and interoperability with other high-performing models (e.g., a state-of-the-art IMU encoder (Yuan et al., 2024a)). Crucially, this encoder-LLM approach does not require paired data with other modalities to train a single multimodal model. However, it may introduce complexity by limiting end-to-end gradient propagation and reduce interpretability in encoder-LLM communication compared to natural language prompts. Despite these trade-offs, PAPAGEI serves dual purposes: as a generic feature extractor for various PPG signals and applications, and as a modality encoder in next-generation frontier models. This versatility positions it as a valuable tool for advancing multimodal sensory AI systems. 
+
+## I EXTENDED DISCUSSION 
+
+In §5.1, we observed that PAPAGEI outperforms baselines in at least 14 out of 20 tasks, with average classification and regression improvements of 4.7%-6.3% and 2.9%-4.9%, respectively. PAPAGEIS performed best for cardiovascular parameters like BP, Hypertension, and Avg. HR, which are closely linked to metrics such as sVRI and IPA (Liang et al., 2018b). Additionally, PAPAGEI-P surpassed baselines FMs like Moment and is well-suited for tasks such as Smoking and Arousal. 
+
+By ablating different components of PAPAGEI-S (Section 5.2), we found that the full model performs best, with sVRI contributing the most. Adding IPA or SQI separately did not improve performance, suggesting that (a) IPA and SQI positively transfer in a multi-task setup, and (b) our design choice to include both to compensate for situations where IPA cannot be computed is effective (Section 3.2). While combining PAPAGEI-P and PAPAGEI-S may seem intuitive, constraining positive pairs on both sVRI and participants leads to too many unique labels with limited samples. In our scalability analysis, we observed that the smallest model (5M parameters) outperformed others, aligning with other studies using CNNs with 3.3M parameters for biosignals (Abbaspourazad et al., 2023), likely due to the size of PPG datasets. Larger models like Chronos or Moment are impractical for wearables due to their size and privacy concerns with cloud-based inference for health data. Additionally, PAPAGEI-S is more data-efficient for linear probing, showing greater performance gains with increased data availability, making it a promising backbone for small studies in future research. 
+
+Our studies in Section 5.3 reveal that PAPAGEI-S embeddings are more dispersed across participants, enhancing performance, while regression predictions more accurately reflect the true distribution. We attribute this to our positive pair selection, which chooses positive pairs across individuals based on sVRI. Moreover, our skin tone analysis shows that the method performs better on lighter skin tones, likely due to the model being trained predominantly on such data. For darker skin tones, performance was similar across models for diastolic BP, with REGLE and BYOL performing best, highlighting the need for future work creating more robust models for diverse skin tones. 
+
+To provide future direction regarding the use of PAPAGEI, we provide some suggestions. For instance, let’s consider the nuMoM2B dataset which consists of pregnant women. PAPAGEI-S obtains an AUROC of 0.78 in pregnancy stage classification and 6.05 is gestation age classification. Compared to the pre-training population with diverse age and gender, the nuMoM2B consists of women generally aged between 20-35. Furthermore, the gestation age readings are collected approximately around the first and third trimester. Given these factors, the target nuMoM2B dataset has many variables contributing toward distribution shift. Therefore, PaPaGei-S can be fine-tuned to address the shift in the following ways: (1) We can align the pre-trained embeddings to the nuMoM2B embedding using unsupervised or semi-supervised domain adaptation. (2) Domain Generalization is also an option during the training phase to improve generalization robustness. (3) Newer methods such as LoRA can provide another way to quickly fine-tune. (4) Importantly, given that more women are present in the first visit compared to the third visit, we can optimize different metrics to improve accuracy under the imbalance. For example, AUPRC can be optimized instead of AUROC. Fairness of classification across genders can also be considered during training. Exploring these avenues to further enhance the performance and applicability of PaPaGei is a promising direction for future studies. Moreover, future work may benefit from exploring PPG specific augmentations such as GAN-based approaches (Kiyasseh et al., 2020); and systematically evaluating different augmentations to provide insights into useful PPG augmentations. 
+
+32 
+

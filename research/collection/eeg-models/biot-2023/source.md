@@ -1,837 +1,584 @@
-BIOT: Cross-data Biosignal Learning in the Wild
-ChaoqiYang1, M.BrandonWestover2,3, JimengSun1
-1UniversityofIllinoisUrbana-Champaign,2HarvardMedicalSchool
-3BethIsraelDeaconessMedicalCenter
+# `BIOT` **: Cross-data Biosignal Learning in the Wild** 
+
+**Chaoqi Yang**<sup>1</sup> **, M. Brandon Westover**<sup>2</sup><sup>_,_3</sup> **, Jimeng Sun**<sup>1</sup> 
+
+1University of Illinois Urbana-Champaign, 2Harvard Medical School 3Beth Israel Deaconess Medical Center 
+
+```
 {chaoqiy2}@illinois.edu
-Abstract
-Biologicalsignals,suchaselectroencephalograms(EEG),playacrucialrolein
-numerousclinicalapplications,exhibitingdiversedataformatsandqualityprofiles.
-Currentdeeplearningmodelsforbiosignalsaretypicallyspecializedforspecific
-datasetsandclinicalsettings,limitingtheirbroaderapplicability. Motivatedbythe
-successoflargelanguagemodelsintextprocessing,weexplorethedevelopment
-of foundational models that are trained from multiple data sources and can be
-fine-tunedondifferentdownstreambiosignaltasks.
-Toovercometheuniquechallengesassociatedwithbiosignalsofvariousformats,
-suchasmismatchedchannels,variablesamplelengths,andprevalentmissingval-
-ues,weproposeaBiosignalTransformer(BIOT).TheproposedBIOTmodelcan
-enablecross-datalearningwithmismatchedchannels,variablelengths,andmissing
-valuesbytokenizingdiversebiosignalsintounified"biosignalsentences". Specifi-
-cally,wetokenizeeachchannelintofixed-lengthsegmentscontaininglocalsignal
-features,flatteningthemtoformconsistent"sentences". Channelembeddingsand
-relativepositionembeddingsareaddedtopreservespatio-temporalfeatures.
-TheBIOTmodelisversatileandapplicabletovariousbiosignallearningsettings
-across different datasets, including joint pre-training for larger models. Com-
-prehensive evaluations on EEG, electrocardiogram (ECG), and human activity
-sensorysignalsdemonstratethatBIOToutperformsrobustbaselinesincommon
-settingsandfacilitateslearningacrossmultipledatasetswithdifferentformats. Use
-CHB-MITseizuredetectiontaskasanexample,ourvanillaBIOTmodelshows3%
-improvementoverbaselinesinbalancedaccuracy,andthepre-trainedBIOTmodels
-(optimizedfromotherdatasources)canfurtherbringupto4%improvements.
-1 Introduction
-Biosignals,suchasEEGandECG,aremulti-channeltimeseriesrecordedathighsamplingrates
-(e.g.,256Hz)invarioushealthcaredomains,includingsleepmedicine,neurologicalandcardiovas-
-cular disease detection, and activity monitoring. Deep learning (DL) models have demonstrated
-impressivesuccessinautomatingbiosignaldiagnosisacrossdiverseapplications(Yangetal.,2021),
-encompassingsleepstageclassification(Biswaletal.,2018;Yangetal.,2021;PhanandMikkelsen,
-2022),emotionanalysisviaEEG(Zhangetal.,2020;Suhaimietal.,2020),actionandmotorimagery
-recognition(Venkatachalametal.,2020),acutestressdetectionthroughelectrodermalactivity(Greco
-etal.,2021),EEG-basedseizureepilepsyclassification(Yangetal.,2023;Jingetal.,2023),and
-ECG-drivencardiacarrhythmiadetection(IsinandOzdalili,2017;Parvanehetal.,2019).
-Variousdeeplearningmethodshavebeenappliedtobiosignalanalysis. Someworksuse1Dconvolu-
-tionalneuralnetworks(CNN)onrawsignals(Jingetal.,2023;Nagabushanametal.,2020;Daretal.,
-2020),whileotherspreprocessthedatawithshort-timeFouriertransform(STFT)andemploy2D
-CNNmodelsontheresultingspectrogram(Yangetal.,2022a;Kimetal.,2020;Cuietal.,2020).
-ResearchersalsosegmentthesignalanduseaCNNsegmentencoderwithadownstreamsequence
-Preprint.Underreview.
-3202
-yaM
-01
-]PS.ssee[
-1v15301.5032:viXra
+```
 
-model (Zhang et al., 2019; Biswal et al., 2018; Jing et al., 2020; Almutairi et al., 2021), such as
-Transformerorrecurrentneuralnetworks(RNN),tocapturetemporaldynamics. Otherapproaches
-involveensemblelearning,featurefusionfrommultipleencoders(Lietal.,2022),andmulti-level
-transformersto encodespatialandtemporal featuresacrossandwithin channels(Lawhernet al.,
-2018;Songetal.,2021;Liuetal.,2021).
-Thesemodels(Jingetal.,2023;Yangetal.,2021;Biswaletal.,2018;Kostasetal.,2021;Duetal.,
-2022;Zhangetal.,2022)predominantlyfocusonbiosignalsampleswithfixedformatsforspecific
-tasks,whilereal-worlddatamayexhibitmismatchedchannels,variablelengths,andmissingvalues.
-Inthispaper,ourobjectiveistodeviseaflexibletrainingstrategythatcanhandlediversebiosignal
-datasetswithvaryingchannels, lengths, andlevelsofmissingness. Forexample, isitpossibleto
-transfer knowledge from abnormal EEG detection (a binary classification task with 64 channels
-and a 5-second duration, recorded at 256Hz) to improve another EEG task, such as seizure type
-classification(amulti-classtaskwith16channelsanda10-seconddurationat200Hz)? Inreality,
-such data mismatches often arise from varying devices, system errors, and recording limitations.
-Additionally,itisalsoimportanttoexplorethepotentialofutilizingdifferentunlabeleddata.
-To apply existing deep learning models to such settings of different biosignals, significant data
-processingisrequiredtoaligntheformatsacrossmultipledatasets. Thismayinvolvetruncating
-or padding signals for consistent lengths (Zhang et al., 2022), and imputing missing channels or
-segments(Bahadoretal.,2021). Suchpractices,however,mayintroduceunnecessarynoiseandshift
-datadistributions,leadingtopoorgeneralizationperformance. Developingaflexibleandunified
-modelthataccommodatesbiosignalswithdiverseformatscanbeadvantageous.
-Inourpaper,wedevelopthebiosignaltransformer(BIOT)model(summarizedinFigure1),which,to
-thebestofourknowledge,isthefirstbiosignalencodingmodelthatcanhandlebiosignalsofvarious
-formats. Ourmotivationstemsfromthevisiontransformer(ViT)(Dosovitskiyetal.,2020)andthe
-audiospectrogramtransformer(AST)(Gongetal.,2021). TheViTmodelsplitstheimageintoa
-"sentence"ofpatchesforimagerepresentation. TheASTmodelsplitstheaudiospectrograminto
-"sentence"for1Daudiorepresentation. These"sentence"structurescombinedwithTransformer
-(Vaswanietal.,2017)canhandlevariable-sizedinputs.
-Comparedtoimages(RGBorgray),audios,ornaturallanguages,biosignalsaremorecomplicated
-primarily as it has multiple channels. It is non-trivial to transform diverse biosignals of various
-formatsintounified"sentence"structures. ThispaperproposesBIOTtosolvethechallengebyanovel
-biosignaltokenizationmodulethatsegmentseachchannelseparatelyintotokensandthenflattens
-thetokenstoformconsistentbiosignal"sentences"(illustratedinFigure2). Withthedesign,our
-BIOTcanenabletheknowledgetransfercrossdifferentdatainthewildandallowjoint(pre-)training
-onmultiplebiosignaldatasources. Ourcontributionsarelistedbelow.
-• Biosignaltransformer(BIOT).ThispaperproposesabiosignalencodingmodelBIOTbytokeniz-
-ingbiosignalsofvariousformatsintounified“sentences.”
-• Knowledgetransferacrossdifferentdata. OurBIOTcanenablejoint(pre-)trainingandknowl-
-edgetransferacrossdifferentbiosignaldatasetsinthewild,whichinspirestheresearchoflarge
-foundationmodelsforbiosignals.
-• Strongempiricalperformance. WeevaluateourBIOTonseveralunsupervisedandsupervised
-EEG,ECG,andhumanactivitysensorydatasets. ResultsshowthatBIOToutperformsbaseline
-modelsandcanutilizethemodelspre-trainedonotherdatatobenefitthecurrenttask.
-2 BIOT:BiosignalTransformer
-As shown in Figure 1, our BIOT encoder cascades two modules: (i) the biosignal tokenization
-modulethattokenizesanarbitrarybiosignal(variablelengths,differentchannels,andmissingvalues)
-intoa"sentence"structure.Thisdesigncanpotentiallyenablepreviouslanguagemodelingtechniques
-(Devlin et al., 2018; Liu et al., 2019; OpenAI, 2023) to empower the current biosignal models;
-(ii) a linear transformer module that captures complex token interactions within the "sentence"
-whilemaintaininglinearcomplexity. Afterthat,wealsodiscusstheapplicationofBIOTindifferent
-real-worldsettings.
-2
+## **Abstract** 
 
-Figure1: BiosignalTransformer(BIOT).(Upper)Givenanewdatasample, weinitiallyperform
-datapreprocessing(resampling, normalization, tokenization, andflattening)tocreateabiosignal
-"sentence"usingthebiosignaltokenizationmodule. Wethenlearnthecomplexinteractionswithin
-the"sentence"throughthelineartransformermodule. (Lower)BIOTencoderisversatile,enabling
-supervisedlearningoncompletedata, datawithmissingvalues, andpre-trainingandfine-tuning
-acrossdiversedataformatsandtasks.
-2.1 Module1: BiosignalTokenization
-Motivation. Thegoalofthispaperistomodelheterogeneousbiosignals(e.g.,EEGsampleswith
-differentchannelsfordifferenttasks)withaunifiedencodingmodel. Forexample,commonEEG
-samples (Lopez et al., 2015), such as those for seizure detection, are recorded at 256Hz in the
-international 10-20 system 1 for 10-second long (Klem et al., 1999). With standard 16 montage
-editing,thesampleisessentiallyamulti-channeltime-series, representedasamatrixofsize(16,
-2560). However, format mismatch may prevent the applications on other similar data, such as
-different sampling rate (e.g., 200Hz vs 256Hz) (Jing et al., 2023), mismatched channels (i.e.,
-differentdatasetshavetheirownnovelchannels),variablerecordingduration(i.e.,30spersample
-vs. 10s)(Zhangetal.,2022),missingsegments(i.e.,partoftherecordingisdamagedduetodevice
-error). Thus,existingmodelsmayfailtoutilizethemismatcheddatafromdifferentdatasets.
-OurBIOTsolvestheabovechallengesbythefollowingsteps. IllustrationsareshowninFigure2.
-Assumethemulti-channelbiosignalasS∈RI×J (useacompletesamplefortheeaseofnotation).
-• Resampling. We first resample all data to the same rate (denoted by r ∈ R+, such as 200Hz)
-bylinearinterpolation. Theconsistentratecouldbeselectedfollowingclinicalknowledgeofa
-certainbiosignal. Forexample,thehighestfrequencyofinterestinbothEEGandECGsignalsis
-commonlyaround100Hz,andthus200Hzor250HzcanbesuitablefortypicalEEGorECG
-applications,accordingtoNyquist-Shannonsamplingtheorem(Nyquist,1928;Shannon,1949).
-• Normalization: Toalleviatetheunitdifferenceandamplitudemismatchacrossdifferentchannels
-and datasets, we use the 95-percentile of the absolute amplitude to normalize each channel.
-Formally,eachchannelS[i]isnormalizedby S[i] .
-percentile(|S[i]|,95%)
-1https://en.wikipedia.org/wiki/10-20_system_(EEG)
-3
+Biological signals, such as electroencephalograms (EEG), play a crucial role in numerous clinical applications, exhibiting diverse data formats and quality profiles. Current deep learning models for biosignals are typically specialized for specific datasets and clinical settings, limiting their broader applicability. Motivated by the success of large language models in text processing, we explore the development of foundational models that are trained from multiple data sources and can be fine-tuned on different downstream biosignal tasks. 
 
-Figure2: BiosignalTokenization(nooverlapintheexamples). Sample1hasfourchannels(Fp1,
-Fp2,O1,andO2)for5seconds. Wetokenizeeachchannelintosegmentsandthenparameterizethese
-20segmentswiththreeembeddings. Ontheright,weusedifferentcolorstorepresentthechannels
-(blue-Fp1, brown-Fp2, green-O1, and yellow-O2). Sample 2 has mismatched channels (no O2),
-variablelengths(Fp1andFp2areshorterandflipped),andmissingvalues(inO1). Usingourmethod,
-wecanstilltokenizeSample2inacomparable"sentence".
-• Tokenization: For handling length variation, we tokenize the recording of each channel into
-t-secondtokens,andneighboringtokenscanhaveoverlapsofpseconds(p,t∈R+andp<t,e.g.,
-t=1andp=0.5). Thus,thek-thtoken(k =1,2,3,...)inthei-thchannelcanberepresentedby
-theslicingnotationS[i,(t−p)(k−1):(t−p)(k−1)+t]. Thenumberoftokensperchannel
-islimitedbytheinequality: (t−p)(k−1)+t≤J. Here,theoverlappisessentialtomaintain
-the temporal information for shorter signals. For example, if the length of signal is J = 3, a
-configurationoft=1,p=0willonlygenerate3tokensforeachchannel,whileaconfigurationof
-t=1,p=0.5gives5tokensperchannel. Incasesofmissingvalues,wedropthecorresponding
-tokens directly (as shown in Sample 2 Figure 2). Note that, our tokenization applies to each
-channel,separately,whichisdifferentfrompreviousworks(Biswaletal.,2018;Almutairietal.,
-2021;Duetal.,2022)thatsplitallchannelstogether(whichcannotworkonSample2).
-• Flattening: Wefinallyflattentokensfromallchannelsintoaconsistent"sentence".
-Theabovestepsarenon-parametric.Tostudytheeffectofsamplingrater,tokenlengtht,andoverlap
-p,weprovideablationstudiesandinsightsinAppendixB.3. Inthefollowing,wedesignthetoken
-embeddingforthebiosignal"sentence",whichcombinesinformationfromthreeaspects.
-• Segment embedding. We learn the segment embedding from a spectral perspective by first
-extractinganenergyvectorforeachtokenS[i,(t−p)(k−1):(t−p)(k−1)+t]basedonall
-frequencybands. Thisstepisenabledbyfastfouriertransform(FFT).Afullyconnectednetwork
-(FCN)isthenappliedontheenergyvectortoobtainthesegmentembedding.
-• Channelembedding(spatial). Welearnanembeddingtableforalldifferentchannelsandaddthe
-correspondingchannelembeddingtothetoken. EachcolorrepresentsonechannelinFigure2.
-• Positionalembedding(temporal). Inbiosignals,thesegmentorderwithinthechannelcaptures
-temporalinformation. Wethusaddrelativepositionalembeddingtothefinaltokeembeddingby
-usingthesinusoidalandcosinefunctions,whichdoesnotneedlearnableparameters.
-Wedenotethefinaltokenziedbiosignal"sentence"asX∈RN×l whereN isthenumberoftokens
-andlisthedimensionoftokenembedding. InFigure2,themarkedorangeareaindicatesthespatial-
-or temporal-relevant tokens w.r.t. the current token (i.e., same time step or channel). Our token
-embeddingscaneffectivelycapturethesegmentfeaturesaswellasthespatio-temporalfeatures.
-2.2 Module2: Lineartransformer
-Transformerwithlinearcomplexityforlongbiosignal"sentence".Next,wewanttoleveragethe
-Transformermodel(Vaswanietal.,2017)forlearningthe"sentence"embedding.However,biosignals
-usuallyhavemanychannels,whichmayleadtolong"sentences". Forexample,the"sentence"ofa
-4
+To overcome the unique challenges associated with biosignals of various formats, such as mismatched channels, variable sample lengths, and prevalent missing values, we propose a Biosignal Transformer ( `BIOT` ). The proposed `BIOT` model can enable cross-data learning with mismatched channels, variable lengths, and missing values by tokenizing diverse biosignals into unified "biosignal sentences". Specifically, we tokenize each channel into fixed-length segments containing local signal features, flattening them to form consistent "sentences". Channel embeddings and _relative_ position embeddings are added to preserve spatio-temporal features. 
 
-64-channelEEGsignalfor20seconds(withoutoverlapsp=0)canhave64×20=1280tokens,
-andlongerwiththeoverlaps. GiventhattheoriginalTransformermodelisknowntohavequadratic
-complexity in both time and space, we adopt the linear attention mechanism (Wang et al., 2020;
-Katharopoulosetal.,2020)forbiosignallearningapplications.
-Formally,letusassumeWK,WV,WQ ∈ Rl×k bethekey,value,andquerymatrices. Ourself-
-attentionmoduleusesarank-dapproximationforthesoftmaxattention(N ×N)byreduced-rank
-parametermatricesE(cid:62) ∈RN×d,F∈Rd×N (whered(cid:28)N). TheoutputH∈RN×k is,
-H= Attention(XWQ,EXWK,FXWV) (1)
-(cid:18) (XWQ)(EXWK)(cid:62)(cid:19)
-= softmax √ ·FXWV . (2)
-k (cid:124) (cid:123)(cid:122) (cid:125)
-(cid:124) (cid:123)(cid:122) (cid:125) d×l
-N×d
-Themaincomponentsinourlineartransformermoduleareonelinearself-attentionlayerandonefully
-connectednetwork. Toenablestabletraining,weaddlayernormalization(Baetal.,2016),residual
-connection(Heetal.,2016),anddropout(Srivastavaetal.,2014)rightbeforeeachcomponent(see
-Figure1),whichgreatlyacceleratestheconvergenceandimprovesthefinalperformance.
-BIOTEncoder. AnillustrationofourproposedBIOTencoderisshowninFigure1(upper),which
-comprisesthebiosignaltokenizationmoduleandmultipleblocksoflineartransformermodules.
-Weobtainthefinalbiosignal"sentence"embeddingbyameanpoolingstepoveralltokens. Notethat
-appendingaclassification[CLS]tokenatthebeginningofthe"sentence"(afterModule1)isalsoa
-commonoption. However,wefindityieldsaslightlyworseperformanceinourapplication,andthus
-weusemeanpoolingintheexperiments.
-2.3 BiosignalLearningintheWild
-OurproposedBIOTencodercanbeappliedinvariousreal-worldbiosignalapplicationsillustratedin
-thelowerpartofFigure1). Theseapplicationsinclude(1)standardsupervisedlearning,(2)learning
-withmissingchannelsorsegments,(3)&(4)pre-trainingononeormoredatasets,andfine-tuningon
-othersimilardatasetswithdifferentinputformats.
-(1)SupervisedLearningisthemostcommonsettinginthepreviousliterature(Jingetal.,2023;
-Biswal et al., 2018). With the BIOT encoder, we finally apply an exponential linear unit (ELU)
-activation(Clevertetal.,2015)andalinearlayerforclassificationtasks.
-(2) Supervised Learning (with missing). Many real biosignal data have mismatched channels,
-missingsegments,andvariablelengths,whichpreventstheapplicationsofexistingmodels(Jing
-etal.,2023;Songetal.,2021). Flexibleasourmodelis,BIOTcanbeappliedinthissettingwiththe
-samemodelstructureasin(1).
-(3)UnsupervisedPre-training.Wecanjointlypre-trainageneral-purposeBIOTencoderonmultiple
-largeunlabeleddatasets. Intheexperiments,wepre-trainanunsupervisedencoderusing5million
-restingEEGsamples(16channels,10s,200Hz)and5millionsleepEEGsamples(2channels,30s,
-125Hz),whichislaterutilizedtoimprovevariousdownstreamtasks.
-Fortheunsupervisedpre-training,wetakethefollowingsteps(adiagramisshowninFigure1).
-• AssumeSistheoriginalbiosignal. Wefirstrandomlydropoutpartofitschannelsanddropoutpart
-ofthetokensfromtheremainingchannels,resultinginaperturbedsignalS˜.
-• WethenobtaintheembeddingsofSandS˜ bythesameBIOTencoder. Toformtheobjective,we
-wanttopredicttheembeddingoftheoriginalsignalbytheperturbedsignal. Thus,anadditioanl
-predictor(i.e.,two-layerneuralnetwork)isappendedfortheperturbedsignalfollowing(Grilletal.,
-2020). WeuseZandZ˜ todenotetherealembeddingofSandpredictedembeddingfromS˜.
-Z= BIOT(S), Z˜ = predictor(BIOT(S˜)). (3)
-• Finally,contrastiveloss(Heetal.,2020;Chenetal.,2020)isusedonSandS˜ toformtheobjective.
-(cid:16) (cid:16) (cid:17) (cid:17)
-L= CrossEntropyLoss softmax (cid:104)Z,Z˜(cid:62)(cid:105)/T ,I . (4)
-Here,T representsthetemperature(T =0.2throughoutthepaper)andIisanidentitymatrix. Inthe
-implementation,wealsoapplysample-wiseL2-normalizationonbothZandZ˜ beforesoftmax.
-5
+The `BIOT` model is versatile and applicable to various biosignal learning settings across different datasets, including joint pre-training for larger models. Comprehensive evaluations on EEG, electrocardiogram (ECG), and human activity sensory signals demonstrate that `BIOT` outperforms robust baselines in common settings and facilitates learning across multiple datasets with different formats. Use CHB-MIT seizure detection task as an example, our vanilla `BIOT` model shows 3% improvement over baselines in balanced accuracy, and the pre-trained `BIOT` models (optimized from other data sources) can further bring up to 4% improvements. 
 
-(4)SupervisedPre-trainingaimstopre-trainamodelbysupervisedlearningononetaskandthen
-generalizeandfine-tunetheencoderonanewtask. Thegoalistotransferknowledgeamongdifferent
-datasetsandgainimprovementsonthenewtaskcomparedtotrainingfromscratch. OurBIOTmodel
-allowsthenewdatasetstohavemismatchedchannelsanddifferentlengths.
-3 Experiments
-This section shows the strong performance of BIOT on several EEG, ECG and sensory datasets.
-Section3.2,3.3compareBIOTwithbaselinesonsupervisedlearningandlearningwithmissing
-settings. Section 3.4, 3.5, 3.6 show the that BIOT can be flexibly pre-trained on other datasets
-(supervisedorunsupervised)toimprovethecurrenttaskwithdifferentsampleformats. Wereleased
-thecodebaseandthepre-trainedmodelsinGitHub2.
-3.1 ExperimentalSetups
-BiosignalDatasets. Weconsiderthefollowingdatasetsintheevaluation: (i)SHHS(Zhangetal.,
-2018; Quan et al., 1997) is a large sleep EEG corpus from patients aged 40 years and older. (ii)
-PRESTisalargeunlabeledproprietaryrestingEEGdataset;(iii)Cardiology(Aldayetal.,2020)
-isacollectionoffiveECGdatasets(initiallycontainssix,butweexcludethePTB-XLintroduced
-below). (iv)TheCHB-MITdatabase(Shoeb,2009)iscollectedfrompediatricpatientsforepilepsy
-seizuredetection. (v)IIICSeizuredatasetisfromGeetal.(2021);Jingetal.(2023)fordetecting
-oneofthesixictal-interictal-injury-continuum(IIIC)seizurepatterns(OTH,ESZ,LPD,GPD,LRDA,
-GRDA);(vi)TUHAbnormalEEGCorpus(TUAB)(Lopezetal.,2015)isanEEGdatasetthathas
-beenannotatedasnormalorabnormal; (vii)TUHEEGEvents(TUEV)(Haratietal.,2015)isa
-corpusofEEGthatcontainsannotationsofEEGsegmentsasoneofsixeventtypes: spikeandsharp
-wave(SPSW),generalizedperiodicepileptiformdischarges(GPED),periodiclateralizedepileptiform
-discharges(PLED),eyemovement(EYEM),artifact(ARTF)andbackground(BCKG);(viii)PTB-
-XL(Wagneretal.,2020)isanECGdatasetwith12-leadrecordingsfordiagnosisprediction,andwe
-useditforarrhythmiasphenotypinginthispaper;(ix)HAR(Anguitaetal.,2013)isahumanaction
-recognitiondatasetusingsmartphoneaccelerometerandgyroscopedata.
-Table1: DatasetStatistics
-Datasets Type(subtype) #Recordings Rate Channels Duration #Sample Tasks
-SHHS EEG(sleep) 5,445 125Hz C3-A2,C4-A1 30seconds 5,093,522 Unsupervisedpre-training
-PREST EEG(resting) 6,478 200Hz 16montages 10seconds 5,110,992 Unsupervisedpre-training
-Cardiology ECG 21,264 500Hz 6or12ECGleads 10seconds 495,970 Unsupervisedpre-training
-CHB-MIT EEG(resting) 686 256Hz 16montages 10seconds 326,993 Binary(seizureornot)
-IIICSeizure EEG(resting) 2,702 200Hz 16montages 10seconds 165,309 Multi-class(6seizuretypes)
-TUAB EEG(unknown) 2,339 256Hz 16montages 10seconds 409,455 Binary(abnormalornot)
-TUEV EEG(both) 11,914 256Hz 16montages 5seconds 112,491 Multi-class(6eventtypes)
-PTB-XL ECG 21,911 500Hz 12ECGleads 5seconds 65,511 Binary(arrhythmiasornot)
-HAR Wearablesensors 10,299 50Hz 9coordinates 2.56seconds 10,299 Multi-class(6actions)
-DatasetProcessing. Thefirstthreedatasetsareusedentirelyforunsupervisedpre-training. Thenext
-fourdatasetsareusedforsupervisedlearning,andweusedthecommon16bipolarmontagechannels
-intheinternational10-20system. ForCHB-MIT(containing23patients),wefirstusepatient1to
-19fortraining, 20,21forvalidation, and22,23fortest. Then, weflipthevalidationandtestsets
-andconducttheexperimentsagain. Wereporttheaverageperformanceonthesetwosettings. For
-IIICseizure,wedividepatientgroupsintotraining/validation/testsetsby60%:20%:20%. ForTUAB
-andTUEV,thetrainingandtestseparationisprovidedbythedataset. Wefurtherdividethetraining
-patientsintotrainingandvalidationgroupsby80%:20%. ForPTB-XL,wedividepatientgroupsinto
-training/validation/testsetsby80%:10%:10%. ThetrainandtestsetofHARisprovided,andwe
-furtherdividethetestpatientsintovalidation/textby50%:50%. Forallthedatasets,afterassigning
-thepatientstoeithertraining,validation,ortestgroups,wewillfurthersplitthepatient’srecordingto
-samples,andthesampledurationaccordstotheannotationfiles. Thedatasetstatisticscanbefound
-inTable1,andweprovidesmoredescriptionsandprocessingdetailsinAppendixA.1.
-Baseline. Weconsiderthefollowingrepresentativemodels: (i)SPaRCNet(Jingetal.,2023)isa
-1D-CNNbasedmodelwithdenseresidualconnections,moreadvancedthanthepopularConvNet
-(Schirrmeister et al., 2017), CSCM (Sakhavi et al., 2018); (ii) ContraWR’s (Yang et al., 2021)
-2https://github.com/ycq091044/BIOT
-6
+## **1 Introduction** 
 
-encodermodelfirsttransformsthebiosignalsintomulti-channelspectrogramandthenuses2D-CNN
-basedResNet(Heetal.,2016);(iii)CNN-Transformer(Pehetal.,2022)issuperiortoCNN-LSTM
-models(Zhangetal.,2019);(iv)FFCL(Lietal.,2022)combinesembeddingsfromCNNandLSTM
-encodersforfeaturefusion;(v)ST-TransformerSongetal.(2021)proposesanmulti-levelEEG
-transformerforlearningspatial(S)andtemporal(T)featuressimultaneously,empiricallybetterthan
-EEGNetLawhernetal.(2018). OurBIOTmodeltrainedfromscratchisdenotedby(vanilla).
-Environments and Settings. The experiments are implemented by Python 3.9.12, Torch
-1.13.1+cu117, Pytorch-lightning 1.6.4 on a Linux server with 512 GB memory, 128-core CPUs
-andeightRTXA6000GPUs. Allthemodelsareoptimizedontrainingsetandevaluatedonthetest
-set. Thebestmodelandhyperparametercombinationsareselectedbasedonthevalidationset. For
-Table2andTable3,weobtainfivesetsofresultswithdifferentrandomseedsandreportthemean
-andstandarddeviationvalues. ForFigure3andFigure4,wereporttheresultsunderthreerandom
-seeds. MoreexperimentalandimplementationdetailscanrefertoAppendixA.2.
-3.2 Setting(1)-standardsupervisedlearning
-ThissectionshowsthatBIOTiscomparableorbetterthanbaselinesinthesupervisedlearningsettings.
-• FourEEGTasks. BothCHB-MITandTUABaredesignedtopredictbinaryoutput,andweuse
-binarycrossentropy(BCE)forTUABandthefocalloss(Linetal.,2017)forCHB-MITdueto
-itsimbalances(around0.6%positiveratiointrainingset). Weusebalancedaccuracy(Balanced
-Acc.),areaunderprecision-recallcurve(AUC-PR)andAUROCasthemetrics. BothIIICSeizure
-andTUEVaremulti-classclassificationtaskswithcrossentropyloss. WeemployBalancedAcc.,
-Cohen’sKappa,andWeightedF1asthemulti-classevaluation. Tosavespace,weonlyshowthe
-performanceonCHB-MITandIIICSeizureinTable2andmovetheothertwotoAppendixB.1.
-• ECGandSensoryTasks. PTB-XLisformulatedasabinaryclassificationondetectingarrhyth-
-miasphenotypes. WeusetheBCElossandbinaryevaluationmetrics. HAR(classifyingactions)
-usesthecrossentropylossandisevaluatedbymulti-classmetrics. ResultsarereportedinTable3.
-Table2and3showthatourmodelhassuperiorperformanceoverbaselinesinmosttasks,especially
-onCHB-MIT,IIICSeizure,andHAR.Thereasonmightbethatthefrequencyfeaturesaremoreuseful
-inthesethreedatasetsasourBIOTextractsthemainfeaturesfromspectralperspective. SPaRCNetis
-astrongmodelamongallthebaselinesexceptontheCHB-MITtask. Themodelmightbevulnerable
-intheimbalancedclassificationsettingevenwiththefocalloss. Thepre-trainingmodelsattheendof
-thetableswillbeintroducedandexplainedinSection3.4,3.6.
-Table2: EEGclassificationtasks(ResultsofTUABandTUEVareinAppendixB.1)
-CHB-MIT(seizuredetection) IIICSeizure(seizuretypeclassification)
-Models
-BalancedAcc. AUC-PR AUROC BalancedAcc. Cohen’sKappa WeightedF1
-SPaRCNet(Jingetal.,2023) 0.5876±0.0191 0.1247±0.0119 0.8143±0.0148 0.5546±0.0161 0.4679±0.0228 0.5569±0.0184
-ContraWR(Yangetal.,2021) 0.6344±0.0002 0.2264±0.0174 0.8097±0.0114 0.5519±0.0058 0.4623±0.0148 0.5486±0.0137
-CNN-Transformer(Pehetal.,2022) 0.6389±0.0067 0.2479±0.0227 0.8662±0.0082 0.5476±0.0103 0.4481±0.0139 0.5346±0.0127
-FFCL(Lietal.,2022) 0.6262±0.0104 0.2049±0.0346 0.8271±0.0051 0.5617±0.0117 0.4704±0.0130 0.5617±0.0171
-ST-Transformer(Songetal.,2021) 0.5915±0.0195 0.1422±0.0094 0.8237±0.0491 0.5423±0.0056 0.4492±0.0056 0.5440±0.0014
-(Vanilla)BIOT 0.6640±0.0037 0.2573±0.0088 0.8646±0.0030 0.5762±0.0034 0.4932±0.0046 0.5773±0.0031
-PretrainedBIOT(PREST) 0.6942±0.0431 0.3072±0.1187 0.8679±0.0106 0.5787±0.0066 0.4980±0.0054 0.5828±0.0049
-PretrainedBIOT(PREST+SHHS) 0.6788±0.0036 0.3090±0.0003 0.8752±0.0022 0.5800±0.0004 0.5040±0.0041 0.5878±0.0015
-PretrainedBIOT(6EEGdatasets) 0.7068±0.0457 0.3277±0.0460 0.8761±0.0284 0.5779±0.0087 0.4949±0.0103 0.5737±0.0088
-1.Allmodelsusethesametrainingsetofthetask,whilethepre-trainedBIOTmodelsareinitiallypre-trainedonotherdatasources(seeSection3.4,3.6).
-2.Boldforthebestmodel(trainedfromscratch)and box forthebestpre-trainedmodels.
-3.3 Setting(2)-learningwithmissingchannelsandsegments
-ThesectionsimulatestheTUEVdatasettomimicthesettingofsupervisedlearningwithmissing
-channelsandsegmentsandshowthestrongperformanceofBIOT.Weconsiderthreemissingcases:
-• Missingsegments: Randomlymaskoutasegments(eachsegmentspansfor0.5seconds),a =
-0,1,2,3,4,5withequalprobability. Thesegmentmaskingisappliedseparatelyforeachchannel.
-• Missingchannels: Randomlymaskoutbchannels,b = 0,1,2,3,4withequalprobability. We
-assumethatthemaskingwillnotaltertheunderlyinglabels(thesameassumptionforothercases).
-• Missingbothchannelsandsegments: CombiningCase2&3simultaneously.
-7
+Biosignals, such as EEG and ECG, are multi-channel time series recorded at high sampling rates (e.g., 256Hz) in various healthcare domains, including sleep medicine, neurological and cardiovascular disease detection, and activity monitoring. Deep learning (DL) models have demonstrated impressive success in automating biosignal diagnosis across diverse applications (Yang et al., 2021), encompassing sleep stage classification (Biswal et al., 2018; Yang et al., 2021; Phan and Mikkelsen, 2022), emotion analysis via EEG (Zhang et al., 2020; Suhaimi et al., 2020), action and motor imagery recognition (Venkatachalam et al., 2020), acute stress detection through electrodermal activity (Greco et al., 2021), EEG-based seizure epilepsy classification (Yang et al., 2023; Jing et al., 2023), and ECG-driven cardiac arrhythmia detection (Isin and Ozdalili, 2017; Parvaneh et al., 2019). 
 
-Table3: ECGandhumanactivitysensoryclassificationtasks
-PTB-XL(arrhythmiasphenotypeprediction) HAR(huamnactionrecognition)
-Models
-BalancedAcc. AUC-PR AUROC BalancedAcc. Cohen’sKappa WeightedF1
-SPaRCNet(Jingetal.,2023) 0.8275±0.0047 0.9040±0.0067 0.7550±0.0073 0.9371±0.0160 0.9236±0.0189 0.9365±0.0155
-ContraWR(Yangetal.,2021) 0.6341±0.0883 0.6795±0.1083 0.4433±0.1557 0.9068±0.0164 0.8879±0.0201 0.9055±0.0182
-CNN-Transformer(Pehetal.,2022) 0.6650±0.0459 0.7175±0.0558 0.4996±0.0936 0.8690±0.0839 0.8273±0.0953 0.8352±0.1166
-FFCL(Lietal.,2022) 0.7034±0.0052 0.7088±0.0053 0.5127±0.0051 0.8519±0.0148 0.8216±0.0177 0.8508±0.0138
-ST-Transformer(Songetal.,2021) 0.7238±0.0083 0.7775±0.0153 0.6003±0.0179 0.9336±0.0063 0.9213±0.0076 0.9337±0.0068
-(Vanilla)BIOT 0.8315±0.0008 0.8978±0.0020 0.7493±0.0167 0.9461±0.0134 0.9351±0.0160 0.9458±0.0136
-PretrainedBIOT(Cardiology-6) 0.8350±0.0073 0.9128±0.0094 0.7671±0.0116 / / /
-PretrainedBIOT(Cardiology-12) 0.8421±0.0030 0.9221±0.0075 0.7659±0.0076 / / /
-*Boldforthebestmodel.Allmodelsusethesametrainingsetofthetask.ThePretrainedBIOT(Cardiology-6)andPretrainedBIOT(Cardiology-12)
-arepre-trainedonCardiologydata(seeSection3.4),andtheydonotapplytoHARdata(duetodifferentbiosignaltypes).
-Figure3: Supervisedlearningwithmissingchannelsorsegments(onTUEVandIIICSeizure)
-Toenablethebaselinemodelscompatiblewiththesetting,weuseallzerostoimputethemasked
-regions. The comparison is plotted in Figure 3, which shows that (i) all models decrease the
-performancewithmoremissingswhileBIOTandthepre-trainedBIOTarelessimpacted(especially
-onKappaandWeightedF1);(ii)"Missingchannels"affectstheperformancemorethan"Missing
-segments",whichmakessenseassegmentmaskingstillpreservesinformationfromallchannels.
-3.4 Setting(3)-unsupervisedpre-training
-Inthissection,weshowthatBIOTenablesunsupervisedpre-trainingonexistingwithvariousformats.
-• Pre-trained(PREST):Thismodelispre-trainedon5millionrestingEEGsamples(PREST)with
-2,048asthebatchsize. Wesavethepre-trainedmodelatthe100-thepoch.
-• Pre-trained(PRESET+SHHS):Thismodelisjointlypre-trainedon5MPRESTand5MSHHS
-EEGsamples. Thoughtwodatasetshavedifferentsampleformats,ourmodelisabletoencode
-themregardless. Also,weuse2048asthebatchsizeandsavemodelatthe100-thepoch.
-• Pre-trained (Cardiology-12) is jointly pre-trained on raw data of five datasets in Cardiology
-corpus(detailsinAppendixA.1). Weuse1024asbatchsizeandsavemodelatthe100-thepoch.
-• Pre-trained(Cardiology-6)ispre-trainedsimilarlyasPre-trained(Cardiology-12),whileweonly
-utilizethefirst6ECGleads. Bycontast,Pre-trained(Cardiology-12)usesfull12leads.
-Wefine-tunethefirsttwopre-trainedEEGmodelsonfourEEGtasksandappendtheresultstoTable2
-(alsoinAppendixB.1). Wefine-tunethelasttwopre-trainedECGmodelsonPTB-XLdatasetsin
-Table3. Theresultsshowthatthepre-trainedmodelsgreatlyimprovesthefinalperformanceonthe
-downstreamtasksinTable2andTable3.
-8
+Various deep learning methods have been applied to biosignal analysis. Some works use 1D convolutional neural networks (CNN) on raw signals (Jing et al., 2023; Nagabushanam et al., 2020; Dar et al., 2020), while others preprocess the data with short-time Fourier transform (STFT) and employ 2D CNN models on the resulting spectrogram (Yang et al., 2022a; Kim et al., 2020; Cui et al., 2020). Researchers also segment the signal and use a CNN segment encoder with a downstream sequence 
 
-3.5 Setting(4)-supervisedpre-trainingonothertasks
-ThissectionshowsthatBIOTallowsknowledgetransferfromonetasktoanothersimilartaskwith
-differentsampleformats. Wepre-trainonthetrainingsetofCHB-MIT,IIICSeizure,TUABand
-fine-tunesonTUEV(whichhas16channelsand5sduration). Alldatasetsuse200Hzsamplingrate.
-Wedesignthreesetsofconfigurationsforthepre-traineddatasets:Format(i)usesthefirst8channels
-and10sduration;Format(ii)usesthefull16channelsbutonlythefirst5srecording;Format(iii)
-usesfull16channelsandfull10srecording. Duringfine-tuning,wethenremovethepredictionlayers
-fromthesepre-trainedmodelandaddanewpredictionlayertofittheTUEVdataset.
-Figure4: Fine-tunedonTUEVfromdifferentsupervisedpre-trainedmodels(bestnumberinbold).
-Similarsupervisedfine-tuninganalysisonCHB-MITdatasetisshowninAppendixB.2.
-The results are shown in Figure 4 where we also add the vanilla BIOT (trained from scratch) for
-references. Wefindthat(i)themodelpre-trainedonIIICSeizureandTUABaregenerallybeneficial
-for the event classification task on TUEV. The reason might be that TUAB and TUEV are both
-recordedfromTempleUniversityandsharesomecommoninformation,whileIIICseizureandTUEV
-are both related to seizure detection and may share some latent patterns. (ii) More pre-training
-datawillbebeneficialinthedownstreamtask. Thoughthepre-trainingconfiguration(16channels,
-5 seconds) aligns better with the TUEV data formats, the results show that configuration of (16
-channels,10seconds)encodeslongerdurationandworksconsistentlybetter. (iii)Comparedtothe
-TUEVresultsinAppendixB.1,wealsofindthatoftentimesthesupervisedpre-training(e.g.,onIIIC
-seizureorTUAB)canbemoreeffectivethanunsupervisedpre-training(e.g.,onSHHSandPREST).
-3.6 Pre-trainedonallEEGdatasets
-Inthissection,weshowthatBIOTcanleverageallsixEEGresourcesconsideredinthepaper. We
-obtainaPre-trained(6EEGdatasets)modelbyloadingthePre-trained(PREST+SHHS)model
-andfurthertrainitonthetrainingsetsofCHB-MIT,IIICSeizure,TUAB,andTUEV.Weaddseparate
-classificationlayersforfourtasks. Essentially,thismodelispre-trainedonallsixEEGdatasets. To
-usethemodel,westillfine-tuneitonthetrainingsetofdownstreamtasksandappendtheresultsto
-Table2andAppendixB.1. Apparently,Pre-trained(sixEEGdatasets)outperformsthevanillaBIOT
-andisgenerallybetterthantheunsupervisedandthesupervisedpre-trainedBIOT.
-4 Conclusion
-Thispaperproposesanewbiosignaltransformermodel(BIOT)thatlearnsembeddingsforbiosignals
-withvariablelengths,channelsandmissingvalues. BIOTcanenableeffectiveknowledgetransfer
-acrossdifferentdataandallowjointtrainingonmultiplesources. Weconductextensiveevaluations
-ontwolargeEEGcorpus(5Meach)forunsupervisedpre-training,andseveralEEG,ECG,human
-actionsensorydatasetsforsupervisedlearning. TheresultsshowthatourBIOToutperformsstrong
-baselinesinstandardsupervisedlearningandcaneffectivelyhandlethelearningsettingswithmissing
-values. Thepre-trainedBIOTmodelsalsoshowsignificantimprovementsonvariousdownstream
-classificationtasks. Intheend,wehopeourworkcaninspiremorefollow-upresearchesoflarge
-foundationalmodelsforbiosignals.
-9
+Preprint. Under review. 
 
-References
-Alday,E.A.P.,Gu,A.,Shah,A.J.,Robichaux,C.,Wong,A.-K.I.,Liu,C.,Liu,F.,Rad,A.B.,Elola,
-A.,Seyedi,S.,etal.(2020). Classificationof12-leadecgs: thephysionet/computingincardiology
-challenge2020. Physiologicalmeasurement,41(12):124003.
-Almutairi,H.,Hassan,G.M.,andDatta,A.(2021). Detectionofobstructivesleepapnoeabyecg
-signalsusingdeeplearningarchitectures. In202028thEuropeansignalprocessingconference
-(EUSIPCO),pages1382–1386.IEEE.
-Anguita,D.,Ghio,A.,Oneto,L.,Parra,X.,Reyes-Ortiz,J.L.,etal.(2013). Apublicdomaindataset
-forhumanactivityrecognitionusingsmartphones. InEsann,volume3,page3.
-Ba, J. L., Kiros, J. R., and Hinton, G. E. (2016). Layer normalization. arXiv preprint
-arXiv:1607.06450.
-Bahador, N., Jokelainen, J., Mustola, S., and Kortelainen, J. (2021). Reconstruction of missing
-channelinelectroencephalogramusingspatiotemporalcorrelation-basedaveraging. Journalof
-NeuralEngineering,18(5):056045.
-Biswal,S.,Sun,H.,Goparaju,B.,Westover,M.B.,Sun,J.,andBianchi,M.T.(2018). Expert-level
-sleepscoringwithdeepneuralnetworks. JournaloftheAmericanMedicalInformaticsAssociation,
-25(12):1643–1650.
-Chen,T.,Kornblith,S.,Norouzi,M.,andHinton,G.(2020). Asimpleframeworkforcontrastive
-learningofvisualrepresentations. InInternationalconferenceonmachinelearning,pages1597–
-1607.PMLR.
-Clevert,D.-A.,Unterthiner,T.,andHochreiter,S.(2015). Fastandaccuratedeepnetworklearningby
-exponentiallinearunits(elus). arXivpreprintarXiv:1511.07289.
-Cui,H.,Liu,A.,Zhang,X.,Chen,X.,Wang,K.,andChen,X.(2020).Eeg-basedemotionrecognition
-usinganend-to-endregional-asymmetricconvolutionalneuralnetwork.Knowledge-BasedSystems,
-205:106243.
-Dar,M.N.,Akram,M.U.,Khawaja,S.G.,andPujari,A.N.(2020). Cnnandlstm-basedemotion
-chartingusingphysiologicalsignals. Sensors,20(16):4551.
-Devlin,J.,Chang,M.-W.,Lee,K.,andToutanova,K.(2018). Bert: Pre-trainingofdeepbidirectional
-transformersforlanguageunderstanding. arXivpreprintarXiv:1810.04805.
-Dosovitskiy,A.,Beyer,L.,Kolesnikov,A.,Weissenborn,D.,Zhai,X.,Unterthiner,T.,Dehghani,M.,
-Minderer,M.,Heigold,G.,Gelly,S.,etal.(2020). Animageisworth16x16words: Transformers
-forimagerecognitionatscale. arXivpreprintarXiv:2010.11929.
-Du,Y.,Xu,Y.,Wang,X.,Liu,L.,andMa,P.(2022). Eegtemporal–spatialtransformerforperson
-identification. ScientificReports,12(1):14378.
-Ge,W.,Jing,J.,An,S.,Herlopian,A.,Ng,M.,Struck,A.F.,Appavu,B.,Johnson,E.L.,Osman,G.,
-Haider,H.A.,etal.(2021). Deepactivelearningforinterictalictalinjurycontinuumeegpatterns.
-Journalofneurosciencemethods,351:108966.
-Gong,Y.,Chung,Y.-A.,andGlass,J.(2021). Ast: Audiospectrogramtransformer. arXivpreprint
-arXiv:2104.01778.
-Greco,A.,Valenza,G.,Lázaro,J.,Garzón-Rey,J.M.,Aguiló,J.,De-laCamara,C.,Bailón,R.,and
-Scilingo,E.P.(2021). Acutestressstateclassificationbasedonelectrodermalactivitymodeling.
-IEEETransactionsonAffectiveComputing.
-Grill,J.-B.,Strub,F.,Altché,F.,Tallec,C.,Richemond,P.,Buchatskaya,E.,Doersch,C.,AvilaPires,
-B.,Guo, Z.,GheshlaghiAzar,M., etal.(2020). Bootstrapyourownlatent-anewapproachto
-self-supervisedlearning. Advancesinneuralinformationprocessingsystems,33:21271–21284.
-10
+model (Zhang et al., 2019; Biswal et al., 2018; Jing et al., 2020; Almutairi et al., 2021), such as Transformer or recurrent neural networks (RNN), to capture temporal dynamics. Other approaches involve ensemble learning, feature fusion from multiple encoders (Li et al., 2022), and multi-level transformers to encode spatial and temporal features across and within channels (Lawhern et al., 2018; Song et al., 2021; Liu et al., 2021). 
 
-Harati,A.,Golmohammadi,M.,Lopez,S.,Obeid,I.,andPicone,J.(2015). Improvedeegevent
-classificationusingdifferentialenergy. In2015IEEESignalProcessinginMedicineandBiology
-Symposium(SPMB),pages1–4.IEEE.
-He, K., Fan, H., Wu, Y., Xie, S., andGirshick, R.(2020). Momentumcontrastforunsupervised
-visualrepresentationlearning. InProceedingsoftheIEEE/CVFconferenceoncomputervision
-andpatternrecognition,pages9729–9738.
-He,K.,Zhang,X.,Ren,S.,andSun,J.(2016). Deepresiduallearningforimagerecognition. In
-ProceedingsoftheIEEEconferenceoncomputervisionandpatternrecognition,pages770–778.
-Isin,A.andOzdalili,S.(2017).Cardiacarrhythmiadetectionusingdeeplearning.Procediacomputer
-science,120:268–275.
-Jing,J.,d’Angremont,E.,Zafar,S.,Rosenthal,E.S.,Tabaeizadeh,M.,Ebrahim,S.,Dauwels,J.,and
-Westover,M.B.(2018). Rapidannotationofseizuresandinterictal-ictalcontinuumeegpatterns.
-In201840thAnnualInternationalConferenceoftheIEEEEngineeringinMedicineandBiology
-Society(EMBC),pages3394–3397.IEEE.
-Jing,J.,Ge,W.,Hong,S.,Fernandes,M.B.,Lin,Z.,Yang,C.,An,S.,Struck,A.F.,Herlopian,A.,
-Karakis,I.,etal.(2023). Developmentofexpert-levelclassificationofseizuresandrhythmicand
-periodicpatternsduringeeginterpretation. Neurology.
-Jing,J.,Sun,H.,Kim,J.A.,Herlopian,A.,Karakis,I.,Ng,M.,Halford,J.J.,Maus,D.,Chan,F.,
-Dolatshahi,M.,etal.(2020). Developmentofexpert-levelautomateddetectionofepileptiform
-dischargesduringelectroencephalograminterpretation. JAMAneurology,77(1):103–108.
-Katharopoulos, A., Vyas, A., Pappas, N., and Fleuret, F. (2020). Transformers are rnns: Fast
-autoregressivetransformerswithlinearattention. InProceedingsoftheInternationalConference
-onMachineLearning(ICML).
-Kim, M.-G., Ko, H., and Pan, S. B. (2020). A study on user recognition using 2d ecg based on
-ensembleofdeepconvolutionalneuralnetworks. JournalofAmbientIntelligenceandHumanized
-Computing,11:1859–1867.
-Klem,G.H.,Lüders,H.,Jasper,H.H.,andElger,C.E.(1999). Theten-twentyelectrodesystemof
-theinternationalfederation.theinternationalfederationofclinicalneurophysiology. Electroen-
-cephalographyandclinicalneurophysiology.Supplement,52:3–6.
-Kostas,D.,Aroca-Ouellette,S.,andRudzicz,F.(2021). Bendr: usingtransformersandacontrastive
-self-supervised learning task to learn from massive amounts of eeg data. Frontiers in Human
-Neuroscience,15:653659.
-Lawhern,V.J.,Solon,A.J.,Waytowich,N.R.,Gordon,S.M.,Hung,C.P.,andLance,B.J.(2018).
-Eegnet: acompactconvolutionalneuralnetworkforeeg-basedbrain–computerinterfaces. Journal
-ofneuralengineering,15(5):056013.
-Li,H.,Ding,M.,Zhang,R.,andXiu,C.(2022). Motorimageryeegclassificationalgorithmbased
-oncnn-lstmfeaturefusionnetwork. Biomedicalsignalprocessingandcontrol,72:103342.
-Lin,T.-Y.,Goyal,P.,Girshick,R.,He,K.,andDollár,P.(2017). Focallossfordenseobjectdetection.
-InProceedingsoftheIEEEinternationalconferenceoncomputervision,pages2980–2988.
-Liu,J.,Zhang,L.,Wu,H.,andZhao,H.(2021). Transformersforeegemotionrecognition. arXiv
-preprintarXiv:2110.06553.
-Liu,Y.,Ott,M.,Goyal,N.,Du,J.,Joshi,M.,Chen,D.,Levy,O.,Lewis,M.,Zettlemoyer,L.,and
-Stoyanov,V.(2019). Roberta: Arobustlyoptimizedbertpretrainingapproach. arXivpreprint
-arXiv:1907.11692.
-Lopez, S., Suarez, G., Jungreis, D., Obeid, I., and Picone, J. (2015). Automated identification
-ofabnormaladulteegs. In2015IEEESignalProcessinginMedicineandBiologySymposium
-(SPMB),pages1–5.IEEE.
-11
+These models (Jing et al., 2023; Yang et al., 2021; Biswal et al., 2018; Kostas et al., 2021; Du et al., 2022; Zhang et al., 2022) predominantly focus on biosignal samples with fixed formats for specific tasks, while real-world data may exhibit mismatched channels, variable lengths, and missing values. In this paper, our objective is to devise a flexible training strategy that can handle diverse biosignal datasets with varying channels, lengths, and levels of missingness. For example, is it possible to transfer knowledge from abnormal EEG detection (a binary classification task with 64 channels and a 5-second duration, recorded at 256Hz) to improve another EEG task, such as seizure type classification (a multi-class task with 16 channels and a 10-second duration at 200Hz)? In reality, such data mismatches often arise from varying devices, system errors, and recording limitations. Additionally, it is also important to explore the potential of utilizing different unlabeled data. 
 
-Nagabushanam, P., George, S.T., Davu, P., Bincy, P., Naidu, M., andRadha, S.(2020). Artifact
-removalusingellipticfilterandclassificationusing1d-cnnforeegsignals.In20206thInternational
-Conference on Advanced Computing and Communication Systems (ICACCS), pages 551–556.
-IEEE.
-Nyquist,H.(1928). Certaintopicsintelegraphtransmissiontheory. TransactionsoftheAmerican
-InstituteofElectricalEngineers,47(2):617–644.
-OpenAI(2023). Gpt-4technicalreport.
-Parvaneh,S.,Rubin,J.,Babaeizadeh,S.,andXu-Wilson,M.(2019). Cardiacarrhythmiadetection
-usingdeeplearning: Areview. Journalofelectrocardiology,57:S70–S74.
-Peh, W. Y., Yao, Y., and Dauwels, J. (2022). Transformer convolutional neural networks for
-automatedartifactdetectioninscalpeeg. In202244thAnnualInternationalConferenceofthe
-IEEEEngineeringinMedicine&BiologySociety(EMBC),pages3599–3602.IEEE.
-Phan,H.andMikkelsen,K.(2022). Automaticsleepstagingofeegsignals: recentdevelopment,
-challenges,andfuturedirections. PhysiologicalMeasurement.
-Quan, S. F., Howard, B.V., Iber, C., Kiley, J.P., Nieto, F.J., O’Connor, G. T., Rapoport, D. M.,
-Redline,S.,Robbins,J.,Samet,J.M.,etal.(1997). Thesleephearthealthstudy: design,rationale,
-andmethods. Sleep,20(12):1077–1085.
-Sakhavi, S., Guan, C., and Yan, S. (2018). Learning temporal information for brain-computer
-interfaceusingconvolutionalneuralnetworks. IEEEtransactionsonneuralnetworksandlearning
-systems,29(11):5619–5629.
-Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J., Glasstetter, M., Eggensperger, K.,
-Tangermann,M.,Hutter,F.,Burgard,W.,andBall,T.(2017). Deeplearningwithconvolutional
-neuralnetworksforeegdecodingandvisualization. Humanbrainmapping,38(11):5391–5420.
-Shannon,C.E.(1949).Communicationinthepresenceofnoise.ProceedingsoftheIRE,37(1):10–21.
-Shoeb, A. H. (2009). Application of machine learning to epileptic seizure onset detection and
-treatment. PhDthesis,MassachusettsInstituteofTechnology.
-Song,Y.,Jia,X.,Yang,L.,andXie,L.(2021). Transformer-basedspatial-temporalfeaturelearning
-foreegdecoding. arXivpreprintarXiv:2106.11170.
-Srivastava,N.,Hinton,G.,Krizhevsky,A.,Sutskever,I.,andSalakhutdinov,R.(2014). Dropout: a
-simplewaytopreventneuralnetworksfromoverfitting. Thejournalofmachinelearningresearch,
-15(1):1929–1958.
-Suhaimi,N.S.,Mountstephens,J.,Teo,J.,etal.(2020). Eeg-basedemotionrecognition: Astate-of-
-the-artreviewofcurrenttrendsandopportunities. Computationalintelligenceandneuroscience,
-2020.
-Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and
-Polosukhin, I. (2017). Attention is all you need. Advances in neural information processing
-systems,30.
-Venkatachalam,K.,Devipriya,A.,Maniraj,J.,Sivaram,M.,Ambikapathy,A.,andIraj,S.A.(2020).
-Anovelmethodofmotorimageryclassificationusingeegsignal. Artificialintelligenceinmedicine,
-103:101787.
-Wagner,P.,Strodthoff,N.,Bousseljot,R.-D.,Kreiseler,D.,Lunze,F.I.,Samek,W.,andSchaeffter,T.
-(2020). Ptb-xl,alargepubliclyavailableelectrocardiographydataset. Scientificdata,7(1):154.
-Wang,S.,Li,B.Z.,Khabsa,M.,Fang,H.,andMa,H.(2020). Linformer: Self-attentionwithlinear
-complexity. arXivpreprintarXiv:2006.04768.
-Yang, C., Qian, C., Singh, N., Xiao, C. D., Westover, M., Solomonik, E., and Sun, J. (2022a).
-Atd: Augmentingcptensordecompositionbyselfsupervision. AdvancesinNeuralInformation
-ProcessingSystems,35:32039–32052.
-12
+To apply existing deep learning models to such settings of different biosignals, significant data processing is required to align the formats across multiple datasets. This may involve truncating or padding signals for consistent lengths (Zhang et al., 2022), and imputing missing channels or segments (Bahador et al., 2021). Such practices, however, may introduce unnecessary noise and shift data distributions, leading to poor generalization performance. Developing a flexible and unified model that accommodates biosignals with diverse formats can be advantageous. 
 
-Yang,C.,Westover,M.B.,andSun,J.(2023). Manydg: Many-domaingeneralizationforhealthcare
-applications. InTheEleventhInternationalConferenceonLearningRepresentations.
-Yang, C., Wu, Z., Jiang, P., Lin, Z., and Sun, J. (2022b). Pyhealth: A deep learning toolkit for
-healthcarepredictivemodeling,092022. URLhttps://github.com/sunlabuiuc/PyHealth.
-Yang,C.,Xiao,D.,Westover,M.B.,andSun,J.(2021). Self-supervisedeegrepresentationlearning
-forautomaticsleepstaging. arXivpreprintarXiv:2110.15278.
-Zhang,G.-Q.,Cui,L.,Mueller,R.,Tao,S.,Kim,M.,Rueschman,M.,Mariani,S.,Mobley,D.,and
-Redline,S.(2018). Thenationalsleepresearchresource: towardsasleepdatacommons. Journal
-oftheAmericanMedicalInformaticsAssociation,25(10):1351–1358.
-Zhang, R., Zong, Q., Dou, L., and Zhao, X. (2019). A novel hybrid deep learning scheme for
-four-classmotorimageryclassification. Journalofneuralengineering,16(6):066004.
-Zhang,X.,Zhao,Z.,Tsiligkaridis,T.,andZitnik,M.(2022). Self-supervisedcontrastivepre-training
-fortimeseriesviatime-frequencyconsistency. arXivpreprintarXiv:2206.08496.
-Zhang,Y.,Chen,J.,Tan,J.H.,Chen,Y.,Chen,Y.,Li,D.,Yang,L.,Su,J.,Huang,X.,andChe,W.
-(2020). Aninvestigationofdeeplearningmodelsforeeg-basedemotionrecognition. Frontiersin
-Neuroscience,14:622759.
-A DetailsofDatasetsandExperimentalSettings
-A.1 MoreforDatasetsandProcessings
-Weprovidemoredescriptionsoneachdatasetinthissection.
-ForEEGdatasets. First,the16montages(in10-20internationalsystem)are"FP1-F7","F7-T7",
-"T7-P7","P7-O1","FP2-F8","F8-T8","T8-P8","P8-O2","FP1-F3","F3-C3","C3-P3","P3-O1",
-"FP2-F4","F4-C4","C4-P4","P4-O2".
-• Sleep Heart Health Study (SHHS) (Zhang et al., 2018; Quan et al., 1997) is a multi-center
-cohortstudyfromtheNationalHeartLung&BloodInstituteassembledtostudysleep-disordered
-breathing,whichcontains5,445recordings. Thedataisaccessibleuponrequestintheirwebsite3.
-Eachrecordinghas14Polysomnography(PSG)channels,andtherecordingfrequencyis125.0Hz.
-WeusetheC3/A2andC4/A1EEGchannels. Thedatasetisreleasedwithsleepannotations. We
-usetheexistingcodes4 andspliteachrecordingsinto30-secondsamples. Inthisstudy,weuse
-SHHSsamplesforunsupervisedpre-trainingwithoutitoriginallabels.
-• PRESTisaprivatedatasetrecordedinhospitalsleeplab,primarilyforseizureandabnormalEEG
-detectionpurpose(suchasspikes). ThelocalIRBwaivedtherequirementforinformedconsent
-forthisretrospectiveanalysisofEEGdata. Wefollowtheclinician’sinstructionsandspliteach
-recordingsinto10secondswithoutlabels. Intheexperiment,weuseitforEEGmodelpre-training.
-• TheCHB-MITdatabase5(Shoeb,2009)ispubliclyavailable,whichiscollectedattheChildren’s
-HospitalBoston,consistsofEEGrecordingsfrompediatricsubjectswithintractableseizures. The
-datasetisunderOpenDataCommonsAttributionLicensev1.06 andisusedtopredictwhether
-theEEGrecordingscontainseizuresignals. Eachrecordinginitiallycontains23bipolarchannels
-andweselectthe16standardmontagesintheexperiments. Weutilizetheexistingpreprocessing7
-andfollowthetypicalpracticestofurtherspliteachrecordingsinto10-secondnon-overlapping
-samplesbydefault. Sincethedatasetishighlyimbalanced,weuse5secondsasoverlapstosplit
-theseizureregions(whichcouldpotentiallydoublethepositivesamples). Afterprocessing,the
-positiveratiointhetrainingsetisaround0.6%.
-3https://sleepdata.org/datasets/shhs
-4https://github.com/ycq091044/ContraWR/tree/main/preprocess
-5https://physionet.org/content/chbmit/1.0.0/
-6https://physionet.org/content/chbmit/view-license/1.0.0/
-7https://github.com/bernia/chb-mit-scalp
-13
+In our paper, we develop the biosignal transformer ( `BIOT` ) model (summarized in Figure 1), which, to the best of our knowledge, is the first biosignal encoding model that can handle biosignals of various formats. Our motivation stems from the vision transformer (ViT) (Dosovitskiy et al., 2020) and the audio spectrogram transformer (AST) (Gong et al., 2021). The ViT model splits the image into a "sentence" of patches for image representation. The AST model splits the audio spectrogram into "sentence" for 1D audio representation. These "sentence" structures combined with Transformer (Vaswani et al., 2017) can handle variable-sized inputs. 
 
-• IIIC Seizure is requested from Jing et al. (2018); Ge et al. (2021); Jing et al. (2023), and we
-followthelicenseandusagestatementsinJingetal.(2023). Thesamplesfollow16montages
-andspan10-secondsignalsat200Hz. Thisdatasetisusedforpredictingoneofthesixclasses:
-lateralizedperiodicdischarges(LPD),generalizedperiodicdischarges(GPD),lateralizedrhythmic
-deltaactivity(LRDA),generalizedrhythmicdeltaactivity(GRDA),Seizuretypes,andOther.
-• TUHAbnormalEEGCorpus(TUAB)(Lopezetal.,2015)andTUHEEGEvents(TUEV)(Harati
-et al., 2015) is accessible upon request at Temple University Electroencephalography (EEG)
-Resources8. Weprocessbothdatasetstofollowthe16EEGmontages.
-ForECGdatasets. WeusetheCardiologycollectiontopre-traintheECGmodelsandapplyiton
-downstreamsupervisdPTB-XLtask.
-• The Cardiology collection (Alday et al.,2020) ispublicly availableat physionet 9, which was
-usedinthePhysioNet/ComputinginCardiologyChallenge2020. ThiscollectionisunderCreative
-CommonsAttribution4.0InternationalPublicLicense10. Inthisstudy,weusefivesetsfromthe
-trainingportionofthecollection(Ithasintotalsixsets. AnotheroneoverlapswiththePTB-XL
-dataset,andthuswedropitinthepre-training),whichcontainsrecordingsfromCPSC2018(6,877
-recordings), CPSC2018Extra (China 12-Lead ECG Challenge Database – unused CPSC 2018
-data,3,453recordings),StPetersburgIncart(12-leadArrhythmiaDatabase,74recordings),ptb
-(DiagnosticECGDatabase,516recordings),Georgia(12-LeadECGChallengeDatabase,10,344
-recordings). Forpreprocessing,weextract10-secondsamplesfromeachrecordingwith0.5sasthe
-overlappingwindow. Allthesamplesaremergedtogetherasanunsupervisedpre-trainingECG
-corpusofnearly0.5millionsamples. Wepre-trainaPre-trainedBIOT(Cardiology-12)onallthe
-channelsandaPre-trainedBIOT(Cardiology-6)onthefirst6-channelsofallsamples. Thesample
-sizesaredifferentfromthebelowPTB-XLdataset.
-• Physikalisch-TechnischeBundesanstalt(PTB-XL)11(Wagneretal.,2020)isapubliclyavailable
-largedatasetof12-leadECGsfrom18885patients. ItisundertheCreativeCommonsAttribution
-4.0InternationalPublicLicense12.Therawwaveformdatawasannotatedbyuptotwocardiologists,
-who assigned potentially multiple ECG statements to each record up to 27 diagnoses: 1:1st
-degree AV block, 2:Atrial fibrillation, 3:Atrial flutter, 4:Bradycardia, 5:Complete right bundle
-branch block, 6:Incomplete right bundle branch block, 7:Left anterior fascicular block, 8:Left
-axisdeviation,9:Leftbundlebranchblock,10:LowQRSvoltages,11:Nonspecificintraventricular
-conductiondisorder,12:Pacingrhythm,13:Prematureatrialcontraction,14:Prematureventricular
-contractions,15:ProlongedPRinterval,16:ProlongedQTinterval,17:Qwaveabnormal,18:Right
-axisdeviation,19:Rightbundlebranchblock,20:Sinusarrhythmia,21:Sinusbradycardia,22:Sinus
-rhythm,23:Sinustachycardia,24:Supraventricularprematurebeats,25:Twaveabnormal,26:T
-waveinversion, 27:Ventricularprematurebeats. Wefollowingclinicalknowledgesandfurther
-groupsthemintosixbroadercategories: Arrhythmias,Bundlebranchblocksandfascicularblocks,
-Axis deviations, Conduction delays, Wave abnormalities, Miscellaneous. Each recordings can
-beassociatedtomultiplecategories. Inthispaper,weconductthe"Arrhythmias"phenotyping
-predictiontask. IftherecordingshaveatleastonediagnosisbelongingtotheArrhythmiasgroup,
-thenwelabelthemaspositive,otherwiseasnegative.
-Forhumanactivitysensorydata. Humanactivityrecognition(HAR)dataset13 (Anguitaetal.,
-2013)ispubliclyavailableatUCImachinelearningrepository.Thedataiscollectedfromsmartphone
-accelerometer and gyroscope data with 3D coordinates to detect six actions: walking, walking
-upstairs,walkingdownstairs,sitting,standing,laying. Thesamplesarealreadysplittedandprovided
-intheoriginaldatasets.
-8https://isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml
-9https://physionet.org/content/challenge-2020/1.0.2/
-10https://physionet.org/content/challenge-2020/view-license/1.0.2/
-11https://physionet.org/content/ptb-xl/1.0.1/
-12https://physionet.org/content/ptb-xl/view-license/1.0.1/
-13https://archive.ics.uci.edu/ml/datasets/human+activity+recognition+using+smartphones
-14
+Compared to images (RGB or gray), audios, or natural languages, biosignals are more complicated primarily as it has multiple channels. It is non-trivial to transform diverse biosignals of various formats into unified "sentence" structures. This paper proposes `BIOT` to solve the challenge by a novel **biosignal tokenization module** that segments each channel separately into tokens and then flattens the tokens to form consistent biosignal "sentences" (illustrated in Figure 2). With the design, our `BIOT` can enable the knowledge transfer cross different data in the wild and allow joint (pre-)training on multiple biosignal data sources. Our contributions are listed below. 
 
-A.2 MoreforExperimentalSettings
-Formodelimplementation, theSPaRCNetcodeisrequestedfromtheauthors(Jingetal.,2023),
-the ContraWR code isdownloaded and modified uponthe github 14, CNN-Transformer is easily
-implementedfollowingtheFig. 3oftheoriginalpaper(Pehetal.,2022), FFCL(Lietal.,2022)
-combinesaCNNmodelandaLSTMmodelforlearningsepareterepresentationsandthenmerges
-thembeforethefinalpredictionlayer,theimplementationofST-Transformerrefertothisrepo15.
-Thelinear-complexityattentionmoduleisreferredtothisrepo16inourBIOTimplementation.
-ForallEEGtasks,weresamplethedatasetsinto200Hz. TheECGtasksuse500Hz,andtheHAR
-tasksuse50Hzbydefault. Foreachspecifictasks,wehavetoadjustthebaselinemodelarchitectures
-(e.g,numberoflayers,inputchannelsizes,etc)accordinglysincetheinputdatahavevariousformats.
-WhileforourBIOT,weonlyadjustthefftsizebasedontheirsamplingrate(200pointsforEEG,
-1000 points for ECG, 100 points for HAR) and use 100 points, 200 points, and 10 points as the
-hoplength(i.e.,overlaps)inthreesignaltypes. Theseconfigurationsarechosenbytestingseveral
-other combinations based on the validation performance. For our BIOT model, we use 8 as the
-numberofhead,4asthenumberoftransformerlayers,andT =2asthetemperatureinunsupervised
-pre-training by default. We use the Adam optimizer with learning rate 1×10−3 and 1×10−5
-asthecoefficientforL2regularizationbydefault. Weusethepytorchlightningframework(with
-100 as the max epoch) to handle the training, validation, and test pipeline by setting AUROC as
-the monitoring metirc for binary classification and Coken’s Kappa as the monitoring metric for
-multi-classclassification. MoredetailscanrefertoourSupplementarycodes. Below,weprovide
-thedefinitionofeachmetricusedinthepaper,andweusepyhealth.metrics17 Yangetal.(2022b)
-modulefortheimplementation.
-BalancedAccuracyisdefinedastheaverageofrecallobtainedoneachclass. Itisusedforboth
-binaryclassificationandmulti-classclassification.
-AUC-PRistheareaundertheprecisionrecall(PR)curveforbinaryclassificationtask.
-AUROCistheareaundertheROCcurve,summarizingtheROCcurveintoansinglenumberthat
-describestheperformanceofamodelformultiplethresholdsatthesametime. Itisusedforbinary
-classification.
-Coken’s Kappa is a statistic that measures inter-annotator agreement, which is usually used for
-imbalancedmulti-classclassificationtask. Thecalculationcanrefertosklearnmetrics18.
-Weighted F1 is used for multi-class classification in this paper, which is a weighted average of
-individualF1-scoresfromeachclass, witheachscoreweightedbythenumberofsamplesinthe
-correspondingclass.
-B AdditionalResults
-Thissectionprovidesadditionalexperimentalresultstosupportclaimsinthemainpaper.
-B.1 AdditionalExperimentsonTUEVandTUAB
-WehaveprovidedthesupervisedlearningresultsonEEGdatasetIIICSeizureandCHB-MITinthe
-maintext. Forcompleteness,weprovidesimilarcomparisonresultsonTUABandTUEVbelow
-inTable45,whichshowasimilartrendthatourBIOTshowsbetterperformanceagainstbaseline
-models,andthepre-trainedBIOTmodelscanbringsignificantimprovementsontwodownstream
-tasks,especiallyonTUEV.ForTUEV,wealsoappendtheresultsofalldifferentpre-trainedmodels
-(e.g.,trainfromscratch,supervisedtraining,unsupervisedtraining,etc)intheendinTable5.
-14https://github.com/ycq091044/ContraWR
-15https://github.com/eeyhsong/EEG-Transformer
-16https://github.com/lucidrains/linear-attention-transformer
-17https://pyhealth.readthedocs.io/en/latest/api/metrics.html
-18https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html
-15
+- **Biosignal transformer (** `BIOT` **).** This paper proposes a biosignal encoding model `BIOT` by tokenizing biosignals of various formats into unified “sentences.” 
 
-Table4: AdditionalSupervisedLearningResultsonTUAB
-TUAB(abnormaldetection)
-Models
-|          | BalancedAcc.  | AUC-PR        | AUROC         |     |
-| -------- | ------------- | ------------- | ------------- | --- |
-| SPaRCNet | 0.7896±0.0018 | 0.8414±0.0018 | 0.8676±0.0012 |     |
-|          | 0.7746±0.0041 | 0.8421±0.0104 | 0.8456±0.0074 |     |
-ContraWR
-| CNN-Transformer               | 0.7777±0.0022 | 0.8433±0.0039 | 0.8461±0.0013 |     |
-| ----------------------------- | ------------- | ------------- | ------------- | --- |
-| FFCL                          | 0.7848±0.0038 | 0.8448±0.0065 | 0.8569±0.0051 |     |
-| ST-Transformer                | 0.7966±0.0023 | 0.8521±0.0026 | 0.8707±0.0019 |     |
-| (Vanilla)BIOT                 | 0.7925±0.0035 | 0.8707±0.0087 | 0.8691±0.0033 |     |
-| Pre-trainedBIOT(PREST)        | 0.7907±0.0050 | 0.8752±0.0051 | 0.8730±0.0021 |     |
-| Pre-trainedBIOT(PREST+SHHS)   | 0.8019±0.0021 | 0.8749±0.0054 | 0.8739±0.0019 |     |
-| Pre-trainedBIOT(6EEGdatasets) | 0.7959±0.0057 | 0.8792±0.0023 | 0.8815±0.0043 |     |
-*Boldforthebestmodel(trainedfromscratch)and box forthebestpre-trainedmodels.
-Table5: AdditionalSupervisedLearningResultsonTUEV(All-in-one-tablecomparison)
-TUEV(eventtypeclassification)
-Models
-|     |     | BalancedAcc. | Coken’sKappa | WeightedF1 |
-| --- | --- | ------------ | ------------ | ---------- |
-(TrainingfromscratchinSection3.2
-| SPaRCNet |     | 0.4161±0.0262 | 0.4233±0.0181 | 0.7024±0.0104 |
-| -------- | --- | ------------- | ------------- | ------------- |
-| ContraWR |     | 0.4384±0.0349 | 0.3912±0.0237 | 0.6893±0.0136 |
-|          |     | 0.4087±0.0161 | 0.3815±0.0134 | 0.6854±0.0293 |
-CNN-Transformer
-| FFCL           |     | 0.3979±0.0104 | 0.3732±0.0188 | 0.6783±0.0120 |
-| -------------- | --- | ------------- | ------------- | ------------- |
-| ST-Transformer |     | 0.3984±0.0228 | 0.3765±0.0306 | 0.6823±0.0190 |
-| (Vanilla)BIOT  |     | 0.4682±0.0125 | 0.4482±0.0285 | 0.7085±0.0184 |
-(Unsupervisedpre-trainedmodelsinSection3.4):
-Pre-trainedBIOT(PREST) 0.5207±0.0285 0.4932±0.0301 0.7381±0.0169
-Pre-trainedBIOT(PREST+SHHS) 0.5149±0.0292 0.4841±0.0309 0.7322±0.0196
-(Supervisedpre-trainedmodelsinSection3.5):
-Pre-trainedBIOT(pre-trainedonCHB-MITwith8channelsand10s) 0.4123±0.0087 0.4285±0.0065 0.6989±0.0015
-Pre-trainedBIOT(pre-trainedonCHB-MITwith16channelsand5s) 0.4218±0.0117 0.4427±0.0093 0.7147±0.0058
-Pre-trainedBIOT(pre-trainedonCHB-MITwith16channelsand10s) 0.4344±0.0065 0.4719±0.0231 0.7280±0.0126
-Pre-trainedBIOT(pre-trainedonIIICseizurewith8channelsand10s) 0.4956±0.0552 0.4719±0.0475 0.7214±0.0220
-Pre-trainedBIOT(pre-trainedonIIICseizurewith16channelsand5s) 0.4894±0.0189 0.4881±0.0045 0.7348±0.0056
-Pre-trainedBIOT(pre-trainedonIIICseizurewith16channelsand10s) 0.4935±0.0288 0.5316±0.0176 0.7555±0.0111
-Pre-trainedBIOT(pre-trainedonTUABwith8channelsand10s) 0.4980±0.0384 0.4487±0.0535 0.7044±0.0365
-Pre-trainedBIOT(pre-trainedonTUABwith16channelsand5s) 0.4954±0.0305 0.5053±0.0079 0.7447±0.0049
-Pre-trainedBIOT(pre-trainedonTUABwith16channelsand10s) 0.5256±0.0348 0.5187±0.0160 0.7504±0.0102
-(Supervised+unsupervisedpre-trainedmodelinSection3.6):
-Pre-trainedBIOT(ultimate) 0.5281±0.0225 0.5273±0.0249 0.7492±0.0082
-B.2 AdditionalExperimentsonCHB-MIT
-ThissectionperformsasimilarexperimentonCHB-MIT,similartoSection3.2. Wepre-trainonthe
-trainingsetofIIICSeizure(whichhas16channelsand10sduration),TUAB(whichhas16channels
-and 10s duration), TUEV (which has 16 channels and 5s duration) and fine-tunes on CHB-MIT
-(whichhas16channelsand10sduration). Alldatasetsuse200Hzsamplingrate. Wedesignfivesets
-ofconfigurationsforthepre-traineddatasets: Format(i)usesthefirst8channelsand10sduration;
-Format(ii)usesthefull16channelsbutonlythefirst5srecording;Format(iii)usesfull16channels
-andfull10srecording;Format(iv)uses8channelsand5srecording,andFormat(v)usesfull16
-channelsand2.5srecording. ThelasttwoareonlyfortheTUEVdataset. Duringfine-tuning,we
-thenremovethepredictionlayersfromthesepre-trainedmodelandaddanewpredictionlayertofit
-theCHB-MITdataset.
-The results are reported in Figure 5, which shows that the supervised pre-training on both IIIC
-seizureandTUEVcanhelpimprovethedownstreamperformanceonCHB-MITtaskcomparedto
-trainingfromscratch. ThereasonisthatIIICSeizureisonmultipleseizuretypeclassificationwhile
-CHB-MITisonbinaryseizureornotclassification,andthecontextofbothtasksarefairlyrelated.
-AlthoughTUEVisnotentirelyonseizurerelatedclassification,someclassesinTUEVareseizure
-subtypes(suchasGPED,PLED),andthusitssupervisdpre-trainedmodelscanalsobringbenefits
-fortheCHB-MITtask.
-16
+- **Knowledge transfer across different data.** Our `BIOT` can enable joint (pre-)training and knowledge transfer across different biosignal datasets in the wild, which inspires the research of large foundation models for biosignals. 
 
-Figure5: Fine-tunedonCHB-MITfromdifferentsupervisedpre-trainedmodels. IIICSeizureand
-TUAVdatasetsfollowFormat(i)(ii)(iii),whileTUEVfollowstheFormat(iv)(v)(ii).
-B.3 AblationStudiesonHyperparameters
-Thissectionprovidesablationstudiesonthreehyperparametersindataprocessing: targetsampling
-rate,tokenduration,andtheoverlapsizebetweentwoneighboringtokens. WeusetwoEEGdatasets
-asexample: IIICSeizureandTUAB.Thedefaultconfigurationinthemainpaperis(1)sampling:
-200Hz,(2)tokenlength: 1s,(3)overlaps: 0.5sasreference.
-B.3.1 AblationStudyonTargetSamplingRater
-Inthisexperiments,wefix(2)(3)andconductablationstudyonthetargetsamplingrate. Theoriginal
-IIICSeizuredataisat200HzandtheTUABdataisat256Hz. ForIIICSeizure,wevarythesampling
-rate to 26Hz, 50Hz, 100Hz, 150Hz, and 200Hz. For TUAB, we vary the sampling rate to 50Hz,
-100Hz, 150Hz, 200Hz, 250Hz, and 300Hz. The evaluations are conducted under three different
-randomseedsandthemeanandstandarddeviationvaluesarereported.
-ForIIICSeizure,wecanobservethatahighersamplingratecouldgiveslightlybetterperformance,
-especially on balanced acc. and coken’s kappa. The reason is that higher sampling rate can pre-
-servemoredetailed(high-frequency)biosignalinformation. TheresultsonTUABshowsthatthe
-performancesaresimilaronallsamplingrates. Weconjecturethatdifferenttasksmighthavediverse
-sensitivitytothethefrequencybands. Forexample,thetaskonIIICseizureistoclassifydifferent
-seizuretypes,whichmayneedtocaptureminorcluesfromhigh-frequencywaves(suchasGamma
-waves(30-100Hz)),whiletheTUABdatasetisforabnormaldetection,andusingbrainwavesunder
-50Hzmightbeenoughforthetask. Insum,thetargetsamplingrateshouldbeselectedbasedonthe
-predictingtargets.
-B.3.2 AblationStudyonTokenLengthst
-Inthisexperiments,wefix(1)(3)andconductablationstudyonthetokenlength. Bothdatasetshave
-10sastheentiresamplelengthand0.5sastheoverlaplengths. Forbothofthem,wevarythetoken
-lengthsto0.75s,1s,1.5s,2s,2.5s,5s. Theevaluationsareconductedunderthreedifferentrandom
-seedsandthemeanandstandarddeviationvaluesarereported.
-Foreachconfiguration,wealsovarythefftsizetomatchthetokenlength,whichmeansthat5stoken
-lengthcanextractmorefrequencyinformation. However,wefindthatbyincreasingthetokenlengths,
-themodelperformancestartstodecrease. PerformancesonIIICSeizurestartstodecreaseafter1s
-whiletheperformanceonTUABdecreasesafter2s. Thereasoncouldbethatgiventheincreaseing
-tokenlengthst,thetotalbiosignal"sentence"length,whichis J −t +1= 10−t +1,willdecrease
-t−p t−0.5
-(here, J isthechannelbiosignalduration, tisthetokenlength, pistheoverlappinglength). For
-example,withx=5asthetokenlengths,thefinal"sentence"lengthbecomes11whileitis19inthe
-17
+- **Strong empirical performance.** We evaluate our `BIOT` on several unsupervised and supervised EEG, ECG, and human activity sensory datasets. Results show that `BIOT` outperforms baseline models and can utilize the models pre-trained on other data to benefit the current task. 
 
-Figure6: AblationStudyonTargetSamplingRater
-defaultconfigurationwithx=1s. Theperformancedropsisduetotransformermodelswillbeless
-beneficialinshorter"sentence"s.
-Figure7: AblationStudyonTokenLengthst
-B.3.3 AblationStudyonOverlappingLengthsp
-Inthisexperiments,wefix(1)(2)andconductablationstudyontheoverlaplengths. Bothdatasets
-have 10s as the entire sample length and 1s as the token lengths. For both of them, we vary the
-overlaplengthsto0.875s,0.75s,0.5s,0.25s,0s. Theevaluationsareconductedunderthreedifferent
-randomseedsandthemeanandstandarddeviationvaluesarereported.
-Basedonthe"sentence"lengthformula J−t+1,smalleroverlaplengthswilldecreasethe"sentence"
-t−p
-length. Onbothdatasets,wefindthatlargeroverlapscanbringsslightlybetterresultsduetothat
-thebiosignal"sentence"becomeslonger. Anotherreasonisthatwithlargeroverlaps,neighboring
-tokenscancapturemoretransitioninginformationandhelpthetransformermodeltobettercapture
-thetemporalinformation.
-18
+## **2** `BIOT` **: Biosignal Transformer** 
 
-Figure8: AblationStudyonOverlappingLengthspBetweenTokens
-19
+As shown in Figure 1, our `BIOT` encoder cascades two modules: (i) the **biosignal tokenization** module that tokenizes an arbitrary biosignal (variable lengths, different channels, and missing values) into a "sentence" structure. This design can potentially enable previous language modeling techniques (Devlin et al., 2018; Liu et al., 2019; OpenAI, 2023) to empower the current biosignal models; (ii) a **linear transformer** module that captures complex token interactions within the "sentence" while maintaining linear complexity. After that, we also discuss the application of `BIOT` in different real-world settings. 
+
+2 
+
+
+
+Figure 1: Biosignal Transformer ( `BIOT` ). (Upper) Given a new data sample, we initially perform data preprocessing (resampling, normalization, tokenization, and flattening) to create a biosignal "sentence" using the **biosignal tokenization module** . We then learn the complex interactions within the "sentence" through the **linear transformer module** . (Lower) `BIOT` encoder is versatile, enabling supervised learning on complete data, data with missing values, and pre-training and fine-tuning across diverse data formats and tasks. 
+
+### **2.1 Module 1: Biosignal Tokenization** 
+
+> **Motivation.** The goal of this paper is to model heterogeneous biosignals (e.g., EEG samples with different channels for different tasks) with a unified encoding model. For example, common EEG samples (Lopez et al., 2015), such as those for seizure detection, are recorded at 256Hz in the international 10-20 system<sup>1</sup> for 10-second long (Klem et al., 1999). With standard 16 montage editing, the sample is essentially a multi-channel time-series, represented as a matrix of size (16, 2560). However, format mismatch may prevent the applications on other similar data, such as **different sampling rate** (e.g., 200Hz vs 256Hz) (Jing et al., 2023), **mismatched channels** (i.e., different datasets have their own novel channels), **variable recording duration** (i.e., 30s per sample vs. 10s) (Zhang et al., 2022), **missing segments** (i.e., part of the recording is damaged due to device error). Thus, existing models may fail to utilize the mismatched data from different datasets. 
+
+Our `BIOT` solves the above challenges by the following steps. Illustrations are shown in Figure 2. Assume the multi-channel biosignal as **S** _∈_ R<sup>_I×J_</sup> (use a complete sample for the ease of notation). 
+
+- **Resampling.** We first resample all data to the same rate (denoted by _r ∈_ R<sup>+</sup> , such as 200Hz) by linear interpolation. The consistent rate could be selected following clinical knowledge of a certain biosignal. For example, the highest frequency of interest in both EEG and ECG signals is commonly around 100 Hz, and thus 200 Hz or 250 Hz can be suitable for typical EEG or ECG applications, according to Nyquist-Shannon sampling theorem (Nyquist, 1928; Shannon, 1949). 
+
+- **Normalization** : To alleviate the unit difference and amplitude mismatch across different channels and datasets, we use the 95-percentile of the absolute amplitude to normalize each channel. **S** <u>[</u> _i_ <u>]</u> 
+
+- Formally, each channel **S** [ _i_ ] is normalized by percentile( _|_ **S** [ _i_ ] _|,_ 95%)<sup>.</sup> 
+
+> 1https://en.wikipedia.org/wiki/10-20_system_(EEG) 
+
+3 
+
+
+
+Figure 2: Biosignal Tokenization (no overlap in the examples). **Sample 1** has four channels (Fp1, Fp2, O1, and O2) for 5 seconds. We tokenize each channel into segments and then parameterize these 20 segments with three embeddings. On the right, we use different colors to represent the channels (blue-Fp1, brown-Fp2, green-O1, and yellow-O2). **Sample 2** has mismatched channels (no O2), variable lengths (Fp1 and Fp2 are shorter and flipped), and missing values (in O1). Using our method, we can still tokenize Sample 2 in a comparable "sentence". 
+
+- **Tokenization** : For handling length variation, we tokenize the recording of each channel into _t_ -second tokens, and neighboring tokens can have overlaps of _p_ seconds ( _p, t ∈_ R<sup>+</sup> and _p < t_ , e.g., _t_ = 1 and _p_ = 0 _._ 5). Thus, the _k_ -th token ( _k_ = 1 _,_ 2 _,_ 3 _, ..._ ) in the _i_ -th channel can be represented by the slicing notation **S** [ _i,_ ( _t − p_ )( _k −_ 1) : ( _t − p_ )( _k −_ 1) + _t_ ]. The number of tokens per channel is limited by the inequality: ( _t − p_ )( _k −_ 1) + _t ≤ J_ . Here, the overlap _p_ is essential to maintain the temporal information for shorter signals. For example, if the length of signal is _J_ = 3, a configuration of _t_ = 1 _, p_ = 0 will only generate 3 tokens for each channel, while a configuration of _t_ = 1 _, p_ = 0 _._ 5 gives 5 tokens per channel. In cases of missing values, we drop the corresponding tokens directly (as shown in **Sample 2** Figure 2). Note that, our tokenization applies to each channel, separately, which is different from previous works (Biswal et al., 2018; Almutairi et al., 2021; Du et al., 2022) that split all channels together (which cannot work on **Sample 2** ). 
+
+- **Flattening** : We finally flatten tokens from all channels into a consistent "sentence". 
+
+The above steps are non-parametric. To study the effect of sampling rate _r_ , token length _t_ , and overlap _p_ , we provide ablation studies and insights in Appendix B.3. In the following, we design the token embedding for the biosignal "sentence", which combines information from three aspects. 
+
+- **Segment embedding.** We learn the segment embedding from a spectral perspective by first extracting an energy vector for each token **S** [ _i,_ ( _t − p_ )( _k −_ 1) : ( _t − p_ )( _k −_ 1) + _t_ ] based on all frequency bands. This step is enabled by fast fourier transform (FFT). A fully connected network (FCN) is then applied on the energy vector to obtain the segment embedding. 
+
+- **Channel embedding (spatial).** We learn an embedding table for all different channels and add the corresponding channel embedding to the token. Each color represents one channel in Figure 2. 
+
+- **Positional embedding (temporal).** In biosignals, the segment order within the channel captures temporal information. We thus add _relative_ positional embedding to the final toke embedding by using the sinusoidal and cosine functions, which does not need learnable parameters. 
+
+We denote the final tokenzied biosignal "sentence" as **X** _∈_ R<sup>_N×l_</sup> where _N_ is the number of tokens and _l_ is the dimension of token embedding. In Figure 2, the marked orange area indicates the spatialor temporal-relevant tokens w.r.t. the current token (i.e., same time step or channel). Our token embeddings can effectively capture the segment features as well as the spatio-temporal features. 
+
+### **2.2 Module 2: Linear transformer** 
+
+**Transformer with linear complexity for long biosignal "sentence".** Next, we want to leverage the Transformer model (Vaswani et al., 2017) for learning the "sentence" embedding. However, biosignals usually have many channels, which may lead to long "sentences". For example, the "sentence" of a 
+
+4 
+
+64-channel EEG signal for 20 seconds (without overlaps _p_ = 0) can have 64 _×_ 20 = 1280 tokens, and longer with the overlaps. Given that the original Transformer model is known to have quadratic complexity in both time and space, we adopt the linear attention mechanism (Wang et al., 2020; Katharopoulos et al., 2020) for biosignal learning applications. 
+
+Formally, let us assume **W**<sup>_K_</sup> _,_ **W**<sup>_V_</sup> _,_ **W**<sup>_Q_</sup> _∈_ R<sup>_l×k_</sup> be the key, value, and query matrices. Our selfattention module uses a rank- _d_ approximation for the softmax attention ( _N × N_ ) by reduced-rank parameter matrices **E**<sup>_⊤_</sup> _∈_ R<sup>_N×d_</sup> _,_ **F** _∈_ R<sup>_d×N_</sup> (where _d ≪ N_ ). The output **H** _∈_ R<sup>_N×k_</sup> is, 
+
+
+
+The main components in our linear transformer module are one linear self-attention layer and one fully connected network. To enable stable training, we add layer normalization (Ba et al., 2016), residual connection (He et al., 2016), and dropout (Srivastava et al., 2014) right before each component (see Figure 1), which greatly accelerates the convergence and improves the final performance. 
+
+`BIOT` **Encoder.** An illustration of our proposed `BIOT` encoder is shown in Figure 1 (upper), which comprises the **biosignal tokenization** module and multiple blocks of **linear transformer** modules. We obtain the final biosignal "sentence" embedding by a mean pooling step over all tokens. Note that appending a classification [CLS] token at the beginning of the "sentence" (after Module 1) is also a common option. However, we find it yields a slightly worse performance in our application, and thus we use mean pooling in the experiments. 
+
+### **2.3 Biosignal Learning in the Wild** 
+
+Our proposed `BIOT` encoder can be applied in various real-world biosignal applications illustrated in the lower part of Figure 1). These applications include (1) standard supervised learning, (2) learning with missing channels or segments, (3) & (4) pre-training on one or more datasets, and fine-tuning on other similar datasets with different input formats. 
+
+**(1) Supervised Learning** is the most common setting in the previous literature (Jing et al., 2023; Biswal et al., 2018). With the `BIOT` encoder, we finally apply an exponential linear unit (ELU) activation (Clevert et al., 2015) and a linear layer for classification tasks. 
+
+**(2) Supervised Learning (with missing).** Many real biosignal data have mismatched channels, missing segments, and variable lengths, which prevents the applications of existing models (Jing et al., 2023; Song et al., 2021). Flexible as our model is, `BIOT` can be applied in this setting with the same model structure as in **(1)** . 
+
+**(3) Unsupervised Pre-training.** We can jointly pre-train a general-purpose `BIOT` encoder on multiple large unlabeled datasets. In the experiments, we pre-train an unsupervised encoder using 5 million resting EEG samples (16 channels, 10s, 200Hz) and 5 million sleep EEG samples (2 channels, 30s, 125Hz), which is later utilized to improve various downstream tasks. 
+
+For the unsupervised pre-training, we take the following steps (a diagram is shown in Figure 1). 
+
+- Assume **S** is the original biosignal. We first randomly dropout part of its channels and dropout part of the tokens from the remaining channels, resulting in a perturbed signal **S**<sup>˜</sup> . 
+
+- We then obtain the embeddings of **S** and **S**<sup>˜</sup> by the same `BIOT` encoder. To form the objective, we want to predict the embedding of the original signal by the perturbed signal. Thus, an additioanl predictor (i.e., two-layer neural network) is appended for the perturbed signal following (Grill et al., 2020). We use **Z** and **Z**<sup>˜</sup> to denote the real embedding of **S** and predicted embedding from **S**<sup>˜</sup> . 
+
+**Z** = `BIOT` ( **S** ) _,_ **Z**<sup>˜</sup> = predictor( `BIOT` ( **S**<sup>˜</sup> )) _._ (3) 
+
+- Finally, contrastive loss (He et al., 2020; Chen et al., 2020) is used on **S** and **S**<sup>˜</sup> to form the objective. 
+
+
+
+Here, _T_ represents the temperature ( _T_ = 0 _._ 2 throughout the paper) and **I** is an identity matrix. In the implementation, we also apply sample-wise L2-normalization on both **Z** and **Z**<sup>˜</sup> before softmax. 
+
+5 
+
+**(4) Supervised Pre-training** aims to pre-train a model by supervised learning on one task and then generalize and fine-tune the encoder on a new task. The goal is to transfer knowledge among different datasets and gain improvements on the new task compared to training from scratch. Our `BIOT` model allows the new datasets to have mismatched channels and different lengths. 
+
+## **3 Experiments** 
+
+This section shows the strong performance of `BIOT` on several EEG, ECG and sensory datasets. Section 3.2, 3.3 compare `BIOT` with baselines on **supervised learning** and **learning with missing** settings. Section 3.4, 3.5, 3.6 show the that `BIOT` can be flexibly **pre-trained on other datasets** (supervised or unsupervised) to improve the current task with different sample formats. We released the codebase and the pre-trained models in GitHub<sup>2</sup> . 
+
+### **3.1 Experimental Setups** 
+
+**Biosignal Datasets.** We consider the following datasets in the evaluation: (i) **SHHS** (Zhang et al., 2018; Quan et al., 1997) is a large sleep EEG corpus from patients aged 40 years and older. (ii) **PREST** is a large unlabeled proprietary resting EEG dataset; (iii) **Cardiology** (Alday et al., 2020) is a collection of five ECG datasets (initially contains six, but we exclude the PTB-XL introduced below). (iv) The **CHB-MIT** database (Shoeb, 2009) is collected from pediatric patients for epilepsy seizure detection. (v) **IIIC Seizure** dataset is from Ge et al. (2021); Jing et al. (2023) for detecting one of the six ictal-interictal-injury-continuum (IIIC) seizure patterns (OTH, ESZ, LPD, GPD, LRDA, GRDA); (vi) TUH Abnormal EEG Corpus ( **TUAB** ) (Lopez et al., 2015) is an EEG dataset that has been annotated as normal or abnormal; (vii) TUH EEG Events ( **TUEV** ) (Harati et al., 2015) is a corpus of EEG that contains annotations of EEG segments as one of six event types: spike and sharp wave (SPSW), generalized periodic epileptiform discharges (GPED), periodic lateralized epileptiform discharges (PLED), eye movement (EYEM), artifact (ARTF) and background (BCKG); (viii) **PTBXL** (Wagner et al., 2020) is an ECG dataset with 12-lead recordings for diagnosis prediction, and we used it for arrhythmias phenotyping in this paper; (ix) **HAR** (Anguita et al., 2013) is a human action recognition dataset using smartphone accelerometer and gyroscope data. 
+
+Table 1: Dataset Statistics 
+
+|**Datasets**|**Type (subtype)**|**# Recordings**|**Rate**|**Channels**|**Duration**|**# Sample**|**Tasks**|
+|---|---|---|---|---|---|---|---|
+|SHHS<br>PREST|EEG (sleep)<br>EEG (resting)|5,445<br>6,478|125Hz<br>200Hz|C3-A2, C4-A1<br>16 montages|30 seconds<br>10 seconds|5,093,522<br>5,110,992|Unsupervised pre-training<br>Unsupervised pre-training|
+|Cardiology|ECG|21,264|500Hz|6 or 12 ECG leads|10 seconds|495,970|Unsupervised pre-training|
+|CHB-MIT<br>IIIC Seizure<br>TUAB|EEG (resting)<br>EEG (resting)<br>EEG (unknown)|686<br>2,702<br>2,339|256Hz<br>200Hz<br>256Hz|16 montages<br>16 montages<br>16 montages|10 seconds<br>10 seconds<br>10 seconds|326,993<br>165,309<br>409,455|Binary (seizure or not)<br>Multi-class (6 seizure types)<br>Binary (abnormal or not)|
+|TUEV|EEG (both)|11,914|256Hz|16 montages|5 seconds|112,491|Multi-class (6 event types)|
+|PTB-XL<br>HAR|ECG<br>Wearable sensors|21,911<br>10,299|500Hz<br>50Hz|12 ECG leads<br>9 coordinates|5 seconds<br>2.56 seconds|65,511<br>10,299|Binary (arrhythmias or not)<br>Multi-class (6 actions)|
+
+
+
+**Dataset Processing.** The first three datasets are used entirely for unsupervised pre-training. The next four datasets are used for supervised learning, and we used the common 16 bipolar montage channels in the international 10-20 system. For CHB-MIT (containing 23 patients), we first use patient 1 to 19 for training, 20,21 for validation, and 22,23 for test. Then, we flip the validation and test sets and conduct the experiments again. We report the average performance on these two settings. For IIIC seizure, we divide patient groups into training/validation/test sets by 60%:20%:20%. For TUAB and TUEV, the training and test separation is provided by the dataset. We further divide the training patients into training and validation groups by 80%:20%. For PTB-XL, we divide patient groups into training/validation/test sets by 80%:10%:10%. The train and test set of HAR is provided, and we further divide the test patients into validation/text by 50%:50%. For all the datasets, after assigning the patients to either training, validation, or test groups, we will further split the patient’s recording to samples, and the sample duration accords to the annotation files. The dataset statistics can be found in Table 1, and we provides more descriptions and processing details in Appendix A.1. 
+
+**Baseline.** We consider the following representative models: (i) **SPaRCNet** (Jing et al., 2023) is a 1D-CNN based model with dense residual connections, more advanced than the popular ConvNet (Schirrmeister et al., 2017), CSCM (Sakhavi et al., 2018); (ii) **ContraWR** ’s (Yang et al., 2021) 
+
+> 2https://github.com/ycq091044/BIOT 
+
+6 
+
+encoder model first transforms the biosignals into multi-channel spectrogram and then uses 2D-CNN based ResNet (He et al., 2016); (iii) **CNN-Transformer** (Peh et al., 2022) is superior to CNN-LSTM models (Zhang et al., 2019); (iv) **FFCL** (Li et al., 2022) combines embeddings from CNN and LSTM encoders for feature fusion; (v) **ST-Transformer** Song et al. (2021) proposes an multi-level EEG transformer for learning spatial (S) and temporal (T) features simultaneously, empirically better than EEGNet Lawhern et al. (2018). Our `BIOT` model trained from scratch is denoted by (vanilla). 
+
+**Environments and Settings.** The experiments are implemented by Python 3.9.12, Torch 1.13.1+cu117, Pytorch-lightning 1.6.4 on a Linux server with 512 GB memory, 128-core CPUs and eight RTX A6000 GPUs. All the models are optimized on training set and evaluated on the test set. The best model and hyperparameter combinations are selected based on the validation set. For Table 2 and Table 3, we obtain five sets of results with different random seeds and report the mean and standard deviation values. For Figure 3 and Figure 4, we report the results under three random seeds. More experimental and implementation details can refer to Appendix A.2. 
+
+### **3.2 Setting (1) - standard supervised learning** 
+
+This section shows that `BIOT` is comparable or better than baselines in the supervised learning settings. 
+
+- **Four EEG Tasks.** Both CHB-MIT and TUAB are designed to predict binary output, and we use binary cross entropy (BCE) for TUAB and the focal loss (Lin et al., 2017) for CHB-MIT due to its imbalances (around 0.6% positive ratio in training set). We use balanced accuracy (Balanced Acc.), area under precision-recall curve (AUC-PR) and AUROC as the metrics. Both IIIC Seizure and TUEV are multi-class classification tasks with cross entropy loss. We employ Balanced Acc., Cohen’s Kappa, and Weighted F1 as the multi-class evaluation. To save space, we only show the performance on CHB-MIT and IIIC Seizure in Table 2 and move the other two to Appendix B.1. 
+
+- **ECG and Sensory Tasks.** PTB-XL is formulated as a binary classification on detecting arrhythmias phenotypes. We use the BCE loss and binary evaluation metrics. HAR (classifying actions) uses the cross entropy loss and is evaluated by multi-class metrics. Results are reported in Table 3. 
+
+Table 2 and 3 show that our model has superior performance over baselines in most tasks, especially on CHB-MIT, IIIC Seizure, and HAR. The reason might be that the frequency features are more useful in these three datasets as our `BIOT` extracts the main features from spectral perspective. SPaRCNet is a strong model among all the baselines except on the CHB-MIT task. The model might be vulnerable in the imbalanced classification setting even with the focal loss. The pre-training models at the end of the tables will be introduced and explained in Section 3.4, 3.6. 
+
+Table 2: EEG classification tasks (Results of TUAB and TUEV are in Appendix B.1) 
+
+|**Models**|**CHB**|**-MIT (seizure detec**|**tion)**|**IIIC Seizu**|**re (seizure type clas**|**sifcation)**|
+|---|---|---|---|---|---|---|
+||Balanced Acc.|AUC-PR|AUROC|Balanced Acc.|Cohen’s Kappa|Weighted F1|
+|SPaRCNet (Jing et al., 2023)|0.5876_±_0.0191|0.1247_±_0.0119|0.8143_±_0.0148|0.5546_±_0.0161|0.4679_±_0.0228|0.5569_±_0.0184|
+|ContraWR (Yang et al., 2021)|0.6344_±_0.0002|0.2264_±_0.0174|0.8097_±_0.0114|0.5519_±_0.0058|0.4623_±_0.0148|0.5486_±_0.0137|
+|CNN-Transformer (Peh et al., 2022)|0.6389_±_0.0067|0.2479_±_0.0227|**0.8662**_±_0.0082|0.5476_±_0.0103|0.4481_±_0.0139|0.5346_±_0.0127|
+|FFCL (Li et al., 2022)|0.6262_±_0.0104|0.2049_±_0.0346|0.8271_±_0.0051|0.5617_±_0.0117|0.4704_±_0.0130|0.5617_±_0.0171|
+|ST-Transformer (Song et al., 2021)|0.5915_±_0.0195|0.1422_±_0.0094|0.8237_±_0.0491|0.5423_±_0.0056|0.4492_±_0.0056|0.5440_±_0.0014|
+|(Vanilla)`BIOT`|**0.6640**_±_**0.0037**|**0.2573**_±_**0.0088**|0.8646_±_0.0030|**0.5762**_±_**0.0034**|**0.4932**_±_**0.0046**|**0.5773**_±_**0.0031**|
+|Pretrained`BIOT`(PREST)|0.6942_±_0.0431|0.3072_±_0.1187|0.8679_±_0.0106|0.5787_±_0.0066|0.4980_±_0.0054|0.5828_±_0.0049|
+|Pretrained`BIOT`(PREST+SHHS)|0.6788_±_0.0036|0.3090_±_0.0003|0.8752_±_0.0022|0.5800_±_0.0004|0.5040_±_0.0041|0.5878_±_0.0015|
+|Pretrained`BIOT`(6 EEG datasets)|0.7068_±_0.0457|0.3277_±_0.0460|0.8761_±_0.0284|0.5779_±_0.0087|0.4949_±_0.0103|0.5737_±_0.0088|
+
+
+
+1. All models use the same training set of the task, while the pre-trained `BIOT` models are initially pre-trained on other data sources (see Section 3.4, 3.6). 
+
+2. **Bold** for the best model (trained from scratch) and box for the best pre-trained models. 
+
+### **3.3 Setting (2) - learning with missing channels and segments** 
+
+The section simulates the TUEV dataset to mimic the setting of _supervised learning with missing channels and segments_ and show the strong performance of `BIOT` . We consider three missing cases: 
+
+- **Missing segments** : Randomly mask out _a_ segments (each segment spans for 0.5 seconds), _a_ = 0 _,_ 1 _,_ 2 _,_ 3 _,_ 4 _,_ 5 with equal probability. The segment masking is applied separately for each channel. 
+
+- **Missing channels** : Randomly mask out _b_ channels, _b_ = 0 _,_ 1 _,_ 2 _,_ 3 _,_ 4 with equal probability. We assume that the masking will not alter the underlying labels (the same assumption for other cases). 
+
+- **Missing both channels and segments** : Combining Case 2 & 3 simultaneously. 
+
+7 
+
+Table 3: ECG and human activity sensory classification tasks 
+
+|**Models**|**PTB-XL (ar**|**rhythmias phenotyp**|**e prediction)**|**HAR (h**|**uamn action reco**|**gnition)**|
+|---|---|---|---|---|---|---|
+||Balanced Acc.|AUC-PR|AUROC|Balanced Acc.|Cohen’s Kappa|Weighted F1|
+|SPaRCNet (Jing et al., 2023)|0.8275_±_0.0047|**0.9040**_±_**0.0067**|**0.7550**_±_**0.0073**|0.9371_±_0.0160|0.9236_±_0.0189|0.9365_±_0.0155|
+|ContraWR (Yang et al., 2021)|0.6341_±_0.0883|0.6795_±_0.1083|0.4433_±_0.1557|0.9068_±_0.0164|0.8879_±_0.0201|0.9055_±_0.0182|
+|CNN-Transformer (Peh et al., 2022)|0.6650_±_0.0459|0.7175_±_0.0558|0.4996_±_0.0936|0.8690_±_0.0839|0.8273_±_0.0953|0.8352_±_0.1166|
+|FFCL (Li et al., 2022)|0.7034_±_0.0052|0.7088_±_0.0053|0.5127_±_0.0051|0.8519_±_0.0148|0.8216_±_0.0177|0.8508_±_0.0138|
+|ST-Transformer (Song et al., 2021)|0.7238_±_0.0083|0.7775_±_0.0153|0.6003_±_0.0179|0.9336_±_0.0063|0.9213_±_0.0076|0.9337_±_0.0068|
+|(Vanilla)`BIOT`|**0.8315**_±_**0.0008**|0.8978_±_0.0020|0.7493_±_0.0167|**0.9461**_±_**0.0134**|**0.9351**_±_**0.0160**|**0.9458**_±_**0.0136**|
+|Pretrained`BIOT`(Cardiology-6)|0.8350_±_0.0073|0.9128_±_0.0094|0.7671_±_0.0116|/|/|/|
+|Pretrained`BIOT`(Cardiology-12)|0.8421_±_0.0030|0.9221_±_0.0075|0.7659_±_0.0076|/|/|/|
+
+
+
+* **Bold** for the best model. All models use the same training set of the task. The Pretrained `BIOT` (Cardiology-6) and Pretrained `BIOT` (Cardiology-12) are pre-trained on Cardiology data (see Section 3.4), and they do not apply to HAR data (due to different biosignal types). 
+
+
+
+Figure 3: Supervised learning with missing channels or segments (on TUEV and IIIC Seizure) 
+
+To enable the baseline models compatible with the setting, we use all zeros to impute the masked regions. The comparison is plotted in Figure 3, which shows that (i) all models decrease the performance with more missings while `BIOT` and the pre-trained `BIOT` are less impacted (especially on Kappa and Weighted F1); (ii) "Missing channels" affects the performance more than "Missing segments", which makes sense as segment masking still preserves information from all channels. 
+
+### **3.4 Setting (3) - unsupervised pre-training** 
+
+In this section, we show that `BIOT` enables unsupervised pre-training on existing with various formats. 
+
+- **Pre-trained (PREST)** : This model is pre-trained on 5 million resting EEG samples (PREST) with 2,048 as the batch size. We save the pre-trained model at the 100-th epoch. 
+
+- **Pre-trained (PRESET+SHHS)** : This model is jointly pre-trained on 5M PREST and 5M SHHS EEG samples. Though two datasets have different sample formats, our model is able to encode them regardless. Also, we use 2048 as the batch size and save model at the 100-th epoch. 
+
+- **Pre-trained (Cardiology-12)** is jointly pre-trained on raw data of five datasets in Cardiology corpus (details in Appendix A.1). We use 1024 as batch size and save model at the 100-th epoch. 
+
+- **Pre-trained (Cardiology-6)** is pre-trained similarly as Pre-trained (Cardiology-12), while we only utilize the first 6 ECG leads. By contast, Pre-trained (Cardiology-12) uses full 12 leads. 
+
+We fine-tune the first two pre-trained EEG models on four EEG tasks and append the results to Table 2 (also in Appendix B.1). We fine-tune the last two pre-trained ECG models on PTB-XL datasets in Table 3. The results show that the pre-trained models greatly improves the final performance on the downstream tasks in Table 2 and Table 3. 
+
+8 
+
+### **3.5 Setting (4) - supervised pre-training on other tasks** 
+
+This section shows that `BIOT` allows knowledge transfer from one task to another similar task with different sample formats. We pre-train on the training set of CHB-MIT, IIIC Seizure, TUAB and fine-tunes on TUEV (which has 16 channels and 5s duration). All datasets use 200Hz sampling rate. We design three sets of configurations for the pre-trained datasets: **Format (i)** uses the first 8 channels and 10s duration; **Format (ii)** uses the full 16 channels but only the first 5s recording; **Format (iii)** uses full 16 channels and full 10s recording. During fine-tuning, we then remove the prediction layers from these pre-trained model and add a new prediction layer to fit the TUEV dataset. 
+
+
+
+Figure 4: Fine-tuned on TUEV from different supervised pre-trained models (best number in **bold** ). Similar supervised fine-tuning analysis on CHB-MIT dataset is shown in Appendix B.2. 
+
+The results are shown in Figure 4 where we also add the vanilla `BIOT` (trained from scratch) for references. We find that (i) the model pre-trained on IIIC Seizure and TUAB are generally beneficial for the event classification task on TUEV. The reason might be that TUAB and TUEV are both recorded from Temple University and share some common information, while IIIC seizure and TUEV are both related to seizure detection and may share some latent patterns. (ii) More pre-training data will be beneficial in the downstream task. Though the pre-training configuration (16 channels, 5 seconds) aligns better with the TUEV data formats, the results show that configuration of (16 channels, 10 seconds) encodes longer duration and works consistently better. (iii) Compared to the TUEV results in Appendix B.1, we also find that oftentimes the supervised pre-training (e.g., on IIIC seizure or TUAB) can be more effective than unsupervised pre-training (e.g., on SHHS and PREST). 
+
+### **3.6 Pre-trained on all EEG datasets** 
+
+In this section, we show that `BIOT` can leverage all six EEG resources considered in the paper. We obtain a **Pre-trained (6 EEG datasets)** model by loading the Pre-trained (PREST+SHHS) model and further train it on the training sets of CHB-MIT, IIIC Seizure, TUAB, and TUEV. We add separate classification layers for four tasks. Essentially, this model is pre-trained on all six EEG datasets. To use the model, we still fine-tune it on the training set of downstream tasks and append the results to Table 2 and Appendix B.1. Apparently, Pre-trained (six EEG datasets) outperforms the vanilla `BIOT` and is generally better than the unsupervised and the supervised pre-trained `BIOT` . 
+
+## **4 Conclusion** 
+
+This paper proposes a new biosignal transformer model ( `BIOT` ) that learns embeddings for biosignals with variable lengths, channels and missing values. `BIOT` can enable effective knowledge transfer across different data and allow joint training on multiple sources. We conduct extensive evaluations on two large EEG corpus (5M each) for unsupervised pre-training, and several EEG, ECG, human action sensory datasets for supervised learning. The results show that our BIOT outperforms strong baselines in standard supervised learning and can effectively handle the learning settings with missing values. The pre-trained `BIOT` models also show significant improvements on various downstream classification tasks. In the end, we hope our work can inspire more follow-up researches of large foundational models for biosignals. 
+
+9 
+
+## **References** 
+
+- Alday, E. A. P., Gu, A., Shah, A. J., Robichaux, C., Wong, A.-K. I., Liu, C., Liu, F., Rad, A. B., Elola, A., Seyedi, S., et al. (2020). Classification of 12-lead ecgs: the physionet/computing in cardiology challenge 2020. _Physiological measurement_ , 41(12):124003. 
+
+- Almutairi, H., Hassan, G. M., and Datta, A. (2021). Detection of obstructive sleep apnoea by ecg signals using deep learning architectures. In _2020 28th European signal processing conference (EUSIPCO)_ , pages 1382–1386. IEEE. 
+
+- Anguita, D., Ghio, A., Oneto, L., Parra, X., Reyes-Ortiz, J. L., et al. (2013). A public domain dataset for human activity recognition using smartphones. In _Esann_ , volume 3, page 3. 
+
+- Ba, J. L., Kiros, J. R., and Hinton, G. E. (2016). Layer normalization. _arXiv preprint arXiv:1607.06450_ . 
+
+- Bahador, N., Jokelainen, J., Mustola, S., and Kortelainen, J. (2021). Reconstruction of missing channel in electroencephalogram using spatiotemporal correlation-based averaging. _Journal of Neural Engineering_ , 18(5):056045. 
+
+- Biswal, S., Sun, H., Goparaju, B., Westover, M. B., Sun, J., and Bianchi, M. T. (2018). Expert-level sleep scoring with deep neural networks. _Journal of the American Medical Informatics Association_ , 25(12):1643–1650. 
+
+- Chen, T., Kornblith, S., Norouzi, M., and Hinton, G. (2020). A simple framework for contrastive learning of visual representations. In _International conference on machine learning_ , pages 1597– 1607. PMLR. 
+
+- Clevert, D.-A., Unterthiner, T., and Hochreiter, S. (2015). Fast and accurate deep network learning by exponential linear units (elus). _arXiv preprint arXiv:1511.07289_ . 
+
+- Cui, H., Liu, A., Zhang, X., Chen, X., Wang, K., and Chen, X. (2020). Eeg-based emotion recognition using an end-to-end regional-asymmetric convolutional neural network. _Knowledge-Based Systems_ , 205:106243. 
+
+- Dar, M. N., Akram, M. U., Khawaja, S. G., and Pujari, A. N. (2020). Cnn and lstm-based emotion charting using physiological signals. _Sensors_ , 20(16):4551. 
+
+- Devlin, J., Chang, M.-W., Lee, K., and Toutanova, K. (2018). Bert: Pre-training of deep bidirectional transformers for language understanding. _arXiv preprint arXiv:1810.04805_ . 
+
+- Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., et al. (2020). An image is worth 16x16 words: Transformers for image recognition at scale. _arXiv preprint arXiv:2010.11929_ . 
+
+- Du, Y., Xu, Y., Wang, X., Liu, L., and Ma, P. (2022). Eeg temporal–spatial transformer for person identification. _Scientific Reports_ , 12(1):14378. 
+
+- Ge, W., Jing, J., An, S., Herlopian, A., Ng, M., Struck, A. F., Appavu, B., Johnson, E. L., Osman, G., Haider, H. A., et al. (2021). Deep active learning for interictal ictal injury continuum eeg patterns. _Journal of neuroscience methods_ , 351:108966. 
+
+- Gong, Y., Chung, Y.-A., and Glass, J. (2021). Ast: Audio spectrogram transformer. _arXiv preprint arXiv:2104.01778_ . 
+
+- Greco, A., Valenza, G., Lázaro, J., Garzón-Rey, J. M., Aguiló, J., De-la Camara, C., Bailón, R., and Scilingo, E. P. (2021). Acute stress state classification based on electrodermal activity modeling. _IEEE Transactions on Affective Computing_ . 
+
+- Grill, J.-B., Strub, F., Altché, F., Tallec, C., Richemond, P., Buchatskaya, E., Doersch, C., Avila Pires, B., Guo, Z., Gheshlaghi Azar, M., et al. (2020). Bootstrap your own latent-a new approach to self-supervised learning. _Advances in neural information processing systems_ , 33:21271–21284. 
+
+10 
+
+- Harati, A., Golmohammadi, M., Lopez, S., Obeid, I., and Picone, J. (2015). Improved eeg event classification using differential energy. In _2015 IEEE Signal Processing in Medicine and Biology Symposium (SPMB)_ , pages 1–4. IEEE. 
+
+- He, K., Fan, H., Wu, Y., Xie, S., and Girshick, R. (2020). Momentum contrast for unsupervised visual representation learning. In _Proceedings of the IEEE/CVF conference on computer vision and pattern recognition_ , pages 9729–9738. 
+
+- He, K., Zhang, X., Ren, S., and Sun, J. (2016). Deep residual learning for image recognition. In _Proceedings of the IEEE conference on computer vision and pattern recognition_ , pages 770–778. 
+
+- Isin, A. and Ozdalili, S. (2017). Cardiac arrhythmia detection using deep learning. _Procedia computer science_ , 120:268–275. 
+
+- Jing, J., d’Angremont, E., Zafar, S., Rosenthal, E. S., Tabaeizadeh, M., Ebrahim, S., Dauwels, J., and Westover, M. B. (2018). Rapid annotation of seizures and interictal-ictal continuum eeg patterns. In _2018 40th Annual International Conference of the IEEE Engineering in Medicine and Biology Society (EMBC)_ , pages 3394–3397. IEEE. 
+
+- Jing, J., Ge, W., Hong, S., Fernandes, M. B., Lin, Z., Yang, C., An, S., Struck, A. F., Herlopian, A., Karakis, I., et al. (2023). Development of expert-level classification of seizures and rhythmic and periodic patterns during eeg interpretation. _Neurology_ . 
+
+- Jing, J., Sun, H., Kim, J. A., Herlopian, A., Karakis, I., Ng, M., Halford, J. J., Maus, D., Chan, F., Dolatshahi, M., et al. (2020). Development of expert-level automated detection of epileptiform discharges during electroencephalogram interpretation. _JAMA neurology_ , 77(1):103–108. 
+
+- Katharopoulos, A., Vyas, A., Pappas, N., and Fleuret, F. (2020). Transformers are rnns: Fast autoregressive transformers with linear attention. In _Proceedings of the International Conference on Machine Learning (ICML)_ . 
+
+- Kim, M.-G., Ko, H., and Pan, S. B. (2020). A study on user recognition using 2d ecg based on ensemble of deep convolutional neural networks. _Journal of Ambient Intelligence and Humanized Computing_ , 11:1859–1867. 
+
+- Klem, G. H., Lüders, H., Jasper, H. H., and Elger, C. E. (1999). The ten-twenty electrode system of the international federation. the international federation of clinical neurophysiology. _Electroencephalography and clinical neurophysiology. Supplement_ , 52:3–6. 
+
+- Kostas, D., Aroca-Ouellette, S., and Rudzicz, F. (2021). Bendr: using transformers and a contrastive self-supervised learning task to learn from massive amounts of eeg data. _Frontiers in Human Neuroscience_ , 15:653659. 
+
+- Lawhern, V. J., Solon, A. J., Waytowich, N. R., Gordon, S. M., Hung, C. P., and Lance, B. J. (2018). Eegnet: a compact convolutional neural network for eeg-based brain–computer interfaces. _Journal of neural engineering_ , 15(5):056013. 
+
+- Li, H., Ding, M., Zhang, R., and Xiu, C. (2022). Motor imagery eeg classification algorithm based on cnn-lstm feature fusion network. _Biomedical signal processing and control_ , 72:103342. 
+
+- Lin, T.-Y., Goyal, P., Girshick, R., He, K., and Dollár, P. (2017). Focal loss for dense object detection. In _Proceedings of the IEEE international conference on computer vision_ , pages 2980–2988. 
+
+- Liu, J., Zhang, L., Wu, H., and Zhao, H. (2021). Transformers for eeg emotion recognition. _arXiv preprint arXiv:2110.06553_ . 
+
+- Liu, Y., Ott, M., Goyal, N., Du, J., Joshi, M., Chen, D., Levy, O., Lewis, M., Zettlemoyer, L., and Stoyanov, V. (2019). Roberta: A robustly optimized bert pretraining approach. _arXiv preprint arXiv:1907.11692_ . 
+
+- Lopez, S., Suarez, G., Jungreis, D., Obeid, I., and Picone, J. (2015). Automated identification of abnormal adult eegs. In _2015 IEEE Signal Processing in Medicine and Biology Symposium (SPMB)_ , pages 1–5. IEEE. 
+
+11 
+
+- Nagabushanam, P., George, S. T., Davu, P., Bincy, P., Naidu, M., and Radha, S. (2020). Artifact removal using elliptic filter and classification using 1d-cnn for eeg signals. In _2020 6th International Conference on Advanced Computing and Communication Systems (ICACCS)_ , pages 551–556. IEEE. 
+
+- Nyquist, H. (1928). Certain topics in telegraph transmission theory. _Transactions of the American Institute of Electrical Engineers_ , 47(2):617–644. 
+
+OpenAI (2023). Gpt-4 technical report. 
+
+- Parvaneh, S., Rubin, J., Babaeizadeh, S., and Xu-Wilson, M. (2019). Cardiac arrhythmia detection using deep learning: A review. _Journal of electrocardiology_ , 57:S70–S74. 
+
+- Peh, W. Y., Yao, Y., and Dauwels, J. (2022). Transformer convolutional neural networks for automated artifact detection in scalp eeg. In _2022 44th Annual International Conference of the IEEE Engineering in Medicine & Biology Society (EMBC)_ , pages 3599–3602. IEEE. 
+
+- Phan, H. and Mikkelsen, K. (2022). Automatic sleep staging of eeg signals: recent development, challenges, and future directions. _Physiological Measurement_ . 
+
+- Quan, S. F., Howard, B. V., Iber, C., Kiley, J. P., Nieto, F. J., O’Connor, G. T., Rapoport, D. M., Redline, S., Robbins, J., Samet, J. M., et al. (1997). The sleep heart health study: design, rationale, and methods. _Sleep_ , 20(12):1077–1085. 
+
+- Sakhavi, S., Guan, C., and Yan, S. (2018). Learning temporal information for brain-computer interface using convolutional neural networks. _IEEE transactions on neural networks and learning systems_ , 29(11):5619–5629. 
+
+- Schirrmeister, R. T., Springenberg, J. T., Fiederer, L. D. J., Glasstetter, M., Eggensperger, K., Tangermann, M., Hutter, F., Burgard, W., and Ball, T. (2017). Deep learning with convolutional neural networks for eeg decoding and visualization. _Human brain mapping_ , 38(11):5391–5420. 
+
+- Shannon, C. E. (1949). Communication in the presence of noise. _Proceedings of the IRE_ , 37(1):10–21. 
+
+Shoeb, A. H. (2009). _Application of machine learning to epileptic seizure onset detection and treatment_ . PhD thesis, Massachusetts Institute of Technology. 
+
+- Song, Y., Jia, X., Yang, L., and Xie, L. (2021). Transformer-based spatial-temporal feature learning for eeg decoding. _arXiv preprint arXiv:2106.11170_ . 
+
+- Srivastava, N., Hinton, G., Krizhevsky, A., Sutskever, I., and Salakhutdinov, R. (2014). Dropout: a simple way to prevent neural networks from overfitting. _The journal of machine learning research_ , 15(1):1929–1958. 
+
+- Suhaimi, N. S., Mountstephens, J., Teo, J., et al. (2020). Eeg-based emotion recognition: A state-ofthe-art review of current trends and opportunities. _Computational intelligence and neuroscience_ , 2020. 
+
+- Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., and Polosukhin, I. (2017). Attention is all you need. _Advances in neural information processing systems_ , 30. 
+
+- Venkatachalam, K., Devipriya, A., Maniraj, J., Sivaram, M., Ambikapathy, A., and Iraj, S. A. (2020). A novel method of motor imagery classification using eeg signal. _Artificial intelligence in medicine_ , 103:101787. 
+
+- Wagner, P., Strodthoff, N., Bousseljot, R.-D., Kreiseler, D., Lunze, F. I., Samek, W., and Schaeffter, T. (2020). Ptb-xl, a large publicly available electrocardiography dataset. _Scientific data_ , 7(1):154. 
+
+- Wang, S., Li, B. Z., Khabsa, M., Fang, H., and Ma, H. (2020). Linformer: Self-attention with linear complexity. _arXiv preprint arXiv:2006.04768_ . 
+
+- Yang, C., Qian, C., Singh, N., Xiao, C. D., Westover, M., Solomonik, E., and Sun, J. (2022a). Atd: Augmenting cp tensor decomposition by self supervision. _Advances in Neural Information Processing Systems_ , 35:32039–32052. 
+
+12 
+
+- Yang, C., Westover, M. B., and Sun, J. (2023). Manydg: Many-domain generalization for healthcare applications. In _The Eleventh International Conference on Learning Representations_ . 
+
+Yang, C., Wu, Z., Jiang, P., Lin, Z., and Sun, J. (2022b). Pyhealth: A deep learning toolkit for healthcare predictive modeling, 09 2022. _URL https://github. com/sunlabuiuc/PyHealth_ . 
+
+Yang, C., Xiao, D., Westover, M. B., and Sun, J. (2021). Self-supervised eeg representation learning for automatic sleep staging. _arXiv preprint arXiv:2110.15278_ . 
+
+- Zhang, G.-Q., Cui, L., Mueller, R., Tao, S., Kim, M., Rueschman, M., Mariani, S., Mobley, D., and Redline, S. (2018). The national sleep research resource: towards a sleep data commons. _Journal of the American Medical Informatics Association_ , 25(10):1351–1358. 
+
+- Zhang, R., Zong, Q., Dou, L., and Zhao, X. (2019). A novel hybrid deep learning scheme for four-class motor imagery classification. _Journal of neural engineering_ , 16(6):066004. 
+
+Zhang, X., Zhao, Z., Tsiligkaridis, T., and Zitnik, M. (2022). Self-supervised contrastive pre-training for time series via time-frequency consistency. _arXiv preprint arXiv:2206.08496_ . 
+
+- Zhang, Y., Chen, J., Tan, J. H., Chen, Y., Chen, Y., Li, D., Yang, L., Su, J., Huang, X., and Che, W. (2020). An investigation of deep learning models for eeg-based emotion recognition. _Frontiers in Neuroscience_ , 14:622759. 
+
+## **A Details of Datasets and Experimental Settings** 
+
+### **A.1 More for Datasets and Processings** 
+
+We provide more descriptions on each dataset in this section. 
+
+**For EEG datasets.** First, the 16 montages (in 10-20 international system) are "FP1-F7", "F7-T7", "T7-P7", "P7-O1", "FP2-F8", "F8-T8", "T8-P8", "P8-O2", "FP1-F3", "F3-C3", "C3-P3", "P3-O1", "FP2-F4", "F4-C4", "C4-P4", "P4-O2". 
+
+- Sleep Heart Health Study ( **SHHS** ) (Zhang et al., 2018; Quan et al., 1997) is a multi-center cohort study from the National Heart Lung & Blood Institute assembled to study sleep-disordered breathing, which contains 5,445 recordings. The data is accessible upon request in their website<sup>3</sup> . Each recording has 14 Polysomnography (PSG) channels, and the recording frequency is 125.0 Hz. We use the C3/A2 and C4/A1 EEG channels. The dataset is released with sleep annotations. We use the existing codes<sup>4</sup> and split each recordings into 30-second samples. In this study, we use SHHS samples for unsupervised pre-training without it original labels. 
+
+- **PREST** is a private dataset recorded in hospital sleep lab, primarily for seizure and abnormal EEG detection purpose (such as spikes). The local IRB waived the requirement for informed consent for this retrospective analysis of EEG data. We follow the clinician’s instructions and split each recordings into 10 seconds without labels. In the experiment, we use it for EEG model pre-training. 
+
+- The **CHB-MIT** database<sup>5</sup> (Shoeb, 2009) is publicly available, which is collected at the Children’s Hospital Boston, consists of EEG recordings from pediatric subjects with intractable seizures. The dataset is under Open Data Commons Attribution License v1.0<sup>6</sup> and is used to predict whether the EEG recordings contain seizure signals. Each recording initially contains 23 bipolar channels and we select the 16 standard montages in the experiments. We utilize the existing preprocessing<sup>7</sup> and follow the typical practices to further split each recordings into 10-second non-overlapping samples by default. Since the dataset is highly imbalanced, we use 5 seconds as overlaps to split the seizure regions (which could potentially double the positive samples). After processing, the positive ratio in the training set is around 0.6%. 
+
+> 3https://sleepdata.org/datasets/shhs 
+
+> 4https://github.com/ycq091044/ContraWR/tree/main/preprocess 
+
+> 5https://physionet.org/content/chbmit/1.0.0/ 
+
+> 6https://physionet.org/content/chbmit/view-license/1.0.0/ 
+
+> 7https://github.com/bernia/chb-mit-scalp 
+
+13 
+
+- **IIIC Seizure** is requested from Jing et al. (2018); Ge et al. (2021); Jing et al. (2023), and we follow the license and usage statements in Jing et al. (2023). The samples follow 16 montages and span 10-second signals at 200Hz. This dataset is used for predicting one of the six classes: lateralized periodic discharges (LPD), generalized periodic discharges (GPD), lateralized rhythmic delta activity (LRDA), generalized rhythmic delta activity (GRDA), Seizure types, and Other. 
+
+- TUH Abnormal EEG Corpus ( **TUAB** ) (Lopez et al., 2015) and TUH EEG Events ( **TUEV** ) (Harati et al., 2015) is accessible upon request at Temple University Electroencephalography (EEG) Resources<sup>8</sup> . We process both datasets to follow the 16 EEG montages. 
+
+> **For ECG datasets.** We use the Cardiology collection to pre-train the ECG models and apply it on downstream supervisd PTB-XL task. 
+
+- The **Cardiology** collection (Alday et al., 2020) is publicly available at physionet<sup>9</sup> , which was used in the PhysioNet/Computing in Cardiology Challenge 2020. This collection is under Creative Commons Attribution 4.0 International Public License<sup>10</sup> . In this study, we use five sets from the training portion of the collection (It has in total six sets. Another one overlaps with the PTB-XL dataset, and thus we drop it in the pre-training), which contains recordings from CPSC2018 (6,877 recordings), CPSC2018Extra (China 12-Lead ECG Challenge Database – unused CPSC 2018 data, 3,453 recordings), St Petersburg Incart (12-lead Arrhythmia Database, 74 recordings), ptb (Diagnostic ECG Database, 516 recordings), Georgia (12-Lead ECG Challenge Database, 10,344 recordings). For preprocessing, we extract 10-second samples from each recording with 0.5s as the overlapping window. All the samples are merged together as an unsupervised pre-training ECG corpus of nearly 0.5 million samples. We pre-train a Pre-trained `BIOT` (Cardiology-12) on all the channels and a Pre-trained `BIOT` (Cardiology-6) on the first 6-channels of all samples. The sample sizes are different from the below PTB-XL dataset. 
+
+- Physikalisch-Technische Bundesanstalt ( **PTB-XL** )<sup>11</sup> (Wagner et al., 2020) is a publicly available large dataset of 12-lead ECGs from 18885 patients. It is under the Creative Commons Attribution 4.0 International Public License<sup>12</sup> . The raw waveform data was annotated by up to two cardiologists, who assigned potentially multiple ECG statements to each record up to 27 diagnoses: 1:1st degree AV block, 2:Atrial fibrillation, 3:Atrial flutter, 4:Bradycardia, 5:Complete right bundle branch block, 6:Incomplete right bundle branch block, 7:Left anterior fascicular block, 8:Left axis deviation, 9:Left bundle branch block, 10:Low QRS voltages, 11:Nonspecific intraventricular conduction disorder, 12:Pacing rhythm, 13:Premature atrial contraction, 14:Premature ventricular contractions, 15:Prolonged PR interval, 16:Prolonged QT interval, 17:Q wave abnormal, 18:Right axis deviation, 19:Right bundle branch block, 20:Sinus arrhythmia, 21:Sinus bradycardia, 22:Sinus rhythm, 23:Sinus tachycardia, 24:Supraventricular premature beats, 25:T wave abnormal, 26:T wave inversion, 27:Ventricular premature beats. We following clinical knowledges and further groups them into six broader categories: Arrhythmias, Bundle branch blocks and fascicular blocks, Axis deviations, Conduction delays, Wave abnormalities, Miscellaneous. Each recordings can be associated to multiple categories. In this paper, we conduct the "Arrhythmias" phenotyping prediction task. If the recordings have at least one diagnosis belonging to the Arrhythmias group, then we label them as positive, otherwise as negative. 
+
+**For human activity sensory data.** Human activity recognition ( **HAR** ) dataset<sup>13</sup> (Anguita et al., 2013) is publicly available at UCI machine learning repository. The data is collected from smartphone accelerometer and gyroscope data with 3D coordinates to detect six actions: walking, walking upstairs, walking downstairs, sitting, standing, laying. The samples are already splitted and provided in the original datasets. 
+
+> 8https://isip.piconepress.com/projects/tuh_eeg/html/downloads.shtml 
+
+> 9https://physionet.org/content/challenge-2020/1.0.2/ 
+
+> 10https://physionet.org/content/challenge-2020/view-license/1.0.2/ 
+
+> 11https://physionet.org/content/ptb-xl/1.0.1/ 
+
+> 12https://physionet.org/content/ptb-xl/view-license/1.0.1/ 
+
+> 13https://archive.ics.uci.edu/ml/datasets/human+activity+recognition+using+smartphones 
+
+14 
+
+### **A.2 More for Experimental Settings** 
+
+For model implementation, the SPaRCNet code is requested from the authors (Jing et al., 2023), the ContraWR code is downloaded and modified upon the github<sup>14</sup> , CNN-Transformer is easily implemented following the Fig. 3 of the original paper (Peh et al., 2022), FFCL (Li et al., 2022) combines a CNN model and a LSTM model for learning separete representations and then merges them before the final prediction layer, the implementation of ST-Transformer refer to this repo<sup>15</sup> . The linear-complexity attention module is referred to this repo<sup>16</sup> in our `BIOT` implementation. 
+
+For all EEG tasks, we resample the datasets into 200Hz. The ECG tasks use 500Hz, and the HAR tasks use 50Hz by default. For each specific tasks, we have to adjust the baseline model architectures (e.g, number of layers, input channel sizes, etc) accordingly since the input data have various formats. While for our `BIOT` , we only adjust the fft size based on their sampling rate (200 points for EEG, 1000 points for ECG, 100 points for HAR) and use 100 points, 200 points, and 10 points as the hop length (i.e., overlaps) in three signal types. These configurations are chosen by testing several other combinations based on the validation performance. For our `BIOT` model, we use 8 as the number of head, 4 as the number of transformer layers, and _T_ = 2 as the temperature in unsupervised pre-training by default. We use the Adam optimizer with learning rate 1 _×_ 10<sup>_−_3</sup> and 1 _×_ 10<sup>_−_5</sup> as the coefficient for L2 regularization by default. We use the pytorch lightning framework (with 100 as the max epoch) to handle the training, validation, and test pipeline by setting AUROC as the monitoring metirc for binary classification and Coken’s Kappa as the monitoring metric for multi-class classification. More details can refer to our Supplementary codes. Below, we provide the definition of each metric used in the paper, and we use _pyhealth.metrics_<sup>17</sup> Yang et al. (2022b) module for the implementation. 
+
+**Balanced Accuracy** is defined as the average of recall obtained on each class. It is used for both binary classification and multi-class classification. 
+
+**AUC-PR** is the area under the precision recall (PR) curve for binary classification task. 
+
+**AUROC** is the area under the ROC curve, summarizing the ROC curve into an single number that describes the performance of a model for multiple thresholds at the same time. It is used for binary 
+
+**Coken’s Kappa** is a statistic that measures inter-annotator agreement, which is usually used for The calculation can refer to sklearn metrics<sup>18</sup> . 
+
+**Weighted F1** is used for multi-class classification in this paper, which is a weighted average of individual F1-scores from each class, with each score weighted by the number of samples in the corresponding class. 
+
+## **B Additional Results** 
+
+This section provides additional experimental results to support claims in the main paper. 
+
+### **B.1 Additional Experiments on TUEV and TUAB** 
+
+We have provided the supervised learning results on EEG dataset IIIC Seizure and CHB-MIT in the main text. For completeness, we provide similar comparison results on TUAB and TUEV below in Table 4 5, which show a similar trend that our `BIOT` shows better performance against baseline models, and the pre-trained `BIOT` models can bring significant improvements on two downstream tasks, especially on TUEV. For TUEV, we also append the results of all different pre-trained models (e.g., train from scratch, supervised training, unsupervised training, etc) in the end in Table 5. 
+
+> 14https://github.com/ycq091044/ContraWR 
+
+> 15https://github.com/eeyhsong/EEG-Transformer 
+
+> 16https://github.com/lucidrains/linear-attention-transformer 
+
+> 17https://pyhealth.readthedocs.io/en/latest/api/metrics.html 
+
+> 18https://scikit-learn.org/stable/modules/generated/sklearn.metrics.cohen_kappa_score.html 
+
+15 
+
+Table 4: Additional Supervised Learning Results on TUAB 
+
+|**Models**|**TU**|**AB (abnormal detect**|**ion)**|
+|---|---|---|---|
+||Balanced Acc.|AUC-PR|AUROC|
+|SPaRCNet|0.7896_±_0.0018|0.8414_±_0.0018|0.8676_±_0.0012|
+|ContraWR|0.7746_±_0.0041|0.8421_±_0.0104|0.8456_±_0.0074|
+|CNN-Transformer|0.7777_±_0.0022|0.8433_±_0.0039|0.8461_±_0.0013|
+|FFCL|0.7848_±_0.0038|0.8448_±_0.0065|0.8569_±_0.0051|
+|ST-Transformer|0.7966_±_0.0023|0.8521_±_0.0026|**0.8707**_±_**0.0019**|
+|(Vanilla) BIOT|**0.7925**_±_**0.0035**|**0.8707**_±_**0.0087**|0.8691_±_0.0033|
+|Pre-trained BIOT (PREST)|0.7907_±_0.0050|0.8752_±_0.0051|0.8730_±_0.0021|
+|Pre-trained BIOT (PREST+SHHS)|0.8019_±_0.0021|0.8749_±_0.0054|0.8739_±_0.0019|
+|Pre-trained BIOT (6 EEG datasets)|0.7959_±_0.0057|0.8792_±_0.0023|0.8815_±_0.0043|
+
+
+
+* **Bold** for the best model (trained from scratch) and box for the best pre-trained models. 
+
+Table 5: Additional Supervised Learning Results on TUEV (All-in-one-table comparison) 
+
+|**Models**|**TUEV**|**(event type classif**|**cation)**|
+|---|---|---|---|
+||Balanced Acc.|Coken’s Kappa|Weighted F1|
+|**(Training from scratch in Section 3.2**||||
+|SPaRCNet|0.4161_±_0.0262|0.4233_±_0.0181|0.7024_±_0.0104|
+|ContraWR|0.4384_±_0.0349|0.3912_±_0.0237|0.6893_±_0.0136|
+|CNN-Transformer|0.4087_±_0.0161|0.3815_±_0.0134|0.6854_±_0.0293|
+|FFCL|0.3979_±_0.0104|0.3732_±_0.0188|0.6783_±_0.0120|
+|ST-Transformer|0.3984_±_0.0228|0.3765_±_0.0306|0.6823_±_0.0190|
+|(Vanilla) BIOT|0.4682_±_0.0125|0.4482_±_0.0285|0.7085_±_0.0184|
+|**(Unsupervised pre-trained models in Section 3.4):**||||
+|Pre-trained BIOT (PREST)|0.5207_±_0.0285|0.4932_±_0.0301|0.7381_±_0.0169|
+|Pre-trained BIOT (PREST+SHHS)|0.5149_±_0.0292|0.4841_±_0.0309|0.7322_±_0.0196|
+|**(Supervised pre-trained models in Section 3.5):**||||
+|Pre-trained BIOT (pre-trained on CHB-MIT with 8 channels and 10s)|0.4123_±_0.0087|0.4285_±_0.0065|0.6989_±_0.0015|
+|Pre-trained BIOT (pre-trained on CHB-MIT with 16 channels and 5s)|0.4218_±_0.0117|0.4427_±_0.0093|0.7147_±_0.0058|
+|Pre-trained BIOT (pre-trained on CHB-MIT with 16 channels and 10s)|0.4344_±_0.0065|0.4719_±_0.0231|0.7280_±_0.0126|
+|Pre-trained BIOT (pre-trained on IIIC seizure with 8 channels and 10s)|0.4956_±_0.0552|0.4719_±_0.0475|0.7214_±_0.0220|
+|Pre-trained BIOT (pre-trained on IIIC seizure with 16 channels and 5s)|0.4894_±_0.0189|0.4881_±_0.0045|0.7348_±_0.0056|
+|Pre-trained BIOT (pre-trained on IIIC seizure with 16 channels and 10s)|0.4935_±_0.0288|0.5316_±_0.0176|0.7555_±_0.0111|
+|Pre-trained BIOT (pre-trained on TUAB with 8 channels and 10s)|0.4980_±_0.0384|0.4487_±_0.0535|0.7044_±_0.0365|
+|Pre-trained BIOT (pre-trained on TUAB with 16 channels and 5s)|0.4954_±_0.0305|0.5053_±_0.0079|0.7447_±_0.0049|
+|Pre-trained BIOT (pre-trained on TUAB with 16 channels and 10s)|0.5256_±_0.0348|0.5187_±_0.0160|0.7504_±_0.0102|
+|**(Supervised + unsupervised pre-trained model in Section 3.6):**||||
+|Pre-trained BIOT (ultimate)|0.5281_±_0.0225|0.5273_±_0.0249|0.7492_±_0.0082|
+
+
+
+### **B.2 Additional Experiments on CHB-MIT** 
+
+This section performs a similar experiment on CHB-MIT, similar to Section 3.2. We pre-train on the training set of IIIC Seizure (which has 16 channels and 10s duration), TUAB (which has 16 channels and 10s duration), TUEV (which has 16 channels and 5s duration) and fine-tunes on CHB-MIT (which has 16 channels and 10s duration). All datasets use 200Hz sampling rate. We design five sets of configurations for the pre-trained datasets: **Format (i)** uses the first 8 channels and 10s duration; **Format (ii)** uses the full 16 channels but only the first 5s recording; **Format (iii)** uses full 16 channels and full 10s recording; **Format (iv)** uses 8 channels and 5s recording, and **Format (v)** uses full 16 channels and 2.5s recording. The last two are only for the TUEV dataset. During fine-tuning, we then remove the prediction layers from these pre-trained model and add a new prediction layer to fit the CHB-MIT dataset. 
+
+The results are reported in Figure 5, which shows that the supervised pre-training on both IIIC seizure and TUEV can help improve the downstream performance on CHB-MIT task compared to training from scratch. The reason is that IIIC Seizure is on multiple seizure type classification while CHB-MIT is on binary seizure or not classification, and the context of both tasks are fairly related. Although TUEV is not entirely on seizure related classification, some classes in TUEV are seizure subtypes (such as GPED, PLED), and thus its supervisd pre-trained models can also bring benefits for the CHB-MIT task. 
+
+16 
+
+
+
+Figure 5: Fine-tuned on CHB-MIT from different supervised pre-trained models. IIIC Seizure and TUAV datasets follow Format (i)(ii)(iii), while TUEV follows the Format (iv)(v)(ii). 
+
+### **B.3 Ablation Studies on Hyperparameters** 
+
+This section provides ablation studies on three hyperparameters in data processing: target sampling rate, token duration, and the overlap size between two neighboring tokens. We use two EEG datasets as example: IIIC Seizure and TUAB. The default configuration in the main paper is **(1) sampling** : 200Hz, **(2) token length** : 1s, **(3) overlaps** : 0.5s as reference. 
+
+### **B.3.1 Ablation Study on Target Sampling Rate** _r_ 
+
+In this experiments, we fix (2)(3) and conduct ablation study on the target sampling rate. The original IIIC Seizure data is at 200Hz and the TUAB data is at 256Hz. For IIIC Seizure, we vary the sampling rate to 26Hz, 50Hz, 100Hz, 150Hz, and 200Hz. For TUAB, we vary the sampling rate to 50Hz, 100Hz, 150Hz, 200Hz, 250Hz, and 300Hz. The evaluations are conducted under three different random seeds and the mean and standard deviation values are reported. 
+
+For IIIC Seizure, we can observe that a higher sampling rate could give slightly better performance, especially on balanced acc. and coken’s kappa. The reason is that higher sampling rate can preserve more detailed (high-frequency) biosignal information. The results on TUAB shows that the performances are similar on all sampling rates. We conjecture that different tasks might have diverse sensitivity to the the frequency bands. For example, the task on IIIC seizure is to classify different seizure types, which may need to capture minor clues from high-frequency waves (such as Gamma waves (30-100Hz)), while the TUAB dataset is for abnormal detection, and using brain waves under 50Hz might be enough for the task. In sum, the target sampling rate should be selected based on the predicting targets. 
+
+### **B.3.2 Ablation Study on Token Lengths** _t_ 
+
+In this experiments, we fix (1)(3) and conduct ablation study on the token length. Both datasets have 10s as the entire sample length and 0.5s as the overlap lengths. For both of them, we vary the token lengths to 0.75s, 1s, 1.5s, 2s, 2.5s, 5s. The evaluations are conducted under three different random seeds and the mean and standard deviation values are reported. 
+
+For each configuration, we also vary the fft size to match the token length, which means that 5s token length can extract more frequency information. However, we find that by increasing the token lengths, the model performance starts to decrease. Performances on IIIC Seizure starts to decrease after 1s while the performance on TUAB decreases after 2s. The reason could be that given the increaseing token lengths _t_ , the total biosignal "sentence" length, which is<sup>_<u>J</u>_</sup> _t−_<sup>_−_</sup> _p_<sup>_<u>t</u>_+ 1 =</sup> _t_<sup><u>10</u></sup> _−_<sup>_−_</sup> 0 _._<sup>_<u>t</u>_</sup> 5<sup>+ 1, will decrease</sup> (here, _J_ is the channel biosignal duration, _t_ is the token length, _p_ is the overlapping length). For example, with _x_ = 5 as the token lengths, the final "sentence" length becomes 11 while it is 19 in the 
+
+17 
+
+
+
+Figure 6: Ablation Study on Target Sampling Rate _r_ 
+
+default configuration with _x_ = 1 _s_ . The performance drops is due to transformer models will be less 
+
+
+
+Figure 7: Ablation Study on Token Lengths _t_ 
+
+### **B.3.3 Ablation Study on Overlapping Lengths** _p_ 
+
+In this experiments, we fix (1)(2) and conduct ablation study on the overlap lengths. Both datasets have 10s as the entire sample length and 1s as the token lengths. For both of them, we vary the overlap lengths to 0.875s, 0.75s, 0.5s, 0.25s, 0s. The evaluations are conducted under three different random seeds and the mean and standard deviation values are reported. 
+
+Based on the "sentence" length formula<sup>_<u>J</u>_</sup> _t−_<sup>_−_</sup> _p_<sup>_<u>t</u>_+ 1, smaller overlap lengths will decrease the "sentence"</sup> length. On both datasets, we find that larger overlaps can brings slightly better results due to that the biosignal "sentence" becomes longer. Another reason is that with larger overlaps, neighboring tokens can capture more transitioning information and help the transformer model to better capture the temporal information. 
+
+18 
+
+
+
+Figure 8: Ablation Study on Overlapping Lengths _p_ Between Tokens 
+
+19 
+

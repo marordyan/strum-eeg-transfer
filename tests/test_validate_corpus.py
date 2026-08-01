@@ -344,6 +344,55 @@ def test_real_pdf_header_raises_no_header_violation(tmp_path: Path) -> None:
     assert not any("is not a PDF" in v for v in violations)
 
 
+def test_local_pdf_cache_must_be_a_real_pdf(tmp_path: Path) -> None:
+    entry = write_entry(tmp_path, "strand-a", "paper-one")
+    (entry / "source.local.pdf").write_bytes(b"<html>blocked</html>\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("source.local.pdf is not a PDF" in v for v in violations)
+
+
+def test_local_pdf_cache_alone_is_fine(tmp_path: Path) -> None:
+    """The normal case: a non-redistributable entry keeps only the local copy."""
+    entry = write_entry(tmp_path, "strand-a", "paper-one")
+    (entry / "source.local.pdf").write_bytes(b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert violations == []
+
+
+def test_committed_and_local_pdf_together_is_a_violation(tmp_path: Path) -> None:
+    """Both copies present means the entry's archival status is ambiguous."""
+    entry = write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={"pdf_license": "CC-BY-4.0"},
+        with_pdf=True,
+        pdf_bytes=b"%PDF-1.7\nbody\n",
+    )
+    (entry / "source.local.pdf").write_bytes(b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("both source.pdf and source.local.pdf exist" in v for v in violations)
+
+
 def test_same_identifier_in_two_strands_warns(tmp_path: Path) -> None:
     """Dual-carding is legitimate, but it has to be visible.
 

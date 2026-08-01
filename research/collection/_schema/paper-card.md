@@ -228,6 +228,27 @@ When the value is `rough` or worse, `meta.json.notes` must name which parts came
 downstream reader deciding whether to re-extract needs to know whether the tables survived, and the
 enum alone cannot say.
 
+### `source.local.pdf`, the local cache for what may not be committed
+
+A licence that forbids redistribution stops us publishing a PDF. It does not stop us reading one.
+Where the two were conflated, the corpus lost more than it needed to: a benchmark's leaderboard,
+few-shot curves and channel-masking curves were image-only, so with no PDF on disk the numbers were
+simply unavailable to later phases.
+
+So an entry whose licence forbids redistribution may keep `source.local.pdf`, which is gitignored and
+never committed. Rules the validator enforces:
+
+- It must be a real PDF, with a `%PDF` header, for the same reason `source.pdf` must be.
+- It must not coexist with `source.pdf`. An archived entry keeps the committed copy; a
+  non-redistributable one keeps only the local copy. Both present makes the entry's status ambiguous.
+- It changes nothing about `pdf_status`, `pdf_license`, or `redistribution_ok`. Those describe what
+  may be published, and caching a readable copy does not alter that.
+
+The tradeoff to keep in mind while writing cards: a locally cached PDF is not reproducible for anyone
+who clones the corpus. A claim resting on one must also be supported by `source.md`, which is
+committed. Use the cache to read tables and figures accurately; do not use it as the only evidence
+for a claim.
+
 ### `imported_from` means carried over, not found
 
 Set it only for an entry brought in from an existing document: a prior review, a grant application,

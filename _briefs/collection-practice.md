@@ -106,6 +106,36 @@ Two related traps found later in the same run:
   than ASCII hyphen, so a search for `-0.5` misses `−0.5`. Four verification checks came back as
   misses on that alone.
 
+## Converting PDFs: use pymupdf4llm, not markitdown
+
+Measured on this corpus, not assumed. On one benchmark paper, `pymupdf4llm` preserved 72 markdown
+table rows where markitdown preserved none, and cut de-spacing artifacts from 1413 runs to 7.
+Markitdown also joins words across a two-column layout, producing text like `ZilingLu1†` that cannot
+be quoted or reliably searched. Across 50 re-extracted entries, 39 improved from `md_quality: rough`
+to `clean`, and seven gained real content markitdown had silently dropped, one by 61 percent.
+
+```bash
+uvx --from pymupdf4llm python -c "
+import pymupdf4llm, pathlib, sys
+pathlib.Path(sys.argv[2]).write_text(pymupdf4llm.to_markdown(sys.argv[1]), encoding='utf-8')
+" <pdf> <entry>/source.md
+```
+
+One trap it introduces: decimal points inside emphasized table cells are escaped as `13_._8`. A
+verification pass that does not strip `_` and `*` before matching will report large numbers of
+spurious misses. In one run this produced 49 false alarms out of 84 apparent misses.
+
+## Reading a paper you may not republish
+
+A licence that forbids redistribution stops the PDF being committed. It does not stop it being read.
+Cache it as `source.local.pdf`, which is gitignored, and regenerate `source.md` from it. The
+validator requires a real `%PDF` header and forbids it coexisting with a committed `source.pdf`.
+
+This matters most where results live in figures: without a cached copy, a leaderboard that exists
+only as an image is simply unavailable to synthesis. Note the limit, though. A locally cached PDF is
+not reproducible for anyone who clones the corpus, so any claim resting on it must also be supported
+by the committed `source.md`.
+
 ## Second-hand text is a provenance category, and must be labelled
 
 One entry's only available method description came from search-engine snippets of a publisher

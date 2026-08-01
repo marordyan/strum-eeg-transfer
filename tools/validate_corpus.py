@@ -339,6 +339,23 @@ def _validate_meta_and_pdf(entry_dir: Path, frontmatter: dict[str, object] | Non
                 "interstitial page was probably saved under HTTP 200"
             )
 
+    # source.local.pdf is a gitignored working copy for entries whose licence
+    # forbids redistribution: readable during synthesis, never committed. It
+    # must still be a real PDF, and it must never coexist with an archived
+    # entry, where the committed source.pdf is the copy of record.
+    local_pdf_path = entry_dir / "source.local.pdf"
+    if local_pdf_path.is_file():
+        local_head, read_error = _read_bytes_safe(local_pdf_path)
+        if read_error is not None:
+            violations.append(f"source.local.pdf {read_error}")
+        elif not local_head.startswith(b"%PDF"):
+            violations.append("source.local.pdf is not a PDF (no %PDF header)")
+        if pdf_exists:
+            violations.append(
+                "both source.pdf and source.local.pdf exist; an archived entry keeps only "
+                "source.pdf, and a non-redistributable one keeps only source.local.pdf"
+            )
+
     meta: object = _UNSET
     meta_path = entry_dir / "meta.json"
     if meta_path.is_file():
