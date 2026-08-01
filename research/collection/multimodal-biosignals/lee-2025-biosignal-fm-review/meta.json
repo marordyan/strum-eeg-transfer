@@ -1,0 +1,9 @@
+{
+  "doi": "10.36227/techrxiv.176369849.97173246/v1",
+  "source_url": "https://doi.org/10.36227/techrxiv.176369849.97173246/v1",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "unknown (OpenAlex records cc-by; the TechRxiv posting's own licence statement could not be read)",
+  "redistribution_ok": false,
+  "notes": "RETRIEVAL FAILED. TechRxiv sits behind a Cloudflare challenge: the landing page, the /doi/full view and both /doi/pdf variants (with and without ?download=true, with a browser User-Agent and Referer) all returned the 'Just a moment...' interstitial rather than the document, and WebFetch on the full-text URL returned HTTP 403. LICENCE: the project addendum requires a preprint licence to be read on the posting rather than inferred, and it could not be read, so the value is 'unknown' and no PDF is committed even though OpenAlex reports cc-by for this record. Re-attempting later is worthwhile: if the cc-by is confirmed on the posting this becomes an archivable entry. source.md is a metadata and abstract snapshot from OpenAlex. The brief also flags that TechRxiv does not peer review, so this is a map of the field rather than evidence."
+}

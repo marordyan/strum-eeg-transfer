@@ -1,0 +1,9 @@
+{
+  "doi": "10.13026/C2X676",
+  "source_url": "https://physionet.org/content/sleep-edfx/1.0.0/",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "not-applicable (dataset with a registry landing page, no data-descriptor paper)",
+  "redistribution_ok": false,
+  "notes": "PAPER LICENCE: not applicable. There is no data-descriptor paper for this database. PhysioNet directs citation to Kemp, Zwinderman, Tuk, Kamphuisen & Oberye (2000), IEEE Trans. Biomed. Eng. 47(9):1185-1194, which is about slow-wave microcontinuity rather than about the database, and which is IEEE paywalled. source.md is therefore a snapshot of the canonical PhysioNet landing page, which is the primary documentation of the recording; pdf_status is not-applicable and md_quality is clean (the page is single-column prose and the extraction preserves it as written, including the per-study sampling-rate paragraphs and the Access block). DATA LICENCE, read verbatim from the Access block on the landing page: 'Access Policy: Anyone can access the files, as long as they conform to the terms of the specified license. License (for files): Open Data Commons Attribution License v1.0'. ODC-BY is a redistributable attribution licence for the data files themselves; that applies to the data, not to this snapshot of the page. redistribution_ok is set false here because it governs whether a source.pdf may be committed in this entry folder, and there is no PDF to commit -- it is not a statement about the data licence, which is recorded above. NOTE ON THE STRAND BRIEF's registry sweep: PhysioNet is not well covered by citation search, and this entry was found by browsing the registry directly, with the landing page recorded as source_url as the brief instructs. The dataset DOI 10.13026/C2X676 is PhysioNet's own version DOI, not a Crossref journal DOI, so `opencite lookup` does not resolve it; Crossref has no record."
+}

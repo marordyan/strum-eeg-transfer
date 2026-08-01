@@ -307,6 +307,196 @@ def test_archived_pdf_sha256_mismatch(tmp_path: Path) -> None:
     assert any("pdf_sha256 mismatch" in v for v in violations)
 
 
+def test_source_pdf_must_have_a_pdf_header(tmp_path: Path) -> None:
+    """An HTML challenge page saved as source.pdf must be caught.
+
+    Several publishers answer automated fetches with an interstitial page
+    under HTTP 200, so a naive download writes HTML into a file named
+    source.pdf. Its sha256 then matches its own garbage and every other
+    check passes.
+    """
+    write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        with_pdf=True,
+        pdf_bytes=b"<!DOCTYPE html>\n<html><body>Checking your browser</body></html>\n",
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("source.pdf is not a PDF" in v for v in violations)
+
+
+def test_real_pdf_header_raises_no_header_violation(tmp_path: Path) -> None:
+    write_entry(tmp_path, "strand-a", "paper-one", with_pdf=True, pdf_bytes=b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert not any("is not a PDF" in v for v in violations)
+
+
+def _write_benchmark_card(root: Path, slug: str, checkpoints: str) -> None:
+    """A datasets-benchmarks entry carrying a 'Checkpoints covered' line."""
+    write_entry(root, "datasets-benchmarks", slug)
+    card = root / "research" / "collection" / "datasets-benchmarks" / slug / "card.md"
+    card.write_text(
+        card.read_text(encoding="utf-8")
+        + f"\n## Notable details\n\n- **Checkpoints covered:** {checkpoints}\n",
+        encoding="utf-8",
+    )
+
+
+def test_checkpoint_with_no_model_card_warns(tmp_path: Path) -> None:
+    """A suite evaluating a checkpoint the models strand never carded.
+
+    This is the real failure it exists to catch: the eeg-models strand met a
+    self-contained "at least N model families" quota while omitting the model
+    that takes the best average rank under a suite's primary protocol.
+    """
+    _write_benchmark_card(tmp_path, "some-bench", "BENDR, BrainOmni, LaBraM")
+    write_entry(tmp_path, "eeg-models", "bendr-2021")
+    write_entry(tmp_path, "eeg-models", "labram-2024")
+
+    warnings = vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection")
+
+    assert any("BrainOmni" in w and "some-bench" in w for w in warnings)
+    assert not any("BENDR" in w for w in warnings)
+    assert not any("LaBraM" in w for w in warnings)
+
+
+def test_checkpoint_coverage_ignores_year_suffix_and_case(tmp_path: Path) -> None:
+    """Slugs carry a year and lowercase the name; matching must see through both."""
+    _write_benchmark_card(tmp_path, "some-bench", "CBraMod, REVE")
+    write_entry(tmp_path, "eeg-models", "cbramod-2025")
+    write_entry(tmp_path, "eeg-models", "reve-2025")
+
+    assert vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection") == []
+
+
+def test_checkpoint_coverage_tolerates_trailing_detail(tmp_path: Path) -> None:
+    """One suite lists parameter counts inline; only the leading token is a name."""
+    _write_benchmark_card(tmp_path, "some-bench", "BIOT, 3.2M params, LaBraM, 5.8M params")
+    write_entry(tmp_path, "eeg-models", "biot-2023")
+    write_entry(tmp_path, "eeg-models", "labram-2024")
+
+    warnings = vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection")
+
+    assert warnings == []
+
+
+def test_local_pdf_cache_must_be_a_real_pdf(tmp_path: Path) -> None:
+    entry = write_entry(tmp_path, "strand-a", "paper-one")
+    (entry / "source.local.pdf").write_bytes(b"<html>blocked</html>\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("source.local.pdf is not a PDF" in v for v in violations)
+
+
+def test_local_pdf_cache_alone_is_fine(tmp_path: Path) -> None:
+    """The normal case: a non-redistributable entry keeps only the local copy."""
+    entry = write_entry(tmp_path, "strand-a", "paper-one")
+    (entry / "source.local.pdf").write_bytes(b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert violations == []
+
+
+def test_committed_and_local_pdf_together_is_a_violation(tmp_path: Path) -> None:
+    """Both copies present means the entry's archival status is ambiguous."""
+    entry = write_entry(
+        tmp_path,
+        "strand-a",
+        "paper-one",
+        card_overrides={"pdf_status": "archived", "pdf_path": "source.pdf"},
+        meta_overrides={"pdf_license": "CC-BY-4.0"},
+        with_pdf=True,
+        pdf_bytes=b"%PDF-1.7\nbody\n",
+    )
+    (entry / "source.local.pdf").write_bytes(b"%PDF-1.7\nbody\n")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    violations, _, _ = vc.validate_strand(
+        tmp_path / "research" / "collection" / "strand-a", tmp_path
+    )
+
+    assert any("both source.pdf and source.local.pdf exist" in v for v in violations)
+
+
+def test_same_identifier_in_two_strands_warns(tmp_path: Path) -> None:
+    """Dual-carding is legitimate, but it has to be visible.
+
+    The per-strand duplicate-key check cannot see across strands, so without
+    this the same paper carded twice becomes two bibliography entries for one
+    identifier at synthesis time, with nothing having flagged it.
+    """
+    for strand in ("strand-a", "strand-b"):
+        write_entry(tmp_path, strand, "paper-one", meta_overrides={"doi": "10.1234/shared"})
+        write_strand_index(tmp_path, strand, ["paper-one"])
+        write_strand_bib(tmp_path, strand, ["paper-one"])
+
+    violations, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert violations == []
+    assert any(
+        "10.1234/shared" in w and "strand-a/paper-one" in w and "strand-b/paper-one" in w
+        for w in warnings
+    )
+
+
+def test_arxiv_doi_and_abs_url_collapse_to_one_identifier(tmp_path: Path) -> None:
+    """A DOI-registered arXiv paper and a bare abs link to the same preprint
+    are one work, so the duplicate check must pair them."""
+    write_entry(
+        tmp_path, "strand-a", "paper-one", meta_overrides={"doi": "10.48550/arXiv.2510.21585"}
+    )
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+
+    write_entry(
+        tmp_path,
+        "strand-b",
+        "paper-two",
+        meta_overrides={"doi": None, "source_url": "https://arxiv.org/abs/2510.21585"},
+    )
+    write_strand_index(tmp_path, "strand-b", ["paper-two"])
+    write_strand_bib(tmp_path, "strand-b", ["paper-two"])
+
+    _, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert any("arxiv:2510.21585" in w for w in warnings)
+
+
+def test_distinct_identifiers_do_not_warn(tmp_path: Path) -> None:
+    for strand, doi in (("strand-a", "10.1234/one"), ("strand-b", "10.1234/two")):
+        write_entry(tmp_path, strand, "paper-one", meta_overrides={"doi": doi})
+        write_strand_index(tmp_path, strand, ["paper-one"])
+        write_strand_bib(tmp_path, strand, ["paper-one"])
+
+    _, warnings, _, _ = vc.run_validation(tmp_path)
+
+    assert not any("carded in" in w for w in warnings)
+
+
 def test_relevance_high_share_warning(tmp_path: Path) -> None:
     slugs = [f"paper-{i}" for i in range(6)]
     for i, slug in enumerate(slugs):

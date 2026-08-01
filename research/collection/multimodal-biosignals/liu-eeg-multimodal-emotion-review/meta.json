@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/TIM.2024.3369130",
+  "source_url": "https://doi.org/10.1109/TIM.2024.3369130",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (IEEE Transactions on Instrumentation and Measurement)",
+  "redistribution_ok": false,
+  "notes": "IDENTIFIER RESOLUTION -- the strand brief lists this seed with no resolved identifier. It resolved on the first exact-title query: `uvx opencite search \"EEG-Based Multimodal Emotion Recognition: A Machine Learning Perspective\" --max 8` returned it as hit [1] from openalex: DOI 10.1109/tim.2024.3369130, OpenAlex W4392125748, IEEE TIM volume 73, pages 1-29, 93 citations, Liu et al. 2024, consistent with the brief's author list. NO FULL TEXT: IEEE Xplore is paywalled and no repository copy was located, so source.md is a metadata and abstract snapshot from OpenAlex. Consequence: the brief asks that this review be mined for further entries, its reference list is not accessible, and so no entry in this strand was sourced from it."
+}

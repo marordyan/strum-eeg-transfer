@@ -111,10 +111,13 @@ Supplied by the user. These are required entries, not suggestions.
   paper that cites it as though it did would be making an argument the source does not make. State
   that limit explicitly in the card's "Open questions / limitations" section.
 
-  Retrieval note: a PubMed Central copy exists, but availability there does not by itself establish
-  a redistribution license. Check the actual license on the PubMed Central record. If it is a
-  standard author manuscript deposit, `author-accepted-manuscript` applies and the PDF may be
-  archived. If the license is unclear, use `unknown`, which means markdown only.
+  Retrieval note, corrected during collection. An earlier version of this brief said that a standard
+  author manuscript deposit takes `author-accepted-manuscript` and may be archived. The collecting
+  agent checked and found the PubMed Central record is an NIHMS deposit carrying no license statement
+  at all, with Europe PMC reporting `isOpenAccess: N` and `license: null`. That is structurally the
+  same as the arXiv default: a grant running to the host, not to third parties. It was recorded
+  `unknown`, markdown only, which is correct. Read the license off the record; deposit in a
+  repository is not itself a license.
 
 - Alexander DM, Ball T, Schulze-Bonhage A, van Leeuwen C. Large-scale cortical travelling waves
   predict localized future cortical signals. PLOS Computational Biology, 2019. Digital object
@@ -186,6 +189,13 @@ Exclusion: single-dataset supervised models with no pretraining and no role as a
 baseline; brain-computer interface (BCI) application papers that use a pretrained model as a
 black box without reporting a baseline comparison.
 
+## Collection practice
+
+Read `_briefs/collection-practice.md` before starting. It carries the working tool invocations, the
+BibTeX verification requirement, the search trap that silently reports zero matches on converted
+sources, and the rules for missing facts, self-contradicting sources, and strand-level fields. Every
+item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
+
 ## Skills to use
 
 - `opencite:opencite` for DOI lookup, PDF retrieval, PDF to markdown conversion, BibTeX export.
@@ -195,7 +205,14 @@ black box without reporting a baseline comparison.
 
 - [ ] At least 18 entries across all 5 categories
 - [ ] At least 3 entries per category, and at least 3 in category 5 specifically
-- [ ] At least 6 distinct model families represented
+- [ ] Every checkpoint named on a `Checkpoints covered` line in a `datasets-benchmarks`
+      benchmark-suite card has an entry in this strand. `uv run python tools/validate_corpus.py`
+      warns for any that does not; the warning is the criterion, not a suggestion
+- [ ] At least 6 distinct model families represented. This is a floor, not the test. It is a
+      self-contained count, and a strand can satisfy it while omitting the model that wins a
+      suite's primary protocol, which is exactly what happened on the first pass: BrainOmni,
+      EEGConformer, FEMBA and LUNA were all named repeatedly in benchmark cards and carded by
+      nobody. The coverage criterion above is what actually prevents that
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `eeg-models.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners

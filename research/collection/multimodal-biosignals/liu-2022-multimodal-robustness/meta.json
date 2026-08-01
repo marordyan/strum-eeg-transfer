@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/TCDS.2021.3071170",
+  "source_url": "https://doi.org/10.1109/TCDS.2021.3071170",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (IEEE Transactions on Cognitive and Developmental Systems)",
+  "redistribution_ok": false,
+  "notes": "No open-access or repository copy located; IEEE Xplore is paywalled, so source.md is a metadata and abstract snapshot from OpenAlex. The abstract gives fused accuracies on all five datasets but no unimodal arm, so EEG-only figures are recorded on the card as reported-but-not-accessible. The modality-ablation experiment this entry is carded for -- replacing the EEG features with noise -- is named in the abstract but its numbers are not, which is the single most valuable missing fact in this entry and is worth re-attempting with institutional access. Percent signs in the OpenAlex abstract are HTML-escaped (&#x0025;) and are reproduced as escaped in source.md."
+}

@@ -1,0 +1,9 @@
+{
+  "doi": "10.13026/C2X676",
+  "source_url": "https://physionet.org/content/sleep-edfx/1.0.0/",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "not-applicable",
+  "redistribution_ok": false,
+  "notes": "Carded from the dataset landing page rather than from a paper, so pdf_status is not-applicable and source.md is a plain-text snapshot of https://physionet.org/content/sleep-edfx/1.0.0/ retrieved 2026-07-31. DATA LICENCE: Open Data Commons Attribution License v1.0, read verbatim from the Access section of the landing page, with access policy 'Anyone can access the files, as long as they conform to the terms of the specified license.' The dataset DOI 10.13026/C2X676 is recorded as the entry DOI. PAPER: the landing page asks users to cite Kemp, Zwinderman, Tuk, Kamphuisen and Oberye (2000), IEEE Transactions on Biomedical Engineering 47(9):1185-1194, doi 10.1109/10.867928. That article is paywalled -- Unpaywall reports is_oa false as of 2026-07-31 -- and it is a study of slow-wave microcontinuity rather than a data descriptor, so it was not retrieved and the landing page is treated as the primary source. redistribution_ok is false because no PDF is being committed, not because the data are restricted; the data themselves are openly licensed. md_quality is clean: the HTML rendered to readable text with only navigation chrome retained, and the citation-format modal blocks appear inline. The page's own version metadata is internally inconsistent (published date October 2013, version 1.0.0, describing a March 2018 expansion), which the card records."
+}

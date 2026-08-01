@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/TCYB.2018.2797176",
+  "source_url": "https://doi.org/10.1109/TCYB.2018.2797176",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (IEEE Transactions on Cybernetics)",
+  "redistribution_ok": false,
+  "notes": "No open-access or repository copy located; IEEE Xplore is paywalled, so source.md is a metadata and abstract snapshot from OpenAlex. The abstract states the fused accuracy (85.11%) and that fusion 'significantly enhance[s] the performance compared with a single modality', but gives no single-modality number, so the EEG-only arm is recorded on the card as reported-but-not-accessible rather than as not reported. Partial corroboration of the fused figure: ding-2025-cross-attention-fusion, an open-access entry in this same strand, lists EmotionMeter at 85.11% on SEED-IV in its Table 4. Year: the DOI and OpenAlex record 2018 (early access); the issue of record is IEEE TCYB 49(3), 1110-1122, 2019."
+}

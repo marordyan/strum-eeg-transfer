@@ -1,0 +1,9 @@
+{
+  "doi": "10.3389/fpsyt.2025.1713559",
+  "source_url": "https://doi.org/10.3389/fpsyt.2025.1713559",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "3180b2c5465b1c0a99d18b3def33cc59ad9bf5502087edb26b27679000021aa3",
+  "pdf_license": "CC-BY (Creative Commons Attribution License, as stated in the article's own copyright block)",
+  "redistribution_ok": true,
+  "notes": "Licence read from the PDF's copyright block: 'This is an open-access article distributed under the terms of the Creative Commons Attribution License'. Europe PMC independently reports 'cc by' for PMC12739757. Extraction: markitdown on the Frontiers two-column template, the worst conversion in this strand -- the title block, the abstract and every results table are shredded into single-cell pipe fragments interleaved with body prose. Tables 3 and 4 are legible only because their numbers survived as inline text, and they were read against the PDF. Author order on the card follows the PDF byline (Ding, Ma, Li), which matches OpenAlex; the mangled markdown line places a reviewer's name ('WeiZhang') adjacent to the author list and must not be read as authorship. EXTRACTION UPDATE 2026-08-01 -- source.md was regenerated with pymupdf4llm, which preserves markdown tables and inter-word spacing that the earlier markitdown conversion destroyed, and md_quality was reassessed against the new extraction as clean (was rough)."
+}

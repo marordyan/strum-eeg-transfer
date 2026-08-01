@@ -1,0 +1,9 @@
+{
+  "doi": "10.3389/fnins.2014.00322",
+  "source_url": "https://doi.org/10.3389/fnins.2014.00322",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": "b13b75d8fec5cf960b60f5f8eccd430a3711afd0a8d066599e6b78cc4774c8f8",
+  "pdf_license": "CC-BY (Creative Commons Attribution License, as stated in the article's own copyright block)",
+  "redistribution_ok": true,
+  "notes": "Licence read from the PDF's copyright block: 'This is an open-access article distributed under the terms of the Creative Commons Attribution License (CC BY)'. PDF fetched from the Frontiers PDF endpoint. Extraction: markitdown on the older Frontiers two-column template; the conversion strips almost all inter-word spaces, so the text reads as run-together strings, and the figure panels that carry the per-sensor-group accuracies (Figure 3 A-D) are images and did not extract at all. The numbers on the card come from the Conclusion and Discussion prose, which restates them; per-condition figure values are therefore not on the card. EXTRACTION UPDATE 2026-08-01 -- source.md was regenerated with pymupdf4llm, which preserves markdown tables and inter-word spacing that the earlier markitdown conversion destroyed, and md_quality was reassessed against the new extraction as clean (was rough)."
+}

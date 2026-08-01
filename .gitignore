@@ -7,3 +7,8 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+.DS_Store
+
+# Locally cached PDFs for entries whose licence forbids redistribution.
+# Readable during synthesis, never committed.
+source.local.pdf

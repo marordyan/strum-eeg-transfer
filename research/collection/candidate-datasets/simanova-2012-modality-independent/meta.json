@@ -1,0 +1,9 @@
+{
+  "doi": "10.1093/cercor/bhs324",
+  "source_url": "https://doi.org/10.1093/cercor/bhs324",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (Cerebral Cortex, Oxford University Press; bronze open access on the publisher host, no licence stated)",
+  "redistribution_ok": false,
+  "notes": "PAPER LICENCE: Unpaywall reports oa_status 'bronze' with best_oa_location https://academic.oup.com/cercor/article-pdf/24/2/426/14099581/bhs324.pdf and licence null -- i.e. free to read on the publisher's site with no licence statement, which under the schema addendum is a licence that cannot be positively identified, so redistribution_ok is false and no PDF is committed. RETRIEVAL ATTEMPTED AND FAILED: Europe PMC has no PMCID for this record (isOpenAccess 'N'), so the fullTextXML route is unavailable; a direct GET of the OUP article-pdf URL with a browser user-agent returned an HTML interstitial of 5,676 bytes rather than the PDF. This is a gap in our access, not in the literature -- the paper certainly reports participant count, scan parameters, per-modality accuracies and the category set, none of which could be read. RE-ATTEMPT through a UC San Diego OUP subscription. DATA LICENCE: not applicable; the article describes no public data deposit. source.md is the publisher-supplied abstract as indexed by Europe PMC, with an explicit retrieval note at the top; md_quality is abstract-only. AUTHOR ORDER differs from the 2010 EEG paper by the same four authors and was taken from Crossref: Simanova, Hagoort, Oostenveld, van Gerven."
+}

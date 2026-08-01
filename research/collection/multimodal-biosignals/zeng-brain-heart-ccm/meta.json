@@ -1,0 +1,9 @@
+{
+  "doi": "10.1088/1361-6579/ae7c55",
+  "source_url": "https://doi.org/10.1088/1361-6579/ae7c55",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "unknown (OpenAlex records cc-by-nc-nd at the publisher; the IOP page could not be read)",
+  "redistribution_ok": false,
+  "notes": "IDENTIFIER RESOLUTION -- the strand brief lists this seed with no resolved identifier. It resolved on an exact-title query against the OpenAlex REST interface (filter=title.search:Emotion effects on spatiotemporal brain-heart interactions with convergent cross mapping), which returned exactly one work: DOI 10.1088/1361-6579/ae7c55, Physiological Measurement 47(6) 065005 (2026), PMID 42276114, with the brief's six authors in the brief's order. Note this places the seed in the same journal as the already-resolved schiecke-2019-brain-heart-ccm seed. RETRIEVAL FAILED: OpenAlex lists no OA PDF URL and IOP returns an anti-bot interstitial for the article and PDF paths, so the licence statement could not be read on the publisher page; deny-by-default gives 'unknown' with no PDF committed. source.md is a metadata and abstract snapshot from OpenAlex."
+}

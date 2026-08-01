@@ -1,0 +1,9 @@
+{
+  "doi": "10.1523/JNEUROSCI.0675-19.2019",
+  "source_url": "https://doi.org/10.1523/JNEUROSCI.0675-19.2019",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (The Journal of Neuroscience; bronze open access on the publisher host, Europe PMC records cc by-nc-sa but no licence statement was read)",
+  "redistribution_ok": false,
+  "notes": "PAPER LICENCE: ambiguous, and resolved conservatively. Unpaywall reports oa_status 'bronze' with best_oa_location https://www.jneurosci.org/content/jneuro/39/39/7722.full.pdf and licence null. Europe PMC's core record for PMID 31427396 reports licence 'cc by-nc-sa' but isOpenAccess 'N'. Two indexes disagree, and no licence statement was read on the article itself, so under the schema addendum the licence is treated as not positively identified: redistribution_ok is false and no PDF is committed. RETRIEVAL ATTEMPTED AND FAILED: the Europe PMC fullTextXML endpoint returns HTTP 404 for PMC6764208 (the PMCID exists but full text is not deposited for mining), a search on PMCID returns no result at all, and direct GETs of both https://www.jneurosci.org/content/jneuro/39/39/7722.full.pdf and https://pmc.ncbi.nlm.nih.gov/articles/PMC6764208/pdf/zns7722.pdf returned small HTML documents rather than PDFs. This is a gap in our access, not in the literature. RE-ATTEMPT via the PMC web interface with a browser, or through a UC San Diego subscription. DATA LICENCE: not applicable from the abstract; the article describes an fMRI study, and whether the narrative-listening/reading data were deposited is not stated in the abstract and was not verifiable. source.md is the publisher-supplied abstract including the Significance Statement, with an explicit retrieval note; md_quality is abstract-only."
+}

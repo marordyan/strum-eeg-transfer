@@ -1,0 +1,9 @@
+{
+  "doi": "10.1016/j.neuroimage.2018.09.074",
+  "source_url": "https://doi.org/10.1016/j.neuroimage.2018.09.074",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (NeuroImage, Elsevier; Unpaywall reports a hybrid CC-BY copy on the publisher host that could not be retrieved)",
+  "redistribution_ok": false,
+  "notes": "PAPER LICENCE: Unpaywall reports oa_status 'hybrid' with licence 'cc-by' and best_oa_location the publisher DOI itself, and Europe PMC also records licence 'cc by'. So the article is very probably CC BY. It is recorded here as publisher-paywall with redistribution_ok false anyway, because the licence statement was never read directly -- the addendum's rule is that a licence is read, not inferred from an index -- and because no PDF could be obtained to archive in any case. RETRIEVAL ATTEMPTED AND FAILED: Europe PMC has no PMCID for PMID 30268846, so no fullTextXML; a direct GET of https://www.sciencedirect.com/science/article/pii/S1053811918308073/pdfft returned a 1.2 MB HTML anti-bot page rather than a PDF. This is a gap in our access, not in the literature: the paper reports simulation parameters, empirical accuracies and the exact cross-validated confound-regression procedure, none of which could be read. RE-ATTEMPT via the CC-BY copy on ScienceDirect from a browser, or via the authors' code release. DATA LICENCE: not applicable; the empirical analysis uses structural MRI from an existing cohort and the paper is a methods contribution. source.md is the publisher-supplied abstract as indexed by Europe PMC, with an explicit retrieval note; md_quality is abstract-only."
+}
