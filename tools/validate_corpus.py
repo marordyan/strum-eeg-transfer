@@ -120,6 +120,7 @@ INDEX_LINK_RE = re.compile(r"\]\(\./([^)]+)\)")
 PDF_LICENSE_LEADING_RE = re.compile(r"[(;]")
 DOI_URL_PREFIX_RE = re.compile(r"^https?://(dx\.)?doi\.org/")
 ARXIV_ABS_RE = re.compile(r"arxiv\.org/abs/([0-9]+\.[0-9]+)")
+CHECKPOINT_LINE_RE = re.compile(r"^-\s+\*\*Checkpoints covered[^:]*:\*\*\s*(.+)$")
 
 HIGH_RELEVANCE_CEILING = 0.40
 HIGH_RELEVANCE_MIN_ENTRIES = 5
@@ -630,6 +631,58 @@ def _entry_identifier(entry_dir: Path) -> str | None:
     return None
 
 
+def _normalize_model_name(name: str) -> str:
+    return re.sub(r"[^a-z0-9]", "", name.lower())
+
+
+def _checkpoint_coverage_warnings(collection_root: Path) -> list[str]:
+    """Warn when a benchmark suite evaluates a checkpoint no model card covers.
+
+    The eeg-models strand's own acceptance criterion counted distinct model
+    families, which is self-contained: nothing tied it to the checkpoints the
+    benchmark strand actually evaluates. The strand met its quota while
+    omitting the model that takes the best average rank under one suite's
+    primary protocol. This closes that loop mechanically, using the
+    "Checkpoints covered" line the datasets-benchmarks brief already requires.
+    """
+    models_dir = collection_root / "eeg-models"
+    if not models_dir.is_dir():
+        return []
+    carded = {
+        _normalize_model_name(re.sub(r"-(19|20)\d{2}$", "", p.name))
+        for p in models_dir.iterdir()
+        if p.is_dir() and not p.name.startswith("_")
+    }
+
+    uncovered: dict[str, set[str]] = {}
+    for card_path in sorted((collection_root / "datasets-benchmarks").glob("*/card.md")):
+        text, read_error = _read_text_safe(card_path)
+        if read_error is not None:
+            continue
+        for line in text.splitlines():
+            match = CHECKPOINT_LINE_RE.match(line.strip())
+            if not match:
+                continue
+            for chunk in match.group(1).split(","):
+                # Chunks may carry trailing detail ("BIOT, 3.2M params"); keep
+                # only a leading model-name-shaped token.
+                token = re.match(r"\s*([A-Za-z][A-Za-z0-9.\-]{2,})", chunk)
+                if not token:
+                    continue
+                name = token.group(1).rstrip(".")
+                normalized = _normalize_model_name(name)
+                if not normalized or normalized.isdigit():
+                    continue
+                if not any(normalized in slug or slug in normalized for slug in carded):
+                    uncovered.setdefault(name, set()).add(card_path.parent.name)
+
+    return [
+        f"WARNING checkpoint '{name}' is evaluated by {', '.join(sorted(suites))} "
+        f"but has no entry in eeg-models"
+        for name, suites in sorted(uncovered.items())
+    ]
+
+
 def _cross_strand_duplicate_warnings(collection_root: Path, root: Path) -> list[str]:
     """Warn when one identifier is carded in more than one strand.
 
@@ -701,6 +754,7 @@ def run_validation(root: Path) -> tuple[list[str], list[str], int, dict[str, int
                     f"above the 40% ceiling"
                 )
 
+    warnings.extend(_checkpoint_coverage_warnings(collection_root))
     warnings.extend(_cross_strand_duplicate_warnings(collection_root, root))
 
     return violations, warnings, total_entries, strand_counts

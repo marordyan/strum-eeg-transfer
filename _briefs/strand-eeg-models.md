@@ -205,7 +205,14 @@ item in it cost real time or nearly corrupted a card during the Phase 2 pilot.
 
 - [ ] At least 18 entries across all 5 categories
 - [ ] At least 3 entries per category, and at least 3 in category 5 specifically
-- [ ] At least 6 distinct model families represented
+- [ ] Every checkpoint named on a `Checkpoints covered` line in a `datasets-benchmarks`
+      benchmark-suite card has an entry in this strand. `uv run python tools/validate_corpus.py`
+      warns for any that does not; the warning is the criterion, not a suggestion
+- [ ] At least 6 distinct model families represented. This is a floor, not the test. It is a
+      self-contained count, and a strand can satisfy it while omitting the model that wins a
+      suite's primary protocol, which is exactly what happened on the first pass: BrainOmni,
+      EEGConformer, FEMBA and LUNA were all named repeatedly in benchmark cards and carded by
+      nobody. The coverage criterion above is what actually prevents that
 - [ ] Every entry folder has `card.md`, `source.md`, and `meta.json`
 - [ ] Every entry has BibTeX in `eeg-models.bib`
 - [ ] `INDEX.md` fully populated with categorized one-liners

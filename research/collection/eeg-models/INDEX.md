@@ -3,12 +3,19 @@
 Strand A. Scope categories are those defined in `_briefs/strand-eeg-models.md`. One line per entry;
 each entry's full record is its `card.md`.
 
-**Collection status: COMPLETE, 18 of at least 18 entries.** The first 6 were a deliberately small
-pilot pass run to expose process problems; the remaining 12 were collected on 2026-07-31. All five
-categories now hold at least 3 entries, category 5 holds 6, and 8 distinct model families are
-represented (REVE, LaBraM, BrainWave, CBraMod, BENDR, BIOT, EEGPT, NeuroGPT). An entry appears
-under more than one heading where its evidence genuinely serves both, and the cross-listing is
-marked. Nothing here is a synthesis or a ranking; that is Phase 3.
+**Collection status: COMPLETE, 22 of at least 18 entries.** The first 6 were a deliberately small
+pilot pass run to expose process problems; 12 more were collected on 2026-07-31; 4 were added on
+2026-08-01. All five categories hold at least 3 entries, category 5 holds 7, and 12 distinct model
+families are represented (REVE, LaBraM, BrainWave, CBraMod, BENDR, BIOT, EEGPT, NeuroGPT,
+BrainOmni, FEMBA, LUNA, EEG Conformer). An entry appears under more than one heading where its
+evidence genuinely serves both, and the cross-listing is marked. Nothing here is a synthesis or a
+ranking; that is Phase 3.
+
+The four 2026-08-01 additions close a coverage gap rather than widen scope. The strand's acceptance
+criterion counted model families against a self-contained target, so it was met while omitting
+checkpoints the `datasets-benchmarks` suites actually evaluate: BrainOmni is named 11 times across
+that strand's cards and takes the best average rank under `omnieeg-bench`'s primary protocol, and
+EEGConformer, FEMBA and LUNA are each named 4 times.
 
 ## 1. Pretraining objectives
 
@@ -63,6 +70,25 @@ signal in [reve-2025](./reve-2025/card.md), vector-quantized spectral tokenizati
   transplanted to EEG; an unfamiliar channel set is handled by a fixed 20-slot index map with
   zero-fill for missing electrodes, and the best of its six configurations discards the pretrained
   transformer entirely (`relevance: medium`, 2021)
+- [brainomni-2025](./brainomni-2025/card.md): cross-listed to category 4 — a Sensor Encoder over
+  each sensor's position, orientation and type, and a cross-attention block compressing any channel
+  count to 16 latent source variables, so one residual-vector-quantised tokenizer covers EEG and MEG
+  devices from 19 to 306 channels; 2,653 h of joint EEG and MEG pretraining, 8.4M and 33M
+  (`relevance: high`, 2025)
+- [luna-2025](./luna-2025/card.md): cross-listed to category 4 — 4 to 8 learned queries cross-attend
+  to the channel dimension before any temporal attention runs, making the encoder linear rather than
+  quadratic in electrode count and fixing the downstream feature width; 21,928 h from TUEG plus
+  Siena, and it still loses to CBraMod on the one genuinely unseen layout in its own evaluation
+  (`relevance: medium`, 2025)
+- [femba-2025](./femba-2025/card.md): cross-listed to category 4 — the strand's only state-space
+  backbone, bidirectional Mamba blocks with a 4-channel × 32-sample patch tokenizer, reporting
+  floating-point operations and peak memory beside every accuracy; four sizes from 7.8M to 386M on
+  21,000 h of TUEG (`relevance: medium`, 2025)
+- [eegconformer-2023](./eegconformer-2023/card.md): cross-listed to category 5 — a ShallowConvNet
+  front end plus six self-attention layers, trained from scratch per subject with pretraining
+  explicitly declined "due to the limited data for calibration"; the supervised reference point that
+  three of the four benchmark suites in `datasets-benchmarks` measure pretrained checkpoints against
+  (`relevance: high`, 2023)
 
 ## 3. Released checkpoints and reproducibility
 
@@ -86,7 +112,13 @@ six released checkpoints — channel interpolation, resampling, and dead-channel
 [zare-2026-stress-testing](./zare-2026-stress-testing/card.md). Licences for released *weights*
 remain unrecorded in every model paper read so far; `adabrain-bench-2025` is the only entry in the
 strand that states a licence for any released artefact, and that licence covers its own pipeline
-code rather than any checkpoint.
+code rather than any checkpoint. The 2026-08-01 additions do not change that:
+[brainomni-2025](./brainomni-2025/card.md) releases code and checkpoints at three sizes with no
+licence stated, [femba-2025](./femba-2025/card.md) releases code without saying whether the weights
+are released, and [luna-2025](./luna-2025/card.md)'s NeurIPS checklist says weights "will be
+released upon publication" and that "we do not release any new assets yet".
+[eegconformer-2023](./eegconformer-2023/card.md) has no checkpoint to release, and is also the one
+entry in the strand whose parameter count is published only as a curve on a figure axis.
 
 ## 4. Transfer and fine-tuning evidence
 
@@ -110,6 +142,18 @@ code rather than any checkpoint.
 - [lee-2025-lbms-capable-yet](./lee-2025-lbms-capable-yet/card.md): cross-listed from category 5 —
   fine-tuned foundation models beat EEGNet by 1.4 mean points across five benchmarks, and the
   advantage is statistically significant on one of five tasks for LaBraM (`relevance: high`, 2025)
+- [brainomni-2025](./brainomni-2025/card.md): cross-listed from category 2 — 0.622 balanced accuracy
+  on TUEV against 0.392 for the best trained-from-scratch baseline in the same pipeline, but 0.877
+  against 0.863 on MDD; freezing the backbone costs 14.2 points on TUEV and 1.0 on TUAB, and its own
+  unseen-device evidence is reconstruction error rather than classification (`relevance: high`, 2025)
+- [luna-2025](./luna-2025/card.md): cross-listed from category 2 — on SEED-V, the only unseen
+  electrode layout it evaluates, LUNA-Huge reaches 0.3900 balanced accuracy against 0.3678 for the
+  best supervised baseline at roughly 100 times the parameters, and trails CBraMod on all three
+  metrics; no frozen-backbone result is reported (`relevance: medium`, 2025)
+- [femba-2025](./femba-2025/card.md): cross-listed from category 2 — 81.82% balanced accuracy on
+  TUAB against 79.66% for ST-Transformer at 386M parameters against 3.2M, with FEMBA-Base reaching
+  81.05% at one eighth the size; all three downstream tasks are subsets of the corpus it was
+  pretrained on (`relevance: medium`, 2025)
 
 Also bearing directly on this category from other groups: [reve-2025](./reve-2025/card.md) reports
 the strand's cleanest single pretraining ablation (+10.7 points on PhysioNet-MI for the same
@@ -138,6 +182,11 @@ whose results happen to be negative.
   under 10-fold subject-independent cross-validation, the best fine-tuned foundation model averages
   0.745 against EEGNet's 0.731 at 2,394 versus 78.5M parameters; with the backbone frozen the same
   models sit 8–10 points *below* the small supervised baselines (`relevance: high`, 2025)
+- [eegconformer-2023](./eegconformer-2023/card.md): cross-listed from category 2 — the paper that
+  declines pretraining on the grounds that calibration data is too scarce, and reaches 78.66% on BCI
+  IV 2a against EEGNet's 74.50% with no pretraining at all; the reference point whose average rank
+  separates the fine-tuned regime from the frozen one in `omnieeg-bench`, where seven of ten
+  checkpoints beat it fine-tuned and only five beat it frozen (`relevance: high`, 2023)
 - [kuruppu-2025-critical-review](./kuruppu-2025-critical-review/card.md): of ten EEG foundation
   models, four were evaluated on data they had been pretrained on, only four can be ranked against
   each other at all, linear probing is consistently worse than the baselines it should beat, and

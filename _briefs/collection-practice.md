@@ -59,8 +59,15 @@ Corrections found after the pilot, during the four-strand run. Each cost an agen
   OpenAlex and Crossref REST interfaces directly; they were faster and more complete in every strand.
   PubMed `esearch` beat everything for psychophysiology and human-factors venues.
 - **Publishers that block automated fetches, with the endpoints that work.** IOP returns a captcha
-  page, PMC an interstitial, MDPI 403, eLife 406, ACM 403, all under a status that looks like success.
-  Working alternates: `europepmc.org/articles/<PMCID>?pdf=render`, `res.mdpi.com/d_attachment/...`,
+  page, PMC an interstitial, MDPI 403, eLife 406, ACM 403, and IEEE a JavaScript challenge, all under
+  a status that looks like success. IEEE is the trap of the group, because the open-access PDF URL
+  that Unpaywall and Semantic Scholar both advertise
+  (`ieeexplore.ieee.org/ielx7/.../<id>.pdf`) is one of the challenge pages; the working alternate is
+  `https://ieeexplore.ieee.org/stampPDF/getPDF.jsp?tp=&arnumber=<arnumber>&ref=` with a browser
+  user-agent.
+
+  Working alternates for the rest: `europepmc.org/articles/<PMCID>?pdf=render`,
+  `res.mdpi.com/d_attachment/...`,
   `cdn.elifesciences.org/articles/<id>/elife-<id>-v2.pdf`, and the Europe PMC `fullTextXML` endpoint.
   A naive `curl -o source.pdf` against a blocked endpoint writes HTML into a file named `.pdf`; the
   validator now rejects any `source.pdf` without a `%PDF` header, so this fails loudly rather than
@@ -124,6 +131,40 @@ pathlib.Path(sys.argv[2]).write_text(pymupdf4llm.to_markdown(sys.argv[1]), encod
 One trap it introduces: decimal points inside emphasized table cells are escaped as `13_._8`. A
 verification pass that does not strip `_` and `*` before matching will report large numbers of
 spurious misses. In one run this produced 49 false alarms out of 84 apparent misses.
+
+## When the tables are images, render the page
+
+Some papers have no text layer behind their tables at all. EEG Conformer's Tables I to IV return
+nothing from `pymupdf.get_text()` between their captions: the numbers exist only as pixels. No
+converter recovers them, so this is not a conversion-fidelity problem and no `md_quality` value
+describes it well; use `partial` and name the loss in `notes`.
+
+The numbers are still readable. Render the page and look at it:
+
+```bash
+uvx --from pymupdf python -c "
+import pymupdf, sys
+d = pymupdf.open(sys.argv[1])
+d[int(sys.argv[2])-1].get_pixmap(dpi=200).save(sys.argv[3])
+" <pdf> <page number> /tmp/page.png
+```
+
+Then read the PNG. This is the only route to an image-only table, and on the pilot's most-cited
+supervised baseline it was the difference between a card with accuracy numbers and a card without
+any. Note that the `Read` tool cannot open a PDF directly in this environment, which needs
+`pdftoppm` from poppler; the pymupdf route above needs no install.
+
+## A third case: the source declined to do the thing
+
+Collection practice already distinguishes "the source does not report it" from "the source reports it
+and we could not see it". A third case turns up in the model strand and is a finding rather than a
+gap: the source deliberately did not do it.
+
+EEG Conformer has no pretraining corpus and no pretraining hours, not because the paper omits them
+but because it argues against pretraining in this setting: "pre-training is not used in EEG
+Conformer, due to the limited data for calibration". Recording that as `not reported` would file a
+stated design choice as an absence. Card it as the choice it is, quote the reasoning, and give the
+quantity as zero where a number is required.
 
 ## Reading a paper you may not republish
 

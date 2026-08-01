@@ -344,6 +344,55 @@ def test_real_pdf_header_raises_no_header_violation(tmp_path: Path) -> None:
     assert not any("is not a PDF" in v for v in violations)
 
 
+def _write_benchmark_card(root: Path, slug: str, checkpoints: str) -> None:
+    """A datasets-benchmarks entry carrying a 'Checkpoints covered' line."""
+    write_entry(root, "datasets-benchmarks", slug)
+    card = root / "research" / "collection" / "datasets-benchmarks" / slug / "card.md"
+    card.write_text(
+        card.read_text(encoding="utf-8")
+        + f"\n## Notable details\n\n- **Checkpoints covered:** {checkpoints}\n",
+        encoding="utf-8",
+    )
+
+
+def test_checkpoint_with_no_model_card_warns(tmp_path: Path) -> None:
+    """A suite evaluating a checkpoint the models strand never carded.
+
+    This is the real failure it exists to catch: the eeg-models strand met a
+    self-contained "at least N model families" quota while omitting the model
+    that takes the best average rank under a suite's primary protocol.
+    """
+    _write_benchmark_card(tmp_path, "some-bench", "BENDR, BrainOmni, LaBraM")
+    write_entry(tmp_path, "eeg-models", "bendr-2021")
+    write_entry(tmp_path, "eeg-models", "labram-2024")
+
+    warnings = vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection")
+
+    assert any("BrainOmni" in w and "some-bench" in w for w in warnings)
+    assert not any("BENDR" in w for w in warnings)
+    assert not any("LaBraM" in w for w in warnings)
+
+
+def test_checkpoint_coverage_ignores_year_suffix_and_case(tmp_path: Path) -> None:
+    """Slugs carry a year and lowercase the name; matching must see through both."""
+    _write_benchmark_card(tmp_path, "some-bench", "CBraMod, REVE")
+    write_entry(tmp_path, "eeg-models", "cbramod-2025")
+    write_entry(tmp_path, "eeg-models", "reve-2025")
+
+    assert vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection") == []
+
+
+def test_checkpoint_coverage_tolerates_trailing_detail(tmp_path: Path) -> None:
+    """One suite lists parameter counts inline; only the leading token is a name."""
+    _write_benchmark_card(tmp_path, "some-bench", "BIOT, 3.2M params, LaBraM, 5.8M params")
+    write_entry(tmp_path, "eeg-models", "biot-2023")
+    write_entry(tmp_path, "eeg-models", "labram-2024")
+
+    warnings = vc._checkpoint_coverage_warnings(tmp_path / "research" / "collection")
+
+    assert warnings == []
+
+
 def test_local_pdf_cache_must_be_a_real_pdf(tmp_path: Path) -> None:
     entry = write_entry(tmp_path, "strand-a", "paper-one")
     (entry / "source.local.pdf").write_bytes(b"<html>blocked</html>\n")
