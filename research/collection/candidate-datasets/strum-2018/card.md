@@ -3,7 +3,7 @@ slug: strum-2018
 type: dataset
 strand: candidate-datasets
 year: 2018
-authors: [Mullen, Kothe, Makeig]
+authors: [Kothe, Mullen, Makeig]
 venue: 2018 IEEE International Conference on Systems, Man, and Cybernetics (SMC)
 doi: 10.1109/SMC.2018.00023
 url: https://ieeexplore.ieee.org/document/8616018/
@@ -18,15 +18,17 @@ added: 2026-07-31
 pdf_status: not-redistributable
 pdf_path: null
 md_path: source.md
-md_quality: abstract-only
+md_quality: partial
 ---
 
 ## TL;DR
 
-The dataset this project intends to fine-tune on is described only in a six-page paywalled
-IEEE proceedings paper with no open copy anywhere, and its recording specification — channel
-count, sampling rate, derivation scheme, peripheral channels, label scheme — could not be read
-at retrieval time; two papers cite it, neither of them a modelling study.
+The dataset this project intends to fine-tune on is described only in a six-page paywalled IEEE
+proceedings paper with no open copy anywhere; page 77 was later obtained through institutional
+access and establishes that recordings are genuinely two-person and that events carry extended
+HED 1.0 tags, but the recording specification — channel count, sampling rate, derivation scheme,
+peripheral channels — sits on pages 78 to 82 and is still unread; two papers cite it, neither of
+them a modelling study.
 
 ## Summary
 
@@ -65,28 +67,52 @@ expectations.
 
 ## Notable details
 
+**Source note, 2026-08-01.** The first page of the paper was obtained through institutional access
+and is cached locally as `source.local.pdf`; `source.md` is its extraction. It is **page 77 only, one
+page of six**, ending mid-sentence in section "C. Spatial Layout", and it is not committed because
+the paper is under IEEE copyright. Fields below marked `reported but not accessible` are therefore
+facts the source carries on pages 78 to 82, which have not been read. Fields that page 77 does settle
+are now marked as sourced.
+
 **Fixed field set** (per the strand brief; `reported but not accessible` distinguishes facts the
 primary source certainly carries from facts no source states, following
 `_briefs/collection-practice.md`):
 
 - **Participants**: reported but not accessible: the abstract calls the data "this large trove
-  of data" and does not give a participant count. No secondary source consulted gives one.
-- **Simultaneous participants per recording**: reported but not accessible. Nothing in the
-  abstract or in any indexed secondary description states whether STRUM recordings are
-  single-participant or multi-participant. The project's own framing is dyadic/team, but that is
-  a project assumption, not a sourced fact, and is not carded as one here.
+  of data" and does not give a participant count. No secondary source consulted gives one, and it is
+  not on page 77.
+- **Simultaneous participants per recording**: **two**, now sourced. Page 77 states the laboratory
+  space "includes two identical seats for the subjects, each equipped with three vertically mounted"
+  displays, the sentence breaking at the page boundary. STRUM is therefore a genuinely two-person
+  simultaneous recording, which was previously a project assumption this card declined to card as
+  fact. Whether the two participants interact, and whether labels are per-participant or per-dyad,
+  remains unread.
 - **Channels**: reported but not accessible.
 - **Sampling rate**: reported but not accessible.
 - **Peripheral channels present**: reported but not accessible. The project plan assumes
   electrocardiography, electrooculography and respiration are present; no read source confirms
   this.
 - **Total hours**: reported but not accessible.
-- **Task**: partially accessible — "a task battery modeled after a complex real-world scenario".
-  The abstract does not name the constituent tasks or the stimulus modalities. The project's plan
-  to label epochs spoken versus written implies a language-stimulus manipulation, which the
-  abstract does not mention.
-- **Label type**: reported but not accessible.
-- **Label source**: reported but not accessible.
+- **Task**: partially sourced. "A task battery modeled after a complex real-world scenario", and page
+  77 adds that the paradigm is multi-task and "puts heavy emphasis on selective attention in visual
+  and auditory domains", that "task load, fatigue, and attention distribution are expected to vary",
+  and that individual tasks "are designed to elicit frequent perceptual and response errors". The
+  constituent tasks are named on pages not read.
+
+  This bears directly on the project's label plan. The paradigm deliberately manipulates attention
+  across the visual and auditory domains, so a visual-versus-auditory contrast is built into the
+  design rather than incidental to it. That makes the concern recorded in
+  `simanova-2010-eeg-object-categories` sharper, not weaker: a classifier separating spoken from
+  written stimuli in STRUM would be separating two modalities the experiment was constructed to drive
+  apart. Whether anything beyond sensory response distinguishes them is the open question.
+- **Label type**: reported but not accessible for the task labels, but the marker mechanism is
+  sourced: page 77 states that "events are recorded in great detail and described using an ontology
+  extended from the HED 1.0 event marker specification". Labels therefore come from Hierarchical
+  Event Descriptor tags rather than from bare trigger codes, which means the stimulus conditions
+  should be recoverable from the event annotations without inference. Which tags exist is unread.
+- **Label source**: stimulus and event annotation via the extended HED 1.0 ontology, per page 77. The
+  intended constructs named on that page are task load, fatigue, and attention distribution; whether
+  any is separately labelled, for instance by self-report, is unread.
 - **License**: unknown for the data. The paper is under IEEE copyright.
 - **Access route**: request to authors. The community list `meagmohit/EEG-Datasets` records
   STRUM verbatim as "Strum dataset is not available on headit.ucsd .. contact authors", and no
