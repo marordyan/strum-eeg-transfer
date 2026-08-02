@@ -67,9 +67,15 @@ not the eye-movement pattern, and testing on the task, is a design that separate
 It is more informative than a post-hoc regression, because it never lets the classifier see the
 confounded distribution at training time.
 
-The card records the paper as a `modalities: [eog]` entry, which is a deliberate abstraction: the
-measurement here is video eye tracking, not electrooculography, and the recording modality is MEG,
-not EEG. Neither substitution weakens the argument for this project — scalp EEG is more sensitive
+Correction, made during the Phase 4 refutation pass. An earlier version of this card called the
+`modalities: [eog]` tag "a deliberate abstraction" on the grounds that "the measurement here is video
+eye tracking, not electrooculography". That contradicts the source, which states "Both vertical and
+horizontal electrooculogram (EOG) as well as electrocardiogram were obtained to aid in the recognition
+of artifacts. All signals were sampled at 1200 Hz", alongside gaze and pupil from an Eyelink 1000 at
+the same rate. This recording therefore carries **both instruments on the same trials**. What the
+paper does not do is compare decoders built from the two, since EOG here serves artifact recognition
+rather than decoding, and that is the distinction the review's ocular question turns on. The recording
+modality is MEG, not EEG. Neither substitution weakens the argument for this project — scalp EEG is more sensitive
 to ocular potentials than MEG is, not less, and EOG electrodes measure the same corneo-retinal
 dipole that the eye tracker infers from pupil position — but both should be stated when the claim
 is carried forward.

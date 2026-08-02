@@ -484,7 +484,7 @@ or contactless physiology estimation" with no stated exception at the time this 
 video eye tracking rather than electrooculography, and every one of the six states the substitution
 on its own card:
 
-- [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
+- [wibirama-cognitive-load-eye-movement](. Correction: the entry carries both instruments. Its source records vertical and horizontal electrooculogram alongside an Eyelink 1000, both at 1200 Hz; the card previously denied this and was corrected in Phase 4. What the paper does not do is compare decoders built from the two../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   — the entry is *entirely* eye-tracking-derived; "COLET is an eye-tracking dataset", and the paper
   positions eye tracking as an alternative to EEG, ECG and GSR.
 - [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)

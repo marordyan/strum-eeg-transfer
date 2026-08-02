@@ -183,6 +183,39 @@ layout-flexible checkpoint can ingest STRUM without approximation):
 - **The peripheral branch has more to work with than planned**: ECG, EOG and respiration as assumed,
   plus EMG, eye tracking, force plate and motion capture, all hardware-synchronous.
 
+**Published results on STRUM, from the paper's own Section V.** Added after the Phase 4 refutation
+pass found that the extraction stopped at Section IV and that four downstream conclusions rested on
+the omission. The dataset paper is not only a descriptor: it reports a model comparison on these data.
+
+- **Response-error detection**, per-subject blockwise cross-validation matched to the 5-block session
+  structure. Dual-spectral regularized logistic regression reaches **Az 0.75 +/- 0.13**, HDCA
+  **0.71 +/- 0.10**, plain sLDA **0.63 +/- 0.07**, all significantly above the 0.5 chance level, and
+  "differences between DSLR the other two methods were highly significant at p<0.01".
+- **Task-performance estimation over time**, 8-second windows overlapped by 3 seconds: **0.56 +/- 0.07**
+  and **0.59 +/- 0.07**, "above the chance level of 0.5 at p<0.01", with only the DLCSPcv-versus-CSP
+  difference significant at p<0.05.
+- **The authors' own ocular warning.** "Of note, the highest-performing methods prominently depend on
+  artifactual EEG sources, specifically frontal patterns typical for eye activity for some subjects
+  ... and temporal-lobe patterns typical of muscle activity for some other subjects." Task-performance
+  models, by contrast, rest on "spatial patterns localizable to neocortical locations", including
+  occipital alpha and frontal beta.
+
+Three consequences, each of which reverses a claim made elsewhere in this review. There **is** a
+published modelling baseline on STRUM, so a first result by this project compares against it rather
+than establishing the first. A 12-point difference between methods **was** resolved at this
+dataset's n with per-subject blockwise cross-validation, which is evidence against the claim that
+STRUM's sample size makes effects of that size undetectable. And the ocular confound this review
+raises as a risk is not hypothetical here: the dataset's own authors observed their best models
+depending on eye activity.
+
+**Design details bearing on any analysis, also from the full text.** Stimuli are presented over
+**loudspeakers** in a room seating both participants, and verbal responses are given by voice
+command, so one participant's auditory stimuli and spoken responses are audible to the other. The
+verbal side tasks draw on "ca. 200 non-repeating statement sentences", which bounds the labelled
+trials per class per subject at roughly one hundred. The two visual side tasks occupy **different
+screens**, text comms on the left and satellite map on the right, so a visual-verbal trial and a
+visual-non-verbal trial differ in gaze direction as well as in content.
+
 **Citation record:**
 
 - **Citation count**: 2, agreeing across Semantic Scholar (`opencite lookup`, "Cited: 2") and
