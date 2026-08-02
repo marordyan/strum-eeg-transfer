@@ -92,8 +92,14 @@ features, and where a gain appears it is fragile to the choice of evaluation uni
 - **Most informative transfer number, with baseline**: on CAUEEG 3-way Korean dementia
   classification, frozen REVE reaches 0.568 AUROC against 0.769 for classical handcrafted features —
   a ~20 point deficit — and the ordering holds on the authors' patient-disjoint held-out split
-  (0.565 versus 0.768). Under every tested condition classical features beat frozen REVE by at least
-  12.7 points. Separately, and more damaging to the pretraining claim specifically, a
+  (0.565 versus 0.768). **Correction, made during a Phase 5 traceability spot-check.** An earlier version of this
+  bullet said "under every tested condition classical features beat frozen REVE by at least 12.7
+  points". That is false as a universal and the string "12.7" does not occur in the source at all.
+  The robustness sweep it paraphrases is scoped to CAUEEG alone, and elsewhere in the same paper REVE
+  beats classical: ds004504 three-way 0.795 against 0.754, TUAB by +9.8, CHB-MIT 79.3 against 70.0,
+  and ds004504 AD-versus-HC 82.8 against 80.6. The correct statement is that the classical advantage
+  is large and robust **on CAUEEG**, where the sweep over probe family and epoch length never reverses
+  it, and that the direction is cohort-dependent across the paper as a whole. Separately, and more damaging to the pretraining claim specifically, a
   **randomly-initialised encoder of the same architecture outperforms pretrained REVE on the same
   task, 0.659 versus 0.570**.
 - **The one controlled positive**: CHB-MIT cross-subject ictal detection, full 23-patient cohort,
