@@ -864,7 +864,7 @@ Six entries, of which four are third-party.
   foundation-model tier at 0.755 and EEGNet from scratch at 0.671.
 - [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) — on CAUEEG,
   classical features reach 0.769 AUROC against frozen REVE's 0.568, and classical features beat frozen
-  REVE by at least 12.7 points under every tested condition; no foundation model beats classical
+  REVE by at least 12.7 points under every tested CAUEEG condition; no foundation model beats classical
   features on the 2-channel Sleep-EDF task.
 - [adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md) — on clinical monitoring
   tasks foundation models perform "comparable or even worse than traditional models": EEGNet's 72.29
