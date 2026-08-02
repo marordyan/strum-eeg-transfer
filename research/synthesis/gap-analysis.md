@@ -1652,7 +1652,7 @@ fine-tuned foundation model at 0.745 against EEGNet's 0.731 with 2,394 trainable
 [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) finds classical
 logistic regression at 0.847 against the best foundation-model tier at 0.755;
 [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) finds classical
-features beating frozen REVE by at least 12.7 points under every tested condition;
+features beating frozen REVE by at least 12.7 points under every tested CAUEEG condition;
 [sirca-2026-peft-motor-imagery](../collection/eeg-models/sirca-2026-peft-motor-imagery/card.md) finds
 DeepConvNet highest at every calibration size.
 

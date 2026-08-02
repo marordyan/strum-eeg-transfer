@@ -92,8 +92,19 @@ features, and where a gain appears it is fragile to the choice of evaluation uni
 - **Most informative transfer number, with baseline**: on CAUEEG 3-way Korean dementia
   classification, frozen REVE reaches 0.568 AUROC against 0.769 for classical handcrafted features —
   a ~20 point deficit — and the ordering holds on the authors' patient-disjoint held-out split
-  (0.565 versus 0.768). Under every tested condition classical features beat frozen REVE by at least
-  12.7 points. Separately, and more damaging to the pretraining claim specifically, a
+  (0.565 versus 0.768). A NARPS-style robustness sweep over probe family and epoch length never
+  lowers the classical advantage below **+12.7 pp**, its minimum coming from the 8-second-epoch
+  N=150 sub-analysis (classical 0.695 against frozen REVE 0.568), which is the source's basis for
+  saying the ~20 pp gap "is not a product of favourable pipeline choices" (`source.md:339,341`).
+  **Scope note, and a retracted correction.** The source states that floor as "under every tested
+  condition", but every condition it tests is a CAUEEG condition, so the universal is scoped to that
+  cohort and not to the paper. Elsewhere REVE beats classical: ds004504 three-way 0.795 against
+  0.754, TUAB by +9.8, CHB-MIT 79.3 against 70.0, and ds004504 AD-versus-HC 82.8 against 80.6. A
+  Phase 5 spot-check misread this as a fabricated number and retracted the +12.7 pp floor on the
+  grounds that "12.7" did not occur in the source. It does, at `source.md:341`; the converter
+  renders decimals as `12 _._ 7`, and a search that strips emphasis without collapsing the
+  whitespace it leaves behind fails to match. The floor is restored, with its cohort scope stated;
+  the retraction was wrong. Separately, and more damaging to the pretraining claim specifically, a
   **randomly-initialised encoder of the same architecture outperforms pretrained REVE on the same
   task, 0.659 versus 0.570**.
 - **The one controlled positive**: CHB-MIT cross-subject ictal detection, full 23-patient cohort,
