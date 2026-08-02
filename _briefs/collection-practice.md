@@ -123,6 +123,16 @@ Two related traps found later in the same run:
 - **Normalize the minus sign before searching.** Several extractions render minus as U+2212 rather
   than ASCII hyphen, so a search for `-0.5` misses `−0.5`. Four verification checks came back as
   misses on that alone.
+- **Collapse whitespace as well as stripping emphasis, and never assert a negative without it.**
+  pymupdf4llm renders emphasised decimals as `12 _._ 7`. Stripping `_` and `*` leaves `12 . 7`, so a
+  search for `12.7` still misses. The correct normalisation for any literal search is
+  `re.sub(r'\s+', '', re.sub(r'[_*`]', '', text))` on both the haystack and the needle. This is the
+  most expensive single defect the review produced: a Phase 5 spot-check concluded from an
+  unnormalised search that "the string 12.7 does not occur in the source at all", retracted a
+  faithfully-sourced number from a card and from the direction paper, and published the retraction
+  as a headline finding. The number was at `source.md:341` the whole time. A positive search that
+  fails costs a lookup; a negative claim built on a failed search deletes true content and states a
+  falsehood about a source, which is the one defect class a citation guarantee cannot catch.
 
 ## Converting PDFs: use pymupdf4llm, not markitdown
 
