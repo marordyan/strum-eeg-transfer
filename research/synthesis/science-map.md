@@ -75,6 +75,18 @@ the same strand the three entries whose split geometry is stated and subject-dis
 belong to the two entries whose denominators their cards flag as unverifiable
 ([salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md),
 [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)).
+One entry left that comparison entirely in the Phase 4 audit rather than moving within it:
+[ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)'s
+split was carded as "not stated in the accessible text" and is in fact stated twice — five-fold
+cross-validation pooled over all subjects, and "the subject-dependent recognition accuracy results
+for the 32 participants in the DEAP dataset". Its 94.88% and 95.26% on DEAP are subject-dependent
+numbers, which is what places them far above the cross-subject figures for that dataset, and the card
+now forbids comparing them with any leave-one-subject-out or GroupKFold number in the corpus. The
+audit also verified the opposite case:
+[kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)'s
+partition is genuinely subject-disjoint (28 / 4 / 3 individuals, summing to its stated 35), but is a
+single fixed 80/10/10 split with no folds rotated and no across-fold variance, so
+"cross-validation" is the paper's word for it rather than a description of it.
 
 **As a property of the experimental design, upstream of any protocol.** This is the level the other
 three strands have no representation for.
@@ -147,7 +159,17 @@ the strand that designs against it calls it *manipulation geometry*
   [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) demonstrates that the
   regime reorders the models and
   [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) demonstrates it with the
-  opposite sign for EEGPT, but neither crosses regime with holdout unit.
+  opposite sign for EEGPT, but neither crosses regime with holdout unit. **Restated after the Phase 4
+  audit**, because the third-party evidence now has a first-party counterpart that the corpus
+  previously recorded as absent: [labram-2024](../collection/eeg-models/labram-2024/card.md)'s
+  Appendix K, Table 10 reports five regimes at a fixed holdout, and the ordering is not monotone in
+  how much is unfrozen — balanced accuracy on TUAB then TUEV, full fine-tuning 0.8140 / 0.6409, all
+  twelve transformer blocks 0.8141 / 0.6541, **last eight blocks 0.8134 / 0.6611**, last four 0.8074
+  / 0.6188, **linear probe 0.7954 / 0.3461**. So a within-model regime sweep reorders the *regimes*
+  the way the suites reorder the *models*: partial fine-tuning of the last eight blocks is the best
+  cell in the table, and freezing costs 1.9 points on one dataset and 29.5 on the other. What is
+  still unmeasured anywhere is the interaction with the holdout unit, which is what this bullet
+  claims.
 
 ---
 
@@ -164,7 +186,7 @@ two are connected.
 |---|---|---|
 | dataset / site | a linear probe separates dataset pairs from frozen REVE embeddings at AUROC 1.000, holding after projection to 50 principal components and at 0.9998 band-limited, while the same PCA-50 pipeline decodes the 3-way diagnosis at 0.528 | [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) |
 | subject | frozen embeddings of LaBraM, CBraMod and REVE dominated by subject identity at 13–89× a random-Gaussian null in 12 of 12 model-by-dataset pairs, rising under fine-tuning in all 12 by 10–63 points | [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) |
-| subject (independently) | t-SNE embeddings cluster by participant; of two transformations that artificially reduce inter-participant variability, shifting to the median raises proper-protocol accuracy (0.50 → 0.80) while a shifted Heaviside does not help; neither changes the improper protocol | [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md) |
+| subject (independently) | t-SNE embeddings cluster by participant; of two transformations that artificially reduce inter-participant variability, shifting to the median raises proper-protocol accuracy (0.50 → 0.80, spectral 0.50 → 0.72) and leaves the improper figures untouched at 0.91 and 0.82, while a shifted Heaviside leaves proper accuracy at 0.50 and 0.47 and *lowers* the improper figures to 0.72 and 0.66 | [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md) |
 | session | not measured anywhere; named as its own limit by three critiques (§1) | — |
 | segment | segments of EEG from one subject resemble each other more than segments from different subjects; 46.8 points of inflation | [brookshire-2024-data-leakage](../collection/eeg-models/brookshire-2024-data-leakage/card.md) |
 | trial | the same CSP pipeline retrained to predict *which trial* a segment came from reaches median 100%, 99.9%, 99.7% and 99.6% across four conditions, significantly above the attention accuracies it was built to report | [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md) |
@@ -193,18 +215,35 @@ entry runs two of them.
   decoding by 6–12 points
   ([lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md)).
 - Confound regression inside every cross-validation fold — the only one of two obvious methods that
-  is unbiased, post hoc counterbalancing biasing accuracy upward and plain confound regression
-  downward far enough to produce significant below-chance accuracy
+  restores "plausible (above chance) model performance", post hoc counterbalancing biasing accuracy
+  upward and plain confound regression downward far enough to produce significant below-chance
+  accuracy. The strength of the claim is bounded by the card: "unbiased" overstates an abstract whose
+  own claims are that the negative bias "disappears" and that the method "appears to appropriately
+  control for confounds"
   ([snoek-2019-confound-control](../collection/candidate-datasets/snoek-2019-confound-control/card.md)).
 - A held-out generalization test across exemplars or modalities
   ([simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md),
   [simanova-2012-modality-independent](../collection/candidate-datasets/simanova-2012-modality-independent/card.md)).
+  The two halves do not rest on the same base and the 2010 card now says so: the exemplar test is a
+  20-subject result, while the cross-modal transfer figures (pictures 0.83, spoken 0.66, written
+  0.61) are means over "a subset of four subjects that showed high classification accuracies in all
+  the modalities", and the importance maps are averaged over the five best subjects per modality.
+  The procedure transfers; the cross-modal effect size is a best-case.
 - Training the decoder on a separate functional localizer designed to elicit the sensory response
   without inviting stimulus-specific eye movements
   ([mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)).
-- Tying decodability to behavioural read-out — decodable shape information in two regions, only one
-  of which shows stronger patterns on correct than incorrect trials
+- Connecting behaviour to the *structure of the activation space* rather than to decodability —
+  representational similarity against psychological spaces, and predicting response latency from
+  distance to the decision boundary, "if behaviour can be connected to the structure of activation
+  space in a psychologically plausible manner"
   ([ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)).
+  This entry is stated carefully because the card was corrected in the Phase 4 audit and this theme
+  previously counted the wrong procedure. The correct/incorrect-trial test — decodable information
+  should discriminate correct from incorrect trials — is the option the paper **rejects**, at a
+  section headed "Predicting behaviour is not enough": "merely predicting behaviour using decodable
+  information is not enough". The two-region shape-decoding study is introduced there as an
+  illustration of the problem, not of the remedy. The remedy count is unchanged at five; the fifth
+  remedy is not what an earlier version of this section said it was.
 
 **The same structure produces the failure and the one clean success.**
 [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md), the entry
@@ -240,9 +279,15 @@ sides of the label.
   encoding — a combination the paper does not resolve.
 - The one remedy stated as a general principle is in declared tension with the premise of transfer:
   [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)
-  recommends restricting classifier flexibility and its card records that this "sits in direct
+  endorses restricting classifier flexibility — a corollary its authors quote from Kamitani and Tong
+  (2005) rather than originate — and its card records that this "sits in direct
   tension with the entire premise of transfer from a large pretrained model", left unadjudicated
   because the paper predates that literature.
+- What would count as showing a distinction is *represented* rather than merely decodable is left as
+  a research programme rather than a procedure, by the paper that sets the bar. The same card records
+  that this paper "reports no results of its own and no procedure that can be run off the shelf", and
+  that its two accuracy figures (86% in V1, 65% in V5/+MT) are Seymour et al.'s, quoted as an
+  example.
 
 ---
 
@@ -272,8 +317,11 @@ file layer that can carry it.
   ([luna-2025](../collection/eeg-models/luna-2025/card.md)), and not discussed at all
   ([brainomni-2025](../collection/eeg-models/brainomni-2025/card.md)).
 - (iii) is the formats strand's finding:
-  [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) stores channel labels and "has no
-  mechanism at all for electrode coordinates", and
+  [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) stores channel labels and its
+  specification page carries "no mechanism at all for electrode coordinates" — the word "coordinate"
+  does not occur in it. The card bounds that absence after the Phase 4 audit: it is established for
+  the specification proper and not for the linked standard-texts document at `edftexts.html`, which
+  is not in the archived source. And
   [eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) supplies `electrodes.tsv` and
   `coordsystem.json` at a requirement level the paper states two ways.
   [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md), the substrate under
@@ -367,8 +415,11 @@ mechanisms generalize over the first.
 
 The fusion strand names a two-way mismatch. Held against the other three, it is a three-way one.
 
-**The peripheral integration window: 5 to 60 seconds.** 60 s segments
-([papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md)), 5 s non-overlapping
+**The peripheral integration window: 5 to 20 seconds.** 10 s segments
+([papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — "Segment the signal into
+10-second windows"; **corrected in the Phase 4 audit from 60 s**, which the source attributes to a
+cited comparator rather than using itself, and which was this range's sole upper bound, so the range
+narrows from 5–60 s to 5–20 s), 5 s non-overlapping
 ([mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md),
 [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)),
 10 s ([kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)),
@@ -417,16 +468,21 @@ and fine-tunes on 2-second, 6-second and 30-second trials, "which the architectu
 comparison inherits regardless of its own native window.
 
 **Different words for the same thing — "epoch" names at least four objects.** A data record and a
-30-second sleep-scoring interval, with "window" as a third near-synonym, all inside one specification
-([edf-plus](../collection/datasets-benchmarks/edf-plus/card.md)); a stimulus-locked trial segment
-and a pass through the training set, used as synonyms in one reference implementation's
-documentation ([mne-python](../collection/datasets-benchmarks/mne-python/card.md), where "epoch" and
-"trial" are synonyms while "epoch" also does duty as a training hyperparameter). The measurement
-strand flags the ambiguity about its own sources; the model strand uses the third and fourth senses
-in the same sentence without disambiguation —
+sleep-scoring interval, with "window" as a third near-synonym, all inside one specification
+([edf-plus](../collection/datasets-benchmarks/edf-plus/card.md)); a stimulus-locked trial segment,
+used interchangeably with "trial" in one reference implementation's documentation
+([mne-python](../collection/datasets-benchmarks/mne-python/card.md)); and a pass through the training
+set. Two attributions were corrected in the Phase 4 audit and both weakened the *within-source*
+version of this claim while leaving the four senses intact. The sleep-scoring interval is **not**
+stated at 30 seconds anywhere in EDF+ — the specification gives no scoring-epoch length, and its
+worked example's annotations run 660, 300, 180, 300, 210, 270 and 30 seconds; 30 s was an external
+convention read into the source. And MNE-Python does **not** use "epoch" as a training
+hyperparameter: every occurrence in its decoding section is the data-segment sense and the decoder
+there is a support vector machine, which has no epoch parameter. The fourth sense is still attested,
+but now only from the model and benchmark strands rather than from a format and a reader —
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)'s budget is "50 epochs"
 while [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md)'s
-pipeline z-scores "within each accepted epoch".
+pipeline z-scores "within each accepted epoch", which is the segment sense in the same corpus.
 
 **Open questions the literature leaves.**
 
@@ -440,9 +496,13 @@ pipeline z-scores "within each accepted epoch".
   [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md)'s card records
   5 s as "long relative to a stimulus-locked EEG epoch and short relative to reliable HRV
   estimation — an awkward middle for either use", and the paper measures the cost at neither end.
-- What looking longer buys the peripheral branch is small where it has been measured and untested
-  elsewhere: 2 s to 20 s is worth about 0.012 AUROC in the one entry that sweeps it, and its card
-  notes a 20 s window cannot resolve a stimulus-locked contrast at all
+- What looking longer buys the peripheral branch is small where it has been measured, untested
+  elsewhere, and not even cleanly a time effect: 2 s to 20 s is worth about 0.012 AUROC in the one
+  entry that sweeps it, but the Phase 4 audit established that the sweep changes the feature space
+  as well as the window — "The input dimensionality increased with window length: 27 features for
+  2 s, 142 for 6 s, 234 for 10 s, and 464 for 20 s" — so the 20 s model has seventeen times the
+  inputs of the 2 s model and part of the 0.012 is extra parameters rather than extra time. Its card
+  also notes a 20 s window cannot resolve a stimulus-locked contrast at all
   ([wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)).
   [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) does not
   specify its HRV window, so the temporal resolution of its fused decision is unstated.
@@ -461,8 +521,11 @@ pipeline z-scores "within each accepted epoch".
 Four strands hold four different pieces of this question and use four vocabularies for the same
 channels.
 
-**The models strand: the peripheral channel is out of contract, and the cards say so about
-themselves.** [bendr-2021](../collection/eeg-models/bendr-2021/card.md)'s input contract states that
+**The models strand: the peripheral channel is out of contract for every checkpoint but one, and the
+cards say so about themselves.** The exception is stated below and is load-bearing enough to be worth
+stating first: it is **not** true as a universal that the EEG checkpoints have no representation for
+a peripheral channel, because BIOT's channel-name vocabulary gives an electrocardiography lead a row
+alongside an EEG derivation. [bendr-2021](../collection/eeg-models/bendr-2021/card.md)'s input contract states that
 "reference electrodes, EOG and other auxiliary channels" are dropped.
 [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md)'s Sensor Encoder type vocabulary
 has exactly three values (EEG, gradiometer, magnetometer), and its card states the consequence
@@ -478,10 +541,19 @@ EOG, submental chin EMG and, in the cassette subset, oro-nasal respiration and r
 temperature, and
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) tabulates the dataset as
 2 channels at 100 Hz, the two EEG derivations only.
-[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is the
-stronger case, because there the exclusion is a protocol requirement rather than a modelling choice:
-the three EOG channels "are provided for the subsequent application of artifact processing methods
-and must not be used for classification", and the card records that no suite states what it did.
+[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is still
+the case where the exclusion is a protocol requirement rather than a modelling choice, but the
+requirement is weaker than this section previously said. **Corrected in the Phase 4 audit:** the
+string "must not be used for classification" does **not** occur in that card's source, and the one
+occurrence of "must not be used" in the review belongs to data set **2b**, not 2a. What the source
+establishes for 2a is that the three EOG channels "are provided for the subsequent application of
+artifact processing methods (Fatourechi et al.,2007)" and that the *submitted software* "was
+required to remove EOG artifacts before the subsequent data processing". The official Brunner
+description, which the earlier claim was attributed to, was dropped from `source.md` by a 2026-08-01
+extraction regeneration and is no longer in the corpus. So the protocol requires artifact removal;
+whether it prohibits classification from the ocular channels is not sourceable here. The card's
+downstream observation survives on that weaker footing: no suite carded here states what it did with
+those channels or with the mandatory removal step.
 
 **The candidate strand: the channels exist, in quantity, and their status turns on what the source's
 own analysis did with them.** Eight of eleven datasets carry EEG alongside at least one peripheral
@@ -512,7 +584,7 @@ has than to a new source.
 **Three crossings the ontologies cannot make.**
 
 *The same discard, three justifications, no measurement.* The models strand drops the channels as out
-of contract, the benchmark strand as not-EEG or as protocol-prohibited, and the fusion strand argues
+of contract, the benchmark strand as not-EEG or as required-to-be-removed-as-artifact, and the fusion strand argues
 simultaneously that ocular activity is artifact
 ([mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md),
 [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md))
@@ -540,9 +612,11 @@ no arms at all ([strum-2018](../collection/candidate-datasets/strum-2018/card.md
 
 **Different words for the same channels.** The fusion strand calls them the *peripheral branch*; the
 models strand calls them *auxiliary channels*
-([bendr-2021](../collection/eeg-models/bendr-2021/card.md)); the format strand calls them a channel
-*type*, EEG / EOG / ECG / EMG / MISC in `channels.tsv`
-([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)); and the candidate strand sorts them
+([bendr-2021](../collection/eeg-models/bendr-2021/card.md)); the format strand distinguishes them
+from electrodes and gives them a per-channel metadata file, `channels.tsv`, which "can contain
+information not present in the raw EEG data file such as filter settings and channel status
+(good/bad)" ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)); and the candidate
+strand sorts them
 by *use* — signal versus artifact reference — according to what the source's own analysis did
 ([deap-2012](../collection/candidate-datasets/deap-2012/card.md), whose four EOG and four EMG
 electrodes are simultaneously the standard artifact references and, in an affect paradigm, the
@@ -569,15 +643,28 @@ use.
   [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
   and the EEG+ECG cell of
   [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)'s
-  grid; the two inconsistent entries both carry split or provenance flags.
+  grid; the two inconsistent entries both carry split or provenance flags. One of the three
+  redundancy entries states its own resolution limit, which the Phase 4 audit recovered from its
+  Results prose: "Using the assumption of a binomial distribution, significance (p < 0.05) is reached
+  for differences of around 10%", against a measured fusion increment of 3–5%. Its null is therefore
+  "no gain larger than the study can see", not "no gain" — see §7.
+- What the cardiac channel is worth *alone* now has a number in that entry, where it previously had
+  none: per-sensor 2-back-versus-0-back accuracies of EEG 0.86, eye 0.75, respiration 0.70, skin
+  conductance 0.63 and **ECG 0.61**, the last two "just reaching a level that is significantly higher
+  than chance (p < 0.05)"
+  ([hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)).
+  Whether that ordering holds for a stimulus-modality contrast rather than for workload is untested,
+  which the card says about itself.
 - Whether the peripheral foundation models work as fusion components is untested by the papers that
   propose them: [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) is framed as
   "both a feature extractor and an encoder for multimodal models" and "no multimodal experiment
   appears in the evaluation".
-- Whether published results on the one dataset with an explicit prohibition complied with it is not
-  determinable: no suite carded here states what it did with
+- Whether published results on the one dataset with a stated ocular-artifact requirement complied
+  with it is not determinable: no suite carded here states what it did with
   [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md)'s EOG
-  channels or its mandatory artifact-removal step.
+  channels or its mandatory artifact-removal step. Note that after the Phase 4 audit the corpus no
+  longer holds a source for a *prohibition* on classifying from those channels for data set 2a; the
+  requirement it does hold is removal before further processing.
 
 ---
 
@@ -626,8 +713,10 @@ preprocessing.
 [snoek-2019-confound-control](../collection/candidate-datasets/snoek-2019-confound-control/card.md)
 establishes that of the two obvious ways to remove an identified confound, post hoc counterbalancing
 biases accuracy upward and confound regression biases it downward far enough to produce significant
-below-chance performance, and only confound regression performed inside every cross-validation fold
-is unbiased. [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md)
+below-chance performance, and only confound regression performed "in every fold of the
+cross-validation routine" restores "plausible (above chance) model performance" — the card's
+corrected wording, in place of "unbiased", which its abstract-only source does not support.
+[hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md)
 relies on ICA rather than on a recorded ocular channel for artifact removal, which is the case
 [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
 reports as insufficient. And
@@ -674,8 +763,13 @@ text, so what re-referencing has already been applied to the released data is un
 - Whether preprocessing choices change conclusions is measurable in exactly one tool and measured by
   nobody: [makowski-2021-neurokit2](../collection/multimodal-biosignals/makowski-2021-neurokit2/card.md)'s
   `method` argument propagates through the internal functions "so that the sensitivity of a result to
-  preprocessing choices is measurable rather than assumed", and the card records that the validation
-  evidence behind "validated pipelines" is itself not accessible.
+  preprocessing choices is measurable rather than assumed". The validation behind "validated
+  pipelines" is a related but distinct absence, restated after the Phase 4 audit: the article *does*
+  name the R-peak benchmark's criteria — robustness, efficiency and accuracy against known R-peak
+  locations — and then defers its **results** to the package's own documentation rather than
+  reporting them. That is a pointer elsewhere by the paper, not an extraction failure as an earlier
+  version of this bullet had it, and it matters because a documentation page is a moving target and
+  an article is not.
 
 ---
 
@@ -700,7 +794,14 @@ against. The corpus uses six kinds of reference point interchangeably and they a
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)'s per-dataset margins run
 from −0.08 to +15.00 with no interval reported for any cell, and its BCI-IV-2a row has nine subjects;
 [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
-puts the error bar at ±15 / ±10 / ±6 / ±3 points at n = 30 / 100 / 300 / 1000, and records that "the
+puts the error bar at roughly ±15 / ±10 / ±6 / ±3 points at n = 30 / 100 / 300 / 1000 — **but only
+the n = 100 row survives the Phase 4 audit as sourced.** That table's body is not in the committed
+extraction, and of the four rows only n = 100 is stated in prose anywhere ("A typical sample size in
+neuroimaging, 100 observations, leads to ±10% errors in prediction accuracy"); the other three are
+now marked unverified on the card, and any use of them here inherits that mark. The nearest supported
+values are the paper's Figure 1 figures, which at n = 30 read −20%/+18% (simulation, leave-one-out)
+and −15%/+12% (binomial), at n = 300 −6%/+6%, and at n = 1000 −3%/+3% — that is, the summary is
+*optimistic* at small n relative to the paper's own simulations. The card also records that "the
 standard error across folds strongly underestimates them" — worst, at a factor of 0.26, for the
 scheme with the best true error bars. The measurement strand holds the bound; the model strand's
 within-paper ablations and the fusion strand's deltas are reported with no bound attached at all, and
@@ -709,6 +810,20 @@ several fusion entries report an accuracy with no chance level or class balance
 [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md),
 [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md),
 whose card says "multiclass" without a class count "makes 0.8780 uninterpretable as an effect size").
+
+**Exactly one entry states its own resolution and then reports an effect inside it, and the Phase 4
+audit is what put the pair on the same card.**
+[hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
+gives the threshold — "Using the assumption of a binomial distribution, significance (p < 0.05) is
+reached for differences of around 10%" — and gives its fusion increment over EEG alone as "3-5%".
+The two together turn what the corpus elsewhere reads as a fusion null into a bound: this study can
+exclude a 10-point gain from adding a peripheral sensor group and cannot exclude a 3-point one. That
+is the only place in the corpus where an effect size and the study's own detectable minimum are both
+stated, and it is a warning about every other fusion delta in §5, all of which are reported with no
+resolution attached. Two further first-party numbers arrived with it: adding *time of measurement*
+as a feature raises the physiology model by 9% and does nothing for EEG, and the eye measures come
+from a Tobii T60 eye-tracker rather than from electrooculography electrodes, which bounds how far
+that card's eye-channel result can be carried into an EOG argument.
 
 **A quoted comparator is not a measured one, and the corpus contains the hazard in two strands.**
 [guetschel-2024-representation-learning-review](../collection/eeg-models/guetschel-2024-representation-learning-review/card.md)
@@ -766,10 +881,23 @@ label-permutation control at 0.500), and only one entry reports more than one of
   uses it: TUAB "may already have saturated (85-87% accuracy) with traditional approaches", and only
   four of ten reviewed models can be ranked even on TUAB and TUEV
   ([kuruppu-2025-critical-review](../collection/eeg-models/kuruppu-2025-critical-review/card.md)).
-- The behavioural read-out criterion is unavailable where it is most needed:
-  [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)'s
-  card records that a passive stimulus condition with no task response has no correct/incorrect split
-  to condition on.
+- The behavioural read-out criterion is both insufficient by its source's own argument and
+  unavailable where it would be needed:
+  [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)
+  argues that "linkages to behaviour do not show that the information is actually formatted in a
+  useable way" (corrected in the Phase 4 audit — an earlier reading had the paper proposing the
+  criterion rather than rejecting it), and its card separately records that a passive stimulus
+  condition with no task response has no correct/incorrect split to condition on. What replaces it —
+  predicting behaviour from the geometry of the activation space — has no reference point in this
+  corpus at all.
+- What the engineered-feature comparator actually is has stopped being a single number, in the entry
+  that would supply it: the Phase 4 audit recovered
+  [haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md)'s
+  per-study table, and the accuracies in it span 0.755 to 1.0 over different constructs, sensors,
+  cohort sizes from 8 to 50 participants, and mostly unstated split protocols. Its card's own reading
+  is that this "is a distribution of published accuracies, not a threshold to beat" — and one row,
+  [97], reports HRV alone at 80% against about 77% for HRV plus electrodermal activity, a
+  within-review instance of adding a peripheral channel and the accuracy going down.
 
 ---
 
@@ -819,11 +947,16 @@ source of hours and [openneuro](../collection/datasets-benchmarks/openneuro/card
 dataset count.
 
 **Hours are not a comparable unit across the corpus.** Four EEG checkpoints never report hours at all
-and their cards say so rather than computing a substitute
 ([bendr-2021](../collection/eeg-models/bendr-2021/card.md),
 [biot-2023](../collection/eeg-models/biot-2023/card.md),
 [eegpt-2024](../collection/eeg-models/eegpt-2024/card.md),
-[banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md)).
+[banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md)),
+and three of the four cards say so rather than computing a substitute. The fourth stopped doing so in
+the Phase 4 audit: Banville's card now reconstructs about **7,430 hours** for PC18 from Table 1's
+891,668 non-overlapping 30 s windows, while recording that the same reconstruction fails for TUHab
+because each recording is cropped to at most 20 minutes. That is the general shape — an hours figure
+in this corpus is as often an arithmetic reconstruction from a window count as a reported total, and
+the two are not the same quantity.
 [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md)'s headline "29.1 years" is
 summed over channels and its card records that it "is routinely misquoted as recording duration".
 And the one proposed replacement unit, *channel-hours*, is recorded by its own card as conflating a
@@ -928,7 +1061,10 @@ draw and then pool into one leaderboard.
   of its ten checkpoints was pretrained on any of its 54 evaluation datasets.
 - Whether the field's most reported partition is even patient-disjoint is not asserted anywhere the
   corpus could read: [tuab](../collection/datasets-benchmarks/tuab/card.md)'s thesis describes the
-  data as "divided into two sets" without asserting that no patient contributes to both, the parent
+  data as "divided into two sets" without asserting that no patient contributes to both. The Phase 4
+  audit narrowed this without closing it — the thesis's file-statistics tables do carry a `Patients`
+  column, giving 2,138 training and 253 evaluation patients, and counting patients separately on each
+  side is *consistent with* disjointness but does not state it. The parent
   archive averages 1.56 sessions per patient with one patient contributing 37
   ([tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md)), and the release's
   `_AAREADME` sits behind the registration wall.
@@ -1043,9 +1179,17 @@ checkpoint-to-corpus fact in the benchmark strand traces to
 [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)'s Table 1, and so do the *dataset*
 parameters: TUAB's 2,383 subjects, TUEV's 370, Sleep-EDF's 78 and BCI-IV-2a's 5,184 are all benchmark
 preparation figures, and each of the four cards says so
-([tuab](../collection/datasets-benchmarks/tuab/card.md) calling 2,383 "a benchmark artefact",
-[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) recording
-that 5,184 "is arithmetic (9 × 2 × 288), not a figure stated by either source"). The hazard is that a
+([bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) recording
+that 5,184 "is arithmetic (9 × 2 × 288), not a figure stated by either source"). **One of the four
+changed in the Phase 4 audit and it is the one this mechanism leaned on hardest.**
+[tuab](../collection/datasets-benchmarks/tuab/card.md) no longer calls 2,383 "a benchmark artefact",
+because the thesis the corpus names as TUAB's description does state a patient count after all — its
+file-statistics tables give 2,138 training plus 253 evaluation, i.e. 2,391. So the corpus now holds
+two subject counts for TUAB, eight apart, one from the naming document and one from AdaBrain-Bench's
+preparation, and the card records that whether the difference is a release difference, an exclusion
+or a counting convention "is not determinable from either source". The mechanism survives with one
+fewer clean instance: three of the four remain figures with no primary at all, while TUAB is now a
+figure with a primary that disagrees with it. The hazard is that a
 reader counts five cards as five corroborations. The aggravating fact is that the single source is
 internally inconsistent about exactly the fields it propagates: EEGPT at 198 h in Table 7 against 246
 in the body, CBraMod at 9,246 against ~27,000, LaBraM at 2,535 h and 136 channels against ~2,500 h and
@@ -1056,7 +1200,16 @@ re-runs another entry's model, so every cross-entry comparison is a quotation. D
 87.5% first-party ([liu-2022-multimodal-robustness](../collection/multimodal-biosignals/liu-2022-multimodal-robustness/card.md))
 and 78.74 in a comparator table
 ([ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)),
-an 8.8-point spread that turns a claimed 10.4-point margin into 1.6.
+an 8.8-point spread that turns a claimed 10.4-point margin into 1.6. The Phase 4 audit added a second
+reason not to read that ranking as a comparison: Ding's own evaluation is now known to be
+**subject-dependent five-fold cross-validation pooled over all subjects** ("Regarding the five-fold
+cross-validation on data from all subjects"; "Figure 5 presents the subject-dependent recognition
+accuracy results"), where the card previously recorded the split as unstated. Its 94.88 / 95.26 /
+89.12 figures therefore leave the comparable set entirely, and the card says so — they "must not be
+compared with leave-one-subject-out or GroupKFold numbers elsewhere in the corpus". The inherited
+differences the mechanism names now include whether the comparator was evaluated subject-dependently
+at all. (The SEED-IV figure itself is also no longer settled: the paper gives 89.12 in Table 4 and
+89.32 in Section 3.2, and the card adopts neither.)
 
 **Mechanism 4 — same-paper card divergence, which is a defect in our records rather than a fact about
 the field.** This is the one that only a reader holding all four ontologies can count. The corpus
@@ -1065,7 +1218,7 @@ carries four identifiers in two strands each, and **all four pairs diverge**:
 | identifier | divergence | filed by |
 |---|---|---|
 | AdaBrain-Bench | LaBraM at 137 channels from the body, unflagged ([adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md)) against 136 from Table 7 with the conflict flagged ([adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)); and EEGPT at 246 h against 198 h, same pair of cards | pilot §6.1 and `datasets-benchmarks` §8.1 |
-| EEG-BIDS | `electrodes.tsv` recorded as flatly "recommended, not required" ([eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md)) against the source stating the requirement level two ways with the ambiguity flagged ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)); plus "only two" formats against four permitted | `candidate-datasets` §9.1a and `datasets-benchmarks` §8.1 |
+| EEG-BIDS | `electrodes.tsv` recorded as flatly "recommended, not required" ([eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md)) against the source stating the requirement level two ways with the ambiguity flagged ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)). **The formats half of this row closed in the Phase 4 audit**: the candidate card said "only two recommended official data formats" and now records all four — EDF and BrainVision as official, EEGLAB `.set`/`.fdt` and BioSemi `.bdf` as "unofficial" but allowed — which is what the benchmark card already said. The two cards now agree on formats and diverge only on the sidecar requirement level | `candidate-datasets` §9.1a and `datasets-benchmarks` §8.1 |
 | OpenNeuro | the abstract's rounded figures ([openneuro-2021](../collection/candidate-datasets/openneuro-2021/card.md)) against exact figures plus three flagged internal inconsistencies including the unreconciled 604-versus-502 gap ([openneuro](../collection/datasets-benchmarks/openneuro/card.md)) | `candidate-datasets` §9.1a |
 | Sleep-EDF | "roughly 3,450 hours by arithmetic" ([sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md)) against an explicit refusal to compute a total ([sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md)) | `candidate-datasets` §9.1a |
 
@@ -1091,10 +1244,15 @@ that parameter count does not order the models rests specifically on BENDR being
 its panel and not the best; under either of the two smaller figures it is among the smallest. Second,
 BENDR is one of the ten checkpoints over which
 [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) computes its
-log-parameter-count correlation with per-dataset rank (ρ = −0.21), and that suite's own per-model
-counts are not recoverable from what was read of it. A published correlation is therefore computed
-over a quantity this corpus holds at three orders of magnitude of spread, with no way to check which
-value entered it.
+log-parameter-count correlation with per-dataset rank (ρ = −0.21). **Corrected in the Phase 4 audit:**
+an earlier version of this passage said that suite's per-model counts "are not recoverable from what
+was read of it". They are — Supplementary Table 2 is present in the extraction and carries a
+`#Params` column for all ten checkpoints. So the published correlation *can* be checked against the
+figure that entered it; what the corpus lacks is a card that carries those counts, which is a
+carding gap rather than a source gap. The point about spread stands on its own: a quantity this
+corpus holds at three orders of magnitude across three other sources is being correlated against
+rank, and reconciling the suite's figure with the other three is now a retrievable task rather than
+an impossible one.
 
 **Two more that are load-bearing across strands.** BIOT's fixed channel count is 16 in its own paper
 ([biot-2023](../collection/eeg-models/biot-2023/card.md), "the common 16 bipolar montage channels")
@@ -1107,18 +1265,95 @@ strands — as an inferred modality tag
 ([li-2023-incongruity-fusion](../collection/multimodal-biosignals/li-2023-incongruity-fusion/card.md),
 marked provisional by its own card), as an enumeration of eight peripheral channels containing no ECG
 ([ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)),
-and as an unresolved self-contradiction inside the DEAP paper itself, one enumeration naming
-"electrocardiogram" while the sensor-placement figure does not
-([deap-2012](../collection/candidate-datasets/deap-2012/card.md)). The candidate card names why it
+and as an unresolved self-contradiction inside the DEAP paper itself
+([deap-2012](../collection/candidate-datasets/deap-2012/card.md)). The third of those three was
+sharpened in the Phase 4 audit and the sharpening runs *toward* this theme rather than against it.
+The contradiction holds between **four** passages, not two, and they split evenly: Section 6.1's
+enumeration names "electrocardiogram", and the preprocessing description refers to "each ECG and GSR
+channel" as shipped; against them, the Fig. 3 sensor-placement caption enumerates four EOG, four EMG,
+GSR, blood volume pressure, temperature and respiration with no cardiac electrode, and Table 5's
+peripheral feature table puts heart rate and heart-rate variability under **blood volume pressure**
+rather than under an ECG row. The earlier card resolved that split against ECG under a
+figure-over-prose rule and stated that it "does not assert that DEAP carries ECG"; with two passages
+each way the resolution was a coin-flip presented as a rule application, and the card now records
+both readings and picks neither. Its frontmatter still omits `ecg`, which the card now says reflects
+the unresolved state rather than a finding of absence — a distinction anything reading the modality
+tags mechanically will not see. The candidate card names why it
 matters rather than treating it as pedantry: "blood volume pulse and ECG support different
 heart-rate-variability measures, and the third comparison would be built on whichever one is actually
 there".
 
-**Source self-contradiction is a property of the corpus rather than of any entry.** Fourteen of 22
-`eeg-models` entries, fourteen of 18 `datasets-benchmarks` entries and seven of 19
-`candidate-datasets` entries carry at least one, each recorded faithfully by its own card with both
-readings preserved. This is the second kind of contradiction and conflating it with the first would be
-a defect: the disagreement is in the literature, not in our records.
+**A fifth class arrived with the Phase 4 audit: values the corpus can no longer source, kept rather
+than deleted, and marked.** This is neither a disagreement in the literature nor a divergence between
+our cards; it is a number that was carded as sourced and turns out not to be checkable against the
+archived source, retained with an explicit mark so that a later reader neither propagates it silently
+nor loses it. Four instances, and anything downstream that treats them as settled has to carry the
+same mark:
+
+- [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
+  — Table 1's body is absent from the extraction and only its caption survives, truncated. Of the
+  confidence bounds this document quotes in §7, only the n = 100 row is stated in prose anywhere; the
+  n = 30, 300 and 1000 rows are marked unverified.
+- [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md) — all four numbered tables
+  came through as captions with empty bodies, and re-extraction does not help because the bodies are
+  not in the PDF's text layer either. Thirteen carded values are unverifiable; the Dataset II triple
+  is corroborated by a prose margin ("improvements of 5.25% and 4.15%"), Dataset I is corroborated
+  only against FBCSP, and Dataset III's 95.30 / 94.24 / 86.08 rest on nothing in the committed corpus.
+  This document does not quote any of them, and no ontology or Phase 4 document should without
+  re-obtaining the tables.
+- [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) — the widely repeated claim
+  that several subjects have anomalous run timings and are routinely excluded is now marked
+  unverified: it is field knowledge, it is not on the landing page, and no source read in this corpus
+  states it.
+- [deap-2012](../collection/candidate-datasets/deap-2012/card.md) — the 128 Hz preprocessed sampling
+  rate, which the string "128 Hz" does not support anywhere in the paper; the only down-sampling rate
+  DEAP states is 256 Hz.
+
+The hazard is the mirror image of mechanism 2's. There, a reader counts five cards as five
+corroborations; here, a reader counts a marked value as an unmarked one because the mark lives on the
+card and the number travels without it.
+
+**Source self-contradiction is a property of the corpus rather than of any entry.** Each card records
+its own faithfully, with both readings preserved. This is the second kind of contradiction and
+conflating it with the first would be a defect: the disagreement is in the literature, not in our
+records.
+
+*The counts, recomputed against the cards after the Phase 4 audit, and why they differ from the
+per-strand registers.* Counting a card only where **its own primary source** says two incompatible
+things about the same quantity — excluding disagreements between two different sources, excluding
+typographical slips, and excluding ambiguities the card itself calls reconcilable — the figures are
+**9 of 22** `eeg-models`, **11 of 18** `datasets-benchmarks` and **3 of 19** `candidate-datasets`.
+An earlier version of this paragraph gave 14, 14 and 7, taken from the per-strand registers, which
+count more loosely: they admit cross-source disagreements such as
+[lsl-2024](../collection/candidate-datasets/lsl-2024/card.md)'s 267-channel BioSemi against
+[strum-2018](../collection/candidate-datasets/strum-2018/card.md)'s 269, and
+[tuev](../collection/datasets-benchmarks/tuev/card.md)'s three channel counts from three different
+documents. Both counts are defensible and they answer different questions; the reason to state the
+narrow one here is that this section's whole point is to keep contradiction *in the literature* apart
+from contradiction *in our records*, and a cross-source disagreement is neither.
+
+The audit moved these figures upward, not downward, which is worth saying because the audit's
+headline effect elsewhere was to *remove* false claims. New source self-contradictions were carded on
+[ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
+(SEED-IV at 89.12 in Table 4 and 89.32 in the body),
+[kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
+(the hierarchical-feature gain at 2–4% in the abstract and 9–15% in the Results, a factor of three to
+five apart),
+[papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) (6.3 / 2.9 against ranges of
+4.7–6.3 and 2.9–4.9, so the abstract's pair is the top of one range and the bottom of the other),
+[wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
+(the VitalDB denominator at 6,388 and 5,543, only the first of which reconciles with the exclusion
+arithmetic), [tuab](../collection/datasets-benchmarks/tuab/card.md) (HMM-SdA at 22.9% in the body and
+22.1% in Table 16), [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
+(100 simulated features in Appendix C.1 and 300 in the Figure A3 caption),
+[simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)
+(body text against Table 2 on the written-word mean and all three standard deviations), and
+[luna-2025](../collection/eeg-models/luna-2025/card.md) (an abstract pairing TUAB's figure from Huge
+with SEED-V's from Large, with no single variant achieving both).
+[deap-2012](../collection/candidate-datasets/deap-2012/card.md)'s was not new but was doubled, from
+two passages to four. A corpus audit that looks for false absence claims finds source
+self-contradictions as a by-product, because both are found by the same act — reading the table
+against the prose.
 
 **Open questions the literature leaves.**
 
@@ -1184,16 +1419,42 @@ a card that states the usage.
 | the nuisance variable that is more decodable than the label | the identity trap, dataset identity ([lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md), [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md)) | covariate shift, improper partitioning ([kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)) | trial fingerprints, confound ([rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md)) | exemplar rather than category; confound ([simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)) |
 | a set of electrode positions | electrode layout, and "montage" loosely ([reve-2025](../collection/eeg-models/reve-2025/card.md)) | electrodes and coordinate system, distinguished from channels ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)) | — | montage, used for a cap layout ([strum-2018](../collection/candidate-datasets/strum-2018/card.md)) |
 | a difference between two electrodes | bipolar derivation, or a channel name ([biot-2023](../collection/eeg-models/biot-2023/card.md)) | montage, derivation and re-referencing in one sentence ([edf-plus](../collection/datasets-benchmarks/edf-plus/card.md)) | — | derivation scheme ([sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md)) |
-| a segment of signal fed to a model | window, patch ([eegpt-2024](../collection/eeg-models/eegpt-2024/card.md)) | window; also data record, sleep interval, and training pass, all as "epoch" ([edf-plus](../collection/datasets-benchmarks/edf-plus/card.md), [mne-python](../collection/datasets-benchmarks/mne-python/card.md)) | window, segment, epoch ([kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)) | trial, epoch ([strum-2018](../collection/candidate-datasets/strum-2018/card.md)) |
-| a non-EEG channel on the same recording | auxiliary channel, dropped ([bendr-2021](../collection/eeg-models/bendr-2021/card.md)) | channel type in `channels.tsv`; artifact reference ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md), [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md)) | the peripheral branch, the peripheral modality ([ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)) | signal versus artifact reference, decided by what the source's analysis did ([deap-2012](../collection/candidate-datasets/deap-2012/card.md)) |
-| ocular measurement | not represented | channel type `EOG` ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)) | `eog` as a controlled tag covering both electrooculography and eye tracking, with six cards recording the substitution ([wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)) | EOG channels, with their placements recorded ([boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md)) |
+| a segment of signal fed to a model | window, patch ([eegpt-2024](../collection/eeg-models/eegpt-2024/card.md)); "epoch" as a training pass ([adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)'s "50 epochs") | window; also data record and sleep-scoring interval, both as "epoch", with no scoring length stated ([edf-plus](../collection/datasets-benchmarks/edf-plus/card.md)); "epoch" and "trial" as synonyms for the segment ([mne-python](../collection/datasets-benchmarks/mne-python/card.md)) | window, segment, epoch ([kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)) | trial, epoch ([strum-2018](../collection/candidate-datasets/strum-2018/card.md)) |
+| a non-EEG channel on the same recording | auxiliary channel, dropped ([bendr-2021](../collection/eeg-models/bendr-2021/card.md)); a row in a channel-name vocabulary, for one ECG lead ([biot-2023](../collection/eeg-models/biot-2023/card.md)) | a channel with its own metadata row in `channels.tsv`, distinguished from an electrode ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)); artifact reference to be removed before processing ([bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md)) | the peripheral branch, the peripheral modality ([ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)) | signal versus artifact reference, decided by what the source's analysis did ([deap-2012](../collection/candidate-datasets/deap-2012/card.md)) |
+| ocular measurement | not represented | the channels a submission must remove artifacts from, never named as a type in either BIDS card's source ([bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md)) | `eog` as a controlled tag covering both electrooculography and video eye tracking, with seven cards recording the substitution ([wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)) | EOG channels, with their placements recorded ([boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md)) |
 | evaluating on data the model was trained on | in-domain evaluation ([zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md)) | pretraining-to-evaluation overlap, leakage ([neuralbench](../collection/datasets-benchmarks/neuralbench/card.md)) | — | not named |
 | the reference a result is measured against | baseline, meaning the same architecture unpretrained ([cbramod-2025](../collection/eeg-models/cbramod-2025/card.md)) | supervised comparator, dummy, chance, ceiling ([neuralbench](../collection/datasets-benchmarks/neuralbench/card.md)) | unimodal arm, EEG-only arm ([angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)) | ground truth, label source ([hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md)) |
 
-The `eog` row is worth reading twice. The fusion strand's controlled vocabulary was fixed so a
-modality matrix could be built mechanically, and it is doing that job — but six of its entries carry
-an `eog` tag whose instrument is an eye tracker rather than electrooculography electrodes, and every
-one of those cards states the substitution itself. The format strand's `channels.tsv` type is the only
-machine-readable version of the same distinction anywhere in the corpus, and it records the electrode
-type, not the instrument. The candidate strand records placements. Three levels of specificity, one
-tag.
+The `eog` row is worth reading twice, and its membership was recomputed after the Phase 4 audit. The
+fusion strand's controlled vocabulary was fixed so a modality matrix could be built mechanically, and
+it is doing that job — but **seven** of its entries carry an `eog` tag whose instrument is a video
+eye tracker rather than electrooculography electrodes, and every one of those cards states the
+substitution itself:
+[ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md),
+[angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md),
+[ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md),
+[hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md),
+[liu-2022-multimodal-robustness](../collection/multimodal-biosignals/liu-2022-multimodal-robustness/card.md),
+[wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
+and [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md).
+Two moves produced that seven and they run in opposite directions. Hogervorst joined it in the Phase 4
+audit, which established that its eye measures come from "a **Tobii T60 eye-tracker monitor**, not
+from electrooculography electrodes" — a fact its card now flags precisely because the card's
+eye-channel result had been available to be carried into an EOG argument. And
+[mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
+left it in an earlier correction: the source records vertical and horizontal electrooculogram
+alongside an EyeLink 1000, so that entry carries both instruments rather than substituting one for
+the other.
+
+The rest of the row is now weaker than it was. An earlier version said the format strand's
+`channels.tsv` *type* field is "the only machine-readable version of the same distinction anywhere in
+the corpus". Neither BIDS card supports that: the strings "EOG", "ECG", "EMG" and "MISC" do not occur
+in [eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md)'s source and that card was
+corrected for importing them from the live specification, while
+[eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) says only that `channels.tsv` "can
+contain information not present in the raw EEG data file such as filter settings and channel status
+(good/bad)" and records that the column specifications are in a figure that did not survive
+extraction. So the machine-readable type vocabulary is real in BIDS today and is **not in this
+corpus**; what the format strand actually contributes here is the electrode-versus-channel
+distinction. The candidate strand records placements. Three levels of specificity, one tag, and the
+one level that would be mechanically checkable is the level the corpus does not hold.

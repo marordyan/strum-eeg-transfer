@@ -58,7 +58,7 @@ routinely uses one word for all four.
 |---|---|---|
 | **archive** | a container that distributes many recordings under one access route and, sometimes, one licence | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md), [openneuro](../collection/datasets-benchmarks/openneuro/card.md), PhysioNet, [nemar-2022](../collection/candidate-datasets/nemar-2022/card.md) |
 | **acquisition** | the recording as performed: participants, channels, sampling rate, reference, peripheral inventory, task | the 16,986 Temple University sessions; STRUM's 28 pair-sessions |
-| **release** | the distributed artifact: files, format, version, licence, access route, and any partition that ships with it | TUAB v3.0.1's fixed train/evaluation split; DEAP's 128 Hz preprocessed version against its 512 Hz acquisition |
+| **release** | the distributed artifact: files, format, version, licence, access route, and any partition that ships with it | TUAB v3.0.1's fixed train/evaluation split; DEAP's preprocessed version against its 512 Hz acquisition (the rate of that preprocessed release is *unverified* — see §3.1) |
 | **preparation** | one consumer's version: channel selection, re-derivation, resampling, windowing, split | AdaBrain-Bench's TUAB at 23 channels in 10-second windows; BIOT's 16 bipolar derivations of TUEV |
 
 Every level below the archive can be renamed, re-channelled and re-partitioned without any statement
@@ -120,12 +120,23 @@ counts separately from its parent archive, because it has its own release and it
 Archives, registries, formats and frameworks are *not* recordings and are counted separately in
 §2.0.
 
-On that rule the corpus's data layer holds **154 distinct recordings**:
+On that rule the corpus's data layer holds **156 distinct recordings**:
 
 | | count |
 |---|---|
 | **carded** — the recording has its own card directory | **14** (across 15 cards; Sleep-EDF is carded twice) |
-| **only named** — the recording appears solely inside another card's text | **140** |
+| **only named** — the recording appears solely inside another card's text | **142** |
+
+**The census was recomputed after the Phase 4 audit and moved by +2.** The audit corrected
+[brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) from naming nine of its eighteen
+datasets to naming all eighteen, and corrected a column misreading in the same table. Two changes
+follow. Three datasets enter the census that were not previously named anywhere in the corpus —
+**ADFD**, **ADHDAdult** and **ADHDChild**. And **Chisco-R and Chisco-I collapse to one recording**,
+Chisco: they are two tasks of one dataset, not two datasets, which is the same correction that
+removed "39 subjects each" from that card in favour of 5 subjects and 39 categories. Nine datasets
+are newly named on that card; six of them — ISRUC, SleepEDFx, DEAP, SEED-IV, EEGMat and EEGMMIDB
+(= PhysioNet-MI, by the alias clause) — were already in the census through another consumer, so only
+the three above are additions. Net: 154 → 156, and the only-named tail 140 → 142.
 
 The 14 carded recordings are exactly the 15 `type: dataset` cards, minus the Sleep-EDF duplicate:
 [strum-2018](../collection/candidate-datasets/strum-2018/card.md),
@@ -146,13 +157,19 @@ Sleep-EDF ([sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md) /
 
 Three properties of that count, each a fact about the record rather than about the field.
 
-**The 140 is a floor, not a total.** Two suites do not enumerate their scope on their cards.
+**The 142 is a floor, not a total.** Two suites do not enumerate their scope on their cards.
 [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) covers 54 datasets and its
-card names six, because "the detailed per-dataset accuracies live in supplementary tables 5, 6 and 7
-that are not part of the main text"; [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md)
+card names six — **and the reason changed in the Phase 4 audit**. An earlier version of this passage
+gave the reason as "the detailed per-dataset accuracies live in supplementary tables 5, 6 and 7 that
+are not part of the main text". Those tables *are* in the extraction: the card's own correction
+records that "Supplementary Tables 2, 5, 6 and 7 are all present, including the `#Params` column for
+all ten checkpoints". The forty-eight unnamed datasets are therefore a **carding** limit, not a
+source limit, and closing them is a re-read of a document already in the repository.
+[neuralbench](../collection/datasets-benchmarks/neuralbench/card.md)
 covers 94 datasets and its card names none of them by name, reaching them through MOABB and
-OpenNeuro instead. [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) names ten of its
-eighteen. Two pretraining corpora are likewise unenumerated at source:
+OpenNeuro instead. [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) named ten of its
+eighteen and now names **all eighteen** — its Table 2 was in the extraction all along, and the audit
+also corrected a column misreading on that card (see §2.7). Two pretraining corpora are likewise unenumerated at source:
 [reve-2025](../collection/eeg-models/reve-2025/card.md) names 92 datasets and accounts hours by
 archive rather than per dataset, and
 [brainwave](../collection/eeg-models/brainwave/card.md)'s 40,907 hours are "reported as a total and
@@ -190,14 +207,31 @@ licence and discoverability are actually decided.
   precisely, that "registration and a signed form are not a licence grant".
 - **[openneuro](../collection/datasets-benchmarks/openneuro/card.md) /
   [openneuro-2021](../collection/candidate-datasets/openneuro-2021/card.md)** — 604 datasets and
-  20,989 participants as of 9 October 2021, of which 81 scalp-EEG and 8 intracranial; median dataset
-  size 23 subjects; CC0 by default with no authentication; mandatory BIDS validation at submission;
+  20,989 participants as of 9 October 2021, of which 81 scalp-EEG and 8 intracranial; **median
+  dataset size 23 subjects, 31 studies over 100 subjects, maximum 928 — these three width figures are
+  computed over the 502 DataLad-accessible datasets rather than the 604**, a distinction the Phase 4
+  audit pinned to the Figure 3 analysis specifically. CC0 by default with no authentication;
+  mandatory BIDS validation at submission;
   snapshots as git tags with DOIs; GDPR-covered data excluded. CC0 is a default rather than a
-  guarantee, and the archive's GraphQL `advancedSearch` has no free-text field, so a zero result
+  guarantee — the paper calls it a data use agreement and distinguishes it from *restrictive* ones,
+  so the candidate card's "the only registry with no data use agreement at all" was corrected to the
+  narrower and correct claim that it requires no signature, registration or review — and the
+  archive's GraphQL `advancedSearch` has no free-text field, so a zero result
   means "nothing tagged", not "nothing exists".
 - **[nemar-2022](../collection/candidate-datasets/nemar-2022/card.md)** — the EEG/MEG/iEEG-scoped
   gateway over OpenNeuro, with per-dataset quality assessment and a handoff to San Diego
-  Supercomputer Center compute. Holds no data of its own; reports no dataset count.
+  Supercomputer Center compute. Holds no data of its own. **It does report a count, contrary to an
+  earlier version of this bullet**, and the Phase 4 audit recovered it: "As of February 2022, there
+  were 72 EEG datasets (from 2664 participants) on NEMAR, 22 MEG datasets (from 365 participants) and
+  12 iEEG datasets (from 202 participants)", of which 37 of the 72 EEG datasets are in the EEGLAB
+  format. That is the corpus's only per-modality inventory of an EEG registry, and it is small: 72
+  EEG datasets is the whole browsable EEG holding, which is why the registry sweep for a STRUM-like
+  dyadic corpus (scope diagram §3.4) had little to find. Two further figures on the same card: the
+  underlying archive is restated at "more than 644 open neuroimaging datasets from more than 22 000
+  participants", larger than the 604 / 20,989 the `openneuro` card carries because the two are
+  snapshots at different dates; and the `bids-matlab-tools` plug-in "had been downloaded 844 times"
+  as of January 2022. The card also narrows its own provenance note: the Swartz Center connection
+  rests on the author list, while the only institutional home the source states for the site is SDSC.
 - **PhysioNet** — host of [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) and
   [sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md), Open Data Commons Attribution
   v1.0, no registration, `wget` or `aws s3 sync --no-sign-request`. Not carded as an archive, though
@@ -215,9 +249,23 @@ licence and discoverability are actually decided.
   [lsl-2024](../collection/candidate-datasets/lsl-2024/card.md) and XDF, GDF, BrainVision, EEGLAB
   `.set`. What they make recordable is the `datasets-benchmarks` ontology's §6 and is not restated;
   what matters at this level is only that the file layer is where the specification fields of §3
-  either survive or do not — EDF+ stores channel labels and **has no mechanism at all for electrode
-  coordinates**, and `channels.tsv` is the only machine-readable statement of channel *type*
-  anywhere in the corpus.
+  either survive or do not — EDF+ stores channel labels and its specification page has **no mechanism
+  at all for electrode coordinates**, the word "coordinate" not occurring in it, an absence the Phase
+  4 audit bounded to the specification proper and not to its linked standard-texts document at
+  `edftexts.html`, which is not in the archived source. **The companion claim about `channels.tsv`
+  was withdrawn in the same audit** and this bullet no longer makes it: an earlier version said
+  `channels.tsv` is "the only machine-readable statement of channel *type* anywhere in the corpus".
+  Neither BIDS card supports that. The strings "EOG", "ECG", "EMG" and "MISC" do not occur in
+  [eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md)'s source, which was
+  corrected for importing the type vocabulary from the live specification and attributing it to a
+  2019 announcement paper; and [eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) says
+  only that `channels.tsv` "can contain information not present in the raw EEG data file such as
+  filter settings and channel status (good/bad)", recording that the column specifications sit in a
+  figure that did not survive extraction. What the format layer does contribute is the
+  electrode-versus-channel distinction, stated precisely, and the `electrodes.tsv` /
+  `coordsystem.json` pair. **The corpus therefore holds no machine-readable statement of channel type
+  at all** — which matters directly for §3.3, since that is the field a project would use to
+  enumerate a dataset's peripheral inventory mechanically.
 
 ### 2.1 The Temple University Hospital family
 
@@ -257,7 +305,7 @@ attaches to the *subset*, one level below the archive that supplies the signal.
 |---|---|---|
 | **PhysioNet-MI** (EEGMMIDB / PhysioMI / MMI) | [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) | pretraining substrate (EEGPT) **and** evaluation benchmark (REVE, CBraMod, LaBraM, BIOT, BENDR, BrainOmni, Lee's battery), **and** MOABB's largest dataset, **and** a Brain4FMs task |
 | **Sleep-EDF Expanded** (Sleep-EDFx / SSC) | [sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md), [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) | evaluation benchmark (AdaBrain-Bench, OmniEEG-Bench, Brain4FMs, NeuralBench, BENDR, EEGPT, Lee, Zare) **and** candidate fine-tuning corpus |
-| **PhysioNet/CinC Challenge 2018** (PC18) | only named | self-supervision substrate **and** evaluation set, both inside [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md) — 994 overnight recordings from 994 individuals, two of six channels retained |
+| **PhysioNet/CinC Challenge 2018** (PC18) | only named | self-supervision substrate **and** evaluation set, both inside [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md) — 994 overnight recordings from 994 individuals, two of six channels retained. The Phase 4 audit added a size: 891,668 non-overlapping 30 s windows, i.e. **about 7,430 hours**, reconstructed by the card rather than stated by the paper, where the card had previously said the duration "cannot be reconstructed". That reconstruction does still fail for the same paper's TUHab arm, whose recordings are cropped to at most 20 minutes each |
 | **PhysioNet 2021** (CinC ECG challenge) | only named | pretraining substrate for [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) |
 | **PhysioNet, as an archive line item** | not carded as such | 22,707 of [reve-2025](../collection/eeg-models/reve-2025/card.md)'s 61,415 pretraining hours, with no per-dataset breakout |
 | **PhysioP300** | only named | evaluation for [bendr-2021](../collection/eeg-models/bendr-2021/card.md) and [eegpt-2024](../collection/eeg-models/eegpt-2024/card.md) |
@@ -275,8 +323,9 @@ individual OpenNeuro datasets are named in the corpus: **`ds003670`**, which is
 [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) uses as one
 side of its dataset-identity probe — a linear probe separates it from CAUEEG on frozen REVE
 embeddings at AUROC 1.000. NEMAR is the EEG-scoped browsable layer over the same holdings, and its
-card notes the difference between "600 datasets, mostly MRI" and a browsable EEG inventory. STRUM is
-in neither.
+card notes the difference between "600 datasets, mostly MRI" and a browsable EEG inventory — a
+difference the Phase 4 audit put numbers to, at 72 EEG, 22 MEG and 12 iEEG datasets as of February
+2022 (§2.0). STRUM is in neither.
 
 ### 2.4 MOABB's twelve
 
@@ -370,17 +419,31 @@ among them, which makes BrainOmni the corpus's one checkpoint whose substrate is
 resting-state rather than clinical. Its four downstream sets — AD65, ASD74, MDD and SomatoMotor —
 are likewise named only.
 
-**Brain4FMs's named ten**, of which eight are new here
-([brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)): MAYO (iEEG, 25 subjects), FNUSA
-(iEEG, 14), Dep-BDI (122), MDD-64 (30 healthy + 43 MDD), SD-28 (28), UCSD (31 healthy + 15
-Parkinson's), Chisco-R and Chisco-I (125 channels, 500 Hz, 58.6 h, 39 subjects each). Eight of its
-eighteen are not named at all.
+**Brain4FMs's eighteen, all now named** ([brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)),
+**recomputed after the Phase 4 audit**, which established that Table 2 lists every one of them with
+signal type, task, subject count and number of categories, and that an earlier version of the card
+named only nine. Eleven are new here: MAYO (iEEG, drug-resistant epilepsy, 25 subjects), FNUSA
+(iEEG, 14), Dep-BDI (depression, 122), MDD-64 (30 healthy + 43 MDD), SD-28 (28), UCSD (31 healthy +
+15 Parkinson's), **ADFD** (Alzheimer's, 88), **ADHDAdult** (42 healthy + 37 ADHD), **ADHDChild** (60
+healthy + 61 ADHD), and **Chisco** (concept classification, **5 subjects, 39 categories**, 125
+channels, 500 Hz, 58.6 h). The remaining seven are carded or named elsewhere: CHB-MIT, ISRUC,
+SleepEDFx, DEAP, SEED-IV, EEGMat, EEGMMIDB and BCI-2a.
+
+Two corrections inside that list are worth carrying, because both were reading errors of a *column*
+rather than of a value. Chisco is **one** dataset with two subtasks (Chisco-R and Chisco-I), not two
+datasets, and its "39" is a class count read from the Appendix C table's last column, which is
+categories and not subjects — so the earlier "Chisco-R and Chisco-I ... 39 subjects each" was wrong
+twice over, and BCI-2a's "4 subject groups" was the same misread column (it has 9 subjects and 4
+classes). Both fed §1's census and are the reason it moved.
 
 **OmniEEG-Bench's six named**, of which four are new
 ([omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md)): PD31,
 Broderick-Cocktail-party, Broderick-reverse and Monitoring-Errp. The two Broderick sets are the
 corpus's nearest published analogue to a spoken-language contrast; forty-eight of the suite's
-fifty-four are unrecoverable from the card.
+fifty-four are absent from the card. **The Phase 4 audit changed what that absence means**: the card
+records that Supplementary Tables 2, 5, 6 and 7 are all present in `source.md`, so the remaining
+forty-eight are recoverable from a document already in the repository and are missing from the census
+because nobody read them across, not because they could not be read.
 
 **Named by one checkpoint or critique each** — FACED (CBraMod emotion downstream), BCI-IV-2b
 (EEGConformer's second dataset and an EEGPT evaluation set), KaggleERN / ERN (BENDR, EEGPT), ISRUC
@@ -421,7 +484,11 @@ The data layer of the third comparison. Twenty-two recordings, none carded, spli
   PPG-BP (219 subjects), nuMom2B, SDB (146) and VV (231, stratified over the six-level Fitzpatrick
   scale). VitalDB is dual-role: it is also the entire data source for
   [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md),
-  6,388 surgical patients reduced to 1,022 by an exclusion cascade.
+  6,388 surgical patients reduced to 1,022 by an exclusion cascade — though the Phase 4 audit
+  established that the denominator is stated two ways, 6,388 in the Figure 2 cascade and 5,543 in
+  Section 2.1, and that only the first reconciles with the arithmetic (6,388 − 5,366 = 1,022). Both
+  readings are recorded on the card and neither is adopted, so the surviving cohort is settled and
+  the fraction it represents is not.
 - **EEG-plus-peripheral affect and load corpora, named only** — WESAD, CASE, DREAMER, MAHNOB-HCI,
   ASCERTAIN (58 subjects), CLAS, MAUS, WAUC (48 subjects at three exercise levels), COLET (eye
   tracking), CL-Drive (21 subjects, the study's own release in
@@ -439,7 +506,10 @@ The data layer of the third comparison. Twenty-two recordings, none carded, spli
   CASE "distributes no EEG" — both recorded on
   [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md),
   which names them as its EEG-plus-ECG sources. Whether DEAP carries an ECG channel is held three
-  ways by three cards in two strands (science map §11).
+  ways by three cards in two strands (science map §11), and the Phase 4 audit widened the
+  source-internal half of that from two passages to four, split evenly, with the DEAP card now
+  picking neither reading — so DEAP's presence in this list is itself provisional on which reading
+  turns out to be right.
 
 ### 2.9 Study-own recordings with no released identity
 
@@ -458,7 +528,11 @@ structural-MRI cohort; [kothe-2023-nback-nirs](../collection/candidate-datasets/
 [alexander-2019-cortical-waves](../collection/eeg-models/alexander-2019-cortical-waves/card.md)'s
 20-subject 151-sensor CTF MEG cohort and its three-patient ECoG trio (ECOG1–3, no EEG anywhere);
 [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)'s
-MEG-plus-EyeLink recording at 1200 Hz;
+MEG-plus-EyeLink recording at 1200 Hz, which also carries vertical and horizontal electrooculogram at
+the same rate — 36 volunteers screened, 24 selected, **21 in the MEG analysis** after three
+data-quality exclusions, and either 20 or 17 in the eye-movement analyses depending on how "another
+four were excluded" is parsed. The Phase 4 audit established that this ambiguity is the paper's and
+not the extraction's, where the card had blamed a mangled sentence;
 [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md)'s
 16 participants at 64-channel EEG plus 4-channel EOG on a BioSemi ActiveTwo at 8,192 Hz — the
 highest sampling rate in the corpus.
@@ -470,10 +544,13 @@ EEG + single-lead ECG under VR video);
 and [schiecke-ccm-methods](../collection/multimodal-biosignals/schiecke-ccm-methods/card.md)
 (children with temporal lobe epilepsy, and a paranoid-schizophrenia cohort);
 [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
-(14 participants, EEG + skin conductance + respiration + ECG + pupil size + blinks, with body
-movement and visual input held constant);
+(14 analysed of 35 who took part, keeping only complete data sets, and 12 of the 14 for its 30 s
+analysis; EEG at Fz, FCz, Pz, C3, C4, F3, F4 mastoid-referenced at 256 Hz + skin conductance +
+respiration + ECG on a MindWare BioNex + pupil size and blinks from a **Tobii T60 eye-tracker**, not
+electrooculography electrodes, with body movement and visual input held constant);
 [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
-(40 analysed, eye tracking + heart rate, no EEG);
+(40 participants × 3 phases = **120 observations**, one aggregate feature vector per participant per
+phase rather than windows; eye tracking + heart rate, no EEG);
 [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md)'s
 inaccessible validation cohort;
 [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)'s
@@ -496,7 +573,7 @@ and used as [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md)
 ## 3. Specification
 
 The fields that decide what can ingest what. Values are given only for the 14 carded recordings,
-because for the other 140 the corpus holds at most a name, a subject count and a benchmark's
+because for the other 142 the corpus holds at most a name, a subject count and a benchmark's
 preparation row. Where the source is silent the cell says so; where the source reports it and the
 corpus could not read it, the cell says that instead, and §3.6 keeps the two apart.
 
@@ -508,12 +585,12 @@ corpus could not read it, the cell says that instead, and §3.6 keeps the two ap
 | [mous-2019](../collection/candidate-datasets/mous-2019/card.md) | 204, 102 reading and 102 listening | 1 per subject, plus MRI and fMRI | none — 275 MEG axial gradiometers | 1200 Hz, 300 Hz anti-aliasing cutoff |
 | [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) | 29 final (35 recruited) | **3 sessions one week apart**, 65–80 min of task each | 63 EEG (64 electrodes, TP9 given to ECG); **Cz absent for participants 1–9** | 500 Hz, 24-bit, 0.05 µV, no acquisition filtering |
 | [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md) | 20 recruited, 1 excluded; identifiers not stable across repeats | 62 sessions of 70–70.5 min, >783 stimulation trials | 32 at 10/10 sites, 9 stimulation electrodes interleaved | 2 kHz, amplifier bandwidth 0–520 Hz |
-| [deap-2012](../collection/candidate-datasets/deap-2012/card.md) | 32 (face video for the first 22) | 40 one-minute music videos each | 32 | 512 Hz acquired; the widely distributed preprocessed version is **128 Hz** |
+| [deap-2012](../collection/candidate-datasets/deap-2012/card.md) | 32 (face video for the first 22) | 40 one-minute music videos each | 32 | **512 Hz acquired, down-sampled to 256 Hz** in the paper's own processing. The widely repeated 128 Hz for the distributed preprocessed release is marked **unverified** after the Phase 4 audit: the string "128 Hz" does not occur anywhere in `source.md`, the only down-sampling rate the paper gives is 256 Hz, and the dataset page that would settle it was unreachable (§3.6) |
 | [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md) | 40 short-video; 17 individual + 20 in groups of four for long videos | 16 short clips, 4 long videos | 14, named | 128 Hz, 14-bit |
 | [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md) | 10 (6 actors, 1 director, 3 audience) | 6 rehearsals + 3 performances in one week; two ~1 h, one ~7 min | 28 EEG + 4 EOG of a 32-channel cap; **P01 has 31, CP6 removed** | 500 Hz |
 | [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) | 2 professional dancers | **10 sessions over 4 months**, 7 rehearsals + 3 performances | 28 EEG + 4 EOG | 1000 Hz |
 | Sleep-EDF ([sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md)) | not stated as a figure; 22 in the telemetry study | **197 whole-night polysomnograms** = 153 cassette + 44 telemetry; 3 cassette nights lost | 2 bipolar derivations | 100 Hz |
-| [tuab](../collection/datasets-benchmarks/tuab/card.md) | **not stated** — the thesis counts files; 2,383 is AdaBrain-Bench's preparation | 2,785 training + 280 evaluation files, all >15 min | **not stated for TUAB**; 31 (parent), 22 (thesis re-derivation), 23 (benchmark) | **not stated**; parent range 250/256/400/512 Hz |
+| [tuab](../collection/datasets-benchmarks/tuab/card.md) | **2,138 training + 253 evaluation = 2,391**, from the thesis's file-statistics tables, which carry a `Patients` column beside the `Files` column — **corrected in the Phase 4 audit** from "not stated". `adabrain-bench`'s 2,383 is a preparation figure and is eight patients away; neither source explains the gap | 2,785 training + 280 evaluation files, all >15 min | **not stated for TUAB**; 31 (parent), 22 (thesis re-derivation), 23 (benchmark) | **not stated**; parent range 250/256/400/512 Hz |
 | [tuev](../collection/datasets-benchmarks/tuev/card.md) | **not stated**; 370 is AdaBrain-Bench's preparation | not stated | **not stated**; 31 (parent), 23 (benchmark), 16 bipolar (field convention) | **not stated**; 256 Hz in the benchmark |
 | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) | 10,874, 51% female, ages <1 to >90; the reported "average 51.6, stdev 55.9" is not internally coherent | 16,986 sessions, 1.56 per patient, max 37 | 31 most common EEG-only, as few as 20; overview page says 24–36 | 250 Hz (87%), 256 (8.3%), 400 (3.8%), 512 (1%) |
 | [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) | 109, inferred from the manifest S001–S109; **the prose never gives a number** | 14 runs per participant | 64 on the 10-10 system | 160 Hz |
@@ -556,12 +633,12 @@ EEG-to-peripheral ratio is what any fusion architecture has to resolve, and it r
 | [mous-2019](../collection/candidate-datasets/mous-2019/card.md) | bipolar vertical EOG, horizontal EOG, ECG; plus analogue audio for the auditory subjects only. No respiration, no EDA | 1:1 at 1200 Hz |
 | [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) | **1 ECG channel, bought by sacrificing electrode TP9**. No EOG, no respiration | 1:1 at 500 Hz |
 | [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md) | bipolar lead-I ECG, bipolar horizontal EOG; single lead, so heart rate and HRV but not morphology | same amplifier; no separate rate stated |
-| [deap-2012](../collection/candidate-datasets/deap-2012/card.md) | 4 EOG + 4 EMG (zygomaticus, trapezius) + GSR + respiration + plethysmograph + temperature; the paper's two enumerations disagree about whether ECG is present | **no per-channel rates given for any peripheral channel** |
-| [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md) | 3-electrode ECG at 256 Hz, 12-bit; GSR (rate not stated); frontal HD and RGB-D video | 2:1 against 128 Hz EEG |
+| [deap-2012](../collection/candidate-datasets/deap-2012/card.md) | 4 EOG + 4 EMG (zygomaticus, trapezius) + GSR + respiration + plethysmograph + temperature; **four** passages disagree about whether ECG is present, two each way, and the card now picks neither (§6, science map §11) | all peripheral channels recorded at 512 Hz and "later down-sampled to 256Hz", per the paper; no separate per-channel rate |
+| [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md) | 3-electrode ECG at 256 Hz, 12-bit (two at the arm crooks, one at the left ankle as reference); 2-electrode GSR on the left hand at **128 Hz, 12-bit** — stated in the same sentence that names the module, and corrected in the Phase 4 audit from "rate not stated"; frontal HD and RGB-D video | ECG 2:1 against 128 Hz EEG; GSR 1:1 |
 | [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md) | 4 EOG from the EEG cap; Empatica E4 BVP 64 Hz, heart rate 1 Hz, EDA 4 Hz, temperature 4 Hz, wrist acceleration 32 Hz; two APDM Opal IMUs at 128 Hz. No ECG, no respiration | EOG 1:1; wristband channels 8:1 to **500:1** |
 | [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) | 4 EOG; one head IMU at 128 Hz. Nothing autonomic | EOG 1:1 at 1000 Hz |
 | Sleep-EDF | horizontal EOG at 100 Hz; submental chin EMG (1 Hz envelope in the cassette study, 100 Hz in telemetry); oro-nasal respiration and rectal temperature at 1 Hz, cassette records only; event marker at 1 Hz. **No ECG** | 1:1 for EOG, **100:1** for the EMG envelope and respiration |
-| [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) | 3 monopolar EOG at 250 Hz, 1 mV sensitivity — **provided for artifact processing and, per the protocol, they "must not be used for classification"** | 1:1 |
+| [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) | 3 monopolar EOG at 250 Hz, 1 mV sensitivity — "provided for the subsequent application of artifact processing methods", and the submitted software "was required to remove EOG artifacts before the subsequent data processing". **Corrected in the Phase 4 audit**: the prohibition "must not be used for classification" is *not* in this card's source and belongs to data set 2b; the official Brunner description it was attributed to was dropped from `source.md` by an extraction regeneration | 1:1 |
 | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) family | files "typically also carry supplementary channels such as detected bursts, electrocardiography, electromyography and photic stimuli" — no counts, no rates | unstated |
 | [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) | **none** | — |
 
@@ -611,7 +688,8 @@ together it holds for all fourteen.
 ### 3.5 Which fields are populated, and which are not
 
 Counting over the 14 carded recordings, and treating "the source does not state it" as unpopulated
-regardless of whether a card could infer it.
+regardless of whether a card could infer it. **These counts were recomputed against the cards after
+the Phase 4 audit; two rows moved and both moved in the same direction, toward better population.**
 
 | field | stated by the source | inferred, computed or preparation-sourced | not stated |
 |---|---|---|---|
@@ -619,29 +697,51 @@ regardless of whether a card could infer it.
 | file format | 12 | 0 | 2 (both because the host was down, §3.6) |
 | EEG channel count | 10 | 1 (STRUM, which states two) | 3 (the TUH family) |
 | sampling rate | 11 | 0 | 3 (the TUH family) |
-| participants | 10 | 1 (PhysioNet-MI, from the file manifest) | 3 (TUAB, TUEV, Sleep-EDF) |
+| participants | **11** (was 10) | 1 (PhysioNet-MI, from the file manifest) | **2** (was 3): TUEV, Sleep-EDF |
 | peripheral inventory | 10 | 0 | 4 (the TUH family unspecified, PhysioNet-MI has none) |
 | article licence | 10 | 0 | 4 |
 | derivation / reference | 7 | 3 (hardware-constrained, text-silent: STRUM, DEAP, AMIGOS) | 4 |
 | **data licence** | **5** | 0 | **9** |
-| **total hours** | **1** | 5 (four computed by their own cards; one channel-summed) | **8** |
+| **total hours** | **2** (was 1) | **6** (was 5) | **6** (was 8) |
 | **electrode coordinates** | **1 measured, 1 shipped as a file** | 5 template-derivable from named sites | **7** |
+
+**What moved, and why.** Both changes are on
+[tuab](../collection/datasets-benchmarks/tuab/card.md) and
+[livewire-2024](../collection/candidate-datasets/livewire-2024/card.md), and both are the same kind
+of correction: a card asserted an absence its own source contradicts.
+
+- *Participants.* TUAB was carded as "not stated as a subject count in the corpus documentation or in
+  the thesis, which counts files". The thesis counts both — its file-statistics tables carry a
+  `Patients` column — giving 2,138 training and 253 evaluation. TUAB therefore leaves the not-stated
+  column, which now holds only TUEV and Sleep-EDF.
+- *Total hours.* TUAB was carded as "unknown ... Neither the corpus page nor the thesis gives a
+  total". The same tables have an `Hours` column: 1,064.7 training and 104.4 evaluation, summing to
+  1,169.1. The thesis states the two partition totals and no grand total, so TUAB counts as stated
+  and the grand total as arithmetic. Separately, LiveWire moves from *not stated* to *computed*: its
+  card had said "no per-session duration is given", which the Experimental protocol section
+  contradicts with a "28-minute choreography", making the ten sessions about 4.7 hours per dancer by
+  arithmetic.
 
 **Best populated: the access route, at 14 of 14.** Every carded recording has a route recorded, even
 where the route is "ask the authors" and even where the licence governing what may then be done is
 absent.
 
-**Worst populated: electrode coordinates, total hours and the data licence.** Coordinates are
+**Worst populated: electrode coordinates and the data licence — total hours is no longer in that
+group by the same margin.** Coordinates are
 *measured* in exactly one recording,
 [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md), three
 times per participant, and shipped as a distribution file in exactly one more,
-[physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md). Total hours is *reported* by
-exactly one source, COG-BCI's "over 100 hours"; four cards compute a figure and mark it as arithmetic
-(STRUM ~98 session-hours, GX ~72, DEAP ~21, Sleep-EDF ~3,450), one card explicitly declines to
+[physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md). Total hours is now *reported*
+by two sources — COG-BCI's "over 100 hours" and TUAB's per-partition tables, whose 1,169.1 grand total
+is still the card's arithmetic rather than the thesis's figure — while six cards compute
+a figure and mark it as arithmetic (STRUM ~98 session-hours, GX ~72, DEAP ~21, Sleep-EDF ~3,450,
+LiveWire ~4.7 per dancer, and TUEG's channel-summed "29.1 years"). One card explicitly declines to
 compute the same Sleep-EDF figure its sibling computes, and
-[tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md)'s "29.1 years" is summed
-over channels and "is routinely misquoted as recording duration". Nine of fourteen have no data
-licence, including all three Temple entries under most of the field's pretraining.
+[tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md)'s "29.1 years" "is
+routinely misquoted as recording duration". Six recordings still report nothing at all: MOUS, AMIGOS,
+BOA, TUEV, PhysioNet-MI and BCI-IV-2a. Nine of fourteen have no data
+licence, including all three Temple entries under most of the field's pretraining — that row did not
+move.
 
 **Beyond the carded fourteen the fields are essentially empty.** For the eleven pretraining corpora
 named in [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)'s Table 7 — PREST,
@@ -649,7 +749,7 @@ CHB-MIT, IIIC Seizure, HGD, TSU, M3CV, BCI-IV-1, Emobrain, SPIS, Grasp and Lift,
 further specification is given on any card in the corpus. For AdaBrain-Bench's nine uncarded
 evaluation sets the five fields that exist are the preparation's, not the recording's. An earlier version of this passage stated an inverse
 proportion between how well a recording is specified and how much of the field rests on it. Review
-found that overstated: no per-recording usage measure exists for the 140 named-only recordings, the
+found that overstated: no per-recording usage measure exists for the 142 named-only recordings, the
 field counts cover only the 14 carded, and this document's own tables hold counterexamples, with
 PhysioNet-MI among the most-consumed recordings and also one of only two carrying electrode
 coordinates. What the evidence supports is narrower and still worth stating: the eleven pretraining
@@ -683,10 +783,30 @@ two have opposite implications: the first is a retrieval problem, the second is 
   the object that would settle it, the distributed channel list, is the inaccessible one.
 - [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) — the
   figure showing the 22 electrode positions did not survive extraction and the positions are never
-  enumerated in text.
-- [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) and
-  [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) — the per-dataset tables that
-  would name the rest of the 54 and the 18 are in supplementary material and an appendix.
+  enumerated in text. **A second, worse item was added by the Phase 4 audit**, and it is a
+  *regression* rather than a standing gap: `source.md` used to hold the official Brunner data-set-2a
+  description appended behind a delimiter, and the 2026-08-01 pymupdf4llm regeneration was run over
+  `source.pdf` alone and dropped it. Everything the card once attributed to that document — the
+  four-class confirmation, the singular "the other session", Table 1, and the electrooculography
+  prohibition — is no longer sourceable, and the card has been rewritten to say only what the
+  Frontiers review supports. Re-appending `desc_2a` restores the lost coverage.
+- [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
+  — added by the Phase 4 audit. Table 1's body is not in the extraction and only a truncated caption
+  survives, so three of the four confidence-bound rows this corpus quotes are marked unverified.
+  Re-retrieval would resolve it.
+- [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md) — also added by the audit,
+  and the one item in this list where re-retrieval would **not** help: all four numbered tables came
+  through as captions with empty bodies, and the bodies are not in the PDF's text layer either. It is
+  listed here rather than under never-reported because the paper does report them; the archived
+  artifact cannot.
+- **Two entries left this list in the Phase 4 audit and are recorded here so the removal is visible.**
+  [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) and
+  [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) were listed as having their
+  per-dataset tables in unretrieved supplementary material and an appendix. Both were wrong:
+  OmniEEG-Bench's Supplementary Tables 2, 5, 6 and 7 are present in `source.md`, and Brain4FMs's
+  Appendix D is present in full, Tables 8 through 29. Their unnamed datasets are a carding gap, not a
+  retrieval gap — which reverses what a Phase 4 reader should conclude from them, since nothing needs
+  re-retrieving.
 - [strum-2018](../collection/candidate-datasets/strum-2018/card.md) is the inverse case and the one
   that matters most here: the complete six-page paper *was* obtained through institutional access on
   2026-08-01 and every fixed field is read from section III. Its PDF is inaccessible **to
@@ -697,16 +817,26 @@ two have opposite implications: the first is a retrieval problem, the second is 
 
 - [tuev](../collection/datasets-benchmarks/tuev/card.md) — participants, channels, sampling rate,
   hours, class balance and the partition, all of them, with no descriptive document existing.
-- [tuab](../collection/datasets-benchmarks/tuab/card.md) — no subject count, no total hours, and
-  patient-disjointness not asserted in the document the corpus names as its description.
+- [tuab](../collection/datasets-benchmarks/tuab/card.md) — patient-disjointness not asserted in the
+  document the corpus names as its description. **The other two items on this bullet were removed in
+  the Phase 4 audit**: the subject count and the total hours *are* in the thesis's file-statistics
+  tables (2,138 + 253 patients; 1,064.7 + 104.4 hours), and this bullet had listed both as never
+  reported. The corpus landing page still gives neither, which is presumably where the error came
+  from. Note that counting patients separately on each side of the partition is consistent with
+  disjointness and does not state it, so the one remaining item is genuinely unstated rather than
+  merely unread.
 - [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) — no montage, no
   recording-hours total, no bit depth in the paper.
 - [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) — no total hours, no
   participant count in prose, and no errata or exclusion list for the subjects the BCI literature
   routinely drops.
 - Sleep-EDF — no participant count, no total hours, no per-recording durations.
-- [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) — no total hours and no
-  per-session duration, so the dataset's size cannot be stated without downloading it.
+- [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) — no *corpus-total* hours.
+  **Corrected in the Phase 4 audit**: this bullet previously added "and no per-session duration, so
+  the dataset's size cannot be stated without downloading it", which the Experimental protocol
+  section contradicts — the piece is "a 28-minute choreography ... divided into 5 sections", so ten
+  sessions give about 4.7 hours of choreography per dancer by arithmetic. The size is obtainable
+  without downloading it; only a reported total is missing.
 - [strum-2018](../collection/candidate-datasets/strum-2018/card.md) — the reference used for any
   released version, the electrode coordinates, the usable session count after exclusions, and any
   corpus total.
@@ -827,11 +957,13 @@ differ on the holdout boundary, the adaptation regime, the metric and the compar
 
 ### 5.3 The only-named tail
 
-140 of 154 recordings appear solely inside another card. That tail is not uniform. It contains the
+142 of 156 recordings appear solely inside another card. That tail is not uniform. It contains the
 substrate under BrainOmni's entire pretraining run (18 named sources, none specified beyond a name),
-the substrate under BIOT's (PREST, proprietary and un-inspectable), eight of Brain4FMs's eighteen
-datasets and forty-eight of OmniEEG-Bench's fifty-four (not named at all), and twenty-five study-own
-cohorts that will never have a release. The recordings with the fullest specification in the corpus
+the substrate under BIOT's (PREST, proprietary and un-inspectable), forty-eight of OmniEEG-Bench's
+fifty-four (not named on the card, though present in its extraction — §2.7), and twenty-five
+study-own cohorts that will never have a release. Brain4FMs is no longer in this list: the Phase 4
+audit established that its Table 2 names all eighteen, so what was carded as eight unnamed datasets
+was a carding gap that has closed. The recordings with the fullest specification in the corpus
 — the nine candidate-tier acquisitions of §2.6 — are the ones no model has touched.
 
 ---
@@ -846,14 +978,14 @@ recorded, so nothing is double-counted.
 
 | the figure | the level it actually belongs to | the level it is read at | where registered |
 |---|---|---|---|
-| TUAB 2,383 subjects / 409,083 samples | AdaBrain-Bench's preparation | the corpus's own scale | [tuab](../collection/datasets-benchmarks/tuab/card.md) calls it "a benchmark artefact" |
+| TUAB 2,383 subjects / 409,083 samples | AdaBrain-Bench's preparation | the corpus's own scale | [tuab](../collection/datasets-benchmarks/tuab/card.md). **Changed in the Phase 4 audit**: the card no longer calls 2,383 "a benchmark artefact", because the thesis does state a patient count — 2,138 + 253 = 2,391 — so this is now a preparation figure sitting eight patients away from a primary one, rather than a preparation figure standing in for a primary that does not exist. Whether the gap is a release difference, an exclusion or a counting convention is not determinable from either source |
 | TUEV 370 subjects / 112,237 samples | AdaBrain-Bench's preparation | the corpus's own scale | [tuev](../collection/datasets-benchmarks/tuev/card.md) |
 | Sleep-EDF 78 subjects / 414,961 windows | AdaBrain-Bench's preparation | the dataset's own scale, against 197 recordings | [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) |
 | BCI-IV-2a 5,184 samples | arithmetic over a preparation | a reported figure | [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) |
 | TUAB "22 channels" | a re-derivation the thesis's author applied | the recording montage | [tuab](../collection/datasets-benchmarks/tuab/card.md) |
 | TUEV "16 channels" | BIOT's bipolar derivation scheme | an electrode count | [tuev](../collection/datasets-benchmarks/tuev/card.md), which states the distinction the corpus documentation never makes |
 | TUEG "29.1 years" | duration summed over channels | recording duration | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md): "routinely misquoted" |
-| DEAP 128 Hz | the distributed preprocessed release | the acquisition, which is 512 Hz | [deap-2012](../collection/candidate-datasets/deap-2012/card.md) |
+| DEAP 128 Hz | *unattributable* — the paper's own down-sampling is to **256 Hz** and "128 Hz" does not occur in it; 128 Hz presumably describes the distributed `.dat` files, documented on a dataset page that was unreachable | the acquisition, which is 512 Hz | [deap-2012](../collection/candidate-datasets/deap-2012/card.md). **Reclassified in the Phase 4 audit.** This row previously read the 128 Hz as a release figure read at the acquisition level, which presupposes that the release figure is sourced. It is not; the card now carries it as an explicitly unverified note and forbids presenting it as the paper's own. The genuine level error on this recording is the one the row was reaching for: 512 Hz acquisition against a 256 Hz processed rate, both stated |
 | STRUM 512 Hz | the release | the acquisition, which is 2048 Hz | [strum-2018](../collection/candidate-datasets/strum-2018/card.md) |
 | Sleep-EDF "Version 1.0.0, Oct 2013" | a stale release string | the content, expanded in March 2018 | [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) |
 | TUH v0.6.0 / v0.6.3 / v2.0.2 | three releases | one archive; "none of the counts above should be assumed current" | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) |
@@ -990,7 +1122,7 @@ carries no ranking.
 | IIIC Seizure, HGD, TSU, M3CV, BCI-IV-1, Emobrain, SPIS, Grasp and Lift, Inria P300, ESI NeuroScan | | §2.7 pretraining substrate, unspecified | §3.5, §5.1 |
 | HBN-EEG, HBN EO/EC, SRM, RestCog, PEARL-Neuro, Features-EEG, MusicEEG, HFO, Go-Nogo, Awakening, Kymata-SOTO, CC700, OMEGA, MEG-MASC, SMN4Lang, THINGS-MEG, Gloups-MEG, PerceiveImagine | | §2.7 BrainOmni's sources | §5.1, §5.3 |
 | AD65, ASD74, MDD, SomatoMotor | | §2.7 BrainOmni's downstream sets | — |
-| MAYO, FNUSA, Dep-BDI, MDD-64, SD-28, UCSD, Chisco-R, Chisco-I | | §2.7 Brain4FMs's named ten | §5.3, §7 (Chisco, as a density comparator) |
+| MAYO, FNUSA, Dep-BDI, MDD-64, SD-28, UCSD, **ADFD, ADHDAdult, ADHDChild**, Chisco | | §2.7 Brain4FMs's eighteen, all named | §1 (the three bolded are the census additions), §5.3, §7 (Chisco, as a density comparator) |
 | PD31, Broderick-Cocktail-party, Broderick-reverse, Monitoring-Errp | | §2.7 OmniEEG-Bench's named six | §5.3 |
 | FACED, BCI-IV-2b, KaggleERN, ISRUC, CAUEEG | | §2.7 one consumer each | §2.3 (CAUEEG, with ds004504) |
 | Korea University ERP, Lee's working-memory dataset, NeuroLM's "Workload" | | §2.7 named without specification | — |
@@ -1006,12 +1138,12 @@ carries no ranking.
 | MOABB (aggregator) | C | §2.0 and §2.4 | §4.1, §5.1, §5.2 |
 | PhysioNet (archive) | | §2.0 | §2.2, §5.1 |
 
-The table's rows sum to §1's census of 154 — 14 carded and 140 named only — plus two kinds of row
+The table's rows sum to §1's recomputed census of 156 — 14 carded and 142 named only — plus two kinds of row
 that the counting rule excludes and that are listed anyway so a reader can see they were considered:
 `ds003670`, which is a release of an already-counted recording, and the four archive and aggregator
 rows at the foot, which are containers rather than recordings.
 
 Every recording appears in exactly one primary node. Fourteen appear in six nodes or more, and all
-fourteen are carded; the 140 only-named recordings appear in one to three, which is the intended
+fourteen are carded; the 142 only-named recordings appear in one to three, which is the intended
 shape rather than a placement failure — for most of them the corpus holds a name, a consumer and
 nothing else, so most facets have no value to record. No recording failed to fit a node.
