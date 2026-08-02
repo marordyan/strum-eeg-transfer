@@ -9,7 +9,7 @@ doi: 10.3389/fnins.2012.00055
 url: https://doi.org/10.3389/fnins.2012.00055
 license: CC BY (article); dataset free with citation requirement, no formal licence
 modalities: [scalp-eeg, motor-imagery, eog, 22-channel, monopolar-mastoid-reference]
-tags: [benchmark-dataset, four-class-motor-imagery, competition-protocol, held-out-test-labels, kappa, overfitting-warning, gdf, eog-prohibited, checkpoint-mapping, session-to-session-transfer]
+tags: [benchmark-dataset, four-class-motor-imagery, competition-protocol, held-out-test-labels, kappa, overfitting-warning, gdf, eog-artifact-removal-required, checkpoint-mapping, session-to-session-transfer]
 relevance: medium
 imported_from: null
 added: 2026-07-31
@@ -30,15 +30,19 @@ substantial amount of overfitting".
 
 ## Summary
 
-Data set 2a of BCI Competition IV, recorded at Graz University of Technology, is a cued four-class
+Data set 2a of BCI Competition IV, "provided by C. Brunner, R. Leeb, G. R. Müller-Putz,
+G. Pfurtscheller, and A. Schlögl from Graz (Austria)", is a cued four-class
 motor-imagery paradigm: imagined movement of the left hand, right hand, both feet, and tongue. Nine
 subjects each contributed two sessions on different days, six runs per session, 48 trials per run,
 288 trials per session. Twenty-two silver/silver-chloride electrodes at 3.5 cm spacing were recorded
 monopolarly with the left mastoid as reference and the right as ground, sampled at 250 Hz and
 band-pass filtered 0.5–100 Hz with a 50 Hz notch, at 100 µV amplifier sensitivity. Three additional
 monopolar electrooculography channels were recorded at the same rate and 1 mV sensitivity, and are
-provided for artifact processing only: "the EOG channels are provided for the subsequent application
-of artifact processing methods and must not be used for classification". Each session opens with an
+provided for artifact processing: "The EOG channels are provided for the subsequent application of
+artifact processing methods (Fatourechi et al.,2007)" — the review's data-set-2a section stops
+there, and its prohibition on using them to classify is stated only for data set 2b, and is itself
+cut off mid-sentence in this extraction (see the correction under Open questions). Each session
+opens with an
 approximately five-minute electrooculography calibration block. Data are stored in the General Data
 Format for biomedical signals, one file per subject per session, with labels released for the
 training session only during the competition. The competition metric was the kappa coefficient, and
@@ -53,8 +57,8 @@ competition design is the strand's clearest historical example of an evaluation 
 resist the failures category 4 documents.
 
 The protocol is worth stating in full because nothing in the modern foundation-model suites matches
-it. Test labels were withheld, so participants "had to submit software" rather than predicted
-labels; "all algorithms had to be causal", and "in order to check whether the causality criterion and
+it. Test labels were withheld, so "software had to be submitted" rather than predicted
+labels; "All algorithms had to be causal", and "in order to check whether the causality criterion and
 the artifact processing requirements were fulfilled, all submissions had to be open source"; and the
 organizers explicitly forbade non-causal exploitation of the unlabelled test block, noting they were
 "aware of the problem, that this use of data is non-causal and unrealistic". Held-out labels,
@@ -80,7 +84,10 @@ pretrained model is beaten by EEGNet. On 5,184 trials from 9 subjects, and again
 
 Fixed field set required of every `type: dataset` card in this strand:
 
-- **Participants**: 9. "This data set consists of EEG data from 9 subjects."
+- **Participants**: 9. "This data set comprises electroencephalographic (EEG) data from 9 subjects."
+  *Correction, made during review: an earlier version of this card quoted "This data set consists of
+  EEG data from 9 subjects", which is the opening sentence of the review's section 6.2, describing
+  data set 2b. The count is the same; the sentence is not this data set's.*
 - **Channels**: 22 EEG, "Twenty-two Ag/AgCl electrodes (with inter-electrode distances of 3.5cm)",
   plus 3 monopolar electrooculography channels; 25 channels total in the file, "the first 22 are EEG
   and the last 3 are EOG signals". The electrode layout is described as "corresponding to the
@@ -123,9 +130,12 @@ Other details:
   electrooculography; amplifier sensitivity 100 µV for EEG and 1 mV for electrooculography.
 - **Format**: General Data Format for biomedical signals, one file per subject per session, readable
   with BioSig. Runs within a file are separated by 100 not-a-number samples.
-- **Electrooculography is required to be removed**: "it is required to remove EOG artifacts before
-  the subsequent data processing using artifact removal techniques such as highpass filtering or
-  linear regression".
+- **Electrooculography is required to be removed**, of the submitted software: "Since three EOG
+  channels were provided, the software was required to remove EOG artifacts before the subsequent
+  data processing using artifact removal techniques such as high pass filtering or linear regression
+  (Schlögl et al., 2007a)." *Correction, made during review: an earlier version of this card gave
+  this as "it is required to remove EOG artifacts ... such as highpass filtering", which is not the
+  source's wording and drops the fact that the requirement is on the competition submission.*
 - **Metric**: kappa. Continuous per-sample classifier output was converted to confusion matrices from
   which "the time course of the accuracy as well as the kappa coefficient was obtained ... The chance
   level was at κ=0", and "the algorithm achieving the largest kappa value was declared the winner".
@@ -141,26 +151,50 @@ Other details:
 
 ## Open questions / limitations
 
+- **The appended official description is no longer in `source.md`.** `meta.json` records that
+  `source.md` holds two documents, the Frontiers review and, after a delimiter banner, the official
+  BCI Competition IV data set 2a description `desc_2a.pdf` by Brunner, Leeb, Müller-Putz, Schlögl and
+  Pfurtscheller. It does not: the 2026-08-01 pymupdf4llm regeneration was run over `source.pdf`
+  alone and the appended document was lost with it. The present `source.md` runs from the review's
+  title page to Appendix A.2, Table A4, and contains no delimiter banner, no `desc_2a`, and no "Graz
+  data set A" text. Everything on this card that was attributed to "the official description" is
+  therefore **not verifiable from this card's own source** until the document is re-appended, and the
+  bullets below have been rewritten to say only what the review supports. Note also that the
+  regeneration's stated rationale is wrong on its face: the review does carry the per-dataset
+  recording parameters, in sections 5.2.1, 5.3 and Appendix A.1.
 - **The review contradicts itself on the number of classes.** Section 5.1 says the data set
   "challenges the session-to-session transfer of a three class motor imagery task"; section 5.2.1 and
-  Table 1 and the official Brunner description all say four. Four is correct; the three-class
-  statement is an error in the review.
+  Table 1 both say four. Four is correct; the three-class statement is an error in the review.
+  *Correction: an earlier version of this bullet also cited the official Brunner description for
+  four, which is not in this source.*
 - **The review pluralizes the test sessions**: "only one session contains the class labels for all
-  trials, whereas the other sessions are used to test the classifier", where the official description
-  says "the other session". With exactly two sessions per subject, the singular is correct; the
-  plural appears to be copied from the data set 2b text.
+  trials, whereas the other sessions are used to test the classifier". With exactly two sessions per
+  subject the plural is wrong, and the sentence appears to be copied from the data set 2b text.
+  *Correction: an earlier version of this bullet contrasted the plural against the official
+  description's singular "the other session". That string does not occur in this source.*
 - **Every modern result on this dataset is post-hoc on released test labels**, which the review's own
   authors flagged in advance as a source of substantial overfitting and of improvements that "could
   merely reflect random fluctuations". No suite carded here acknowledges this.
-- **"Test" and "evaluation" name the same files** in different places (the review's Table A1 heading
-  versus the official description's Table 1), and the review reconciles them only in passing as "this
-  data set (also called evaluation data)".
+- **"Test" and "evaluation" name the same files** in different places — the review's own Table A1
+  columns are headed Training and Test while its section 5.4 speaks of "evaluation data sets" — and
+  the review reconciles them only in passing as "This data set (also called evaluation data)".
+  *Correction: an earlier version of this bullet located the clash between the review's Table A1 and
+  the official description's Table 1; the latter is not in this source.*
 - **The per-subject kappa breakdown for 2a is not in the review**; only per-contributor means. The
   per-subject table exists for data set 2b, not 2a. So subject-level variability on the competition's
   own metric is not recoverable from this source.
-- **The electrooculography prohibition is routinely ignored downstream.** The official description
-  says the electrooculography channels "must not be used for classification" and that artifacts must
-  be removed before processing. Benchmark preparations that feed all 25 channels, or that skip
+- **The electrooculography prohibition cannot be sourced to data set 2a from this document, and is
+  routinely ignored downstream.** *Correction, made during review: an earlier version of this card
+  said "The official description says the electrooculography channels 'must not be used for
+  classification'", and carried a frontmatter tag `eog-prohibited`, now replaced by
+  `eog-artifact-removal-required`. The string "must not be
+  used for classification" does not occur in `source.md`. The one occurrence of "must not be used"
+  is in section 6.2.2, describing data set **2b**, and even there the extraction breaks off at "and
+  must not be used for". The review's section 5.2.1, on 2a, ends the corresponding sentence at
+  "(Fatourechi et al.,2007)". What this source does establish for 2a is section 5.4's requirement
+  that the submitted software remove electrooculography artifacts before further processing.* The
+  downstream observation stands on that weaker footing: benchmark preparations that feed all 25
+  channels, or that skip
   artifact removal, are not running the protocol the dataset specifies, and none of the suites carded
   here states what it did. For this project, which will have electrooculography available, the
   distinction between a peripheral channel as signal and as an artifact reference is the same
@@ -176,8 +210,9 @@ Other details:
 Primary: `bci-competition-iv-2a`
 
 - Brunner C, Leeb R, Müller-Putz GR, Schlögl A, Pfurtscheller G, "BCI Competition 2008 – Graz data
-  set A" — the official dataset description, appended to `source.md` because the review does not
-  carry the recording parameters; retrieved from bbci.de.
+  set A" — the official dataset description, retrieved from bbci.de. It was appended to `source.md`
+  when this card was written but is **not in the current `source.md`**; the 2026-08-01 extraction
+  regeneration dropped it. Nothing on this card is now sourced to it.
 - `adabrain-bench` — the source of the four-checkpoint balanced-accuracy comparison quoted above.
 - `moabb` — includes this recording as BNCI2014-001 and argues that the field's reliance on the BCI
   Competition datasets is itself a problem.

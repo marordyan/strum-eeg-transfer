@@ -25,8 +25,19 @@ md_quality: clean
 
 A structured comparison of ten EEG foundation models finds that four of them evaluated on data
 they were pretrained on, only four can be ranked against each other at all, linear probing is
-consistently worse than the fully supervised baselines it is meant to beat, and the evidence for
-data or model scaling is "weak, if any".
+"relatively worse" than fine-tuning and in several instances worse than the fully supervised
+baselines it is meant to beat, and the evidence for data or model scaling is "weak, if any".
+**Corrected during the Phase 4 audit:** an earlier version of this line said linear probing is
+"consistently worse than the fully supervised baselines". The review does not say that, and its
+own per-model summaries contradict it. What it says is "linear probing results, however, were
+relatively worse", and, in the discussion, that such evaluations "have performed significantly
+worse than fine-tuned versions and other baselines *in several instances*". Two of the five models
+that reported linear probing go the other way: for BrainBERT, "Linear probing also achieved Area
+Under the Receiver Operating Characteristic Curve (AUC) values similar to those of the fully
+supervised models"; for Brant, "In the seizure detection and pathology detection tasks, both the
+fine-tuned and linear probed versions of Brant outperformed other supervised and EEG-FM baselines".
+Neuro-GPT is the clear negative case ("linear probing performed worse than fully-supervised
+baselines"). The finding is a tendency with named exceptions, not a uniform result.
 
 ## Summary
 

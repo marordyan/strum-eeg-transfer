@@ -3,7 +3,7 @@ slug: openneuro-2021
 type: platform
 strand: candidate-datasets
 year: 2021
-authors: [Markiewicz, Gorgolewski, Feingold, Blair, Halchenko, Miller, Hardcastle, Wexler, Esteban, Goncavles, Jwa, Poldrack]
+authors: [Markiewicz, Gorgolewski, Feingold, Blair, Halchenko, Miller, Hardcastle, Wexler, Esteban, Goncalves, Jwa, Poldrack]
 venue: eLife
 doi: 10.7554/eLife.71774
 url: https://doi.org/10.7554/eLife.71774
@@ -25,8 +25,17 @@ md_quality: clean
 
 OpenNeuro releases data "by default under a Creative Commons Zero (CC0) Public Domain Dedication
 which places no restrictions on who can use the data or what can be done with them" — the most
-permissive access route available for candidate datasets, and the only registry in this strand with
-no data use agreement at all.
+permissive access route available for candidate datasets, and the only registry in this strand
+requiring no signature, no registration and no review to download.
+
+**Corrected 2026-08-01, Phase 4 audit.** This previously said OpenNeuro is "the only registry in
+this strand with no data use agreement at all". The paper's own framing contradicts the phrasing:
+"The data are released with a clear data use agreement (currently defaulting to a CC0 public domain
+dedication)." OpenNeuro treats CC0 *as* its data use agreement, and distinguishes it from
+*restrictive* ones — noting that "data collected in countries covered by GDPR cannot be shared
+through OpenNeuro at present due to the requirement for restrictive data use agreements that are
+not currently supported by OpenNeuro". The substantive point — no paperwork, no gatekeeping — is
+unaffected and is what the CC0 quotation above supports.
 
 ## Summary
 

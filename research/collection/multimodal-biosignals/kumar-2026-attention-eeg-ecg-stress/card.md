@@ -78,10 +78,16 @@ only the tables would not catch.
 - **Peripheral-only number**: ECG 0.798 with HRV features, 0.856 with raw signal plus CNN.
 - **Combined number**: proposed multimodal 0.957 accuracy, F1 0.953, precision 0.956, recall 0.951.
   Early fusion 0.892, late (average) fusion 0.914, attention removed 0.905.
-- **Split protocol**: the test set is "the remaining 10%, obtained from three individuals whose
-  data were entirely excluded from both training and validation phases to prevent data leakage",
-  i.e. a subject-wise held-out test set of three participants. Stratification of the training and
-  validation split is by dataset and gender.
+- **Split protocol**: subject-disjoint, verified against the Methods in the Phase 4 audit and not
+  contradicted anywhere in the Results, Discussion or Conclusion. The paper: "a subject-independent
+  cross-validation strategy was adopted. The training set comprised 80% of the data collected from
+  28 individuals (WESAD: 12 participants; CASE: 16 participants). The validation set included 10%
+  of the data from four individuals, stratified by dataset and gender. The testing set consisted of
+  the remaining 10%, obtained from three individuals whose data were entirely excluded from both
+  training and validation phases to prevent data leakage." The three partitions account for
+  28 + 4 + 3 = 35 individuals, matching the stated cohort. Note that what is described is a single
+  fixed 80/10/10 partition, not a cross-validation: no folds are rotated and no across-fold variance
+  is reported, so "cross-validation" is the paper's word for it rather than a description of it.
 - **Participants**: 35 stated in the abstract; the body gives WESAD as 15 and CASE as 20, which
   sums to 35. (CASE as published has 30 participants, so the 20 is unexplained.)
 - **Backbone ablation**: removing ResNeXt50 costs least (0.934), removing VGG16 next (0.931),

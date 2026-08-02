@@ -25,8 +25,11 @@ md_quality: rough
 
 Replacing the transformer encoder with a stack of bidirectional Mamba blocks makes the encoder's
 cost linear rather than quadratic in sequence length, and the paper's claim is that this costs
-almost nothing in accuracy — its largest model lands within 0.8 points of the best transformer
-result on abnormal-EEG detection at roughly 70% fewer floating-point operations.
+almost nothing in accuracy — its largest model lands within 0.8 to 1.0 points of the best
+transformer result on abnormal-EEG detection at roughly 70% fewer floating-point operations, and
+short of it. (An earlier version of this line said "within 0.8 points". The paper's own wording is
+a range: "On TUAB, FEMBA-Huge falls within 0.8-1.0% absolute of LaBraM-Large/Huge in balanced
+accuracy but uses roughly 70% fewer FLOPs than LaBraM-Huge.")
 
 ## Summary
 
@@ -94,6 +97,21 @@ itself never states.
   most of the pretrained advantage over the supervised baselines is present at one eighth the size.
   On TUAR under the multiclass protocol the margin is far larger: FEMBA-Tiny at 7.8M reaches 0.918
   AUROC against 0.752 for EEGNet.
+- **FEMBA does not lead its own TUAB table (added during the Phase 4 audit).** The bullet above
+  compares FEMBA only against the supervised models, which is what the paper's headline sentence
+  does too, and it leaves the impression that 81.82% is the best number in Table II. It is not.
+  Verbatim: "All FEMBA variants outperform the supervised models, with FEMBA-Huge attaining a
+  balanced accuracy of 81.82%, approaching LaBraM-Large/Huge [10] (82.26%-82.58%) but with around
+  70% fewer FLOPs than LaBraM-Huge". So the largest FEMBA is behind the two largest LaBraM variants
+  on balanced accuracy, and the efficiency argument is what recovers the position. EEG2Rep is also
+  ahead at 80.52 ± 2.22 among the mid-sized self-supervised models on balanced accuracy, though
+  below FEMBA-Huge. Where FEMBA does lead outright is AUROC against EEGFormer: "FEMBA outperforms
+  EEGFormer-Large [8] in AUROC (0.8921 vs. 0.8760)".
+- **Other first-party margins in the discussion**, none of which were on this card: on TUAR,
+  "FEMBA-Tiny (7.8M) outperforms EEGFormer-l by 6.6% in AUROC under comparable MCC protocols"; on
+  TUSL, "FEMBA-Base surpasses all EEGFormer variants by up to 4.8% in AUROC"; and FEMBA-Base at
+  7.52B FLOPs is "roughly 4× lower than EEGFormer-Large (36.46B FLOPs)". Pretraining loss values
+  are given for FEMBA-Base only: 0.122 train, 0.217 validation.
 - **A counter-result in the paper's own tables**: on TUSL, FEMBA-Base leads on AUROC (0.731 against
   EEGFormer-Base 0.713 and EEG-GNN 0.721) but its area under the precision-recall curve, 0.289,
   trails EEGFormer-Large's 0.389 by 10 points and also trails the supervised EEGNet (0.351), TCN

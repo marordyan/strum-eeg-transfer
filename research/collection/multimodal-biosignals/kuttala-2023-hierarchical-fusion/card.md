@@ -43,8 +43,9 @@ statistical characteristics (five bands, eight features each: max, min, standard
 variance, skewness, kurtosis, median, min). Signals are cut into five-second segments and subject
 IDs are used to keep training and test subjects disjoint. Evaluation covers four benchmarks —
 ASCERTAIN (58 subjects), CLAS, MAUS and WAUC (48 subjects, 45 after removing incomplete records) —
-with the proposed method reported to outperform existing models by 1–2% on frequency-band features
-and the three-level hierarchical set to beat other level combinations by 2–4%.
+with the proposed method reported to outperform existing models by 1–2% on frequency-band features.
+The gain from using all three feature levels is stated twice and inconsistently: 2–4% in the
+abstract, 9–15% on band features in the Results.
 
 ## Relevance to the review
 
@@ -57,10 +58,13 @@ modalities share a representation from the start) and late fusion (where they ne
 the decision). If this project bolts a head onto frozen EEG and peripheral encoders, MMTM is one
 of the few mechanisms in this strand that operates at exactly that interface.
 
-The hierarchical-feature finding is the transferable empirical claim: taking low, mid and high-level
-activations rather than only the last layer is worth 2–4%. For a project using a frozen pretrained
-encoder, the analogous question — which layer's representation to probe — is live, and this is
-weak evidence that the answer is "more than one".
+The hierarchical-feature finding is the transferable empirical claim: taking low, mid and
+high-level activations rather than only the last layer helps. How much it helps cannot be stated,
+because the abstract says 2–4% and the Results say 9–15% on the same comparison (see the
+split-reading note under Notable details). For a project using a frozen pretrained encoder, the
+analogous question — which layer's representation to probe — is live, and this is weak evidence
+that the answer is "more than one", with the magnitude unusable until the discrepancy is resolved
+against the paper's Tables 2 and 3.
 
 Everything else argues for `relevance: low`. There is no EEG arm, so the paper contributes nothing
 to the project's third comparison and is explicitly not counted toward the category 3 criterion.
@@ -84,17 +88,37 @@ that can be checked.
   rationale given is that low- and high-frequency bands are affected by autonomic nervous system
   activity.
 - **Segmentation and split**: signals split into five-second segments to increase sample count;
-  "Subject IDs were established for training and testing to ensure subject independence", with the
-  first 36, 18, 43 and 42 subjects used for training on WAUC, MAUS and the other two datasets.
+  "Subject IDs were established for training and testing to ensure subject independence. The first
+  36,18, 43 and 42 subject samples from WAUC, MAUS, CLAS and ASCERTAIN datasets are used for
+  training. The remaining 9 WAUC, 4 MAUS and 16 CLAS and ASCERTAIN subject samples are employed for
+  the testing." The split is therefore subject-disjoint on all four datasets, and fixed rather than
+  cross-validated.
 - **Datasets**: ASCERTAIN (58 subjects, physiological signals plus face activity, emotional video
   clips, stress labels derived from valence and arousal quadrants), CLAS, MAUS (N-back task,
   complexity as ground truth), WAUC (48 subjects at three exercise levels on a cycle or rowing
   machine, NASA-TLX binarised at the mean; 45 subjects after removing incomplete records).
-- **Reported gains**: outperforms existing models by 1–2% on frequency-band features; the
-  three-level hierarchical set beats other combinations by 2–4%.
-- **Per-dataset accuracies**: **not recorded on this card.** Tables 2 and 3 collapse entirely in
-  the two-column extraction, and the abstract and body give only the relative ranges above. This
-  is an access limitation, not an omission by the paper.
+- **Reported gains — the abstract and the Results section disagree, and neither is adopted here.**
+  The abstract: "The proposed method showed its effectiveness by outperforming existing models by
+  1-2%, respectively, on frequency band features. It is observed that the hierarchical feature set
+  from all three levels performed better than all other combinations by 2-4%." Section IV-A of the
+  Results: "Concatenating all level features (phases 1, 2, and 3) enhanced the model's overall
+  performance more than other combinations (phases 1, 2, and 3 alone and its combinations) by 12-15%
+  on raw data, 9-15% on band features and 12.15% on highest band features of ECG and EDA on WAUC
+  dataset." So the hierarchical-fusion gain is 2-4% by the abstract and 9-15% by the Results, a
+  factor of three to five apart. Recorded as a self-contradiction rather than reconciled.
+- **What the Results' own "2-4%" refers to** is a different comparison entirely: Section IV-C says
+  "in all the datasets, we have observed the same shift in the performance of raw data and frequency
+  band features by 2-4%", i.e. band features beat raw data by 2-4%. An earlier version of this card
+  attached the 2-4% to the hierarchical-feature gain, following the abstract, and used it in the
+  Relevance section as the transferable number.
+- **Per-dataset accuracies**: **not recorded on this card, and the reason was re-verified in the
+  Phase 4 audit.** `source.md` contains no markdown table rows at all — the captions "TABLE 1. List
+  of abbrevations.", "TABLE 2. Classification results.", "TABLE 3. Classification results WAUC
+  dataset on highest performed band of ECG and EDA." and "TABLE 4. Comparison to state-of-art
+  findings." survive with empty bodies. This is the one entry in the strand whose tables did not
+  come back after the pymupdf4llm re-extraction, which is why `md_quality` stays `rough`. The
+  numbers exist in the paper; they are not in the archived markdown. An access limitation, not an
+  omission by the paper.
 
 ## Open questions / limitations
 
@@ -102,7 +126,9 @@ that can be checked.
   category 2 only.
 - The reported improvements are ranges over four datasets with no per-dataset value in the
   accessible text, no variance, and no significance test. A 1–2% improvement over "existing models"
-  without confidence intervals is not distinguishable from run-to-run variation.
+  without confidence intervals is not distinguishable from run-to-run variation — and the paper
+  cannot keep its own two statements of the hierarchical gain consistent, which is a reason to
+  treat all of its reported margins as approximate.
 - Stress labels on ASCERTAIN are derived by thresholding valence and arousal ratings into a
   quadrant, which is a construct substitution the paper adopts from prior work rather than
   validating; on WAUC the label is binarised NASA-TLX at the mean, i.e. a median-split of a

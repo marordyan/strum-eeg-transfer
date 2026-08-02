@@ -109,16 +109,27 @@ in direction. They are independent measurements, not one claim repeated.
   six conditions, non-exhaustive, with no inter-rater statistic, so 27.0 percent is a property of a
   convenience sample rather than an estimate over the field.
 - [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)
-  — the participant boundary, in the cognitive-state setting. Five published cross-participant models
-  replicated twice each on five datasets with training and test volume held constant. Error rises on
-  every one: driver fatigue 0.09 → 0.466, confused students 0.31 → 0.416, alcoholism 0.16 → 0.31
-  against a chance error of 0.36, PTSD 0.005 → 0.197, schizophrenia 0.008 → 0.50 where "no model was
-  able to perform better than random chance". The mechanism is formalized rather than asserted:
-  covariate shift under the Shimodaira loss-rescaling weight, evidenced by principal-component
-  weight-ratio heat maps and by t-SNE embeddings that cluster by participant, and confirmed by a
-  manipulation — two transformations that artificially reduce inter-participant variability raise
-  proper-protocol accuracy substantially (entropy features 0.50 → 0.80) while doing nothing under the
-  improper protocol, "because the model has seen each participant's input distribution".
+  — the participant boundary, in the cognitive-state setting. Cross-participant models built twice
+  on each of five datasets with training and test volume held constant. **Not five replications:**
+  the card was corrected here, and only three of the five reproduce a published model (Min et al. on
+  driver fatigue, Ni et al. on confused students, Farsi et al. on alcoholism). For PTSD and
+  schizophrenia the authors state there was nothing to replicate — "there is no machine learning
+  workflow we are attempting to replicate" — so those two use the authors' own multilayer
+  perceptron, plus a random forest on schizophrenia. That matters for how the entry is weighted: two
+  of the five cells compare a protocol against itself on a model of the authors' choosing rather
+  than against a published result. Error rises on every one: driver fatigue 0.09 → 0.466, confused
+  students 0.31 → 0.416, alcoholism 0.16 → 0.31 against a chance error of 0.36, PTSD 0.005 → 0.197,
+  schizophrenia 0.008 → 0.50 where "no model was able to perform better than random chance" — one
+  dataset at chance, not two. The mechanism is formalized rather than asserted: covariate shift
+  under the Shimodaira loss-rescaling weight, evidenced by principal-component weight-ratio heat
+  maps and by t-SNE embeddings that cluster by participant, and confirmed by a manipulation. The
+  manipulation is narrower than an earlier version of this bullet said: of the two transformations
+  that artificially reduce inter-participant variability, only shift-to-median raises
+  proper-protocol accuracy (entropy features 0.50 → 0.80, spectral 0.50 → 0.72) while leaving the
+  improper numbers untouched at 0.91 and 0.82, "because the model has seen each participant's input
+  distribution". The other, shifted Heaviside, leaves proper accuracy at 0.50 and 0.47 and *lowers*
+  the improper figures by 19 and 16 points, which the paper reads as reduced variability without a
+  performance effect.
 
 Two further properties of this node, both stated by the cards rather than inferred.
 
@@ -217,8 +228,11 @@ data, and its grouping is undocumented in public.
 - [tuab](../collection/datasets-benchmarks/tuab/card.md) — a fixed train/evaluation partition ships
   with the corpus (full set: 1,387 normal plus 1,398 abnormal training files against 150 normal plus
   130 abnormal evaluation files). The document the corpus itself names as its description, Lopez de
-  Diego's 2017 master's thesis, describes selection, demographic balance and file counts and says
+  Diego's 2017 master's thesis, describes selection, demographic balance, file counts, **patient
+  counts per partition** (2,138 training, 253 evaluation) and hours (1,064.7 and 104.4), and says
   the data "was divided into two sets", **without asserting that no patient contributes to both**.
+  Counting patients separately on each side is consistent with disjointness and does not state it,
+  which is the corrected form of this point: the card no longer says the thesis counts only files.
   The parent archive averages 1.56 sessions per patient and one patient contributed 37
   ([tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md)), so the question is
   live rather than pedantic. Every foundation-model TUAB number in this corpus inherits that
@@ -241,8 +255,8 @@ which [tuev](../collection/datasets-benchmarks/tuev/card.md) records from the ot
 
 [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is the
 strand's clearest historical example of an evaluation regime designed against overfitting, and its
-components have no analogue in any modern suite carded here: test labels withheld, so participants
-"had to submit software" rather than predicted labels; "all algorithms had to be causal"; and "in
+components have no analogue in any modern suite carded here: test labels withheld, so "software had
+to be submitted" rather than predicted labels; "All algorithms had to be causal"; and "in
 order to check whether the causality criterion and the artifact processing requirements were
 fulfilled, all submissions had to be open source". The organizers also forbade non-causal
 exploitation of the unlabelled test block, noting they were "aware of the problem, that this use of
@@ -278,7 +292,7 @@ that determines what its leaderboard is a leaderboard of.
 | split rule | subject-disjoint test; ratio not in the paper | 8:1:1 subject-level | ≈3:1:1 leave-subjects-out, group-wise CV | one of four strategies per task, incl. random | within-session 5-fold |
 | primary adaptation | **full fine-tuning**, linear probing secondary | **linear probing**, full fine-tuning additionally on every dataset | full fine-tuning only; no linear-probing protocol defined | end-to-end fine-tuning under one shared recipe | not applicable, classical pipelines |
 | budget | 50 epochs, batch 64, AdamW wd 0.05, LR grid-searched per strategy/setting, no early stopping mentioned | linear head over frozen backbone; sampling capped at 40 samples per subject per class | up to 50 epochs, early stopping patience 5, Adam/AdamW, **original optimizers retained for some models** | linear projection head over average-pooled tokens, AdamW | hyperparameters by cross-validation; nesting not stated |
-| primary metric | balanced accuracy; secondary per dataset; plus a transfer score | balanced accuracy, mean ± sd, ranked by average rank | AUROC-led; also accuracy, F1, F2, Cohen's κ | one metric per task type; plus normalized score against dummy and ceiling | ROC-AUC |
+| primary metric | balanced accuracy; secondary per dataset; plus a transfer score | balanced accuracy, mean ± sd, ranked by average rank | AUROC-led, split by task type: AUROC/accuracy/F1/F2 for binary, AUROC/accuracy/macro-F1/Cohen's κ for multi-class | one metric per task type; plus normalized score against dummy and ceiling | ROC-AUC |
 | uncertainty | none on the leaderboard | sd over 3 or 5 runs; no per-comparison test | sd across CV folds | sd over 3 initialization seeds | **per-dataset test, Stouffer combination, Bonferroni, effect size** |
 | checkpoints | BIOT, EEGPT, LaBraM, CBraMod | BENDR, BIOT, LaBraM, CBraMod, BrainOmni, FEMBA, Neuro-GPT, NeuroLM, EEGMamba, REVE | SppEEGNet, BIOT, BENDR, MBrain, Brant, BFM, BrainBERT, CBraMod, NeuroGPT, LaBraM, BrainWave, REVE, BrainOmni, EEGPT-1, NeuroLM | BENDR, LaBraM, BIOT, CBraMod, LUNA, REVE | **none** |
 | supervised comparators | EEGNet, LDMA, ST-Tran, Conformer | EEGConformer, EEGNet | SPaRCNet, DeprNet, CCNSE, MSCARNet — purpose-built per task family | ShallowFBCSPNet, Deep4Net, EEGNet, BDTCN, ATCNet, EEGConformer, SimpleConvTimeAgg, CTNet, plus handcrafted, chance and dummy baselines | six classical pipelines |
@@ -481,10 +495,19 @@ cross-validation repetitions moves the empirical chance level is on record; the 
 - [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
   — at neuroimaging sample sizes, "sample sizes of many neuroimaging studies inherently lead to large
   error bars, eg ±10% for 100 samples", and "the standard error across folds strongly underestimates
-  them". The headline table gives ±15 / ±10 / ±6 / ±3 percentage points at n = 30 / 100 / 300 / 1000,
-  with the caveat that these "may be significantly larger in adverse situations such as with
-  correlated observations or very unstable classifiers". The literature sample it is calibrated
-  against is 642 studies with a median of 89 samples.
+  them". The literature sample it is calibrated against is 642 studies with a median of 89 samples.
+
+  **The headline table is now marked unverified on the card, and the hedge has to travel with the
+  numbers.** An earlier version of this bullet gave Table 1 as ±15 / ±10 / ±6 / ±3 percentage points
+  at n = 30 / 100 / 300 / 1000. The table's body is not in the extraction — only its caption
+  survives, itself truncated at a page break — so of those four rows only n = 100 is stated anywhere
+  in the source, twice: "eg ±10% for 100 samples" in the abstract and "A typical sample size in
+  neuroimaging, 100 observations, leads to ±10% errors in prediction accuracy" in the conclusion.
+  The other three rows are unverified rather than wrong; the nearest supported values are the paper's
+  own Figure 1 readings, −20%/+18% at n = 30 under leave-one-out simulation and −15%/+12% under the
+  binomial, −6%/+6% at n = 300 and −3%/+3% at n = 1000. The caption's caveat, that actual bounds
+  "may be significantly larger in adverse situations such as with correlated observations or very
+  unstable classi-", survives intact up to that break.
 
 The card records three specifics that matter more than the table. **The bias is worst for the scheme
 with the best true error bars**: for 50 repeated random splits with 20 percent held out, the
@@ -506,8 +529,13 @@ or sub-jects depending on the settings" — so for EEG, where one participant co
 epochs, which n the table refers to is exactly the question
 [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)
 and [eeg-models/brookshire-2024-data-leakage](../collection/eeg-models/brookshire-2024-data-leakage/card.md)
-show is decisive, and this paper does not settle it. All quantitative results are balanced binary
-classification in fMRI, VBM and MEG; no EEG, and continuous outcomes are not analysed at all.
+show is decisive, and this paper does not settle it. Its real-data results are balanced binary
+classification in within-subject fMRI, across-subject fMRI and MEG; no EEG, and continuous outcomes
+are not analysed at all. Two narrowings from the audit: voxel-based morphometry appears only in the
+paper's description of an earlier study and contributes no number here, and unbalanced multiclass
+*is* handled quantitatively — Appendix A.2's Table A1 gives binomial bounds for expected accuracies
+of 10, 25, 50, 75 and 90 percent at n = 30, 100 and 300, so a four-class EEG task has a stated
+reference point in this source after all.
 
 ### 3.3 The two are complementary halves, and the corpus contains exactly one procedure that meets both
 
@@ -589,8 +617,14 @@ balanced accuracy):
 | EEGMAT | CBraMod 88.89 | 73.89 | +15.00 | 36 subjects, 1,080 samples |
 | [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) | CBraMod 69.47 | ST-Tran 69.55 | **−0.08** | 78 subjects, 414,961 samples |
 
-The Sleep-EDF row is the one dataset in that table where a supervised model takes the top spot on
-balanced accuracy, as its card records. The TUAB row is what
+The Sleep-EDF row is the only one of the five above where a supervised model takes the top spot on
+balanced accuracy — but not, as an earlier version of this line said on the card's authority, the
+only such row in AdaBrain-Bench's Table 2. The card was corrected: there are three, all in the
+suite's clinical-monitoring group, the other two being Siena (Conformer 72.87 over BIOT 71.67) and
+HMC (Conformer 73.84 over LaBraM 71.94), with SHHS the group's fourth member going to CBraMod at
+73.51 against ST-Tran's 68.67. The five rows tabulated here are the datasets this strand cards, not
+the suite's full table, and the supervised-wins pattern is concentrated in a task family this table
+under-samples. The TUAB row is what
 [tuab](../collection/datasets-benchmarks/tuab/card.md) calls a saturated benchmark, consistent with
 [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md) listing pathology among the
 tasks near saturation. And
@@ -618,9 +652,11 @@ and which belongs to Phase 4; recorded here only as the property of that one tab
   abnormal in the reports. **No montage information at all** appears in the paper — the word does not
   occur — so the derivation scheme each pretraining paper used is that paper's choice.
 - [openneuro](../collection/datasets-benchmarks/openneuro/card.md) — the heterogeneity source. 604
-  datasets and 20,989 participants as of 9 October 2021, of which 81 are scalp-EEG and 8 intracranial,
-  median dataset size 23 subjects, 31 studies over 100 subjects, maximum 928. Every upload passes
-  BIDS validation at submission; snapshots are git tags with DOIs. What it supplies that TUH does not
+  datasets and 20,989 participants as of 9 October 2021, of which 81 are scalp-EEG and 8 intracranial.
+  Median dataset size 23 subjects, 31 studies over 100 subjects, maximum 928 — these three width
+  figures come from the paper's Figure 3 analysis and so are computed over the 502 DataLad-accessible
+  datasets, not the 604, which the card records and this document previously did not. Every upload
+  passes BIDS validation at submission; snapshots are git tags with DOIs. What it supplies that TUH does not
   is task-based cognitive experiments from individual laboratories.
 - [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) — a laboratory task corpus
   that doubles as a benchmark. 109 participants, 64 channels on the 10-10 system at 160 Hz, EDF+ with
@@ -716,14 +752,34 @@ temperature, alongside its two EEG derivations. Every one of those channels is d
 checkpoint and suite in this corpus:
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) tabulates Sleep-EDF as 2
 channels at 100 Hz in 30-second windows, meaning the two EEG derivations only.
-[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is the
-stronger case, because there the exclusion is a protocol requirement rather than a modelling choice:
-the three EOG channels "are provided for the subsequent application of artifact processing methods
-and must not be used for classification", and artifacts must be removed before further processing.
-Its card records that no suite carded here states what it did, so benchmark preparations that feed
-all 25 channels or skip artifact removal are not running the protocol the dataset specifies.
+[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is still
+the stronger case, but it is weaker than this document previously made it, and the difference is
+structural rather than numeric.
 
-That prohibition is not pedantic, and the corpus contains the demonstration in a sibling strand:
+**What changed.** This section asserted that for BCI-IV-2a "the exclusion is a protocol requirement
+rather than a modelling choice", quoting the three EOG channels as "provided for the subsequent
+application of artifact processing methods and must not be used for classification". The card was
+corrected and that quotation cannot be sourced to data set 2a. Two things went wrong at once. The
+card's `source.md` had held the official Brunner dataset description appended behind a delimiter,
+and a re-extraction run over the PDF alone dropped it, so nothing on the card is now sourced to that
+document (§7). And the surviving review says "must not be used for" only in its section 6.2.2, which
+describes data set **2b**; its section 5.2.1, on 2a, ends the corresponding sentence at "The EOG
+channels are provided for the subsequent application of artifact processing methods (Fatourechi et
+al.,2007)". So the prohibition on classifying from EOG belongs to a different dataset in the same
+review.
+
+**What survives.** The review's section 5.4 does impose a requirement, on the competition's
+submitted software rather than on the data: "Since three EOG channels were provided, the software
+was required to remove EOG artifacts before the subsequent data processing using artifact removal
+techniques such as high pass filtering or linear regression". That is enough to keep the downstream
+observation, on a narrower footing: benchmark preparations that feed all 25 channels or skip
+artifact removal are not running the protocol the competition specified, and the card records that
+no suite carded here states what it did. What no longer holds is the sharper claim that using an EOG
+channel as a *feature* on this dataset violates a stated prohibition. Re-appending the official
+description would settle it; until then the prohibition should be attributed to BCI-IV-2b.
+
+The concern behind that requirement is not pedantic, and the corpus contains the demonstration in a
+sibling strand:
 [multimodal-biosignals/mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
 reports a control analysis in which the memorised item was decodable from two numbers — horizontal
 and vertical gaze position — with ICA-based artifact removal having been insufficient to prevent it.
@@ -783,10 +839,21 @@ The mapping's reach is wider than the five datasets above, and the rest of it is
 suite cards rather than on dataset cards. The further evaluation sets named there are SEED, SEED-IV,
 SEED-VIG, EEGMAT, SHU, Things-EEG, Siena, HMC and SHHS
 ([adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md)); CHB-MIT, MAYO, FNUSA,
-Dep-BDI, MDD-64, SD-28, UCSD, Chisco-R and Chisco-I
+Dep-BDI, MDD-64, SD-28, UCSD, ADFD, ADHDAdult, ADHDChild, ISRUC, SleepEDFx, DEAP, SEED-IV, EEGMat,
+EEGMMIDB, BCI-2a and Chisco
 ([brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)); PD31, DEAP-arousal,
 Broderick-Cocktail-party, Broderick-reverse, ThingsEEG2 and Monitoring-Errp
 ([omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md)).
+
+The Brain4FMs list is longer than it was, and the lengthening matters for §2.6 rather than only for
+bookkeeping. An earlier version named nine datasets, which was all the card then carried; the card
+was corrected to record all eighteen from the suite's Table 2. Five of the nine added — SleepEDFx,
+EEGMat, EEGMMIDB, BCI-2a and SEED-IV — are datasets this strand already tracks through
+AdaBrain-Bench or MOABB, so the overlap between suites is wider than the coverage graph in §2.6
+suggests, and §2.6's warning that a shared dataset name across two suites does not make two
+comparable numbers applies to more rows than it appeared to. Two carded parameters also changed
+with it: BCI-2a is 9 subjects and 4 classes in that table, not "4 subject groups", and Chisco is
+5 subjects and 39 categories, not 39 subjects.
 
 ### 5.2 The mapping and the dataset parameters both come from two tables
 
@@ -803,22 +870,35 @@ fifteen models with parameter count, pretraining modality and feature domain. Th
 as much: Table 7 "is the single most complete public statement of what BIOT, EEGPT, LaBraM and
 CBraMod were pretrained on".
 
-The same is true of the *dataset* parameters. TUAB's 2,383 subjects and 409,083 samples, TUEV's 370
-subjects and 112,237 samples, Sleep-EDF's 78 subjects and 414,961 windows, and BCI-IV-2a's 5,184
-samples are all AdaBrain-Bench preparation figures, and each card says so explicitly rather than
-presenting them as the corpora's own — [tuab](../collection/datasets-benchmarks/tuab/card.md) calls
-2,383 "a benchmark artefact", [tuev](../collection/datasets-benchmarks/tuev/card.md) calls 370 "a
-benchmark figure rather than the corpus's own",
+The same is largely true of the *dataset* parameters. TUAB's 2,383 subjects and 409,083 samples,
+TUEV's 370 subjects and 112,237 samples, Sleep-EDF's 78 subjects and 414,961 windows, and
+BCI-IV-2a's 5,184 samples are all AdaBrain-Bench preparation figures, and each card says so
+explicitly rather than presenting them as the corpora's own —
+[tuev](../collection/datasets-benchmarks/tuev/card.md) calls 370 "a benchmark figure rather than the
+corpus's own",
 [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) records that 78
 "comes from benchmark preparations rather than from the dataset itself", and
 [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) records that
 5,184 "is arithmetic (9 × 2 × 288), not a figure stated by either source".
 
+**TUAB is now the exception, and the exception matters more than the rule it breaks.** An earlier
+version of this section said [tuab](../collection/datasets-benchmarks/tuab/card.md) "calls 2,383 a
+benchmark artefact" because the primary documentation had no subject count of its own. The card was
+corrected: the thesis's file-statistics tables carry a `Patients` column beside the `Files` column,
+giving 2,138 training plus 253 evaluation patients — 2,391 for the release the thesis describes —
+and an `Hours` column giving 1,064.7 plus 104.4. So TUAB does have a primary subject count and a
+primary hours total, and AdaBrain-Bench's 2,383 is a near-miss against it rather than the only
+figure in existence. Whether the eight-patient gap is a release difference, an exclusion or a
+counting convention is not determinable from either source.
+
 Two consequences follow, and both are properties of the corpus rather than of the field.
 
-First, **a reader who sees the same figure on five cards is reading one source five times**. The five
-dataset cards are not five independent corroborations of AdaBrain-Bench's numbers; they are five
-cards that could not obtain the figure from the primary documentation and said so.
+First, **a reader who sees the same figure on several cards is usually reading one source several
+times**. Those cards are not independent corroborations of AdaBrain-Bench's numbers; they are cards
+that could not obtain the figure from the primary documentation and said so. The TUAB correction is
+the counter-case and narrows the claim: for one of the five, the figure *was* obtainable from the
+primary and the card had missed it, which is a defect in our reading rather than a property of the
+documentation.
 
 Second, **that single source is internally inconsistent about the very fields the mapping uses**.
 [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) records five internal
@@ -827,6 +907,14 @@ inconsistencies in its own source, three of them in Table 7 against the body: EE
 channels versus "about 2,500 hours ... supporting 137 EEG channels". So the hours and channel figures
 that the mapping propagates are exactly the figures the source disagrees with itself about. §8.1 and
 §8.2 record the resulting disagreements.
+
+One of the three is now adjudicable, which was not true when this section was written. The LaBraM
+card gained the exact pretraining total from the primary's Appendix D — 2534.78 hours — so
+AdaBrain-Bench's 2,535 and its body's "about 2,500" are two roundings of one correct figure rather
+than two competing claims ([eeg-models/labram-2024](../collection/eeg-models/labram-2024/card.md),
+pilot §2.3). What remains a genuine conflict on that row is the channel count, 136 against 137,
+which the primary states neither way. EEGPT's 198-versus-246 is untouched, because that primary
+reports no hours figure at all.
 
 A third observation, of a related but weaker shape, sits on the parameter side. An earlier version
 of this section held that the counts behind
@@ -877,9 +965,13 @@ the mechanism EDF+ specifies.
 ### 6.2 What the raw layer cannot express, and what that costs a coordinate-based model
 
 [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) stores channel *labels*, standardized
-as texts, and **has no mechanism at all for electrode coordinates**; re-derivation is described as
-label manipulation, "because electrode locations are specified using standard texts, re-montaging
-(i.e. re-referencing) EEG derivations can be done automatically". The card also records that the
+as texts, and **has no mechanism at all for electrode coordinates** — with a bound the card added
+during the audit and which belongs here: the word "coordinate" does not occur in the specification
+page, but the page's linked companion, the standard-texts list at `edftexts.html`, is not in the
+carded source, so the absence is established for the specification proper and not for the document
+it defers to. Re-derivation is described as label manipulation, "because electrode locations are
+specified using standard texts, re-montaging (i.e. re-referencing) EEG derivations can be done
+automatically". The card also records that the
 specification conflates "montage", "derivation" and "re-referencing" in a single sentence — which
 matters here because the format stores labels only and cannot express a position.
 
@@ -938,11 +1030,17 @@ BDF and BrainVision, plus Neuromag FIF natively, and reaches BIDS datasets throu
 **not** read the General Data Format, which is what
 [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) is
 distributed in, so that benchmark needs BioSig or a conversion step. Its access-on-demand design is
-the documented mechanism for bounded memory — `Raw` reads from disk only when needed and "this
-access-on-demand principle can also be inherited by other classes that build upon Raw (such as Epochs
-and Evoked, below), which offers the possibility to process data with a very limited memory usage" —
-though the card records that this is asserted rather than measured: no benchmark, no memory profile,
-no guidance on when preloading is required. It is also infrastructure for two other entries:
+the documented mechanism for bounded memory — "this access-on-demand principle can also be inherited
+by other classes that build upon Raw (such as Epochs and Evoked, below), which offers the possibility
+to process data with a very limited memory usage" — with two limits the card records, the second
+added during the audit. It is asserted rather than measured: no benchmark, no memory profile, no
+guidance on when preloading is required. And the sentence usually quoted as the mechanism's warrant,
+"It offers for example the ability to read data from disk only when needed", has the FIF format as
+its subject, not the `Raw` class; the paper does not extend the claim to the EDF, BDF and BrainVision
+readers listed above. That is the case an EDF+ pipeline actually hits, so the bounded-memory
+guarantee is documented for a format this strand's datasets are mostly not distributed in.
+
+MNE-Python is also infrastructure for two other entries:
 [moabb](../collection/datasets-benchmarks/moabb/card.md) is built on it for preprocessing and channel
 selection, and [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md) uses its sample
 dataset as a smoke-test task.
@@ -978,11 +1076,21 @@ opposite implications for whether re-retrieval is worthwhile.
   registration wall; probed public URLs returned 404. This is where patient-disjointness of the
   distributed partition would be recorded, which makes it the strand's most consequential
   inaccessible item.
-- [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) — per-dataset accuracies
-  live in supplementary tables 5, 6 and 7 outside the main text, so only average ranks and a handful
-  of named values are verifiable from the retrieved document.
-- [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) — full results deferred to
-  Appendix D; Cohen's κ is listed among the reported metrics but absent from the recovered tables.
+- [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) — **removed by the audit,
+  and retained only to record the removal.** This entry said per-dataset accuracies live in
+  supplementary tables 5, 6 and 7 outside the main text, so only average ranks and a handful of
+  named values were verifiable. The card was corrected: Supplementary Tables 2, 5, 6 and 7 are all
+  present in the regenerated extraction, including the `#Params` column for all ten checkpoints, so
+  the per-dataset accuracies and the inputs to the log-parameter correlation are verifiable from
+  this source. §5.2 already carried half of this correction; the other half was still stated here
+  and in §8.1, and both are now consistent with it.
+- [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) — **this entry was removed by the
+  audit and is retained only to record the removal.** An earlier version listed Brain4FMs here on the
+  grounds that full results were deferred to Appendix D and that Cohen's κ was absent from the
+  recovered tables. Appendix D is in the extraction in full, Tables 8 through 29, and κ is reported
+  in seven of them; the metrics are split by task type rather than omitted, AUROC/Acc/F1/F2 for
+  binary tasks and AUROC/Acc/macro-F1/κ for multi-class. Nothing about this suite is
+  reported-but-unread.
 - [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) — the numeric split
   ratios exist in the GitHub repository rather than the paper, which its own card calls a
   reproducibility gap in a document whose purpose is reproducibility.
@@ -991,7 +1099,13 @@ opposite implications for whether re-retrieval is worthwhile.
   survive extraction, so the card does not enumerate required columns.
 - [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) — the
   figure showing the 22 electrode positions did not survive extraction and the positions are never
-  enumerated in text.
+  enumerated in text. **And a second, larger item, which is a regression rather than a retrieval
+  failure:** the card's `source.md` had held the official Brunner data-set-2a description appended
+  behind a delimiter banner, and a 2026-08-01 re-extraction run over the review PDF alone dropped
+  it. Nothing on the card is now sourced to that document. This is the only entry in the strand
+  where the corpus lost a source it had already obtained, and it is what removed the footing under
+  the EOG claim in §4.4. Re-appending `desc_2a.pdf` restores it; the document itself is still public
+  at bbci.de.
 - [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) — `md_quality: partial` for a
   specific reason: the unprintable delimiter bytes 20 and 21 *are* the specification, and the
   HTML-to-text conversion silently dropped them, so every worked annotation example in the extraction
@@ -1001,7 +1115,10 @@ opposite implications for whether re-retrieval is worthwhile.
   captcha, so the arXiv preprint was read instead.
 - [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
   — the carded version is the arXiv preprint of 26 June 2017, not the NeuroImage version of record;
-  any change made in revision is not captured.
+  any change made in revision is not captured. Added by the audit: Table 1's body is not in the
+  extraction either, only a truncated caption, so the ±15 / ±6 / ±3 bounds this document used to
+  quote are marked unverified on the card and here (§3.2). Re-retrieving the version of record would
+  resolve both at once.
 - [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) — per-subject
   detail is in `SC-subjects.xls` and `ST-subjects.xls`, not retrieved.
 - [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) — the signed access
@@ -1013,14 +1130,23 @@ opposite implications for whether re-retrieval is worthwhile.
   paragraph; participants, channels, sampling rate, hours, class balance and the partition are all
   unknown from the primary source, and there is no descriptive document at all, unlike TUAB's thesis
   or the parent corpus's data report.
-- [tuab](../collection/datasets-benchmarks/tuab/card.md) — no subject count (the thesis counts
-  files), no total hours, and patient-disjointness simply not asserted in the document the corpus
-  names as its description.
+- [tuab](../collection/datasets-benchmarks/tuab/card.md) — **only one of the three items previously
+  listed here survives.** Patient-disjointness is indeed simply not asserted in the document the
+  corpus names as its description, and that remains the strand's most consequential silence. The
+  other two were wrong: the thesis tabulates patient counts (2,138 + 253) and hours (1,064.7 +
+  104.4) alongside its file counts, and the card was corrected to say so. What is genuinely absent
+  is any subject count or hours figure on the corpus *landing page*, which is a different and much
+  weaker claim than the one this section used to make.
 - [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) — no recording-hours
   total (only the channel-summed 29.1 years), no montage, no bit depth in the paper.
 - [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) — no total hours, no
   per-run durations beyond "one-minute" and "two-minute", no participant count in prose, and no
-  errata or exclusion list for the subjects the BCI literature routinely drops.
+  errata or exclusion list of any kind. The card now carries an **unverified** marking on the reason
+  that absence matters, and the marking has to travel: that several subjects have anomalous run
+  timings or sampling rates and are routinely dropped is field knowledge, stated by no source read
+  in this strand, and it needs a citation before anything rests on it. What the landing page
+  establishes is only the absence of errata, not that there is something an erratum should have
+  covered.
 - [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) — no participant
   count, no total hours, no per-recording durations.
 - [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) — no total
@@ -1091,8 +1217,14 @@ gives 157M as the largest model in its six-model panel; and
 register including how the spread propagates into Zare's conclusion is pilot §6.1. What this strand
 adds is the second consumer of those counts: BENDR is one of the ten checkpoints over which
 [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) computes its
-log-parameter-count correlation with per-dataset rank, and that suite's own counts are not recoverable
-from what was read (§5.2, §7).
+log-parameter-count correlation with per-dataset rank. An earlier version of this line added that
+the suite's own counts were not recoverable from what was read; that is no longer true, and the
+change alters what should be done about it rather than resolving it. Supplementary Table 2 carries a
+`#Params` column for all ten checkpoints, so OmniEEG-Bench does state a BENDR figure and it is
+readable from the carded source; this document has not read it off, and a later reader should,
+because it would be a fourth entry beside Brain4FMs's 3.97M, FEMBA's 0.39M and Zare's 157M — in the
+one place in the strand where a parameter count is an independent variable in a statistical claim
+(§5.2, §7).
 
 **CBraMod's parameter count and pretraining hours — three and four values.** Parameters: 4.88M in
 [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) Table 1, 4.0M computed with Thop in
@@ -1137,13 +1269,14 @@ side only. **Same-paper divergence; the weakest of the four, and listed for comp
 
 ### 8.2 Kind 2 — sources contradicting themselves, carded faithfully
 
-Fourteen of the 18 entries carry at least one such record, which makes it a property of the corpus
-rather than of any one entry. The four without are
-[tuab](../collection/datasets-benchmarks/tuab/card.md),
+Fifteen of the 18 entries carry at least one such record, which makes it a property of the corpus
+rather than of any one entry. The three without are
 [tuev](../collection/datasets-benchmarks/tuev/card.md),
 [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) and
 [combrisson-2015-chance-level](../collection/datasets-benchmarks/combrisson-2015-chance-level/card.md),
-and in the last three cases the reason is that the source is too short to contradict itself.
+and in each case the reason is that the source is too short to contradict itself.
+[tuab](../collection/datasets-benchmarks/tuab/card.md) was a fourth until the audit found one in its
+thesis; see the entry below.
 
 - [adabrain-bench](../collection/datasets-benchmarks/adabrain-bench/card.md) — five, plus two more.
   Table 7 against the body for EEGPT (198 h / 246 h), CBraMod (9,246 h / ~27,000 h) and LaBraM
@@ -1153,15 +1286,17 @@ and in the last three cases the reason is that the source is too short to contra
   6,441 subjects in the body against the 329 selected healthy subjects the benchmark actually uses;
   the normalization table labels the EEGMAT dataset "EDMAT"; and the arXiv landing-page abstract for
   v2 differs in wording from the abstract in the v2 PDF.
-- [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) — the abstract carries
-  "nconsistent task protocols"; and the primary leaderboard mixes protocols, scoring longitudinal
+- [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) — the primary leaderboard
+  mixes protocols, scoring longitudinal
   test-retest under the multi-subject fallback while including it in the same average-rank
   computation as the cross-subject tasks, so the headline ranking is not uniformly a cross-subject
   ranking.
 - [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) — "BFM" is used both as the
   abbreviation for the class of brain foundation models and as the name of one specific
-  708.96M-parameter model, so the token is ambiguous in that source; Cohen's κ is listed among the
-  reported metrics and does not appear in the recovered result tables.
+  708.96M-parameter model, so the token is ambiguous in that source. That is now the whole of the
+  entry: the second half, that Cohen's κ is listed among the reported metrics and does not appear in
+  the recovered result tables, was an extraction artefact and not a property of the source, and the
+  card was corrected (§7).
 - [neuralbench](../collection/datasets-benchmarks/neuralbench/card.md) — the pretraining-overlap
   conclusion rests on "we did not notice a clear trend" rather than a test, while the overlapping
   cells are neither excluded nor separately analysed.
@@ -1172,23 +1307,27 @@ and in the last three cases the reason is that the source is too short to contra
   produced the small-dataset p-values is unresolved in the paper. Dataset naming also differs between
   table and figures: "Yi et al. 2014" against "Weibo 2014", "BNCI2014-001" against "001-2014".
 - [kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)
-  — the headline 3,900 percent figure is attributed to schizophrenia in the abstract, discussion and
-  conclusion, but 0.197/0.005 ≈ 39× is the PTSD ratio and the paper's own section 4.4 calls PTSD "the
+  — the headline 3,900 percent figure is attributed to schizophrenia in the Discussion ("all the way
+  up to a 3900% increase in error rate in the case of the schizophrenia dataset"),
+  but 0.197/0.005 ≈ 39× is the PTSD ratio and the paper's own section 4.4 calls PTSD "the
   2nd largest difference", while the schizophrenia MLP ratio is roughly 62×. Further: driver-fatigue
   proper error 0.46 in the body against 0.466 in Table 3 with an interval centred on 0.46;
   driver-fatigue proper accuracy 0.540 in the body against 0.50 in Table 1; PTSD observations per
   participant 200 then 260 three sentences later; alcoholism channels 64 in the body and 62 in the
-  appendix; confused-students participants 10 in Table 2 against "all nine participants"; the
+  appendix; confused-students participants 10 in Table 2 against "Sessions from all nine
+  participants were merged together" in the passage describing the replicated protocol; the
   confused-students effect "over 33%" in the body and 35 percent in the abstract. And Table 3's
   caption claims a significant difference in a paper that runs no test.
 - [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
   — the main text states the standard-error underestimation as "a factor of 0.7 in the best case"
   while the appendix gives 0.73 for leave-one-out and 0.26 for repeated splits, so a reader quoting
-  only the main text understates the repeated-splits problem by nearly threefold. The headline table
-  is also optimistic relative to the paper's own real cohorts: ±15 percent at n = 30 against
-  simulations giving −20/+18 and an empirical leave-one-out bound of ±18.9, and ±10 percent at n = 100
-  against a −21/+18 within-subject fMRI cohort at ~212 samples. And two statements about repeated
-  splits versus leave-one-out are left unreconciled.
+  only the main text understates the repeated-splits problem by nearly threefold. The headline
+  summary is also optimistic relative to the paper's own real cohorts: at n = 30 the binomial gives
+  −15/+12 while the simulations give −20/+18 and the appendix's empirical leave-one-out bound is
+  ±18.9, and the stated ±10 percent at n = 100 sits against a −21/+18 within-subject fMRI cohort at
+  ~212 samples. (This comparison was previously anchored on Table 1's ±15 at n = 30, which the audit
+  marked unverified; the point survives on the binomial row instead.) And two statements about
+  repeated splits versus leave-one-out are left unreconciled.
 - [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) — the body announces
   release v0.6.0 while the reference list cites v0.6.3; the reported age statistics are not
   internally coherent ("average 51.6, stdev 55.9" on a distribution bounded between under 1 and over
@@ -1196,9 +1335,12 @@ and in the last three cases the reason is that the source is too short to contra
   them a paragraph later; and "record", "session", "EEG" and "scan" are used interchangeably, with
   the max-per-patient statistic switching unit mid-sentence.
 - [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) — section
-  5.1 calls the data "a three class motor imagery task" while section 5.2.1, Table 1 and the official
-  description all say four; the review pluralizes the test sessions where there are exactly two per
-  subject; and "test" and "evaluation" name the same files in different places.
+  5.1 calls the data "a three class motor imagery task" while section 5.2.1 and Table 1 both say
+  four; the review pluralizes the test sessions where there are exactly two per subject; and "test"
+  and "evaluation" name the same files in different places, Table A1's columns headed Training and
+  Test against section 5.4's "evaluation data sets". All three were previously stated as clashes
+  between the review and the official Brunner description; that document is no longer in the carded
+  source (§7), and all three turn out to be internal to the review, which is where they now sit.
 - [openneuro](../collection/datasets-benchmarks/openneuro/card.md) — 604 datasets against "the 502
   OpenNeuro datasets available via DataLad", both dated 9 October 2021, never reconciled; Table 1's
   modality counts sum to 1,124 against 604 total datasets with no statement that a dataset may be
@@ -1210,16 +1352,27 @@ and in the last three cases the reason is that the source is too short to contra
   the same paragraph that permits four; no `run-` entity in the naming pattern although BIDS defines
   one.
 - [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) — "one session in one file" promised
-  twice and prohibited once; "epoch" used for a data record and for a 30-second sleep-scoring
-  interval with no disambiguation, and "window" as a third near-synonym; sleep-stage nomenclature
-  Rechtschaffen and Kales in section 2.3 and AASM in the section 3.3 annotation example with no
-  mapping and no stage 4; a table-of-contents heading that does not match its section heading.
-- [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) — the PhysioNet
-  page reads "Published: Oct. 24, 2013. Version: 1.0.0" while describing the March 2018 expansion to
-  197 recordings, so the version string does not track the content.
+  twice and prohibited once; "epoch" used for a data record and for a sleep-scoring interval with no
+  disambiguation, and "window" as a third near-synonym; a sleep-stage nomenclature that gives
+  "W,1,2,3,4,R,M" in section 2.3 and "Sleep stage N1/N2/N3" in the section 3.3 annotation example
+  with no mapping and no stage 4; a table-of-contents heading that does not match its section
+  heading. Two details were corrected on the card and both were external conventions this document
+  had absorbed: the specification states no scoring-epoch length anywhere, so the "30-second"
+  qualifier is not the source's, and it never names the Rechtschaffen-and-Kales or AASM schemes,
+  so the identification of the two nomenclatures is ours and not the specification's. The mismatch
+  itself is real either way.
+- [tuab](../collection/datasets-benchmarks/tuab/card.md) — **new to this node after the audit.**
+  Lopez de Diego's thesis, the document the corpus names as TUAB's description, contradicts itself
+  on its own best-system error rates: the body says the hybrid HMM-SdA system "was able to achieve
+  an error rate of 22.9%" while Table 16 records 22.1%. The card records both and prefers neither.
+  Separately, and not a contradiction, the card previously misread that table: 24.6% is the
+  epoch-based HMM with majority vote, not the stacked-denoising-autoencoder system, and the thesis's
+  best result is CNN-MLP at 21.2%. No figure from that table was used in this document.
 - [mne-python](../collection/datasets-benchmarks/mne-python/card.md) — "epoch" and "trial" used as
-  synonyms while "epoch" also does duty as a training hyperparameter; two typographical errors in the
-  source itself.
+  synonyms; two typographical errors in the source itself. The card's further claim that "epoch"
+  also does duty as a training hyperparameter was removed by the audit: every occurrence in the
+  decoding section is the data-segment sense, and the decoder there is a support vector machine,
+  which has no epoch parameter.
 
 ### 8.3 Kind 3 — differences that look like disagreements and are not
 
@@ -1243,13 +1396,18 @@ Recorded so a later reader does not promote one into §8.1.
   convertible to recording hours without the per-file channel count, against REVE's 26,847 hours from
   Temple University Hospital in its own accounting. The card records that the 29.1-year figure "is
   routinely misquoted as recording duration".
-- **Counts of different units.** [tuab](../collection/datasets-benchmarks/tuab/card.md)'s thesis
-  counts 2,785 training and 280 evaluation *files* while AdaBrain-Bench's table reports 2,383
-  *subjects*. [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md)'s 197
+- **Counts of different units.** [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md)'s 197
   *recordings* and 153/44 file split do not map cleanly onto the 78 *subjects* quoted from benchmark
   preparations, because most subjects contributed two nights and three nights were lost.
   [bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md)'s 5,184 is
   arithmetic from 9 × 2 × 288 rather than a stated figure.
+- **One case that has moved out of this node.** TUAB used to sit above as a units difference — the
+  thesis counting 2,785 training and 280 evaluation *files* against AdaBrain-Bench's 2,383
+  *subjects*. The card was corrected: the thesis counts patients too, 2,138 plus 253, so the two
+  sources are now naming the same unit and differ by eight. That is a small unexplained numeric
+  disagreement rather than a category confusion, and neither source lets a reader resolve it (§5.2).
+  It is recorded here rather than promoted to §8.1 because the gap is within rounding distance of a
+  release difference and nothing rests on it.
 - **Reconcilable count pairs the sources do not reconcile.**
   [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)'s "15 BFMs and 18 public datasets"
   against "22 downstream classification tasks from 18 public datasets" — reconcilable, but a reader
@@ -1265,7 +1423,9 @@ Recorded so a later reader does not promote one into §8.1.
   datasets under the AASM five-class scheme. Merging stages 3 and 4 into N3 and dropping movement time
   is the usual mapping, but neither source states it, so a five-class Sleep-EDF result and the
   dataset's own eight-label hypnogram are not the same label space. The same mismatch appears
-  internally in [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) (§8.2).
+  internally in [edf-plus](../collection/datasets-benchmarks/edf-plus/card.md) (§8.2), though there
+  it appears as two stage vocabularies rather than as two named schemes — the specification names
+  neither, as the audit established.
 
 ### 8.4 One tension that is none of the three kinds
 
@@ -1302,7 +1462,7 @@ every dataset has a recording context (§4), a place in the mapping (§5) and a 
 | [openneuro](../collection/datasets-benchmarks/openneuro/card.md) | §4.2 the one unambiguous data licence | §4.1, §5.1, §6.1, §8.1, §8.2 |
 | [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md) | §5.1 the cleanest pretraining ablation in the mapping | §2.5, §4.1, §4.2, §4.3, §6.1, §7 |
 | [sleep-edf-expanded](../collection/datasets-benchmarks/sleep-edf-expanded/card.md) | §4.4 the peripheral channels every suite discards | §3.5, §4.1, §4.2, §5.1, §6.2, §7, §8.2, §8.3 |
-| [tuab](../collection/datasets-benchmarks/tuab/card.md) | §1.4 an inherited split whose grouping is undocumented | §3.5, §4.2, §4.3, §5.1, §5.2, §7, §8.3 |
+| [tuab](../collection/datasets-benchmarks/tuab/card.md) | §1.4 an inherited split whose grouping is undocumented | §3.5, §4.2, §4.3, §5.1, §5.2, §7, §8.2, §8.3 |
 | [tuev](../collection/datasets-benchmarks/tuev/card.md) | §6.2 what a bipolar convention costs a coordinate model | §1.4, §3.5, §4.2, §4.3, §5.1, §5.2, §7, §8.3 |
 | [tuh-eeg-corpus](../collection/datasets-benchmarks/tuh-eeg-corpus/card.md) | §4.1 the clinical substrate under most checkpoints | §4.2, §4.3, §5.1, §6.2, §7, §8.2, §8.3 |
 | [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md) | §3.2 the interval is wider than the reported statistic | §1.2, §3.3, §3.5, §7, §8.2, §8.4 |

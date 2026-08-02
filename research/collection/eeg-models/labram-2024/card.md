@@ -69,7 +69,12 @@ away from more pretraining: see Notable details.
 
 ## Notable details
 
-- **Pretraining corpus and total hours**: over 2,500 hours from about 20 datasets, comprising public
+- **Pretraining corpus and total hours**: "over 2,500 hours" in the body, and exactly **2534.78
+  hours** in Appendix D — "Training datasets (for both vector-quantized neural spectrum prediction
+  training and LaBraM pretraining, the total time is 2534.78 hours)". The exact figure was missing
+  from an earlier version of this card, which matters because `cbramod-2025` quotes LaBraM at
+  2,534.78 hours when contrasting corpus sizes, and this is where that number comes from. From about
+  20 datasets, comprising public
   EEG datasets plus data collected by the authors. Appendix D lists the constituents, the largest of
   which are TUH corpora (one at 1138.53 hours, one at 92.22 hours) and an ESI NeuroScan collection
   at 342.23 hours. The four downstream datasets are excluded from pretraining. Constituent datasets
@@ -130,10 +135,31 @@ away from more pretraining: see Notable details.
   set, and the paper does not test an unseen montage. Third-party use resorts to interpolating the
   position embeddings (`zare-2026-stress-testing`), an adaptation the original paper neither
   specifies nor validates.
-- Whether the frozen representations are useful is not tested here at all; the paper reports only
-  fine-tuning. Independent linear-probe evaluations are less favourable: `reve-2025` measures frozen
-  LaBraM at 0.3715 balanced accuracy on PhysioNet-MI, and `lin-2026-identity-trap` finds LaBraM's
-  frozen embeddings dominated by subject identity.
+- **Frozen representations ARE tested, and the result is bad. Corrected during the Phase 4 audit.**
+  An earlier version of this bullet said "Whether the frozen representations are useful is not
+  tested here at all; the paper reports only fine-tuning." That is wrong. Appendix K, "PARTIAL
+  FINE-TUNING", Table 10, reports five adaptation regimes including a linear probe, on both headline
+  datasets. Verbatim: "We elaborate on several settings: fine-tuning all 12 Transformer blocks,
+  fine-tuning the last 8 Transformer blocks, fine-tuning the last 4 Transformer blocks, and linear
+  probing. It is noteworthy that for linear probing, we set the weight decay to 0... Notably, the
+  results of linear probing are much worse than other settings, which still have room for
+  improvement." Table 10, balanced accuracy, TUAB then TUEV:
+  All 0.8140 / 0.6409; Transformer(12) 0.8141 / 0.6541; Transformer(8) 0.8134 / **0.6611**;
+  Transformer(4) 0.8074 / 0.6188; **Linear Probe 0.7954 / 0.3461**.
+  This is the strand's most consequential correction on this card. It means (a) LaBraM's own paper
+  measures the frozen-embedding regime this project's third comparison depends on, and finds it
+  costs 1.9 balanced-accuracy points on TUAB but **29.5 points on TUEV**; (b) the third-party frozen
+  results the card cited as filling a gap are corroborating, not filling, a first-party measurement;
+  and (c) partial fine-tuning beats full fine-tuning on TUEV — the best number in the whole table,
+  0.6611, comes from unfreezing only the last 8 blocks, not from full fine-tuning. That last point
+  is a live option for a small-data project and was invisible on this card.
+  Independent linear-probe evaluations agree in direction: `reve-2025` and `cbramod-2025` both
+  measure frozen LaBraM at 0.3715 balanced accuracy on PhysioNet-MI, and `lin-2026-identity-trap`
+  finds LaBraM's frozen embeddings dominated by subject identity.
+- **Spatial-embedding ablation** (Appendix L, Table 11), also absent from the earlier card: dropping
+  the spatial embeddings at fine-tuning time costs 1.4 points on TUAB (0.8140 → 0.8004) and 4.6 on
+  TUEV (0.6409 → 0.5949). During pretraining they are not optional at all: "we observed that the
+  loss could not converge without spatial embeddings."
 - The arXiv title carries a trailing "in BCI" that the ICLR proceedings title omits, so citation
   strings for this paper differ between sources.
 

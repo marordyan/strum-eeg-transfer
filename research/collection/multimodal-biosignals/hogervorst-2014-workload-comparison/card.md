@@ -73,11 +73,30 @@ load-bearing for this project.
 - **EEG-only number**: around 86% for high versus low workload (2-back vs 0-back, 120 s segments);
   the single best variable was the ERP at Pz at 88% with elastic net. All EEG variables except
   theta power at Fz classified well above chance at p < 0.01.
-- **Peripheral-only and eye-only numbers**: 70–75%. The only non-EEG variables exceeding the 0.01
-  chance level were respiration frequency (69%) and pupil size (75%). Combining the peripheral
-  physiological sensors (skin conductance electrodes, respiration belt, ECG electrodes) gave a
-  "modest, non-significant improvement to around 75%" over the best single physiological sensor,
-  respiration at around 70%.
+- **Peripheral-only and eye-only numbers**: 70–75% at the sensor-group level. The only non-EEG
+  variables exceeding the 0.01 chance level were respiration frequency (69%) and pupil size (75%).
+  Combining the peripheral physiological sensors (skin conductance electrodes, respiration belt,
+  ECG electrodes) gave a "modest, non-significant improvement to around 75%" over the best single
+  physiological sensor, respiration at around 70%.
+- **Per-sensor accuracies (2-vs-0-back, 120 s), from the Results prose**: EEG 0.86 (both
+  classifiers); eye 0.75 (SVM); respiration 0.70; skin conductance 0.63 (elastic net); **ECG 0.61**
+  (elastic net), the last two "just reaching a level that is significantly higher than chance
+  (p < 0.05)". The ECG figure is the one this strand most needs and an earlier version of this card
+  omitted it: on this task the cardiac channel alone is 25 points below EEG and 5 points above the
+  weakest sensor.
+- **What counts as a real difference here**: "Using the assumption of a binomial distribution,
+  significance (p < 0.05) is reached for differences of around 10%." Adding a sensor group to EEG
+  bought "3-5%" with elastic net. The null is therefore a null against a coarse yardstick — the
+  study can exclude a 10-point fusion gain, not a 3-point one.
+- **Harder conditions do not rescue fusion**: at 30 s segments performance drops 8% (SVM) and 5%
+  (elastic net) and "the pattern of results is highly similar", which the authors read as evidence
+  that the absent fusion benefit "is not due to a ceiling effect". For 2-vs-1-back performance is
+  10% (SVM) and 6% (elastic net) lower; for 1-vs-0-back, 22% and 18% lower, with EEG models "just
+  below 0.70". In both small-difference conditions the physiology model is not significantly
+  different from chance, and the eye model drops to chance for 1-vs-0-back.
+- **Adding the time of measurement as a feature** raises the physiology model by 9% (significant)
+  and the eye model by 5% (not significant), while doing nothing for EEG — a direct measurement of
+  how much of the peripheral signal is drift rather than state.
 - **Combined number**: "a little over 90%" for EEG plus eye-related variables on 2-minute
   segments, against 86% for EEG from Pz alone, described by the authors as "a similar and not
   significantly different performance". Combining EEG with another sensor group did not
@@ -86,7 +105,16 @@ load-bearing for this project.
   participant's data is the training set and the last part the test set, explicitly to avoid
   inflation from time dependencies. This is *not* subject-wise — every model is personal — so the
   numbers say nothing about cross-subject transfer.
-- **Participants**: 14.
+- **Participants**: 14 analysed, "aged between 23 and 40 years (mean age 27.9), 8 female and
+  6 male". A footnote records that "A total of 35 participants took part in the original experiment
+  … However, we here only considered participants with complete data sets", with partial analyses
+  reported to show the same patterns. The 30 s analysis uses 12 of the 14.
+- **Instruments**: EEG from g.tec Au electrodes at Fz, FCz, Pz, C3, C4, F3 and F4, mastoid-
+  referenced, 256 Hz. ECG, skin conductance and respiration on a MindWare BioNex. The eye measures
+  — pupil size and blinks — come from a **Tobii T60 eye-tracker monitor**, not from
+  electrooculography electrodes; the card tags the channel `eog` per the strand's controlled
+  vocabulary, as `ahmad-2020-cognitive-load-framework` does, but the measurement is video eye
+  tracking. This matters wherever the card's eye-channel result is carried into an EOG argument.
 - The authors offer two explanations for their own null in the discussion: that they used
   decision-level as well as feature-level fusion and still saw no reliable advantage, and that
   giving more weight to lower-performing variables hurts. Both cut against the idea that a better
@@ -99,9 +127,10 @@ load-bearing for this project.
 
 ## Open questions / limitations
 
-- Fourteen participants with individually tuned models is a small basis for a null. The paper
-  reports significance tests on the comparison but the extraction does not preserve the effect
-  sizes or confidence intervals, so the null's precision cannot be stated here.
+- Fourteen participants with individually tuned models is a small basis for a null, and the paper
+  states the resolution limit itself: differences below about 10 percentage points are not
+  detectable under its binomial test. The observed 3-5% fusion increment sits inside that band, so
+  the result is "no gain larger than the study can see", not "no gain".
 - The evaluation is entirely within-subject. Whether fusion helps *across* subjects — the regime
   where EEG is weakest and where a peripheral channel might plausibly be more stable — is not
   tested, and this is the most important untested case for the project.
@@ -115,11 +144,14 @@ load-bearing for this project.
 - The workload contrast is 2-back versus 0-back within one task. Nothing establishes that the same
   ordering (EEG best, eyes second, peripheral third) holds for a different construct, and this
   project's construct is a stimulus-modality contrast, not load.
-- **Extraction limitation**: Figure 3, which carries the per-condition accuracies for the separate
-  and combined sensor groups across the four comparisons (2-vs-0-back at 120 s and 30 s,
-  2-vs-1-back, 1-vs-0-back), is an image and did not convert. Every number on this card comes from
-  the prose in the Conclusion and Discussion, so per-condition values are unavailable without
-  re-reading the figure.
+- **Extraction limitation, restated after the Phase 4 audit.** Figures 1-4 are images and their
+  plotted values did not convert; per-sensor-group bar heights for each of the four comparisons
+  cannot be read off `source.md`. But the Results prose restates the values that matter, and this
+  card now quotes them (ECG 0.61, skin conductance 0.63, respiration 0.70, eye 0.75, EEG 0.86, the
+  3-5% fusion increment, the ~10% significance threshold, and the drops for 30 s and for smaller
+  workload differences). An earlier version said "every number on this card comes from the prose in
+  the Conclusion and Discussion, so per-condition values are unavailable" — the Results section
+  states them too, and the condition-level summaries are prose rather than figure-only.
 
 ## Citations
 

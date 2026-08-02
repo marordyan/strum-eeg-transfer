@@ -120,7 +120,11 @@ sampled at the same 1200 Hz as the neural data.
 - **Visual stimulus timing formula, quoted because it is the control that makes the modality
   contrast fair**: word duration in ms = `(nletters/sumnletters) * (audiodur + 2000 - 150*nwords)`,
   with no word shown for less than 300 ms, where `audiodur` is the duration of the audio recording
-  of the spoken version of the same sentence.
+  of the spoken version of the same sentence. Each word is separated by a 300 ms blank screen.
+  (Transcription note: the extraction drops the formula's operators, rendering it as
+  "(nletters/sumnletters) (audiodur + 2000150 nwords)". The multiplication and the minus above are
+  reconstructed from context and are not verbatim; check against the PDF before relying on the
+  exact constants.)
 - **Known timing offset**: the paper records a delay "on the order of slightly more than 60
   milliseconds" between the trigger and the actual auditory presentation, and notes that "detailed
   temporal alignment can be achieved comparing the audio traces in the MEG data with the

@@ -24,8 +24,9 @@ md_quality: clean
 ## TL;DR
 
 Predicts an EEG-derived label from peripheral physiology alone — 27 demographic, vital-sign and
-HRV features reach AUROC 0.825 for detecting a bispectral index above 60 — which makes it the
-strand's cleanest instance of a physiology-only decoding arm with a patient-wise split.
+HRV features at a 2 s window reach AUROC 0.825 for detecting a bispectral index above 60 — which
+makes it the strand's cleanest instance of a physiology-only decoding arm with a patient-wise
+split.
 
 ## Summary
 
@@ -35,9 +36,9 @@ centre. After exclusions — craniocerebral neurosurgery, transplantation and ca
 age outside 18–65; ASA class above III; body mass index at or below 18 or at or above 30; surgery
 shorter than two hours; non-general anaesthesia; and missing synchronised bispectral index, ECG and
 photoplethysmography waveforms — 5,366 patients were removed, leaving 1,022. Inadequate sedation is
-defined as bispectral index above 60. Twenty-seven features spanning demographics, conventional
-vital signs and heart-rate-variability metrics were computed over four temporal windows (2, 6, 10
-and 20 s) and fed to four classifiers (Light Gradient Boosting Machine, logistic regression, random
+defined as bispectral index above 60. Features spanning demographics, conventional vital signs and
+heart-rate-variability metrics were computed over four temporal windows (2, 6, 10 and 20 s), with
+the input dimensionality rising from 27 at 2 s to 464 at 20 s, and fed to four classifiers (Light Gradient Boosting Machine, logistic regression, random
 forest, naive Bayes). LGBM is best at every window: AUROC 0.825 (95% CI 0.823–0.826) and accuracy
 0.741 (0.740–0.742) at 2 s, improving by roughly 0.012 in both at 20 s. Recursive feature
 elimination with cross-validation reduces 27 features to 12 with comparable accuracy. SHAP
@@ -63,9 +64,10 @@ train/test splitting was performed at the patient ID level". That is the protoco
 strand's positive fusion results do not clearly have.
 
 The temporal-window sweep is directly relevant to a project deciding how long an epoch to give a
-peripheral branch. Going from 2 s to 20 s buys about 0.012 AUROC — small, monotone and not free,
-since a 20 s window cannot resolve a stimulus-locked contrast. The peripheral channel's information
-here is slow and mostly not improved by looking longer.
+peripheral branch. Going from 2 s to 20 s buys about 0.012 AUROC — small, and not free twice over:
+a 20 s window cannot resolve a stimulus-locked contrast, and the 20 s model is also a 464-dimension
+model against the 2 s model's 27, so part of that 0.012 is extra parameters rather than extra time.
+The peripheral channel's information here is slow and barely improved by looking longer.
 
 The SHAP ranking says which features carry the decoding, and the answer is mostly *not* HRV: mean
 blood pressure, end-tidal CO2 and systolic blood pressure lead, with heart rate fourth and a single
@@ -90,15 +92,31 @@ weaker half of this feature set.
 - **Combined number**: not reported, same reason.
 - **Split protocol**: patient-ID-level train/test split, 80% of patients to training and 20% to
   test, with 10-fold cross-validation used for hyperparameter tuning inside the training set.
-- **Participants**: 1,022 patients after exclusions, from 6,388 BIS-monitored patients in VitalDB.
-  Exclusion cascade: 283 neurosurgery/transplant/bypass, 2,223 outside 18–65, 125 with ASA above
-  III, 400 with BMI at or below 18 or at or above 30, 1,769 with surgery under two hours, 9
-  non-general anaesthesia, 557 lacking synchronised BIS, ECG and PPG.
+- **Participants**: 1,022 after exclusions. The denominator is stated twice and inconsistently.
+  Section 2.1: "486 intraoperative monitoring parameters, 73 perioperative clinical variables, and
+  34 time-series laboratory parameters collected from 6388 surgical patients at a single tertiary
+  medical center. Among these, 5543 patients had BIS monitoring records available and were
+  considered for inclusion". Figure 2's cascade instead opens "6388 patients monitored using BIS in
+  the VitalDB database", and only the 6,388 figure reconciles with the arithmetic — the seven
+  exclusions sum to 5,366 and 6,388 − 5,366 = 1,022, exactly the stated cohort, whereas
+  5,543 − 5,366 = 177. Both readings are recorded; the card follows neither as settled, though the
+  arithmetic favours the figure. Exclusion cascade (Figure 2): 2,223 outside 18–65; 125 with ASA
+  above III; 400 with BMI at or below 18 or at or above 30; 1,769 with surgery under two hours;
+  283 craniocerebral neurosurgery, transplantation or cardiopulmonary bypass; 9 non-general
+  anaesthesia; 557 lacking synchronised BIS, ECG and PPG.
 - **Signals**: ECG and photoplethysmography waveforms, plus tabulated vital signs and demographics.
   Respiration enters only as end-tidal CO2, a capnograph-derived vital sign, not as a respiratory
   waveform.
-- **Feature count**: 27, reduced to 12 by recursive feature elimination with cross-validation at
-  comparable accuracy.
+- **Feature count**: 27 is the input dimensionality at the 2 s window only. The Methods state
+  "The input dimensionality increased with window length: 27 features for 2 s, 142 for 6 s, 234 for
+  10 s, and 464 for 20 s." Corrected in the Phase 4 audit: an earlier version of this card said 27
+  features were "computed over four temporal windows", which reads as one feature set evaluated at
+  four resolutions. It is not — the 20 s model has 17 times as many inputs as the 2 s model, so the
+  0.012 AUROC gained by going from 2 s to 20 s is bought with a much larger feature space, not with
+  a longer view of the same features. The abstract's flat "27 features" is what the earlier reading
+  followed. Recursive feature elimination with cross-validation reduces the set to 12 with
+  comparable accuracy (the MINsubset reaches AUC 0.825 and accuracy 0.738 "despite a 55.6% reduction
+  in dimensionality"; the OPTsubset reaches AUC 0.827, accuracy 0.743).
 - **Top SHAP features**: mean blood pressure, end-tidal CO2, systolic blood pressure, heart rate,
   body mass index, HRV_CVNN, sex, ASA physical status.
 - **Sex effect**: female patients were more likely to be classified as inadequately sedated. The

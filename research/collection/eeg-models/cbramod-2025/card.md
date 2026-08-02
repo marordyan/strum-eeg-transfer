@@ -105,10 +105,21 @@ that.
   pretraining. Dirty pretraining is therefore worth only about half a point over no pretraining
   at all on this task, which the authors read as dirty data weakening the effectiveness of
   pretraining.
-- **Held-out-corpus check**: for TUEV, the authors re-pretrained a fresh instance of CBraMod with
-  TUEV excluded from pretraining, and it still reached 0.6671 balanced accuracy against
-  LaBraM-Huge (369M parameters) at 0.6616. This is the one place the paper controls for overlap
-  between pretraining corpus and evaluation set.
+- **Held-out-corpus check, corrected during the Phase 4 refutation pass.** An earlier version of this
+  bullet attributed 0.6671 to the run with TUEV excluded. That is the *included* run; the excluded run
+  is 0.6659. The paper runs the check twice and reports both as matched pairs on identical evaluation
+  data:
+  **TUEV** 0.6659 +/- 0.0124 excluded against 0.6671 +/- 0.0107 included, a delta of **+0.0012**; and
+  **TUAB** 0.8249 +/- 0.0025 excluded against 0.8289 +/- 0.0022 included, a delta of **+0.0040**.
+  Method, verbatim: "we excluded TUEV from the pretraining process, re-pretrained a new instance of
+  CBraMod, and subsequently evaluated it on TUEV."
+
+  This is the corpus's only direct measurement of what pretraining-corpus overlap with the evaluation
+  set is worth, and it is **0.12 to 0.40 balanced-accuracy points, inside one standard deviation in
+  both cases**. It bears directly on the argument that a dataset being out of distribution for every
+  checkpoint is an advantage: on this evidence, the advantage is close to zero. Both deltas favour the
+  included run, so overlap helps rather than harms, but not by an amount either experiment can
+  resolve.
 - **Objective**: mean squared error between reconstructed and original masked patches, at a 50
   percent mask ratio, on the raw normalized signal rather than on a discrete codebook. Mask token
   type (full-zero versus learnable) made no significant difference.

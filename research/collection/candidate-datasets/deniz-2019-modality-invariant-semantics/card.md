@@ -23,7 +23,7 @@ md_quality: abstract-only
 
 ## TL;DR
 
-Participants listened to and read the same narrative stories for several hours each, and voxelwise
+Participants listened to and read "several hours of the same narrative stories", and voxelwise
 semantic tuning turned out to be "highly correlated in most semantically selective regions of
 cortex", with models fitted in one modality accurately predicting responses in the other — so the
 cognitive content of spoken and written language is close to identical, and whatever separates the
@@ -33,8 +33,9 @@ two conditions is almost entirely not the cognitive content.
 
 Two fMRI experiments in which participants listened to, or read, "several hours of the same
 narrative stories". The authors built voxelwise encoding models characterising semantic selectivity
-per voxel and per individual participant, rather than contrasting conditions at group level, which
-they present as the sensitivity improvement that makes the question answerable: "previous studies
+per voxel and per individual participant. They frame the sensitivity of prior work as the barrier
+(the abstract does not say what design prior studies used, so the contrast with group-level
+condition contrasts is this card's gloss, not the paper's): "previous studies
 were too insensitive to determine whether semantic representations were shared at a fine level of
 detail rather than merely at a coarse scale." The result is that "semantic tuning during listening
 and reading are highly correlated in most semantically selective regions of cortex, and models
@@ -49,13 +50,22 @@ This is the single most consequential entry in the strand for the project's stat
 its consequence is uncomfortable rather than encouraging.
 
 The project intends to label epochs spoken versus written and to treat the resulting classifier as
-saying something about cognition. This paper is the best-powered available test of whether spoken
-and written language differ in their semantic representation, and its answer is that they are
-"almost identical" at the level of fine-grained voxelwise tuning, with cross-modality prediction
-succeeding. If the semantic representations are near-identical, then a classifier that separates
-spoken from written epochs above chance is, by elimination, separating something other than
-semantics — most plausibly the modality-specific sensory and perceptual response that this paper's
-encoding models factor out.
+saying something about cognition. This paper is a direct test of whether spoken and written language
+differ in their semantic representation, and its answer is that they are "almost identical" at the
+level of fine-grained voxelwise tuning, with cross-modality prediction succeeding. If the semantic
+representations are near-identical, then a classifier that separates spoken from written epochs
+above chance is, by elimination, separating something other than semantics — most plausibly the
+modality-specific sensory and perceptual response.
+
+Two scope corrections, 2026-08-01, Phase 4 audit. This paragraph previously called the paper "the
+best-powered available test", a comparative ranking over a literature that nothing read here
+establishes. And the final clause previously ran "...the modality-specific sensory and perceptual
+response that this paper's encoding models factor out", asserting a method detail from the unread
+body: **the abstract says nothing about what the encoding models control for, regress out, or
+factor out**. Its only statement of what they do is that the authors "created voxelwise encoding
+models to characterize semantic selectivity in each voxel and in each individual participant". The
+inference about what a classifier would be separating is this card's own and stands without the
+method claim.
 
 That does not make a spoken-versus-written label useless. It makes the label's meaning specific:
 it is a label on the sensory channel through which language arrived, not on the linguistic or
@@ -113,6 +123,6 @@ Primary: `deniz-2019-modality-invariant-semantics`
 - `simanova-2010-eeg-object-categories` — the EEG counterpart, and the entry that names the
   early sensory components differing between spoken and written presentation.
 - `mous-2019` — the dataset with the same spoken-versus-written manipulation at scale, though
-  between subjects and in MEG.
+  between subjects, and in MEG and fMRI rather than fMRI alone.
 - `ritchie-2019-decoding-limits` — the general argument that a decodable difference need not be a
   represented distinction.

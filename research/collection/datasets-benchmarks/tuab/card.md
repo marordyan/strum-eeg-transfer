@@ -36,12 +36,15 @@ configuration using natural language processing, then having a team of students 
 signal and its report to confirm the automatic assignment. The corpus documentation names Silvia
 Lopez de Diego's 2017 master's thesis as its description. That thesis defines two data sets: a short
 set of 162 training and 106 evaluation recordings used for pilot work, and a full set of 1,387 normal
-plus 1,398 abnormal training files against 150 normal plus 130 abnormal evaluation files. Selection
+plus 1,398 abnormal training files against 150 normal plus 130 abnormal evaluation files, tabulated
+alongside patient counts (2,138 training, 253 evaluation) and hours (1,064.7 training, 104.4
+evaluation). Selection
 was demographically balanced by age and gender, restricted mostly to patients over 20 because
 "pediatric EEGs are very different in nature from adult EEGs", with ages 20 to 90 excluding outliers,
 mean 46.6 and standard deviation 14.7. One EDF file was selected per session, all longer than 15
-minutes. The thesis's own baselines reach 26.1% error with a hidden Markov model and 24.6% with a
-stacked denoising autoencoder post-processor.
+minutes. The thesis's own baselines reach 26.1% error with a hidden Markov model on the full
+dataset, 24.6% with epoch-based hidden Markov model plus majority vote, and 21.2% with its best
+system, a convolutional network with a multilayer-perceptron head.
 
 ## Relevance to the review
 
@@ -73,11 +76,18 @@ card cannot say so from what was read.
 
 Fixed field set required of every `type: dataset` card in this strand:
 
-- **Participants**: not stated as a subject count in the corpus documentation or in the thesis, which
-  counts *files* — 2,785 training and 280 evaluation in the full set, one EDF file per session.
-  `adabrain-bench` Table 6 records 2,383 subjects and 409,083 samples for its own preparation of
-  TUAB, which is a benchmark preparation figure, not the corpus's own. The corpus documentation
-  states only that TUAB is "a corpus of EEGs that have been annotated as normal or abnormal".
+- **Participants**: 2,138 in the full training set and 253 in the full evaluation set, per the
+  thesis's own file-statistics tables — training "**Abnormal** | | 1398 | | 50.2% | | 899 | 42.1% |
+  | 546.4" and "**Normal** | | 1387 | | 49.8% | | 1239 | 58.0% | | 518.3", total "2138"; evaluation
+  "**Abnormal** | 130 | | 46.4% | | 105 | | | 41.5% | | 48.9" and "**Normal** | 150 | | 53.6% | |
+  148 | | | 58.5% | | 55.4", total "253". *Correction, made during review: an earlier version of
+  this card said the count was "not stated as a subject count in the corpus documentation or in the
+  thesis, which counts files". The thesis counts both — the tables carry a `Patients` column
+  beside the `Files` column. The corpus landing page still states no count, saying only that TUAB
+  is "a corpus of EEGs that have been annotated as normal or abnormal".* `adabrain-bench` Table 6
+  separately records 2,383 subjects and 409,083 samples for its own preparation of TUAB, a
+  benchmark preparation figure that is close to but not identical with the thesis's 2,138 + 253 =
+  2,391.
 - **Channels**: not stated for TUAB specifically. The parent corpus is 24 to 36 channels with 31 the
   most common EEG-only count. The thesis analyses "each one of the 22 channels in the transverse
   central parietal (TCP) montage (ACNS, 2006), which accentuates spike activity", which is a
@@ -88,8 +98,14 @@ Fixed field set required of every `type: dataset` card in this strand:
   derived TCP montage, and a benchmark's preprocessing.
 - **Sampling rate**: not stated for TUAB. The parent corpus is 87% at 250 Hz, with 256, 400 and 512 Hz
   making up the rest. `adabrain-bench` records "250/256/512 Hz" for TUAB, consistent with the parent.
-- **Total hours**: unknown. The thesis states only that all files used are longer than 15 minutes.
-  Neither the corpus page nor the thesis gives a total.
+- **Total hours**: 1,169.1 for the full set — 1,064.7 training plus 104.4 evaluation, both read from
+  the thesis's file-statistics tables, whose last column is headed "**Hours**" (training: abnormal
+  546.4, normal 518.3, "Total ... 1064.7") and "**hours**" (evaluation: abnormal 48.9, normal 55.4,
+  "Total ... 104.4"). The card does not sum them for the reader beyond noting the arithmetic; the
+  thesis states the two partition totals and no grand total. *Correction, made during review: an
+  earlier version of this card said "unknown ... Neither the corpus page nor the thesis gives a
+  total", citing only the thesis's remark that all files used are longer than 15 minutes. That
+  remark is real, but the hours are tabulated.* The corpus landing page still gives no hours figure.
 - **Task**: none. Archival clinical EEG; the binary label is a retrospective classification of the
   recording, not an experimental condition.
 - **Label type**: expert-derived clinical label, normal or abnormal, obtained by natural-language
@@ -119,9 +135,17 @@ Other details:
 - **Context statistic worth carrying**: "75% of the records present in TUH EEG are classified as
   abnormal in the EEG reports" — so TUAB's near-balance is the product of deliberate selection, not
   of the underlying archive.
-- **Thesis baselines**: k-nearest-neighbour and random forest on a single channel with principal
-  component analysis; hidden Markov model at 26.1% error; hidden Markov model plus stacked denoising
-  autoencoder at 24.6%; a convolutional network on four scalp regions. Features are
+- **Thesis baselines**, from its own summary table (Table 16, "Summary of results for the
+  implemented abnormal EEG classification systems", short-dataset / full-dataset error):
+  kNN (k=20) 41.8% / N/A; RF (Nt=50) 31.7% / N/A; PCA-HMM 25.6% / 32.6%; GMM-HMM 17.0% / 26.1%;
+  Epoch-Based HMM-Majority Vote 26.6% / 24.6%; Epoch-Based HMM-SdA 27.2% / 22.1%; CNN-MLP N/A /
+  21.2%. *Correction, made during review: an earlier version of this card read "hidden Markov model
+  plus stacked denoising autoencoder at 24.6%". 24.6% is the majority-vote system, not the
+  stacked-denoising-autoencoder one; Table 16 puts HMM-SdA at 22.1% on the full dataset and CNN-MLP,
+  the best system in the thesis, at 21.2%.* Note that the thesis contradicts itself on the HMM-SdA
+  figure: the body says "This hybrid HMM-SdA system was able to achieve an error rate of 22.9%"
+  while Table 16 records 22.1%. Both readings are recorded and neither is preferred here.
+  Also a convolutional network on four scalp regions. Features are
   mel-frequency-cepstral-coefficient-like, 26 dimensions per frame, with the first 60 seconds of one
   channel stacked into a 15,600-dimensional vector before reduction.
 - The corpus version distributed at retrieval time was v3.0.1; the thesis describes an earlier
@@ -130,8 +154,10 @@ Other details:
 ## Open questions / limitations
 
 - **Patient-disjointness of the released partition is not stated in the document the corpus names as
-  its description.** The thesis describes selection, demographic balance and file counts, and says
-  the data "was divided into two sets", without asserting that no patient contributes to both. Given
+  its description.** The thesis describes selection, demographic balance, file counts, patient
+  counts and hours per partition, and says the data "was divided into two sets", without asserting
+  that no patient contributes to both. Counting patients separately on each side is consistent with
+  disjointness but does not state it. Given
   that the parent corpus averages 1.56 sessions per patient and one patient contributed 37, the
   question is live. Every foundation-model TUAB number in this corpus inherits this partition. This
   is the single most important thing to resolve before any TUAB result is weighed in Phase 4, and
@@ -141,10 +167,11 @@ Other details:
   derivation, 23 in AdaBrain-Bench's preparation — and none of the sources states which the released
   files contain. A project checking whether a checkpoint's input contract fits TUAB cannot answer it
   from these documents.
-- **The subject count is a benchmark artefact.** "2,383 subjects" appears in `adabrain-bench`'s table
-  and is widely repeated, but the corpus documentation states no subject count and the thesis counts
-  files. Whether 2,383 refers to the release the thesis describes or to v3.0.1 is not determinable
-  from either source.
+- **Two subject counts circulate and they are not the same number.** The thesis's tables give 2,138
+  training plus 253 evaluation patients, i.e. 2,391 for the release it describes; `adabrain-bench`
+  records 2,383 for its own preparation. Whether the 8-patient difference is a release difference
+  (the thesis predates v3.0.1), an exclusion, or a counting convention is not determinable from
+  either source, and the corpus landing page states no subject count at all.
 - **Two checkpoints were pretrained on this corpus and are then evaluated on it.** BIOT and CBraMod
   both list TUAB as pretraining data in AdaBrain-Bench's own Table 7, and AdaBrain-Bench reports
   their TUAB scores without comment. Even a patient-disjoint fine-tuning split does not remove this,

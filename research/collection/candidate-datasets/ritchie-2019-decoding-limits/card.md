@@ -45,10 +45,24 @@ information the visual system acts on but not in a usable format. From this foll
 methodological corollary they endorse, citing Naselaris et al.: "non-linearity should be avoided
 precisely because it is too powerful: it allows us to pull out information that is present in the
 brain but could not be exploited by the brain itself", since "a sufficiently powerful nonlinear
-classifier could decode almost any arbitrary feature". The constructive proposal is to tie
-decodability to behavioural read-out, illustrated by a study where decodable shape-category
-information existed in both retinotopic and lateral occipital cortex but only the latter showed
-stronger patterns on correct than on incorrect trials.
+classifier could decode almost any arbitrary feature". The constructive proposal, in section 5, is
+to connect behaviour to **the structure of the activation space** via a psychologically plausible
+model: "if behaviour can be connected to the structure of activation space in a psychologically
+plausible manner, then this may warrant the sort of inference researchers have had in mind."
+
+**Corrected 2026-08-01, Phase 4 audit.** This passage previously read: "The constructive proposal
+is to tie decodability to behavioural read-out, illustrated by a study where decodable
+shape-category information existed in both retinotopic and lateral occipital cortex but only the
+latter showed stronger patterns on correct than on incorrect trials." That is the option the paper
+**rejects**, not the one it proposes. Section 4.3 — whose heading this card itself reproduces as
+"Predicting behaviour is not enough" — closes: "In summary, merely predicting behaviour using
+decodable information is not enough to revive the dictum." Section 5 opens by naming it as the
+discarded alternative: "In the previous section, we considered one form of augmentation-linking
+decoding results to behavioural outcomes-and argued that it was insufficient. The problem was that
+linkages to behaviour do not show that the information is actually formatted in a useable way."
+The Williams et al. correct-versus-incorrect study is introduced at 4.3 as "one of the earliest
+indications that not all decodable information is 'read-out' in behaviour" — an illustration of the
+problem, not of the remedy.
 
 ## Relevance to the review
 
@@ -65,10 +79,22 @@ several EEG checkpoints are dominated by subject identity; a model that can deco
 from an embedding can very plausibly decode auditory-versus-visual stimulation from the same
 embedding, and neither is evidence that the embedding represents a cognitive state.
 
-The second is the constructive half, which gives this project something to actually do. The
-behavioural read-out criterion — decodable information should discriminate correct from incorrect
-trials if it is the information the participant is using — is implementable in any dataset that
-logs behavioural responses. It is a stronger test than accuracy and cheaper than a new experiment.
+The second is the constructive half, which gives this project something to actually do — but it is
+*not* the correct-versus-incorrect-trial test, and an earlier version of this card recommended that
+test on the strength of a misreading (see the correction in the Summary). The paper argues that
+linking decoding to behavioural outcomes is **insufficient**, because "linkages to behaviour do not
+show that the information is actually formatted in a useable way". What it proposes instead is to
+model observer behaviour from the *geometry* of the activation space — representational similarity
+against psychological spaces, and predicting response latency from distance to the decision
+boundary — an approach "importantly different from the dictum, as it does not rely on using linear
+classifiers as a surrogate".
+
+For this project that is a higher bar than a correct/incorrect split. Demonstrating that a
+spoken-versus-written distinction is *represented* would mean showing that the embedding's
+similarity structure predicts behaviour, not merely that decodable information tracks accuracy.
+The correct/incorrect test remains worth running as a cheap first filter — a label that fails it is
+in trouble — but passing it does not license the representational claim, which is precisely the
+paper's point.
 
 ## Notable details
 
@@ -85,15 +111,20 @@ logs behavioural responses. It is a stronger test than accuracy and cheaper than
   for reading" it out. The retinal ganglion cell example makes the point that nonlinearity and noise
   "can only decrease (and never increase) the absolute amount of information present", so
   information being present says nothing about it being usable.
-- **The classifier-flexibility corollary**: "it is important to restrict the flexibility of pattern
-  analysis methods when measuring ensemble feature selectivity", because otherwise the result
-  characterises "the analysis algorithm rather than the tuning properties of individual units within
-  the brain".
-- **The behavioural read-out criterion**: the illustrative study analysed spatial fMRI patterns
-  during a shape-discrimination task and found that "although both retinotopic cortex and lateral
-  occipital cortex (LOC) in humans contain decodable category information, only the LOC shows a
-  difference in pattern strength for correct as compared to incorrect trials". Decodability was
-  equal; behavioural relevance was not.
+- **The classifier-flexibility corollary**, quoted by these authors from **Kamitani and Tong
+  ([2005], p. 684)**, whom they introduce as "the first to caution against the use of non-linear
+  classifiers": "nonlinear methods may spuriously reflect the feature-tuning properties of the
+  pattern analysis algorithm rather than the tuning properties of individual units within the brain.
+  For these reasons, it is important to restrict the flexibility of pattern analysis methods when
+  measuring ensemble feature selectivity." (This bullet previously presented both strings as
+  Ritchie et al.'s own words, and dropped "pattern" from "the pattern analysis algorithm".)
+- **The behavioural read-out criterion, presented by the authors as insufficient** (section 4.3):
+  the illustrative study analysed spatial fMRI patterns during a shape-discrimination task and found
+  that "although both retinotopic cortex and lateral occipital cortex (LOC) in humans contain
+  decodable category information, only the LOC shows a difference in pattern strength for correct as
+  compared to incorrect trials". Both regions carry decodable information; only one tracks
+  behaviour. (The source does **not** say the two regions' decodability was equal in magnitude; this
+  bullet previously asserted "Decodability was equal", which is not in the paper.)
 - **Scope declared by the authors**: the analysis focuses on fMRI studies of the visual system,
   for three stated reasons — that vision decoding popularised MVPA, drove its methodological
   innovation, and is the domain where functional organisation is best understood — with the
@@ -102,9 +133,13 @@ logs behavioural responses. It is a stronger test than accuracy and cheaper than
 
 ## Open questions / limitations
 
-- This is a philosophical argument, not an empirical result. It supplies no numbers and no
-  procedure that can be run; its contribution is a constraint on interpretation and a criterion
-  (behavioural read-out) that has to be operationalised per study.
+- This is a philosophical argument, not an empirical result. It reports no results of its own and
+  no procedure that can be run off the shelf; its contribution is a constraint on interpretation
+  plus a research programme (behaviour predicted from activation-space structure) that has to be
+  operationalised per study. Note that the paper does contain accuracy figures — 86% in V1 and 65%
+  in V5/+MT — but these are **Seymour et al. ([2009], p. 178)'s**, quoted as an example, not
+  results of this paper. (This bullet previously said the paper "supplies no numbers", which those
+  figures contradict, and previously named behavioural read-out as its criterion.)
 - The scope is fMRI and vision by the authors' own declaration. The extension to EEG is natural —
   the paper notes MVPA is "a unified approach for analysing data from cellular recordings, fMRI,
   EEG, and MEG" — but the specific arguments about spatial patterns and voxel selectivity do not

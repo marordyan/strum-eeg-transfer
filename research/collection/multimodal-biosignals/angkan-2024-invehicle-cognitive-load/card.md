@@ -70,12 +70,22 @@ cross-subject deployment.
 
 - **EEG-only number**: LOSO binary mean across models 61.20% (F1 52.14); LOSO ternary mean 41.59%
   (F1 34.28). 10-fold binary mean 67.72%; 10-fold ternary mean 51.78%. Best single model on EEG
-  alone: XGBoost 77.38% (10-fold binary), VGG-features 70.70% (LOSO binary), ResNet-raw 58.13%
-  (LOSO ternary).
+  alone: random forest 77.41% (10-fold binary, with XGBoost second at 77.38%), XGBoost 64.49%
+  (10-fold ternary), VGG-features 70.70% (LOSO binary), ResNet-raw 58.13% (LOSO ternary).
 - **Combined number** (EEG + ECG + EDA + gaze): LOSO binary mean 67.04% (F1 62.02); LOSO ternary
   mean 47.80% (F1 43.02). 10-fold binary mean 74.78%; 10-fold ternary mean 60.90%. Best single
-  model: XGBoost 83.67% (10-fold binary), 74.08% (10-fold ternary), 71.48% (LOSO binary);
-  ResNet-raw 61.55% and VGG-raw 63.56% (LOSO ternary, four modalities).
+  model on all four modalities: XGBoost 83.67% (10-fold binary) and 74.08% (10-fold ternary);
+  VGG-features 75.52% (LOSO binary, with XGBoost at 71.48%); VGG-raw 63.56% (LOSO ternary, with
+  ResNet-raw at 61.55%).
+- **Correction, Phase 4 audit — which model is best is not XGBoost everywhere.** An earlier version
+  of this card gave "XGBoost 77.38% (10-fold binary)" as the best EEG-alone result and "XGBoost …
+  71.48% (LOSO binary)" as the best four-modality result. Table VIII's EEG column has random forest
+  at 77.41%, above XGBoost's 77.38%; Table IX's four-modality column has VGG (feat.) at 75.52%,
+  well above XGBoost's 71.48%. The paper's own Section V says so directly: "In Table IX, for the
+  binary LOSO evaluation scheme, we observe that the highest accuracy of 76.17% is obtained by the
+  VGG-style network trained with features. This accuracy is obtained using 3 modalities, namely
+  EEG, ECG and EDA." The correction reinforces the card's third argument rather than weakening it:
+  gradient boosting wins under 10-fold and deep networks win under LOSO.
 - **Peripheral-only number**: *not reported.* Every one of the eight modality subsets includes
   EEG, so there is no physiology-only arm. This is the paper's one structural gap for category 3.
 - **Split protocol**: both 10-fold cross-validation and leave-one-subject-out, reported in full
@@ -86,8 +96,14 @@ cross-subject deployment.
   construct validity and a weakness for label noise.
 - **Task**: nine scenarios of increasing complexity, 3 minutes each, including night driving and
   highway conditions; scenario 0 is an orientation block.
-- Per-modality feature sets are tabulated (Table V): EEG contributes 40 features (absolute, mean,
-  max, min and median band power, spectral entropy, Hjorth mobility and complexity).
+- Per-modality feature sets are tabulated (Table V): EEG 40 features (PSD absolute, mean, maximum,
+  minimum and median power; spectral entropy; Hjorth mobility and complexity; Lempel-Ziv
+  complexity; Higuchi fractal dimension; and raw-signal mean, minimum, maximum, median, variance
+  and standard deviation), ECG 53, EDA 30, gaze 32. An earlier version of this card listed only the
+  first three EEG families and so under-described the set.
+- **Segmentation**: each 3-minute scenario is cut into 18 non-overlapping 10 s segments, aligned to
+  the 10 s self-report interval. Segments with missing EEG (Bluetooth dropouts of about 30 s) were
+  excluded rather than imputed.
 - Two of the peripheral channels in the grid are the ones this project has (ECG, and gaze as an
   eye-movement proxy for EOG); EDA is not in the STRUM set as far as this strand knows.
 
@@ -99,8 +115,12 @@ cross-subject deployment.
   means hide a wide per-subject spread that the tables do not show (no standard deviations are
   given in the modality tables).
 - Ternary LOSO accuracy of 47.80% against three classes is a modest margin over a 33.3% chance
-  level, and the class balance of the trinarised PAAS labels is not stated, so the effective
-  margin may be smaller.
+  level. The paper does report the label distribution — "Figure 7 presents the distribution of the
+  recorded output scores for all the participants", and it states that the 10 s reporting interval
+  was chosen because "we aimed to balance the frequency of labels" — but the distribution is a
+  figure and no per-class counts survive in the extraction, so the effective margin cannot be
+  computed here. This is a reported-but-not-readable gap, not an omission by the paper; an earlier
+  version of this card recorded it as "not stated".
 - Gaze is recorded with an eye tracker, not electrooculography. Whether the gain it contributes
   would survive substituting EOG electrodes — which is what this project would have — is untested,
   and the two are not interchangeable: an eye tracker gives position, EOG gives a potential

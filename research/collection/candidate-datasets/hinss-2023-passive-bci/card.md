@@ -32,9 +32,19 @@ behavioural performance *and* physiology rather than assuming them.
 
 The COG-BCI database was built because "data sharing in pBCI research is still scarce". Twenty-nine
 participants (11 female, 18 male, mean age 23.9, SD 3.20) completed three sessions spaced one week
-apart, performing four tasks in each: the N-back (N = 0, 1, 2), the MATB-II in which "participants
-have to simultaneously perform four aviation-related subtasks", the Psychomotor Vigilance Task, and
-the arrow-based Eriksen flanker task. Each session opened with a 3D head-and-cap scan, task
+apart, performing four tasks in each: the N-back (N = 0, 1, 2), the MATB-II, in which "Participants
+are presented with up to 4 different tasks that they have to complete simultaneously", the
+Psychomotor Vigilance Task, and the arrow-based Eriksen flanker task.
+
+**Corrected 2026-08-01, Phase 4 audit.** The MATB-II was previously described with the quoted
+string "participants have to simultaneously perform four aviation-related subtasks". That sentence
+is **not in the paper** — the word "aviation" occurs in this source only inside reference titles,
+never in the MATB-II description. The paper's own wording is quoted above, and it names the
+subtasks used: "The four subtasks selected from the MTAB-II are tracking (TRACK), system monitoring
+(SYSMON), communication (COMM) and resource management (RESMAN); leaving task scheduling unused."
+MATB-II is a NASA task with an operational flavour, and the paper calls it "a highly realistic
+environment of operational systems" — but "aviation-related" was this review's characterisation
+presented inside quotation marks as the source's. Each session opened with a 3D head-and-cap scan, task
 training, a Karolinska Sleepiness Scale rating and a two-minute resting state (one minute eyes
 open, one closed); every task was presented twice in pseudorandom order and "followed systematically
 by a Rating Scale Mental Effort", with an extra Karolinska rating after the vigilance task and
@@ -91,7 +101,8 @@ approximation is required to feed it to a layout-flexible model.
   no electrodermal activity.
 - **Total hours**: "over 100 hours of open EEG data", stated by the authors. Per session, tasks took
   65 to 80 minutes plus setup, training and resting states.
-- **Task**: four tasks per session — MATB-II (four simultaneous aviation subtasks), N-back at
+- **Task**: four tasks per session — MATB-II (four simultaneous subtasks: tracking, system
+  monitoring, communication, resource management; task scheduling unused), N-back at
   N = 0, 1, 2, Psychomotor Vigilance Task (10 minutes), Eriksen flanker with congruent and
   incongruent trials and trial-level feedback. Plus resting states, eyes open and eyes closed.
 - **Label type**: task identity and task difficulty level, set by the experimenter; subjective

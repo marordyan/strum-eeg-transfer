@@ -40,10 +40,21 @@ information not present in the raw EEG data file such as filter settings and cha
 (good/bad)"; the `coordsystem.json` file specifies "which coordinate framework to use to interpret
 the electrode locations (for example with respect to a T1 weighted MRI scan)". An `events.tsv` file
 records all events and can reference the presented stimuli through a `stim_file` column into the
-dataset's `stimuli` directory. Optional `sourcedata` and `code` directories allow the conversion
-and preprocessing to be reproduced. The specification names only two recommended official data
-formats: the European Data Format, "an ongoing international effort ... that began in 1992", and
-the BrainVision Core Data Format.
+dataset's `stimuli` directory. An optional `sourcedata` directory holds "original non-formatted
+data", while "a 'stimuli' directory and a 'code' directory can be present to allow data conversion
+and preprocessing to be reproduced". The specification "incorporates only two recommended
+'official' data formats: the European Data Format (EDF), which is an ongoing international effort
+to provide a common data format for electrophysiological recordings that began in 1992, and the
+BrainVision Core Data Format" — but it "also allows two 'unofficial' commonly used data formats:
+The format used by the MATLAB toolbox EEGLAB ('.set' and '.fdt' files), and the Biosemi format
+('.bdf')", so a `.set` or `.bdf` dataset can still be BIDS-valid. The paper also records that the
+Hierarchical Event Descriptor system has been integrated and is "particularly useful for
+electrophysiological data".
+
+(Two fixes here, 2026-08-01: the reproducibility purpose was previously attributed to `sourcedata`
+and `code`, where the paper attributes it to `stimuli` and `code`; and the two permitted
+"unofficial" formats were omitted, which would lead a reader screening candidate datasets to
+conclude wrongly that an EEGLAB or BioSemi dataset cannot be BIDS-compliant.)
 
 ## Relevance to the review
 
@@ -56,12 +67,24 @@ checkpoint measured coordinates in a named frame; a dataset without them forces 
 whether a candidate dataset is BIDS-compliant, and specifically whether those two optional files
 are present, is a concrete predictor of whether a checkpoint can ingest it without approximation.
 
-`channels.tsv` matters for a second reason specific to this project. It is the file that records
-channel *type* and status, so it is where the distinction this strand cares about — which
-peripheral channels are present, and whether a channel is EEG, EOG, ECG, EMG or MISC — is machine
-readable rather than buried in a methods paragraph. Two of the candidate datasets carded here
-(`tes-eeg-ecg-2021` and `hinss-2023-passive-bci`) are distributed in BIDS and therefore expose
-their peripheral inventory in this form.
+`channels.tsv` matters for a second reason specific to this project — but with a caveat about what
+this source actually establishes. What the paper says the file carries is "information not present
+in the raw EEG data file such as filter settings and channel status (good/bad)", and that it "must
+be specified describing the parameters of the data acquisition". Three of the candidate datasets
+carded here (`tes-eeg-ecg-2021`, `hinss-2023-passive-bci` and `mous-2019`) are distributed in BIDS
+and therefore expose per-channel metadata in this form.
+
+**Corrected 2026-08-01, Phase 4 audit.** This paragraph previously asserted that `channels.tsv`
+"is the file that records channel *type* and status, so it is where the distinction this strand
+cares about — which peripheral channels are present, and whether a channel is EEG, EOG, ECG, EMG or
+MISC — is machine readable". **None of that is in this source**: the strings "EOG", "ECG", "EMG",
+"MISC" and "peripheral" do not occur anywhere in `source.md`, and the paper never describes a
+`type` column. The `type` field and its modality vocabulary belong to the live BIDS specification,
+not to this 2019 announcement paper, and the card was importing them and attributing them here.
+This mattered because the peripheral-inventory claim was the load-bearing half of this card's
+second relevance argument. The claim may well be true of BIDS today; it needs the specification as
+its source, not this paper. The paragraph also said "Two of the candidate datasets", against the
+three named in the Notable details bullet below — an internal inconsistency, now resolved to three.
 
 ## Notable details
 
@@ -101,8 +124,13 @@ their peripheral inventory in this form.
 - This is the 2019 specification. BIDS has continued to evolve, so any current claim about required
   versus optional fields should be checked against the live specification rather than against this
   paper.
-- The paper is a specification announcement, so it reports no measurements. There is nothing here to
-  contradict or to verify numerically.
+- The paper is a specification announcement, so it reports no experimental measurements. It is not,
+  however, free of checkable numbers — the previous version of this bullet said "There is nothing
+  here to contradict or to verify numerically", which would tell a later reader not to bother
+  looking. It states numeric precision per format ("they have high numerical precision (EDF:16
+  bits, BrainVision Core Data Format:32 bits)"), "more than 10 major manufacturers in neuroscience",
+  and that "even the simplest processing pipeline already contains eight separate steps". The
+  16-bit versus 32-bit figure is the one a dataset-selection decision might actually rest on.
 
 ## Citations
 
@@ -112,6 +140,14 @@ Primary: `eeg-bids-2019`
   `tes-eeg-ecg-2021`.
 - `nemar-2022` — the EEG/MEG/iEEG-specific gateway layered on OpenNeuro, which runs quality
   assessment over BIDS-formatted neuroelectromagnetic data.
-- Kemp & Olivan (2003), EDF+ — one of the two recommended data formats, and the format
-  `sleep-edfx` is distributed in.
+- Kemp, Värri, Rosa, Nielsen & Gade (1992), "A simple format for exchange of digitized polygraphic
+  recordings" — the reference this paper attaches to **EDF**, one of its two recommended official
+  formats, and the format `sleep-edfx` is distributed in.
+
+  **Corrected 2026-08-01, Phase 4 audit.** This line previously read "Kemp & Olivan (2003), EDF+ —
+  one of the two recommended data formats". Wrong on three counts: the work this paper cites for
+  EDF is Kemp et al. (1992), reference 7; the recommended format is **EDF**, not EDF+; and the
+  string "EDF+" does not appear anywhere in this source. (EDF+ is genuinely relevant to
+  `sleep-edfx`, whose hypnograms are EDF+, and Kemp & Olivan 2003 is correctly cited on *that*
+  card — but it is not a citation of this paper.)
 - Gorgolewski et al. (2016), the original BIDS specification this extends.

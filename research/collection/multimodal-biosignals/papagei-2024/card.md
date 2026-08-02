@@ -44,9 +44,10 @@ block of three parallel two-layer fully-connected networks producing a 128-dimen
 The representation-learning objective uses domain knowledge of PPG signal morphology across
 individuals rather than standard contrastive augmentation. Evaluation covers 20 tasks from 10
 datasets — cardiovascular health, sleep disorders, pregnancy monitoring and wellbeing — including
-held-out out-of-domain datasets, and reports improvements of 6.3% on classification and 2.9% on
-regression metrics in at least 14 tasks, while outperforming models 70 times larger. The paper
-also benchmarks robustness across Fitzpatrick skin tones.
+held-out out-of-domain datasets. The abstract reports improvements of 6.3% on classification and
+2.9% on regression metrics in at least 14 tasks; the Discussion states the same result as ranges,
+4.7–6.3% and 2.9–4.9%. It outperforms models 70 times larger. The paper also benchmarks robustness
+across Fitzpatrick skin tones, and reports that two baselines beat it on dark tones.
 
 ## Relevance to the review
 
@@ -72,7 +73,9 @@ worth the complexity relative to the engineered features in category 5.
 The skin-tone benchmark is the only fairness evaluation in this strand and is directly relevant to
 a dyadic study with a heterogeneous participant pool: PPG amplitude depends on optical absorption,
 so a peripheral channel that works unevenly across participants introduces a subgroup confound of
-exactly the kind `salam-eeg-ecg-stress` runs into with sex.
+exactly the kind `salam-eeg-ecg-stress` runs into with sex. The benchmark's own result is that the
+unevenness is real and that pretraining did not remove it — PaPaGei-S leads on light tones and is
+beaten by BYOL and REGLE on dark tones.
 
 STRUM as described carries ECG rather than PPG, so this entry is context for the model family
 rather than a direct dependency; hence `relevance: medium`.
@@ -86,16 +89,26 @@ rather than a direct dependency; hence `relevance: medium`.
   everything resampled down to 125 Hz.
 - **Input contract**: single-channel PPG; Chebyshev-style band-pass with cut-offs at 0.5 Hz and
   12 Hz; flat-segment rejection when more than 25% of a segment is flat; z-score normalisation;
-  resample to 125 Hz. Segment lengths of 60 s are used, following prior wearable-PPG work.
+  resample to 125 Hz. **Segment length is 10 s**, corrected in Phase 4: an earlier version of this
+  card said 60 s, which the source attributes to a cited comparator rather than using itself. The
+  source reads "Segment the signal into 10-second windows", noting that other studies use 30 s. This
+  card was the sole source of the 60-second upper bound in the multimodal ontology's window range, so
+  that range is 5 to 20 seconds rather than 5 to 60.
 - **Architecture**: 18 convolutional blocks, initial filter size 32 doubling every 4 blocks,
   single fully-connected projection to 512 dimensions. PaPaGei-S adds an expert block of three
   parallel two-layer FCNNs giving a 128-dimensional embedding. PaPaGei-P uses augmentations
   including cropping (p = 0.50), negation (0.20) and flipping.
 - **Objective**: representation learning that "leverages domain knowledge of PPG signal morphology
   across individuals", presented as an alternative to traditional contrastive learning.
-- **Reported gains**: 6.3% on classification metrics and 2.9% on regression metrics in at least 14
-  of 20 tasks, against state-of-the-art time-series foundation models (Chronos, Moment) and
-  self-supervised baselines (SimCLR, BYOL, TF-C) plus PPG-specific comparators (REGLE, EAM).
+- **Reported gains — the abstract gives point values and the body gives ranges.** Abstract:
+  "improving classification and regression metrics by 6.3% and 2.9% respectively in at least 14
+  tasks". Discussion and Appendix I: "PAPAGEI outperforms baselines in at least 14 out of 20 tasks,
+  with average classification and regression improvements of 4.7%-6.3% and 2.9%-4.9%, respectively."
+  The abstract's 6.3% is the top of the classification range and its 2.9% is the bottom of the
+  regression range, so the pair is not a like-for-like summary. Both readings are recorded; the
+  card no longer presents 6.3 / 2.9 as the paper's single result. Comparators are state-of-the-art
+  time-series foundation models (Chronos, Moment), self-supervised baselines (SimCLR, BYOL, TF-C)
+  and PPG-specific models (REGLE, EAM).
 - **Evaluation set**: 20 tasks across 10 datasets, with some datasets held out entirely
   (out-of-domain) and held-out test sets retained for the pretraining datasets. Tasks include ICU
   admission and operation type (VitalDB), mortality (MIMIC-III), smoking status and two
@@ -103,8 +116,17 @@ rather than a direct dependency; hence `relevance: medium`.
   diastolic blood pressure on a skin-tone-stratified dataset (VV, 231 subjects), blood pressure,
   average heart rate and hypertension (PPG-BP, 219 subjects), and sleep-disordered breathing
   (SDB, 146 subjects).
-- **Bias benchmark**: results stratified over the six-level Fitzpatrick skin tone scale for blood
-  pressure estimation, offered as "a benchmark for bias evaluation in future models".
+- **Bias benchmark, and what it found**: results stratified over the Fitzpatrick skin tone scale for
+  blood pressure estimation, offered as "a benchmark for bias evaluation in future models". The
+  finding is not that PaPaGei is uniformly best: "PAPAGEI-S achieves the best BP estimation across
+  light tones. Across dark tones, we notice that BYOL and REGLE obtain the lowest MAE for Systolic
+  BP and Diastolic BP. However, identifying a single model that performs best across all skin tones
+  remains challenging. While PAPAGEI-S obtains the best overall performance, additional work is
+  necessary to improve robustness on darker skin tones." Added in the Phase 4 audit: an earlier
+  version of this card recorded only that a benchmark existed, and said no skin-tone result was
+  quotable because the numbers are in a figure. The per-tone MAE values are indeed figure-only
+  (Figures 9 and 26), but the direction of the result is stated in prose and is the part that
+  matters for a heterogeneous participant pool.
 - **Release**: the paper is positioned as the first *open* PPG foundation model; weights and code
   are released. The licence attached to the released weights is not stated in the extracted text,
   which is the same gap the `eeg-models` strand records for its checkpoints.
@@ -120,11 +142,11 @@ rather than a direct dependency; hence `relevance: medium`.
   contributes on top of an EEG embedding.
 - Resampling everything to 125 Hz to match the lowest-rate source discards information present in
   the 500 Hz and 256 Hz recordings. No ablation reports the cost.
-- The 6.3% and 2.9% figures are averaged improvements over "at least 14 tasks", which leaves up to
-  six tasks where the model does not improve; the extraction does not preserve which.
-- No skin-tone result is quoted on this card: the detailed skin-tone figure (Figure 26) converts to
-  character soup in the markdown extraction and the numbers were not recoverable without reading
-  the PDF figure directly.
+- The improvement figures are averages over "at least 14 out of 20 tasks", which leaves up to six
+  tasks where the model does not improve; the source does not name them in prose, and the abstract's
+  6.3 / 2.9 pair understates the spread the body reports (4.7–6.3 and 2.9–4.9).
+- Per-tone MAE values are figure-only (Figures 9 and 26) and are not quoted here. The qualitative
+  result is quoted above and it cuts against the model: on dark tones two baselines beat it.
 - Licence for the released weights is unrecorded, which matters for whether this project could use
   them.
 - The evaluation is dominated by slow physiological and clinical endpoints (blood pressure, apnoea

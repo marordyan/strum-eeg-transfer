@@ -39,10 +39,12 @@ design where the cross-validated estimate is compared against a held-out validat
 versus private leaderboard discrepancy of a Kaggle schizophrenia-prediction challenge with 144
 subjects; simulations of balanced binary classification at n from 30 to 1000; and a demonstration on
 Haxby et al.'s data with labels deliberately inverted so that true accuracy is chance, where roughly
-50 near-identical analysis pipelines reach 71 percent at 4 sessions. It summarizes the result as a
-table of ballpark confidence bounds — ±15 percent at n = 30, ±10 percent at 100, ±6 percent at 300,
-±3 percent at 1000 — and states that these "may be significantly larger in adverse situations such
-as with correlated observations or very unstable classifiers". The recommended replacements are
+50 near-identical analysis pipelines reach 71 percent at 4 sessions. It summarizes the result in a
+table of ballpark confidence bounds whose body did not survive extraction (see Open questions); the
+only row the prose states outright is n = 100 — "A typical sample size in neuroimaging, 100
+observations, leads to ±10% errors in prediction accuracy" — and the caption, itself cut off at a
+page break in this extraction, says the bounds "may be significantly larger in adverse situations
+such as with correlated observations or very unstable classi-". The recommended replacements are
 permutation testing, group-level inference, comparison across many datasets, larger and pooled
 samples, preregistration, and blind analysis.
 
@@ -74,13 +76,28 @@ prediction".
 
 - **Central claim.** "Sample sizes of many neuroimaging studies inherently lead to large error bars,
   eg ±10% for 100 samples", and "the standard error across folds strongly underestimates them".
-- **Headline table.** Sample size 30 / 100 / 300 / 1000 gives confidence bounds ±15% / ±10% / ±6% /
-  ±3%, with the caveat about adverse situations quoted above.
+- **Headline table (Table 1) — body not recoverable from this extraction; treat as unverified.**
+  Only the caption survives, and truncated: "Table 1: **Confidence bounds to be expected for a
+  binary classification** , summarizing experiments and simulations in Figure 1. Actual confidence
+  bounds may be significantly larger in adverse situations such as with correlated observations or
+  very unstable classi-". *Correction, made during review: an earlier version of this card gave the
+  table as "Sample size 30 / 100 / 300 / 1000 gives confidence bounds ±15% / ±10% / ±6% / ±3%". Of
+  those four, only the n = 100 row is stated anywhere in `source.md` — "A typical sample size in
+  neuroimaging, 100 observations, leads to ±10% errors in prediction accuracy" (Conclusion) and "eg
+  ±10% for 100 samples" (abstract). The other three are marked unverified here rather than deleted;
+  the nearest supported values are the Figure 1b/1c figures carded below, which at n = 30 read
+  −20%/+18% (simulation, leave-one-out) and −15%/+12% (binomial), at n = 300 −6%/+6%, and at
+  n = 1000 −3%/+3%.*
 - **Real-data results** (leave-one-out; 50 repeated splits with 20% test): within-subject functional
   magnetic resonance imaging, ~212 samples, −21%/+18% and −24%/+13%; across-subject functional
   magnetic resonance imaging, ~241 samples, −10%/+10% and −10%/+8%; magnetoencephalography, ~199
   samples, −16%/+14% and −13%/+10%.
-- **Simulation results** (100-dimensional Gaussian, separation tuned to 75% accuracy, linear support
+- **The simulated feature count is stated two ways and neither is preferred here.** Appendix C.1
+  says "each described by a Gaussian of identity covariance in 100 dimensions"; the Figure A3 caption
+  says the 2D illustration is "unlike the actual experiments, which are performed on 300 features".
+  Both readings are recorded; the bullet below carries the Appendix C.1 figure because it is the
+  method description.
+- **Simulation results** (100-dimensional Gaussian per Appendix C.1, separation tuned to 75% accuracy, linear support
   vector machine, compared against 10,000 held-out samples over 1000 repeats): n = 30 gives
   −20%/+18% for leave-one-out and −19%/+15% for repeated splits; n = 100, −10%/+10% and −10%/+8%;
   n = 200, −7%/+7% and −7%/+5%; n = 300, −6%/+6% and −5%/+4%; n = 1000, −3%/+3% and −3%/+2%.
@@ -126,17 +143,27 @@ prediction".
 
 ## Open questions / limitations
 
-- **Scope: balanced binary classification only, and no EEG.** All quantitative results concern
-  balanced two-class accuracy in functional magnetic resonance imaging, voxel-based morphometry and
-  magnetoencephalography. Multiclass is addressed qualitatively in an appendix. Continuous-outcome
+- **Scope: mostly balanced binary classification, and no EEG.** The real-data results concern
+  balanced two-class accuracy in within-subject functional magnetic resonance imaging,
+  across-subject functional magnetic resonance imaging and magnetoencephalography. Multiclass and
+  other expected accuracies are handled in Appendix A.2, and *quantitatively*: Table A1 gives 5–95%
+  binomial confidence bounds for expected accuracies of 10%, 25%, 50%, 75% and 90% at 30, 100 and
+  300 samples — for example 10.0% expected accuracy gives 3.3%–20.0% at 30 samples and 7.3%–13.0% at
+  300, and 25.0% gives 13.3%–40.0% and 21.0%–29.0%. *Correction, made during review: an earlier
+  version of this bullet said "Multiclass is addressed qualitatively in an appendix" and listed
+  voxel-based morphometry among the paper's own quantitative results. Appendix A.2 is quantitative,
+  and voxel-based morphometry appears only in Appendix B's description of the earlier study,
+  "Varoquaux et al. (2017) applied such experiments on a variety of neuroimaging decoding datasets,
+  within and across subjects, in fMRI, VBM (Voxel Based Morphometry) and MEG"; no VBM number is
+  reported in this paper.* Continuous-outcome
   prediction is not analysed at all — the word "continuous" does not appear, and the paper's own
   diagnosis attributes the problem to discreteness, that it "is inherent to the discriminant nature
   of the test, measuring only a success or failure per observations". No number here should be
   attributed to a regression target or to EEG specifically.
-- **The headline table is optimistic relative to the paper's own real data.** At n = 30 the table
-  says ±15%, matching the binomial, while the simulations give −20%/+18% and the appendix's empirical
-  leave-one-out bound is ±18.9%. At ~212 samples the within-subject functional magnetic resonance
-  imaging cohort shows −21%/+18%, worse than the table's ±10% at n = 100 would suggest. The paper
+- **The headline summary is optimistic relative to the paper's own real data.** At n = 30 the
+  binomial lower bound is −15%/+12%, while the simulations give −20%/+18% and the appendix's
+  empirical leave-one-out bound is ±18.9%. At ~212 samples the within-subject functional magnetic resonance
+  imaging cohort shows −21%/+18%, worse than the stated ±10% at n = 100 would suggest. The paper
   does not flag that its summary is anchored on the simulation and binomial rather than on its
   worst real cohort.
 - **Two statements about repeated splits versus leave-one-out that are not reconciled.** A footnote
@@ -147,7 +174,7 @@ prediction".
   and 0.26; a reader who quotes only the main text understates the repeated-splits problem by nearly
   threefold.
 - The x-axis of the analysis deliberately mixes units: the paper is upfront that samples means "less
-  than 100 observations given to the classifier, trials or sub-jects depending on the settings". For
+  than 100 observations given to the classifier, trials or subjects depending on the settings". For
   EEG, where one participant contributes thousands of epochs, which n the table refers to is exactly
   the question `kamrud-2021-data-partitioning` and `brookshire-2024-data-leakage` show is decisive,
   and this paper does not settle it.

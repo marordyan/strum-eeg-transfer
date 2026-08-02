@@ -83,7 +83,9 @@ the card treats it that way.
 - **Parameter count**: 90.9 million. Architecture is wav2vec 2.0: a 4-block multi-layer CNN
   feature extractor embedding raw signal portions into latents z_t, feeding a BERT-like
   transformer encoder producing contextualised representations c_t.
-- **Pretraining scale**: 1.4 million ECG segments, from a study using 1.5 million 12-lead ECGs.
+- **Pretraining scale**: 1.4 million ECG segments — the Experiments section gives the exact figure,
+  "The ECG-FM model was pretrained on 1 405 625 samples using 3 A100 80GB GPUs" — from a study using
+  1.5 million 12-lead ECGs.
   Note the paper states both numbers in different places (abstract: "a study using 1.5 million
   12-lead ECGs"; introduction: "pretrained on 1.4 million ECG segments") — these are consistent
   only if curation removed roughly 100,000 records, which Figure 1 apparently documents.
@@ -118,9 +120,20 @@ the card treats it that way.
 - The 5 s non-overlapping segmentation sets a floor on temporal resolution that is long relative
   to a stimulus-locked EEG epoch and short relative to reliable HRV estimation — an awkward middle
   for either use.
-- Linear probing is described as "competitive" without a number in the abstract, and the
-  linear-probing table did not survive the two-column extraction cleanly, so no frozen-encoder
-  figure is quoted on this card.
+- Linear probing is described as "competitive" without a number anywhere in the article body. The
+  frozen-encoder evidence is a data-scaling curve (Figure 3, "Label-averaged AUPRC across experiment
+  suites and training dataset sizes for all tasks") and a set of supplementary tables (S6-S9); the
+  Results describe it only qualitatively — "At the smallest training set sizes, Linear outperforms
+  the baselines and performs comparably to Full in the MIMIC-IV-ECG machine reads and UHN-ECG
+  reduced LVEF tasks; however, its performance plateaus because it lacks the representational
+  capacity necessary to exploit additional downstream data." Corrected in the Phase 4 audit: an
+  earlier version of this card said "the linear-probing table did not survive the two-column
+  extraction cleanly". There is no such table in the article. Every per-label result is in the
+  supplement, which is not part of the archived source, so the right statement is that the numbers
+  are outside the archived document rather than lost in conversion.
+- **Frozen-versus-fine-tuned, qualitatively**: linear probing matches full fine-tuning only in the
+  smallest-data regime and plateaus thereafter. For a project intending to bolt a head onto a frozen
+  peripheral encoder, that is the relevant shape and it is a warning as much as an endorsement.
 - The 1.5 million versus 1.4 million discrepancy between abstract and introduction is
   reconcilable as pre- versus post-curation but is not stated as such in either place.
 - Deliberately retaining poor-quality records is defensible for clinical robustness but means the

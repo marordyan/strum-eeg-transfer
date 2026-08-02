@@ -47,8 +47,15 @@ commercial products".
 
 This project has a stated hard constraint — loading one subject's full recording into a Jupyter
 kernel exhausts memory and kills it — and this paper is where the mechanism that solves it is
-documented. MNE-Python's `Raw` class "offers for example the ability to read data from disk only when
-needed", and the design point that matters is what follows: "this access-on-demand principle can also
+documented — though the sentence usually quoted for it attaches to the FIF format, not to the `Raw`
+class: "The FIF file format ... is at the core of the MNE-Python package which favored the
+development of highly optimized reading and writing routines for this format. It offers for example
+the ability to read data from disk only when needed." *Correction, made during review: an earlier
+version of this card rendered that as "MNE-Python's `Raw` class 'offers for example the ability to
+read data from disk only when needed'". The quotation is verbatim but its subject is the FIF format
+and its readers, which matters, because the paper does not extend the claim to the EDF, BDF and
+BrainVision readers listed below — the case a STRUM pipeline on EDF+ would hit.* The design point
+that matters is what follows: "this access-on-demand principle can also
 be inherited by other classes that build upon Raw (such as Epochs and Evoked, below), which offers
 the possibility to process data with a very limited memory usage". Two further lazy-evaluation
 mechanisms are documented: projections are applied on demand rather than by rewriting the data, and
@@ -115,8 +122,11 @@ one a new user is most likely to copy.
   ingest that benchmark without a conversion step.
 - **"Epoch" and "trial" are used as synonyms** — "these can be segmented into pieces often called
   epochs or trials, which generally correspond to segments of data after each repetition of a
-  stimulus" — and "epoch" also does duty as a training hyperparameter in the decoding section. The
-  package's own operational definition is the segment, and that is what the container implements.
+  stimulus". The package's own operational definition is the segment, and that is what the container
+  implements. *Correction, made during review: an earlier version of this bullet added that "epoch"
+  "also does duty as a training hyperparameter in the decoding section". It does not. Every
+  occurrence of the word in section 3.3 and Table 3 is the data-segment sense, and the decoder there
+  is a support vector machine, which has no epoch parameter.*
 - **The decoding example's split has no grouping key**, as described above. The paper does not warn
   about it, and does not state a multiple-comparison correction for the per-timepoint significance
   claim in that section, though it discusses correction properly in the cluster-statistics section.

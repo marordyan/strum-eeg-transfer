@@ -663,7 +663,13 @@ def _entry_identifier(entry_dir: Path) -> str | None:
     return None
 
 
-SYNTHESIS_LINK_RE = re.compile(r"\]\((\.\.?/[^)]+)\)")
+# Matches any markdown link target, not just ones already shaped like a
+# relative path. The narrower `\.\.?/` form silently skipped a target that
+# began ". " because a correction had been spliced into the link itself,
+# so the check passed on a document with a broken link in it. Absolute
+# URLs and in-page anchors are filtered at the call site instead.
+SYNTHESIS_LINK_RE = re.compile(r"\]\(([^)\s][^)]*)\)")
+EXTERNAL_LINK_RE = re.compile(r"^(?:[a-z][a-z0-9+.-]*:|#|mailto:)", re.I)
 
 
 def _synthesis_link_violations(root: Path) -> list[str]:
@@ -684,7 +690,9 @@ def _synthesis_link_violations(root: Path) -> list[str]:
             violations.append(f"{doc.relative_to(root)}: {read_error}")
             continue
         for link in SYNTHESIS_LINK_RE.findall(text):
-            target = link.split("#", 1)[0]
+            if EXTERNAL_LINK_RE.match(link.strip()):
+                continue
+            target = link.split("#", 1)[0].strip()
             if not target:
                 continue
             if not (doc.parent / target).resolve().exists():

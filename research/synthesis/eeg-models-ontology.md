@@ -87,7 +87,13 @@ parameter, so the electrode set is bounded by the pretraining vocabulary.
   sample is simply a shorter sentence; the binding constraint is vocabulary, not length. The card
   records that the paper does not say what happens when a downstream dataset presents a channel
   absent from that vocabulary — the missing-channel study removes known channels rather than
-  introducing unknown ones.
+  introducing unknown ones. A consequence of keying on a name rather than a position, and the only
+  demonstrated case of it in §1: the vocabulary is not confined to EEG. BIOT pretrains on a
+  cardiology corpus of 21,264 six- or twelve-lead ECG recordings and reports an ECG downstream task,
+  so an ECG lead occupies a row in the same channel table as an EEG derivation. Other mechanisms
+  here neither admit nor exclude a peripheral channel by construction; the one that excludes it
+  explicitly is [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) in §1.2, whose
+  type vocabulary has exactly three values.
 - [bendr-2021](../collection/eeg-models/bendr-2021/card.md) — the crudest mechanism in the strand
   and stated plainly as such: a fixed 20-slot index map (Deep1010, from the DN3 library), surplus
   channels ignored and missing channels set to zero. The authors' own stated limitation is that it
@@ -218,10 +224,16 @@ statements in the strand about the mechanism as encountered rather than as desig
   channel count; EEGMamba excluded from the 19- and 18-channel cohorts entirely by its fixed
   channel-count-specific patch embeddings. The author states the consequence — the BENDR and LaBraM
   results "should not be interpreted as clean tests of pretraining objective".
-- [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md) — the
-  quietest version of the same problem: "only data from electrodes which were present in the global
-  list provided were used", so the evaluation silently discards channels for any dataset whose
-  montage exceeds LaBraM's vocabulary, and the paper does not say how many.
+- [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md) — two
+  answers to one problem, in the same pipeline. For LaBraM, the quietest version: "only data from
+  electrodes which were present in the global list provided were used", so the evaluation silently
+  discards channels for any dataset whose montage exceeds LaBraM's vocabulary, and the paper does
+  not say how many. For NeuroGPT, an explicit montage-repair procedure rather than a drop, added to
+  the card during the audit: "For any expected channels which are not included in the benchmark
+  data, the nearest available electrode's data is used (if the location is within a few
+  centimeters), otherwise the channel data are set to zero." Two checkpoints in one harness get
+  incomparable channel treatments, which is the same hazard
+  [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) names above.
 
 ### 1.9 A terminology drift that crosses this axis
 
@@ -294,15 +306,23 @@ Temporal-context pretext tasks, compared head to head:
 
 - [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md)
   — relative positioning, temporal shuffling, contrastive predictive coding and a plain autoencoder,
-  all on identical convolutional encoders and read out by the same linear probe. This is the only
-  entry in the strand that isolates the objective from the architecture.
+  read out by the same linear probe. This is the only entry in the strand that isolates the
+  objective from the architecture, and the isolation holds *within* a dataset rather than across the
+  paper: the card records two embedders, not one — StagerNet at 62,307 trainable parameters on PC18
+  and ShallowNet at 170,860 on TUH Abnormal — with all four objectives sharing the encoder for a
+  given dataset. Those counts, and a compute budget of "1 or 2 Nvidia Tesla V100 GPUs for anywhere
+  from a few minutes to 7h", were carded as absences until the audit; they make this the strand's
+  smallest measured encoder by a wide margin.
 
 The map of the space, rather than an instance of it:
 
 - [guetschel-2024-representation-learning-review](../collection/eeg-models/guetschel-2024-representation-learning-review/card.md)
-  — 81 surveyed articles: approximately 31 autoencoders, 13 self-supervised of which ten from 2022
-  onward, plus a taxonomy of the *reasons* for wanting an embedding (transfer, robustness,
-  algorithmic bridge, structure discovery).
+  — 81 surveyed articles, of which 13 self-supervised with ten from 2022 onward, plus a taxonomy of
+  the *reasons* for wanting an embedding (transfer, robustness, algorithmic bridge, structure
+  discovery). The autoencoder count is not quotable as a single number: the card records three
+  values from the same paper — 31 in the abstract, 34 in Section 2, "approximately half" of 81 in
+  the discussion — and adopts none. Any figure this document might have used would have been one
+  arm of a self-contradicting source (§6.2).
 
 ### 2.2 The raw-signal reconstruction problem, and three responses to it
 
@@ -352,7 +372,10 @@ Reported hours, each as its own card states it:
   derives from is, so the retained fraction cannot be computed from the paper.
 - [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) — 2,653 h (1,997 EEG plus 656
   MEG), with the paper stating its own scale limit.
-- [labram-2024](../collection/eeg-models/labram-2024/card.md) — over 2,500 h from about 20 datasets.
+- [labram-2024](../collection/eeg-models/labram-2024/card.md) — 2534.78 h from about 20 datasets.
+  The exact figure is in Appendix D; "over 2,500 hours" is the body's rounding of it. Both are the
+  same measurement, which matters downstream because a third party's tabulation of 2,535 h is a
+  rounding of the primary rather than a competing figure.
 
 Four entries never report hours at all, and the cards say so rather than computing a substitute:
 [bendr-2021](../collection/eeg-models/bendr-2021/card.md) (corpus given in terabytes and subjects;
@@ -360,8 +383,11 @@ the string "hour" does not occur), [biot-2023](../collection/eeg-models/biot-202
 counts and per-sample durations given, total never stated),
 [eegpt-2024](../collection/eeg-models/eegpt-2024/card.md) (five datasets, 279 subjects), and
 [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md)
-(recordings and windows only, and the retained duration is unreconstructible because recordings are
-cropped).
+(recordings and windows only). The Banville entry is half-reconstructible rather than wholly
+unreconstructible, which is a correction to an earlier version of this line: PC18's 891,668
+non-overlapping 30 s windows come to about 7,430 h, while TUH Abnormal genuinely resists it because
+each recording is cropped to at most 20 minutes. Neither figure is stated by the paper, so neither
+enters the list above.
 
 One entry has zero by design:
 [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md) declines pretraining, and
@@ -546,8 +572,6 @@ Frozen-backbone evidence only:
 
 Fine-tuning evidence only, no frozen number reported:
 
-- [labram-2024](../collection/eeg-models/labram-2024/card.md) — whether the frozen representations
-  are useful is not tested in the paper at all.
 - [luna-2025](../collection/eeg-models/luna-2025/card.md) — no linear-probing or frozen-backbone
   result is reported.
 - [femba-2025](../collection/eeg-models/femba-2025/card.md) — likewise, none anywhere in the paper.
@@ -564,7 +588,21 @@ Both measured:
   [adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md),
   [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md),
   [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md),
-  [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md).
+  [banville-2021-self-supervised-eeg](../collection/eeg-models/banville-2021-self-supervised-eeg/card.md),
+  [labram-2024](../collection/eeg-models/labram-2024/card.md).
+
+**LaBraM's placement changed after this document was drafted, and the change is structural rather
+than numeric.** An earlier version of this node placed
+[labram-2024](../collection/eeg-models/labram-2024/card.md) under "fine-tuning evidence only", on
+the card's statement that whether the frozen representations are useful "is not tested in the paper
+at all". The card was corrected: Appendix K, Table 10 reports five adaptation regimes on both
+headline datasets, including a linear probe. Balanced accuracy, TUAB then TUEV, in the table's own
+row labels — All 0.8140 / 0.6409; Transformer(12) 0.8141 / 0.6541; Transformer(8) 0.8134 / 0.6611;
+Transformer(4) 0.8074 / 0.6188; Linear Probe 0.7954 / 0.3461. Two consequences for this node.
+First, the strand's most-cited checkpoint does have a first-party frozen number, so the third-party
+probes of §3.5 corroborate a measurement rather than fill an absence. Second, the entry that most
+nearly counted as "reports only one regime" no longer does, which leaves LUNA, FEMBA and SIRCA as
+the whole of the fine-tuning-only category.
 
 One caution that keeps this node honest: "frozen" is not one protocol.
 [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md)'s frozen table uses the same
@@ -572,8 +610,13 @@ two-layer MLP head as everywhere else, so its "freeze" is not a linear probe, an
 [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) leaves pooling to
 each backbone's release default rather than re-pooling.
 
-Parameter-efficient adaptation as a third position between the two:
+Partial and parameter-efficient adaptation as a third position between the two:
 
+- [labram-2024](../collection/eeg-models/labram-2024/card.md) — the same Appendix K table. Partial
+  fine-tuning of the last eight transformer blocks gives 0.6611 on TUEV, the best value anywhere in
+  the table and above full fine-tuning's 0.6409, while the last four blocks fall back to 0.6188.
+  This is first-party evidence that the best adaptation depth is interior rather than at either
+  end, and it is the only such measurement in the strand.
 - [reve-2025](../collection/eeg-models/reve-2025/card.md) — a two-stage recipe, frozen-backbone
   linear probe then unfreeze as one continuous run, with LoRA on the QKVO projections.
 - [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md) — LoRA at
@@ -598,6 +641,11 @@ Read in one direction, freezing collapses most checkpoints:
   0.297 on motor imagery.
 - [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) — freezing costs 14.2 points on
   TUEV and 5.7 on AD65 but only 1.0 on TUAB, so the cost of freezing is itself task-dependent.
+- [labram-2024](../collection/eeg-models/labram-2024/card.md) — the same task dependence, first
+  party and much sharper: linear probing costs 1.9 balanced-accuracy points on TUAB (0.8140 →
+  0.7954) and 29.5 on TUEV (0.6409 → 0.3461), which the authors describe as "much worse than other
+  settings". This is the largest freezing cost recorded anywhere in the strand, and it sits on the
+  checkpoint the rest of the corpus uses as its reference point (§3.7).
 - [bendr-2021](../collection/eeg-models/bendr-2021/card.md) — the two frozen configurations "often
   stayed marginally above chance".
 - [adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md) — "linear evaluation
@@ -606,7 +654,12 @@ Read in one direction, freezing collapses most checkpoints:
 - [kuruppu-2025-critical-review](../collection/eeg-models/kuruppu-2025-critical-review/card.md) —
   five of ten reviewed models reported linear probing at all, and those results "were relatively
   worse", which the review reads as casting "doubt on the quality of the representations learned via
-  self-supervision in EEG-FMs".
+  self-supervision in EEG-FMs". This is a tendency with named exceptions rather than a uniform
+  result, and the card was corrected to say so: of the five, Neuro-GPT is the clear negative case,
+  while BrainBERT's linear probe reached AUROC "similar to those of the fully supervised models" and
+  both fine-tuned and linear-probed Brant "outperformed other supervised and EEG-FM baselines" on
+  seizure and pathology detection. Two of five going the other way is a weaker premise than the
+  review's headline reads as, and this list is where the difference lands.
 
 Read in the other direction, fine-tuning buys little over a probe, and the ordering flips:
 
@@ -800,7 +853,12 @@ Six entries, of which four are third-party.
 - [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md) — the best
   fine-tuned foundation model averages 0.745 against EEGNet's 0.731 at 2,394 trainable parameters, a
   1.4-point margin at roughly 300 times the parameter count, and LaBraM's advantage over
-  EEG-Inception is statistically significant on exactly one of five tasks.
+  EEG-Inception is statistically significant on exactly one of five tasks. The 0.745 belongs to
+  NeuroGPT encoder-only at 717,958 trainable parameters, and naming the model matters here because
+  the card's own headline had priced the same 1.4-point gain against LaBraM and the full NeuroGPT
+  (5.85M to 78.5M), a ratio of roughly 33,000×; the audit corrected it to the ~300× carried above.
+  Those two larger models score *below* the 0.745, at 0.742 and 0.736, so within this comparison
+  more parameters did not buy more accuracy.
 - [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) — on EEGMAT, a
   classical handcrafted-feature logistic regression reaches 0.847 balanced accuracy against the best
   foundation-model tier at 0.755 and EEGNet from scratch at 0.671.
@@ -819,8 +877,19 @@ Six entries, of which four are third-party.
   data for supervised learning to work.
 
 The one entry that supplies the supervised reference point rather than a negative result is
-[eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md), which reaches 78.66 percent
-on BCI Competition IV 2a against EEGNet's 74.50 percent with no pretraining at all.
+[eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md), which reaches a reported
+78.66 percent on BCI Competition IV 2a against a reported 74.50 percent for EEGNet, with no
+pretraining at all. **Both figures are now marked unverified on the card and the hedge belongs
+here.** All four of the paper's tables came through as captions with empty bodies, and the bodies
+are not in the PDF's text layer either, so thirteen carded numbers cannot be audited from the
+repository. Dataset II's triple is corroborated by prose margins ("improvements of 5.25% and 4.15%
+for ConvNet (p < 0.05) and EEGNet (p < 0.01)"); Dataset III's has no prose margin at all and must
+not be propagated; and Dataset I — the row quoted here — has only a margin against FBCSP, "our
+Conformer significantly improves the accuracy by 10.91% over FBCSP (p < 0.01)", which says nothing
+about the EEGNet value. What survives independently of the tables is the paper's *other* claim of
+the same shape, on Dataset II: +4.15 points over EEGNet at p < 0.01. The reference point therefore
+still exists, but it should be quoted from Dataset II rather than from the 2a row above, and the
+two 2a accuracies are provisional pending re-obtaining the tables.
 
 ### 4.3 The model can score by recognising identity rather than by decoding the task
 
@@ -918,10 +987,21 @@ reopening the scoping decision.
   an empirical study, not a theory paper, carded on the motivation line by a scoping decision the
   card records. What it establishes is narrow: future phase at one site is predicted better from the
   whole-array wave pattern than from that site's own past, at PLV-error 0.73 in the best subject and
-  0.32 in the worst. Three limits bound it. Its data contains no EEG at all — MEG and ECoG only — so
-  nothing in it establishes that the structure survives volume conduction and scalp blurring. Only
-  the single best-predicted site per subject is reported. And the comparison against the
-  temporal-only baseline is presented as figure panels, so the margin cannot be quoted as a number.
+  0.32 in the worst *over all trials*. The condition matters and was missing from an earlier version
+  of this bullet: the paper's tabulated headline (Table 1) is the power-selected condition, top 25
+  percent of trials by past mean log power, where the range is 0.94 to 0.51 with a subject-wise mean
+  of 0.72. Selecting trials by power, like selecting the best site, is a convention the paper adopts
+  from the prior literature it compares against. Three limits bound the result. Its data contains no
+  EEG at all — MEG and ECoG only — so nothing in it establishes that the structure survives volume
+  conduction and scalp blurring. Only the single best-predicted site per subject is reported. And
+  the margin over the temporal-only baseline cannot be quoted here — but for a different reason
+  than this document first gave. It is not unmeasured: the paper runs a mixed linear model over all
+  trials and reports the coefficients and standard errors in S1 Table, concluding that the temporal
+  Fourier model "performed less well" while the large-scale model and a third comparator, the local
+  event-related model, "did not differ in mean performance". S1 Table is supplementary and outside
+  the carded source, so the effect size is inaccessible rather than absent — the same distinction
+  §5.3 draws for a different entry, and it changes what a later reader should do from "the paper did
+  not measure this" to "re-obtain the supplement".
 
 This is also the one entry in the strand whose subject matter falls outside the strand's own
 inclusion criterion, which the brief defines as work that pretrains an EEG model, evaluates one, or
@@ -942,7 +1022,12 @@ their own, so a number quoted through them inherits its source's errors.
   — a survey with no experiments and no results table, whose quantitative content is bibliometric.
   Its headline finding that no EEG foundation model has been adopted by the BCI community is, as its
   card records, a statement about the field before LaBraM, CBraMod, EEGPT and REVE existed; the card
-  instructs that it be cited for its taxonomy and methodological cautions, not for that verdict.
+  instructs that it be cited for its taxonomy and methodological cautions, not for that verdict. The
+  cutoff is now on record and dates the verdict precisely — "This search was conducted on April
+  1<sup>st</sup> 2024", over articles published after 2014, with a full stage-by-stage selection flow
+  and a figure summarizing it. What the review does lack is an inter-rater statistic, and 25 of its
+  81 articles were added by author judgement outside the search protocol, which is the reproducibility
+  limit that actually applies.
 
 ### 5.3 One entry whose decisive number is inaccessible rather than unreported
 
@@ -1066,8 +1151,12 @@ property of the corpus rather than of any one entry.
 - [cbramod-2025](../collection/eeg-models/cbramod-2025/card.md) — the second attention stream called
   V-Attention in the pretraining-settings paragraph and T-Attention in the method section, figure and
   eight other places.
-- [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) — the sensor-embedding ablation
-  described in prose as uniformly harmful while Table 6 shows it *gaining* 0.4 points on TUEV.
+- [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) — Table 6 shows removing the
+  sensor embedding *gaining* 0.4 points on TUEV while the prose reports it as harmful. The card was
+  corrected here and the correction narrows the entry: the prose qualifies itself by dataset
+  difficulty ("especially on challenging MEG and EMEG datasets") rather than claiming uniform harm,
+  so what the source does is decline to name the one dataset where the ablation helps, not overstate
+  its own table.
 - [zare-2026-stress-testing](../collection/eeg-models/zare-2026-stress-testing/card.md) — "Seven
   pretrained EEG foundation models" in Section 3.1 against six in the abstract, Table 1 and the
   conclusion.
@@ -1075,8 +1164,11 @@ property of the corpus rather than of any one entry.
   comparator called a random forest in prose and a logistic regression in Table 2 and Section 3.6,
   with the value 0.847 consistent across both.
 - [guetschel-2024-representation-learning-review](../collection/eeg-models/guetschel-2024-representation-learning-review/card.md)
-  — "31 articles using autoencoders" out of 81 in the abstract, 38 percent, against "approximately
-  half" in the discussion.
+  — the autoencoder count given three ways: "31 articles using autoencoders" out of 81 in the
+  abstract, 38 percent; "34 articles employed autoencoders" in Section 2; and "approximately half"
+  in the discussion, about 40. Two of the three are specific and both are the authors'. The card
+  records all three and adopts none, so no autoencoder proportion should be quoted through this
+  document.
 - [adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md) — the normalization
   table labelling the EEGMAT dataset "EDMAT"; the `datasets-benchmarks` card of the same work records
   four further internal inconsistencies in the source.
@@ -1087,7 +1179,10 @@ property of the corpus rather than of any one entry.
   ambiguous between 2022 and 2023 across the article's own date lines, Crossref, and the sibling
   strand's citations. Separately, its parameter count exists only as a figure axis reading of roughly
   0.79 × 10⁶ against a third party's tabulation of 277K, a roughly threefold gap that nothing in
-  either source explains.
+  either source explains — and the axis reading is itself now marked unverified, because Fig. 4's
+  labels and data points are absent from both the extraction and the PDF's text layer. Only the
+  caption and the remark that "the number of parameters increases proportionally with depth"
+  survive, so this is a gap between one tabulated figure and one unrecoverable one.
 - [labram-2024](../collection/eeg-models/labram-2024/card.md) — the arXiv title carries a trailing
   "in BCI" that the ICLR proceedings title omits, so citation strings differ between sources.
 - [brainwave](../collection/eeg-models/brainwave/card.md) — the arXiv record is at v7 (September
@@ -1134,7 +1229,7 @@ every checkpoint has a spatial mechanism (§1), a provenance (§2) and an eviden
 | [femba-2025](../collection/eeg-models/femba-2025/card.md) | §1.1 learned per-channel parameter | §2.1, §2.3, §2.4, §2.5, §2.6, §3.1, §3.4, §3.6, §3.7, §6.1, §6.2 |
 | [guetschel-2024-representation-learning-review](../collection/eeg-models/guetschel-2024-representation-learning-review/card.md) | §5.2 second-hand review | §2.1, §3.3, §3.7, §6.2 |
 | [kuruppu-2025-critical-review](../collection/eeg-models/kuruppu-2025-critical-review/card.md) | §4.4 the measurement is unsound | §2.3, §2.4, §2.5, §3.3, §3.5, §5.2, §6.1 |
-| [labram-2024](../collection/eeg-models/labram-2024/card.md) | §1.1 learned per-channel parameter | §2.1, §2.2, §2.3, §2.4, §2.5, §2.6, §3.1, §3.4, §3.6, §3.7, §4.1, §4.2, §6.1, §6.2 |
+| [labram-2024](../collection/eeg-models/labram-2024/card.md) | §1.1 learned per-channel parameter | §2.1, §2.2, §2.3, §2.4, §2.5, §2.6, §3.1, §3.4, §3.5, §3.6, §3.7, §4.1, §4.2, §6.1, §6.2 |
 | [lee-2025-lbms-capable-yet](../collection/eeg-models/lee-2025-lbms-capable-yet/card.md) | §4.2 supervised baseline matches or beats | §1.8, §3.2, §3.4, §3.5, §3.6 |
 | [lin-2026-identity-trap](../collection/eeg-models/lin-2026-identity-trap/card.md) | §4.3 scoring on identity, subject level | §3.2, §3.4, §3.5, §3.6, §4.2, §6.1, §6.2 |
 | [luna-2025](../collection/eeg-models/luna-2025/card.md) | §1.2 coordinates and sensor metadata | §1.7, §1.9, §2.1, §2.3, §2.4, §2.5, §2.6, §3.1, §3.4, §3.6, §3.7, §6.1, §6.2, §6.3 |

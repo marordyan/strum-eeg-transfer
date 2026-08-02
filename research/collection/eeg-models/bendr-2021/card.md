@@ -108,9 +108,14 @@ being enough labelled data for supervised learning to work.
   balanced accuracy; BCIC 42.6 accuracy (4-class); ERN 0.65 AUROC; SSC 0.72 balanced accuracy;
   P300 0.72 AUROC. The linear-headed configuration (2) is the best-performing on four of five;
   P300 is the exception, where the transformer configuration (1) wins.
-- **Contrastive-task diagnostics**: masked-position accuracy rises monotonically with evaluation
-  context from 20 s to 60 s, and is nearly identical across the five downstream datasets and
-  across subjects. The authors read the length dependence as evidence the contrastive task is
+- **Contrastive-task diagnostics**: masked-position accuracy rises with evaluation context and is
+  nearly identical across the five downstream datasets and across subjects. *Unverified against the
+  source (Phase 4 audit):* an earlier version said the rise was monotonic "from 20 s to 60 s". The
+  source states only the direction — Figure 4's caption reads "Contrastive accuracy vs. evaluation
+  length in seconds (x-axis logarithmic). Performance is distinctly similar for all datasets, rising
+  for longer sequences" — and the only length named in the prose is that all five datasets have
+  "similar performance when evaluated with 20 s of data". Neither monotonicity nor the endpoints of
+  the x-axis are stated in text. The authors read the length dependence as evidence the contrastive task is
   being solved with signal-relevant features rather than interpolation or position recognition,
   and read the flatness across subjects as evidence of generalization — while noting that
   subject-wise variability returns as soon as the model is fine-tuned for classification.

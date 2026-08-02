@@ -96,10 +96,19 @@ combined-minus-EEG-only gain and a peripheral-only floor.
   70–75%, EEG plus eye-related variables "a little over 90%", which the authors describe as "a
   similar and not significantly different performance". Fourteen participants. The only non-EEG
   variables exceeding the p < 0.01 chance level were respiration frequency (69%) and pupil size
-  (75%).
+  (75%). **Corrected in Phase 4**: an earlier version of this ontology had no per-sensor arm for this
+  entry, because the card said every number came from Discussion prose. The Results state them, and
+  the card now carries them: EEG 0.86, eye 0.75, respiration 0.70, skin conductance 0.63 and **ECG
+  0.61** on the 2-vs-0-back contrast at 120 s, the last two "just reaching a level that is
+  significantly higher than chance (p < 0.05)". This is the strand's only clean EEG-versus-ECG-alone
+  comparison on one task: the cardiac channel alone is 25 points below EEG. The same correction adds
+  the paper's own resolution floor — "significance (p < 0.05) is reached for differences of around
+  10%" — against a fusion increment of 3–5%, which is what §2.1 and §5.5 now have to read the null
+  against.
 - [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
   — EEG 0.794 (95% CI 0.768–0.820) versus EDA 0.557 (0.528–0.586) versus fused 0.796 (0.769–0.823),
-  5-fold subject-independent GroupKFold, 25 participants. The EDA arm sits below the 67%
+  5-fold GroupKFold described as subject-independent in the Methods and denied in the Conclusion
+  ("without subject-wise separation"), 25 participants. The EDA arm sits below the 67%
   majority-class rate, and the authors state the gap "is systematic and not due to high variance".
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — EEG-only 0.823 / 0.841 / 0.836 across three backbones, ECG-only 0.798 with HRV features and
@@ -158,7 +167,10 @@ paper that declined to run the arm.
 
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
   fusion 85.11% on four emotions within session and 72.39% across three sessions on different days,
-  on a six-electrode above-the-ear montage. The abstract states that fusion "can significantly
+  on a six-electrode above-the-ear montage. The two are not exactly commensurable, which the card
+  now records: the abstract calls 85.11% "the best mean accuracy" and 72.39% simply "a mean
+  recognition accuracy … across sessions", so the pair mixes a best case with an average. The
+  abstract states that fusion "can significantly
   enhance the performance compared with a single modality" and that EEG is better at happy while eye
   movements are better at fear, but gives no single-modality accuracy; IEEE Xplore is paywalled. The
   complementarity *localisation* — which class each modality wins on — is the shape of evidence the
@@ -184,16 +196,29 @@ paper that declined to run the arm.
 ### 1.5 Combined only
 
 - [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
-  — 94.88% valence and 95.26% arousal on DEAP, 89.12% four-class on SEED-IV, compared only against
-  other multimodal methods (BDAE, DCCA, HC-MFB, MMResLSTM on DEAP; DCCA, EmotionMeter, MFFNN on
-  SEED-IV). The card is explicit that this is "a gap in the source, not in this corpus's access": no
-  unimodal arm of any kind appears in the paper, and no ablation of the cross-attention module itself
-  is visible either, so even the architectural claim rests on comparison to other papers' models
-  rather than to its own model with the module removed.
+  — 94.88% valence and 95.26% arousal on DEAP, 89.12% four-class on SEED-IV (the card now records
+  that the source states the SEED-IV figure twice and inconsistently, 89.12 in Table 4 against 89.32
+  in the body, and adopts neither), compared only against other multimodal methods (BDAE, DCCA,
+  HC-MFB, MMResLSTM on DEAP; DCCA, EmotionMeter, MFFNN on SEED-IV). The card is explicit that this is
+  "a gap in the source, not in this corpus's access": no unimodal arm of any kind appears in the
+  paper, and there is no ablation of the cross-attention module — the string "ablation" occurs
+  nowhere in the full text — so even the architectural claim rests on comparison to other papers'
+  models rather than to its own model with the module removed.
 
 This is the single entry that the brief's own rule targets — an entry reporting only combined
 performance cannot answer the project's question — and it is marked `relevance: low` on exactly that
 basis while being kept for its architecture (§7.2).
+
+**Structural correction, Phase 4.** This entry's split protocol is no longer unknown, and the change
+moves it off one node of §3 and out of the strand's comparable set. The card's earlier "not stated in
+the accessible text" was a false absence claim: the source says it twice — Section 3.1 ends "Regarding
+the five-fold cross-validation on data from all subjects" and Section 3.2 reads "Figure 5 presents the
+subject-dependent recognition accuracy results for the 32 participants in the DEAP dataset". The
+evaluation is therefore five-fold cross-validation pooled over all subjects, i.e. subject-dependent
+and record-wise. Two consequences that later nodes carry rather than restate: the entry moves from
+§3.5 to §3.3, the sample-level-split node; and its 94.88 / 95.26 / 89.12 figures cannot be placed
+beside the leave-one-subject-out or GroupKFold numbers in §2.1, which is why the DCCA margin in §9.1
+is now hedged on two grounds rather than one.
 
 ### 1.6 Peripheral signal only, with no EEG in the study at all
 
@@ -205,19 +230,32 @@ decoders that happen to have no cortical channel; two are the peripheral foundat
   the *label* is EEG-derived (bispectral index above 60), so the experiment is how much of an
   EEG-derived state peripheral physiology recovers without the EEG. Twenty-seven demographic,
   vital-sign and HRV features reach AUROC 0.825 (95% CI 0.823–0.826) at a 2 s window and roughly
-  0.837 at 20 s, on 1,022 patients after an exclusion cascade from 6,388, with a patient-ID-level
-  split. The SHAP ranking puts mean blood pressure, end-tidal CO2 and systolic blood pressure ahead
-  of heart rate, with a single HRV index sixth.
+  0.837 at 20 s, on 1,022 patients, with a patient-ID-level split. Two hedges the card added in the
+  Phase 4 audit and this document now carries. The 27 is the input dimensionality *at 2 s only* — the
+  Methods give 27, 142, 234 and 464 features at 2, 6, 10 and 20 s — so the four window arms are not
+  one feature set at four resolutions (§8.3). And the denominator is stated two ways: Section 2.1 says
+  5,543 of 6,388 VitalDB patients had bispectral-index records and were considered, while Figure 2's
+  cascade opens at 6,388; only 6,388 reconciles with the seven exclusions summing to 5,366, and the
+  card records both readings without settling. The SHAP ranking puts mean blood pressure, end-tidal
+  CO2 and systolic blood pressure ahead of heart rate, with a single HRV index sixth.
 - [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
   — EDA plus ECG with no EEG anywhere, subject-independent across ASCERTAIN (58 subjects), CLAS, MAUS
   and WAUC (48, 45 after removing incomplete records). Improvements are reported only as ranges: 1–2%
-  over existing models on frequency-band features, 2–4% for the three-level hierarchical feature set
-  over other level combinations. Per-dataset accuracies did not survive the two-column extraction.
+  over existing models on frequency-band features. **Corrected in Phase 4**: the hierarchical-feature
+  gain is *not* settled at 2–4%. The abstract says 2–4%, the Results say "9-15% on band features" for
+  the same comparison, and the Results' own 2–4% is a different comparison entirely (band features
+  against raw data). Neither value is adopted; the magnitude of this entry's one transferable
+  empirical claim is unusable until the paper's Tables 2 and 3 are read (§7.2). Per-dataset accuracies
+  did not survive extraction, and this is the one entry in the strand whose tables did not come back
+  after re-extraction, so that gap is confirmed rather than stale.
 - [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
   — three-level cognitive load at 91.66% (random forest) and 85.83% (naive Bayes) from eye and heart
   measures on 40 participants, with mean pupil diameter change in both eyes dominant and blink rate a
   moderate contributor. The card states plainly that the absent EEG arm is "a property of the study,
-  not an access gap".
+  not an access gap". Two Phase 4 corrections change how small this evaluation is: the dataset is one
+  aggregate observation per participant per phase, so 120 observations in total, 40 per class, and
+  chance is 33.3% by construction rather than unstated (§3.6); and every reported accuracy is an
+  exact multiple of 1/120, so a single reclassified observation moves accuracy by 0.83 points.
 - [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   — BiLSTM on eye-movement indices at 0.8780 for multiclass cognitive load and 0.8836 for multiclass
   activity-task classification on COLET, against LSTM and a temporal convolutional network. The paper
@@ -227,7 +265,9 @@ decoders that happen to have no cortical channel; two are the peripheral foundat
   foundation model, evaluated on 20 tasks across 10 datasets with out-of-domain holdouts. It is
   explicitly framed as "both a feature extractor and an encoder for multimodal models", and the card
   records that no multimodal experiment appears in the evaluation, so the framing is a claim the
-  paper does not test.
+  paper does not test. Its headline gains are hedged from Phase 4 onward: the abstract's 6.3% and
+  2.9% are the *endpoints* of ranges the Discussion states as 4.7–6.3% and 2.9–4.9%, and the pair is
+  the top of one range against the bottom of the other, so it is not a like-for-like summary (§8.1).
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — an
   open-weight wav2vec 2.0 ECG encoder evaluated on multi-label ECG interpretation and reduced
   ejection fraction, with data-scaling experiments. Its downstream endpoints are diagnostic; the card
@@ -247,7 +287,14 @@ about fusion.
   the reference Python implementation for engineered peripheral features; `type: tool`, and the paper
   "contains no performance benchmark that could be quoted as a baseline number".
 - [haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md) —
-  43 studies tabulated by sensor, preprocessing, feature and model.
+  43 studies published 2016–2021, tabulated by sensor, preprocessing, feature and model.
+  **Corrected in Phase 4**: the per-study performance tables are legible after re-extraction, so this
+  entry is no longer a taxonomy with no numbers. What they show is a distribution rather than a bar:
+  accuracies from 0.755 to 1.0, on different constructs, sensors, cohort sizes (largest 50
+  participants, several under 10) and mostly unstated split protocols. One row is directly load-bearing
+  for this strand — Table 12's [97] reports about 80% on HRV features alone against about 77% on HRV
+  plus electrodermal activity, a within-review instance of adding a peripheral channel and the
+  accuracy going *down* (§5.5, §8.2).
 - [liu-eeg-multimodal-emotion-review](../collection/multimodal-biosignals/liu-eeg-multimodal-emotion-review/card.md)
   and [lee-2025-biosignal-fm-review](../collection/multimodal-biosignals/lee-2025-biosignal-fm-review/card.md)
   — the two review-shaped entries, both paywalled or blocked, and both cards record that their
@@ -270,21 +317,33 @@ to something other than the peripheral signal, and the cards say so themselves.
 | [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md) | 0.841 (best of 3) | 0.856 | 0.957 | +11.6 | 3-subject held-out test | 35 claimed |
 | [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md), LOSO binary | 61.20% | not run | 67.04% | +5.84 | leave-one-subject-out | 21 |
 | [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md), LOSO ternary | 41.59% | not run | 47.80% | +6.21 | leave-one-subject-out | 21 |
-| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | ~86% | 70–75% | "a little over 90%" | ~+4, not significant | within-subject, train early / test late | 14 |
-| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | 0.794 | 0.557 | 0.796 | +0.002 | 5-fold GroupKFold, subject-independent | 25 |
+| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | 0.86 | 0.75 eye, 0.70 resp, 0.63 EDA, **0.61 ECG** | "a little over 90%" | +3–5, **below the study's own ~10-point detection floor** | within-subject, train early / test late | 14 |
+| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | 0.794 | 0.557 | 0.796 | +0.002 | **contested**: Methods say 5-fold GroupKFold subject-independent, Conclusion says "without subject-wise separation" | 25 |
 | [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md) | not accessible | not accessible | not accessible | "19% maximum improvement" | not accessible | not accessible |
 
 The relation between the two rightmost columns and the delta column is the structure this table
 exists to make visible, and it is a relation between entries rather than a verdict about the field.
-The three entries whose split geometry is stated and either subject-disjoint or otherwise designed
-against inflation — the LOSO grid, the GroupKFold study, and a within-subject temporal split — report
-+5.84 / +6.21, +0.002, and a difference their own authors call not significant. The third is not
-subject-disjoint and its card says so explicitly, every model being personal; it earns its place here
-because its temporal split is designed against time-dependence inflation, which is a different
-protection rather than a weaker version of the same one. The two
-entries reporting double-digit gains are the two whose denominators the cards flag as unverifiable:
-one has three mutually inconsistent split descriptions, the other attributes its EEG stream to
-datasets that contain no EEG.
+The three entries whose split geometry is stated and designed against some form of inflation — the
+LOSO grid, the contested GroupKFold study, and a within-subject temporal split — report
++5.84 / +6.21, +0.002, and a difference their own authors call not significant. Only the first is
+uncontestedly subject-disjoint. **Corrected in Phase 4**: the second cannot be counted as
+subject-disjoint at all, because its Methods and its Conclusion disagree about subject-wise separation
+and the card records the disagreement unresolved (§3.1). The third is not subject-disjoint and its
+card says so explicitly, every model being personal; it earns its place here because its temporal
+split is designed against time-dependence inflation, which is a different protection rather than a
+weaker version of the same one.
+
+A second Phase 4 correction changes what the third row means. The null is no longer just "not
+significant": the paper states its own resolution limit, "significance (p < 0.05) is reached for
+differences of around 10%", against a fusion increment of 3–5%. That is a null against a coarse
+yardstick — the study can exclude a ten-point fusion gain and cannot exclude a three-point one — so
+it should be read as "no gain larger than this study can see", not "no gain". The same correction
+supplies the row's peripheral-only cells, which this table previously carried only as the sensor-group
+band 70–75%.
+
+The two entries reporting double-digit gains are the two whose denominators the cards flag as
+unverifiable: one has three mutually inconsistent split descriptions, the other attributes its EEG
+stream to datasets that contain no EEG.
 
 ### 2.2 The gain is gated, so the headline is a mixture
 
@@ -331,8 +390,12 @@ Two entries measure this directly on their own data, and the arithmetic is their
   own split-protocol artifact."
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
   the same fused system falls from 85.11% within session to 72.39% across sessions on the same
-  subjects, a 12.7-point cost from session change alone, "larger than most reported fusion gains in
-  this strand".
+  subjects, nominally a 12.7-point cost from session change alone, "larger than most reported fusion
+  gains in this strand". **Hedged in Phase 4**: the two figures are not exactly commensurable, since
+  the abstract calls 85.11% "the best mean accuracy" and 72.39% simply "a mean recognition accuracy
+  … across sessions". The gap therefore mixes a best case with an average, and 12.7 is an upper bound
+  on the session cost rather than an estimate of it. Even discounted it is the right order of
+  magnitude to measure a fusion gain against, which is the use this node makes of it.
 
 ### 2.6 The denominator is unverifiable
 
@@ -383,7 +446,13 @@ the top SHAP predictors. The two run in different directions and neither is adju
 same shape appears on a different variable in
 [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md), whose Fitzpatrick skin-tone
 benchmark is the strand's only fairness evaluation and exists because PPG amplitude depends on
-optical absorption.
+optical absorption. **Corrected in Phase 4**: this document previously recorded only that the
+benchmark exists. Its result is on record and it is unflattering — "PAPAGEI-S achieves the best BP
+estimation across light tones. Across dark tones, we notice that BYOL and REGLE obtain the lowest MAE
+for Systolic BP and Diastolic BP", with the authors conceding that "additional work is necessary to
+improve robustness on darker skin tones". So the strand's one fairness evaluation finds the
+unevenness real and pretraining not to have removed it. The per-tone MAE values remain figure-only;
+the direction does not.
 
 ---
 
@@ -394,11 +463,23 @@ not carry. Five regimes appear.
 
 ### 3.1 Subject- or patient-disjoint, stated
 
-- [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
-  — 5-fold GroupKFold with all windows from a participant confined to one fold; within each training
-  fold, 15% held out and split 1:1 into a temperature-scaling calibration subset and a
-  fusion/threshold subset, so the test folds are used for nothing but testing. The card names this
-  "the protocol this project should copy", and it is the protocol under which the gain evaporates.
+**Membership correction, Phase 4.**
+[azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
+was previously the first entry in this node and is no longer a member of it. Its Methods describe
+5-fold subject-independent GroupKFold; its Conclusion states "This study used 5-fold cross-validation
+**without subject-wise separation**". The card records the contradiction unresolved, so the entry
+cannot be counted as subject-disjoint. It is filed below in §3.5 with the other entries whose split is
+stated inconsistently, and the description of what its Methods claim is kept there because the design
+it *describes* is still the one this project would want. What the Methods claim: 5-fold GroupKFold
+confining all windows from a participant to one fold, with 15% of each training fold held out and
+split 1:1 into a temperature-scaling calibration subset and a fusion/threshold subset, so the test
+folds are used for nothing but testing. This document previously called that "the protocol this
+project should copy" on the card's authority; the design is still worth copying, but the entry can
+no longer be cited as an instance of it having been run, and its +0.002 is a gain measured under a
+protocol the paper describes two ways rather than under subject-disjoint conditions.
+
+The members of this node are therefore five, not six:
+
 - [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   — leave-one-subject-out reported in full and separately from 10-fold, for both label
   granularities. The strand's only entry that reports both regimes side by side rather than choosing
@@ -410,12 +491,20 @@ not carry. Five regimes appear.
   — subject IDs used to keep training and test subjects disjoint, but five-second segmentation
   "to increase the sample count" inflates the within-subject sample count, which the card notes
   protects against cross-subject leakage and not against the resulting optimism in the variance
-  estimate.
+  estimate. The re-extracted quotation adds a detail this document did not carry: the split is a
+  *fixed* first-N-subjects partition on each of the four datasets ("The first 36,18, 43 and 42 subject
+  samples … The remaining 9 WAUC, 4 MAUS and 16 CLAS and ASCERTAIN subject samples are employed for
+  the testing"), not a cross-validated one, so there is one train/test draw per dataset and no
+  repeated-split variance to report.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — a subject-wise held-out test set of three participants, with training and validation stratified
-  by dataset and gender. Subject-disjoint in form; the card records that three subjects cannot
-  support a 95.7% point estimate, with no confidence interval, repeated-split variance or per-subject
-  breakdown reported.
+  by dataset and gender. Subject-disjoint in form, and the Phase 4 audit verified the partition
+  against the Methods and found it uncontradicted elsewhere in the paper — 28 training, 4 validation,
+  3 test, summing to the stated 35. It also found that what the paper calls "a subject-independent
+  cross-validation strategy" is a single fixed 80/10/10 partition: no folds are rotated, so
+  "cross-validation" is the paper's word rather than a description. That sharpens the card's existing
+  point that three subjects cannot support a 95.7% point estimate, since there is no across-fold
+  variance to report either, alongside the absent confidence interval and per-subject breakdown.
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — MIMIC-IV-ECG
   split by patient only, because acquisition dates are imprecise; UHN-ECG excluded from pretraining
   entirely to serve as a cross-dataset generalisation test.
@@ -436,11 +525,25 @@ not carry. Five regimes appear.
 
 - [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
   — "stratified KFold to create five different splits in our dataset" stratifies by class, not by
-  participant, so windows from the same participant appear on both sides. The card reads the
-  consequence through the finding itself: the dominant features are *changes* in pupil diameter,
-  "which is the right normalisation for a within-subject comparison and the wrong one for a
-  cross-subject one", and 91.66% "should therefore be read as a within-subject-leakage-inclusive
-  number".
+  participant, so rows from the same participant appear on both sides. **Corrected in Phase 4**: this
+  document previously described the leaked units as *windows* from participants "each contributing
+  many samples". The source describes no windowing. Each participant contributes one aggregate
+  feature vector per phase, giving 120 rows over 40 participants, so what leaks is a participant's
+  low-load row sitting in training while their high-load row sits in test — per-participant identity
+  across three rows, not per-window temporal correlation. The conclusion is unchanged and the card
+  says so; only the mechanism was wrong. The card reads the consequence through the finding itself:
+  the dominant features are *changes* in pupil diameter, "which is the right normalisation for a
+  within-subject comparison and the wrong one for a cross-subject one", and 91.66% "should therefore
+  be read as a within-subject-leakage-inclusive number".
+- [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
+  — **moved into this node in Phase 4** from §3.5, where it sat as "not stated by the source". The
+  source states it twice: "the five-fold cross-validation on data from all subjects" and
+  "the subject-dependent recognition accuracy results for the 32 participants in the DEAP dataset".
+  Folds are drawn over pooled samples from all subjects, so every participant appears on both sides
+  of every fold. That is what places 94.88% and 95.26% far above typical cross-subject DEAP figures,
+  and the paper's own limitations section concedes the rest: "the model's performance fluctuates
+  across different subjects. This indicates that achieving high-accuracy, subject-independent emotion
+  recognition remains a significant challenge".
 
 ### 3.4 Random cross-validation as the object of study
 
@@ -462,16 +565,25 @@ not carry. Five regimes appear.
   card records that these three statements "are not mutually consistent as written" and that what was
   actually run cannot be determined. This is the most consequential single ambiguity in the strand,
   because it sits under its largest gain.
+- [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
+  — **moved into this node in Phase 4** from §3.1. The Methods describe 5-fold subject-independent
+  GroupKFold; the Conclusion states the study "used 5-fold cross-validation **without subject-wise
+  separation**. Therefore, the results reflect overall performance rather than strict
+  [subject-independent generalisation]". The card records both and picks neither, so this document
+  cannot count the entry as subject-disjoint. That matters more here than for the other entries in
+  this node, because the +0.002 was the strand's flagship instance of a fusion gain evaporating under
+  a clean protocol, and the protocol is contested.
 - Not accessible, in the corpus's sense rather than the source's:
   [liu-2022-multimodal-robustness](../collection/multimodal-biosignals/liu-2022-multimodal-robustness/card.md),
   [li-2023-incongruity-fusion](../collection/multimodal-biosignals/li-2023-incongruity-fusion/card.md),
   [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md),
   [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md).
-- Not stated by the source:
-  [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md),
-  whose card records that "no train/test description was recoverable" from an extraction it calls the
-  worst in the strand, and that accuracies of 94.88% and 95.26% on DEAP "are far above typical
-  cross-subject figures for that dataset and are only interpretable with the protocol named".
+- Not stated by the source: **this sub-node is now empty.** It held
+  [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
+  on the strength of a card claim — "no train/test description was recoverable" from the strand's
+  worst extraction — that the Phase 4 audit found false. Both statements are present and legible in
+  `source.md`, and the entry is now filed at §3.3. No entry in the strand has a split its source
+  declines to state.
 
 ### 3.6 Chance level, class balance, and what is reported against nothing
 
@@ -481,7 +593,6 @@ rather than supplying one:
 problem, one rest condition against four arithmetic conditions, "unlikely to be balanced"),
 [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
 (three-state problem),
-[ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md),
 [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
 ("multiclass" without a class count, which the card says "makes 0.8780 uninterpretable as an effect
 size"), and
@@ -491,18 +602,40 @@ size"), and
 and [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
 both record that no permutation test or chance-corrected metric was run.
 
+Two Phase 4 corrections to this list.
+[ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
+has been removed from it: its chance level *is* established, at 33.3%, not by statement but by
+construction — three phases per participant are the three load levels, the ANOVA is reported as
+F(2,119), and every accuracy is an exact multiple of 1/120, so the design fixes 120 observations at
+40 per class. The margin over chance is real; it is also within-subject-leakage-inclusive (§3.3), so
+the correction does not rehabilitate the number.
+[angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)'s
+class balance shifts category rather than resolving: the paper *does* report the trinarised label
+distribution, in Figure 7, and states that the 10 s reporting interval was chosen because "we aimed
+to balance the frequency of labels" — but the figure does not survive extraction, so this is a
+reported-but-unreadable gap (§9.4, first column) rather than an omission by the paper.
+
 The sibling strands supply the yardsticks these entries lack, and the connection is worth stating
 because it changes how the numbers above should be read.
 [datasets-benchmarks/combrisson-2015-chance-level](../collection/datasets-benchmarks/combrisson-2015-chance-level/card.md)
 demonstrates that classifying pure Gaussian noise reaches "decoding accuracies of up to 70% or
 higher in two-class decoding" at small sample sizes, so a theoretical chance level is not the
 threshold. [datasets-benchmarks/varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)
-puts a roughly ±10 percentage-point confidence interval on a cross-validated accuracy at the sample
-sizes neuroimaging uses. And the split-geometry effect that §3.3 and §3.4 describe qualitatively is
-quantified twice elsewhere:
+puts a roughly ±10 percentage-point confidence interval on a cross-validated accuracy at 100
+observations — the one row of its summary table that survives as prose, "A typical sample size in
+neuroimaging, 100 observations, leads to ±10% errors in prediction accuracy". **Hedge added in Phase
+4**: that card's Table 1 body did not survive extraction and its other rows (±15% at n = 30, ±6% at
+300, ±3% at 1000) are now marked *unverified* there, so this document quotes only the n = 100 figure
+and does not carry the table. Note also that the paper's own real cohorts are worse than the summary
+— −21%/+18% on a 212-sample within-subject fMRI set — and that no result in it concerns EEG. And the
+split-geometry effect that §3.3 and §3.4 describe qualitatively is quantified twice elsewhere:
 [datasets-benchmarks/kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)
-replicates five cross-participant EEG models with and without participant holdout and finds error
-rates rising between 35 percent and roughly 3,900 percent, and
+builds cross-participant EEG models with and without participant holdout on five public datasets and
+finds error rates rising between 35 percent and roughly 3,900 percent (**corrected in Phase 4**: only
+three of the five replicate a published model, the other two using the authors' own multilayer
+perceptron because there was no published workflow to replicate; and the 3,900 percent endpoint is
+attributed by the paper to the schizophrenia dataset while its own per-dataset table makes it the
+PTSD ratio, so the range should be treated as approximate), and
 [eeg-models/brookshire-2024-data-leakage](../collection/eeg-models/brookshire-2024-data-leakage/card.md)
 measures 99.8 percent under segment-based holdout against 53.0 percent under subject-based holdout on
 one dataset.
@@ -598,7 +731,10 @@ combination the paper does not resolve.
 - [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
   — pupil size at 75% is the strongest non-EEG variable in a study that also concludes fusion does
   not help. The card places the eye channel, "not the cardiac or electrodermal channel, as the
-  plausible source of any peripheral gain".
+  plausible source of any peripheral gain", and after the Phase 4 correction that ordering is
+  numerical rather than qualitative: eye 0.75 against skin conductance 0.63 and ECG 0.61 on the same
+  contrast. Note also that this entry's eye measures come from a Tobii T60 monitor, not from
+  electrooculography electrodes, so it belongs on §6.2's substitution list.
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
   the complementarity localisation: EEG better at happy, eye movements better at fear. The card also
   supplies the counter-reading: "a class-specific advantage for eye movements on 'fear' could reflect
@@ -649,7 +785,15 @@ three load levels use different stimuli — single words against sentences — s
 between conditions, and
 [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
 manipulates load by scenario complexity, which changes the scene. The one entry that removed the
-confound is the one that found no fusion gain.
+confound is the one that found no fusion gain — though after the Phase 4 correction that null is
+against a ~10-point detection floor (§2.1), so "removed the confound and found nothing" should be
+read as "removed the confound and found nothing this design could resolve". The Phase 4 audit adds a
+second confound to
+[ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)'s
+column: its three load levels are the session's three *procedural stages* — rest, trial, task — so
+they are perfectly confounded with time on task as well as with the display, and five of its seven
+classifiers score lowest on the middle level, which is the familiarisation block rather than a
+calibrated point on a load scale.
 
 ### 4.4 The cardiac version of the same question
 
@@ -694,7 +838,10 @@ The methodological control the strand does not carry itself sits in the sibling 
 establishes that of the two standard ways of removing a confound from a decoding analysis, post hoc
 counterbalancing biases upward and confound regression biases downward far enough to produce
 significant below-chance accuracy, and only confound regression performed inside every
-cross-validation fold is unbiased.
+cross-validation fold restores "plausible (above chance) model performance". That card is
+abstract-only and was hedged in the Phase 4 audit: "unbiased" overstated it, the abstract claiming
+only that the negative bias "disappears" and that the method "appears to appropriately control for
+confounds".
 
 ---
 
@@ -791,9 +938,9 @@ signal-to-noise on a slow component, a different temporal integration window, or
 
 Consistent with that prediction:
 [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
-(+0.002, though on EDA rather than ECG),
+(+0.002, though on EDA rather than ECG, and now under a contested split — §3.5),
 [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
-(not significant), and the EEG+ECG cell of
+(not significant, but see below), and the EEG+ECG cell of
 [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)'s
 grid specifically (61.20% → 63.95%, the smallest of its three pairings). Inconsistent with it:
 [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) (+12.6 from
@@ -801,6 +948,25 @@ heart rate and LF/HF) and
 [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
 (+11.6, denominator unverifiable per §2.6). Both of the inconsistent entries carry the split or
 provenance flags of §2.1; neither the prediction nor the exception is adjudicated here.
+
+**How much the consistent column is worth, corrected in Phase 4.** Two of the three consistent
+entries are weaker evidence than this node previously treated them as, and for different reasons.
+[hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)'s
+null cannot discriminate the prediction from a small real gain: its own binomial yardstick needs
+about ten points and its fusion increment was three to five, so "consistent with descending coupling
+dominating" and "consistent with a three-point gain the study cannot see" are the same observation
+here. And
+[azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)'s
++0.002 is now a number under a split the paper describes two ways. The prediction's evidential
+position is therefore weaker in Phase 4 than in Phase 3, without any entry changing sides.
+
+One datum from outside the EEG pairing, recorded because it is the only place in the strand where a
+peripheral channel is added and the accuracy falls:
+[haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md)'s
+Table 12 row [97] reports about 80% on HRV features alone against about 77% on HRV plus electrodermal
+activity. The pairing is HRV-plus-EDA rather than EEG-plus-peripheral, so it does not test the
+coupling prediction directly; it does show that the redundancy this node describes is not confined to
+the central-peripheral direction.
 
 The same prediction shows up as a design decision rather than a result in two architectures.
 [li-2023-incongruity-fusion](../collection/multimodal-biosignals/li-2023-incongruity-fusion/card.md)
@@ -872,6 +1038,11 @@ project's target recording carries a 16-channel respiration belt alongside 2-cha
 The controlled vocabulary was fixed for mechanical matrix-building and it is doing that job, but six
 entries carry a tag whose instrument differs from what the spelling names. Every one of those cards
 states the substitution itself, so this is a property of the vocabulary rather than a carding error.
+(The membership of this list has changed twice in Phase 4 and the count has not:
+[mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
+left it, for the reason recorded in place below, and
+[hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
+joined it.)
 
 - `eog` where the instrument is an eye tracker, not electrooculography electrodes:
   [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) (SMI
@@ -883,10 +1054,19 @@ states the substitution itself, so this is a property of the vocabulary rather t
   [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   (COLET, an eye-tracking dataset),
   [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
-  (EyeLink 1000; "a deliberate abstraction"), and
+  (**correction, Phase 4**: this entry does not belong on this list. Its source records vertical and
+  horizontal electrooculogram alongside an EyeLink 1000, both at 1200 Hz, so it carries both
+  instruments; the phrase "a deliberate abstraction" quoted here was retracted from the card. What the
+  paper does not do is compare decoders built from the two, which is where the strand's ocular
+  question actually sits), and
   [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   (gaze as an eye-movement proxy; "an eye tracker gives position, EOG gives a potential difference
-  that mixes gaze angle with blink and with the corneo-retinal offset").
+  that mixes gaze angle with blink and with the corneo-retinal offset"), and — **added in Phase 4** —
+  [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md),
+  whose pupil-size and blink measures come from a Tobii T60 eye-tracker monitor. Its card now states
+  the substitution in the same terms as the others and flags that it "matters wherever the card's
+  eye-channel result is carried into an EOG argument" — which is exactly what §4.2 and §4.3 do with
+  the 0.75 pupil figure.
 - `ecg` where the derivation is optical:
   [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md)'s
   HRV comes from an earplug PPG sensor, and the card records that "beat-interval estimates from PPG
@@ -940,8 +1120,10 @@ nothing about artifact handling (§4.4).
   sizes on the three features: theta/alpha ratio epsilon-squared 0.154, LF/HF 0.094, heart rate 0.030.
 - [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   — per-modality hand-crafted feature sets concatenated across the eight modality subsets, with EEG
-  contributing 40 features (band powers, spectral entropy, Hjorth mobility and complexity), plus deep
-  models on raw signals as a parallel track.
+  contributing 40 features (band powers, spectral entropy, Hjorth mobility and complexity,
+  Lempel-Ziv complexity, Higuchi fractal dimension and raw-signal moments — the card's Phase 4
+  correction adds the last three families, which an earlier description omitted), ECG 53, EDA 30 and
+  gaze 32, plus deep models on raw signals as a parallel track.
 
 ### 7.2 Intermediate fusion, on embeddings
 
@@ -958,8 +1140,14 @@ The configuration this project would use, and the strand's densest node.
   applied to low-, mid- and high-level CNN activations concatenated within each modality, then late
   fusion for the decision. The card calls MMTM "one of the few mechanisms in this strand that operates
   at exactly that interface", and records the transferable empirical claim: taking three levels rather
-  than the last layer alone is worth 2–4%. MMTM is adopted without an ablation against simpler
-  recalibration, so its contribution is not isolated from the hierarchical-feature contribution.
+  than the last layer alone helps. **Corrected in Phase 4 — the magnitude is not 2–4% and is not
+  available.** The abstract says the three-level set beats other combinations "by 2-4%", the Results
+  say "9-15% on band features" for the same comparison, and the Results' own 2–4% describes something
+  else (band features beating raw data). A factor of three to five apart, recorded as a
+  self-contradiction and unresolved, so the layer-choice question this node raises for a frozen
+  pretrained encoder gets a direction from this entry and no size. MMTM is also adopted without an
+  ablation against simpler recalibration, so its contribution is not isolated from the
+  hierarchical-feature contribution.
 - [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
   — dual-branch encoders producing full feature *sequences* rather than static vectors, then
   multi-head cross attention with the EEG representation as Query over the peripheral sequence. The
@@ -992,7 +1180,10 @@ The configuration this project would use, and the strand's densest node.
   fusion. This is what makes its null harder to dismiss, and the authors say so: they used both levels
   and still saw no reliable advantage, and "giving more weight to lower-performing variables hurts".
   Both explanations "cut against the idea that a better fusion architecture would have rescued the
-  result".
+  result". The Phase 4 correction supplies a third reading the card now states itself and this
+  document must carry alongside the other two: the study's binomial test resolves differences of
+  about ten points, and the increment was three to five, so architecture is not the only thing that
+  could have hidden a gain here.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — late (average) fusion at 0.914 as one of its two naive baselines, against early fusion at 0.892.
 
@@ -1036,8 +1227,18 @@ none runs it.
   multimodal experiment appears in the evaluation", so the framing is untested.
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — reports
   "competitive linear probing performance, with functionally discriminative embeddings", which is the
-  claim a frozen peripheral branch depends on; the linear-probing table "did not survive the
-  two-column extraction cleanly, so no frozen-encoder figure is quoted".
+  claim a frozen peripheral branch depends on. **Corrected in Phase 4, and the correction points the
+  other way from the abstract.** This document previously said the linear-probing table "did not
+  survive the two-column extraction cleanly". There is no such table: the per-label frozen-encoder
+  results are in supplementary tables S6–S9, which are not part of the archived source, so they are
+  outside the document rather than lost in conversion. What the Results do state, qualitatively, is a
+  shape rather than a figure: "At the smallest training set sizes, Linear outperforms the baselines
+  and performs comparably to Full in the MIMIC-IV-ECG machine reads and UHN-ECG reduced LVEF tasks;
+  however, its performance plateaus because it lacks the representational capacity necessary to
+  exploit additional downstream data." For a project intending to bolt a head onto a frozen
+  peripheral encoder, that is a warning as much as an endorsement — the frozen configuration matches
+  fine-tuning only in the small-data regime, which is the regime this project is in, and stops
+  improving thereafter.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — the closest instance: frozen pretrained backbones over a time-frequency representation with a
   learned attention weighting and a head on top. The backbones are ImageNet-lineage image models, not
@@ -1097,7 +1298,12 @@ single scalar against ECG's two, with "no other band, no spatial feature, no per
   instance-contrastive learning. Reported gains are 6.3% on classification and 2.9% on regression
   metrics in at least 14 of 20 tasks, while "outperforming models 70 times larger" — a
   parameter-efficiency result the card reads as suggesting "the useful capacity for a single-channel
-  peripheral signal is small".
+  peripheral signal is small". **Hedge added in Phase 4**: the abstract's point pair is not what the
+  body reports. The Discussion and Appendix I give ranges — "average classification and regression
+  improvements of 4.7%-6.3% and 2.9%-4.9%, respectively" — so 6.3 is the *top* of the classification
+  range and 2.9 the *bottom* of the regression range, and the abstract's pair understates the spread
+  rather than summarising it. Both readings are on the card; this document should not quote 6.3 / 2.9
+  as the paper's single result.
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — 90.9 million
   parameters, wav2vec 2.0 architecture, 1.4 million 5-second 12-lead segments, hybrid masked
   reconstruction plus contrastive objective. Poor-quality records were deliberately *retained* "to
@@ -1123,9 +1329,15 @@ the same gap the `eeg-models` strand records for its checkpoints."
   not the article's, governs use of the code".
 - [haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md) —
   establishes the size of the engineered cardiac feature space. Across 43 studies the same dozen
-  indices recur: RMSSD, SDNN, SDANN, AVNN, NN50, PNN50, SD1, SD2, LF, HF, LF/HF and mean heart rate.
-  The card's reading is that this "is small enough to compute exhaustively — which is what makes the
-  classical arm cheap and makes omitting it hard to justify".
+  indices recur: RMSSD, SDNN, SDANN, AVNN, NN50, PNN50, SD1, SD2, LF, HF, LF/HF and mean heart rate,
+  with the review's own summary naming "RMSSD, SDNN, pNN50, and AVNN" as the most used. The card's
+  reading is that this "is small enough to compute exhaustively — which is what makes the classical
+  arm cheap and makes omitting it hard to justify". **What Phase 4 adds, and what it does not**: the
+  per-study accuracies are now readable, and they do *not* supply the engineered-feature bar this
+  node might have wanted from them. They range from 0.755 to 1.0 across different constructs,
+  sensors, cohorts (largest 50 participants) and mostly unstated split protocols, and the card's own
+  conclusion is that "the right reading is a distribution of published accuracies, not a threshold to
+  beat" — with the presence of a 1.0 in the table read as the usual symptom of publication bias.
 
 What the strand's studies actually computed, which is a narrower set than the vocabulary allows:
 [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) two indices
@@ -1133,8 +1345,8 @@ What the strand's studies actually computed, which is a narrower set than the vo
 [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
 51 frequency-domain HRV measures per band from pyHRV over Welch spectra, plus 40 EDA statistics;
 [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
-27 features reduced to 12 by recursive feature elimination, of which only one HRV index reaches the
-top eight by SHAP;
+27 features at the 2 s window (rising to 464 at 20 s) reduced to 12 by recursive feature elimination,
+of which only one HRV index reaches the top eight by SHAP;
 [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
 pupil diameter change, blink rate, heart rate and HRV;
 [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
@@ -1155,8 +1367,15 @@ records the same absence.
 ### 8.3 The window mismatch, which every entry that names both windows names as a mismatch
 
 The strongest cross-card regularity in this facet. The peripheral branch's natural integration window
-is five to sixty seconds; a stimulus-locked EEG epoch is two to four. Eight entries state a window and
-none reconciles the two scales.
+is five to twenty seconds; a stimulus-locked EEG epoch is two to four. Nine entries state a window and
+(corrected in Phase 4: the sixty-second upper bound came from this ontology reading PaPaGei's card,
+which attributed a comparator's segment length to the paper itself. The paper uses ten seconds.)
+none reconciles the two scales. The count rose from eight to nine in the same audit, when
+[angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)'s
+card gained its segmentation: 18 non-overlapping 10 s segments per 3-minute scenario, aligned to the
+10 s self-report interval, with dropout-affected segments excluded rather than imputed. That is the
+strand's only case of the peripheral window being set by the *label*'s sampling interval rather than
+by the signal's dynamics.
 
 - [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
   — EEG non-overlapping 2 s at 128 Hz against EDA non-overlapping 20 s at 4 Hz. Its card names the
@@ -1165,17 +1384,26 @@ none reconciles the two scales.
   the paper does not separate the two." The ablation finds 6 s EEG and 5–10 s EDA windows most stable.
 - [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
   — the only entry that sweeps the window: 2, 6, 10 and 20 s, with 2 s to 20 s buying about 0.012
-  AUROC. The card reads it as "small, monotone and not free, since a 20 s window cannot resolve a
-  stimulus-locked contrast. The peripheral channel's information here is slow and mostly not improved
-  by looking longer."
+  AUROC. **Corrected in Phase 4, and the correction shrinks the sweep's meaning.** The four arms are
+  not one feature set at four resolutions: the Methods state "The input dimensionality increased with
+  window length: 27 features for 2 s, 142 for 6 s, 234 for 10 s, and 464 for 20 s", so the 20 s model
+  has seventeen times the inputs of the 2 s model and part of the 0.012 is extra parameters rather
+  than a longer view. The card's reading now runs "small, and not free twice over: a 20 s window
+  cannot resolve a stimulus-locked contrast, and the 20 s model is also a 464-dimension model against
+  the 2 s model's 27." This is the strand's only window sweep, and it does not cleanly isolate window
+  length.
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — 5 s
   non-overlapping segments, "long relative to a stimulus-locked EEG epoch and short relative to
   reliable HRV estimation — an awkward middle for either use".
-- [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — 60 s segments.
+- [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — 10 s segments; an
+  earlier version of this line said 60 s, which the source attributes to a cited comparator.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — 10 s non-overlapping epochs, each "treated as an independent sample".
 - [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
   — 5 s segments, chosen "to increase the sample count".
+- [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
+  — 10 s non-overlapping segments, set by the self-report interval rather than by either signal
+  (added in Phase 4).
 - [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
   — a 4 s non-overlapping Hanning window for the EEG differential-entropy features.
 - [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) — the HRV
@@ -1253,13 +1481,31 @@ under
 claim to beat DCCA on SEED-IV (89.12 against 78.74), a 10.4-point margin that becomes 1.6 points under
 the first-party figure.
 
+Two Phase 4 hedges on that margin, both on the Ding side. Its own SEED-IV figure is stated twice and
+inconsistently — 89.12 in Table 4, 89.32 in Section 3.2 — and the card adopts neither, so the
+numerator of the margin is itself unsettled by about 0.2. And Ding's evaluation is now known to be
+subject-dependent and pooled (§3.3), while the comparator numbers are quoted from papers whose
+protocols are not checked, so the ranking may compare a subject-dependent result against
+subject-independent ones. The 10.4-point margin should not be quoted without both.
+
 **Whether DEAP carries an ECG channel — three cards, two strands, three positions.**
 
 | position | card |
 |---|---|
 | DEAP's peripheral set includes `ecg`, as an inferred modality tag | [li-2023-incongruity-fusion](../collection/multimodal-biosignals/li-2023-incongruity-fusion/card.md) |
 | DEAP's eight peripheral channels enumerated as 2 EOG, 2 EMG, 1 GSR, 1 skin temperature, 1 respiration, 1 blood volume pressure — no ECG | [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md) |
-| the source paper contradicts itself; one enumeration includes "electrocardiogram" and the sensor-placement figure does not; the card "does not assert that DEAP carries ECG" | [candidate-datasets/deap-2012](../collection/candidate-datasets/deap-2012/card.md) |
+| the source paper contradicts itself, across four passages that split two-to-two, and the card records both readings and picks neither | [candidate-datasets/deap-2012](../collection/candidate-datasets/deap-2012/card.md) |
+
+**Corrected in Phase 4.** The third row previously read that the contradiction held between two
+passages — one enumeration naming "electrocardiogram" against the sensor-placement figure — and that
+the card therefore "does not assert that DEAP carries ECG". Both halves were wrong. There are four
+relevant passages, not two, and they split evenly: Section 6.1's enumeration and the preprocessing
+description ("The trend of the ECG and GSR signals was removed…", which refers to the channels as
+shipped) both name an ECG channel, while the Fig. 3 caption and Table 5 — whose heart-rate and HRV
+features sit under *blood volume pressure* — both enumerate the peripheral set without one. The
+earlier resolution against ECG was a coin-flip presented as a rule application, and the card has
+withdrawn it. The DEAP card's `modalities` field still omits `ecg`; that reflects the unresolved
+state, not a finding of absence.
 
 This one is traceable to its origin, which makes it kind 1 with a kind 2 underneath: the underlying
 disagreement is inside the DEAP paper, and the three cards took three different positions on it. The
@@ -1300,13 +1546,40 @@ than silently picking.
   — the three noise conditions are labelled "40, 60, and 80 dB" in the abstract and class-distribution
   prose and "40 Hz", "60 Hz", "80 Hz" in Table 3 and its surrounding text, "repeated often enough that
   it is not a single typographic slip". Separately, the annoyance cutoff is justified by a citation
-  rendered in the published text as the literal word "(reference)", an unresolved placeholder.
+  rendered in the published text as the literal word "(reference)", an unresolved placeholder. Two
+  more from the Phase 4 audit: the Methods-versus-Conclusion disagreement about subject-wise
+  separation, which is the one with consequences (§3.5); and the prose claim that the coefficient of
+  variation "remained low (≤5% across metrics)" against Table 4's own fusion row, where recall's CoV
+  is 5.49.
+- [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
+  — added in Phase 4. Table 4's `Ours` row gives 89.12 on SEED-IV; Section 3.2 gives 89.32 and calls
+  it "the best result reported on the SEED-IV dataset to date". The same sentence names three emotion
+  labels for a four-class task, against the four named in Section 3.1. Neither accuracy is adopted.
+  Separately, Section 3.1 says three DEAP experiments were run including a four-class
+  valence-arousal-quadrant task, and Table 3 reports only the two binary results, so a computed
+  number is not given.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — the dataset claim of §2.6 and §9.1, plus ICA described twice in its own EEG pipeline with different
   wording and one sentence referring to "the undetectable model".
 - [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
   — the eight EDA statistical features list "min" twice, "which is either a typographic error or an
-  undocumented distinction".
+  undocumented distinction". Added in Phase 4, and more consequential: the hierarchical-feature gain
+  is 2–4% in the abstract and 9–15% in Section IV-A for the same comparison, a factor of three to
+  five apart, while the Results' own "2-4%" belongs to a different comparison (band features against
+  raw data). The card's reading is that the paper "cannot keep its own two statements of the
+  hierarchical gain consistent, which is a reason to treat all of its reported margins as
+  approximate" — including the 1–2% this document quotes elsewhere.
+- [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
+  — added in Phase 4. The screening denominator is 6,388 in Figure 2's cascade and 5,543 in Section
+  2.1; only 6,388 reconciles with the exclusions summing to 5,366 against a stated cohort of 1,022.
+  Both readings recorded, neither adopted.
+- [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — added in Phase 4. The
+  abstract's 6.3% / 2.9% improvement pair against the Discussion's 4.7–6.3% / 2.9–4.9% ranges, which
+  are the same result stated two ways with the abstract taking one endpoint from each (§8.1).
+- [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
+  added in Phase 4, and mild: 85.11% is "the best mean accuracy" while 72.39% is "a mean recognition
+  accuracy", so the pair the strand uses as its session-cost measurement is a best case against an
+  average (§2.5).
 - [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md) — the
   strand brief names six authors where the published record has seven, and renders the title with
   "transcranial Electrical Stimulation" spelled out where the published title abbreviates to "tES".
@@ -1358,8 +1631,11 @@ in §9.2.
 ### 9.4 Inaccessible versus unreported
 
 The distinction the practice brief requires be carried into synthesis. In this strand it is large
-enough to need a node: nineteen of the 25 entries have at least one decisive fact in one column or the
-other, and the two columns have opposite implications for whether re-retrieval is worth doing.
+enough to need a node: most of the 25 entries have at least one decisive fact in one column or the
+other, and the two columns have opposite implications for whether re-retrieval is worth doing. (This
+sentence previously read "nineteen of the 25", a figure that did not match the two lists below even
+before the Phase 4 audit removed two entries from the first column and moved a third between the
+columns. Replaced with a qualitative statement rather than a recount that would go stale again.)
 
 **Reported by the source, and not accessible to this corpus.** Re-retrieval would recover these.
 
@@ -1375,23 +1651,45 @@ other, and the two columns have opposite implications for whether re-retrieval i
 | [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md) | class count, chance level, split, participant count, which indices carry the classification |
 | [lee-2025-biosignal-fm-review](../collection/multimodal-biosignals/lee-2025-biosignal-fm-review/card.md) | contents, model coverage, any comparison table, reference list; Cloudflare challenge, HTTP 403 |
 | [liu-eeg-multimodal-emotion-review](../collection/multimodal-biosignals/liu-eeg-multimodal-emotion-review/card.md) | reference list, taxonomies, tabulated datasets |
-| [haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md) | per-study accuracy figures; the landscape tables collapse in two-column extraction |
-| [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md) | per-dataset accuracies; Tables 2 and 3 collapse entirely |
-| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | per-condition accuracies across the four comparisons; Figure 3 is an image and did not convert |
-| [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) | the skin-tone stratified results; Figure 26 converts to character soup |
-| [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) | the linear-probing figures |
+| [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md) | per-dataset accuracies; Tables 1–4 survive as captions with empty bodies. Re-verified in Phase 4 and still the only entry in the strand whose tables did not come back after re-extraction |
+| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | the plotted bar heights in Figures 1–4 only. **Narrowed in Phase 4**: the per-sensor and per-condition values are restated in the Results prose and are now on the card (§1.1), so this is no longer "every number came from Discussion prose" |
+| [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) | the per-tone MAE values (Figures 9 and 26). **Narrowed in Phase 4**: the direction of the skin-tone result is stated in prose and is on the card (§2.8) |
+| [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) | the per-label frozen-encoder figures, which live in supplementary tables S6–S9. **Reclassified in Phase 4**: they are outside the archived document rather than lost in conversion, and there is no linear-probing table in the article to have lost |
 | [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md) | the accuracy paired with the 20 s AUROC; needs the figure itself |
-| [makowski-2021-neurokit2](../collection/multimodal-biosignals/makowski-2021-neurokit2/card.md) | the validation evidence behind "validated pipelines" |
-| [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md) | the exact analysed n; the exclusion sentence is mangled in extraction |
+| [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md) | the trinarised PAAS class distribution, reported as Figure 7 and not readable in extraction. **Added in Phase 4**, moved out of the unreported column (§3.6) |
+| [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md) | nothing, after Phase 4. The Subjects paragraph is intact: 24 selected, three excluded for data quality, "another four" for eye-tracker failure, so the MEG analysis is 21. Whether the eye-movement analyses run on 20 or 17 turns on what "another" means, and the paper does not say — an ambiguity in the source, not in the extraction, so this row belongs in the second column below |
+
+**Three rows left this column in the Phase 4 audit, and the pattern in why is worth stating.** All
+three were false absence claims written against a superseded extraction and never revised when the
+sources were regenerated, so they told a downstream reader not to bother re-retrieving something that
+was already in the archive.
+[haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md)'s
+per-study accuracy tables render as well-formed markdown and are now quoted (§1.7, §8.2).
+[makowski-2021-neurokit2](../collection/multimodal-biosignals/makowski-2021-neurokit2/card.md)'s
+validation evidence survives, and what it says is that the R-peak benchmark's criteria are named in
+the article while its *results* are deferred to the package documentation — a deliberate pointer
+elsewhere by the paper, not an extraction failure, which matters because a documentation page is a
+moving target and an article is not. And
+[mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)'s
+exclusion sentence is intact, leaving a residual ambiguity that belongs to the paper. Two further
+rows were narrowed rather than removed, marked in place above. This is the largest single revision
+this node has taken, and it runs entirely in the direction of the corpus having claimed absences it
+did not have.
 
 **Not reported by the source.** Re-retrieval would recover nothing.
 
+- [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
+  — **moved here in Phase 4.** The analysed n for the eye-movement analyses is either 20 or 17
+  depending on whether "another four" excludes on top of the three poor-quality exclusions, and no
+  analysed n is stated anywhere else in the paper. Per-subject consistency of the gaze effect is not
+  reported either way.
 - [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
   — no unimodal arm of any kind, and no ablation of its own cross-attention module. Its card marks the
   distinction explicitly: "This is a gap in the source, not in this corpus's access."
 - [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   — no physiology-only arm, no permutation test, no chance-corrected metric, no modality-dropout
-  experiment, no standard deviations in the modality tables.
+  experiment, no standard deviations in the modality tables. Its class distribution moved to the
+  first column in Phase 4: the paper reports it, as a figure that does not convert.
 - [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
   and [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
   — no EEG arm, by study design in both cases.
@@ -1403,7 +1701,9 @@ other, and the two columns have opposite implications for whether re-retrieval i
 - [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
   — no permutation test, and no count of how often its fusion gate fired.
 - [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)
-  — no variance and no significance test behind the 1–2% and 2–4% ranges.
+  — no variance and no significance test behind its reported ranges, and, since the split is a fixed
+  first-N-subjects partition rather than a cross-validation, no repeated-split variance exists to
+  report. The hierarchical-gain range itself is not a single reported quantity (§7.2, §9.2).
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) — no
   test statistic or multiple-comparison correction accompanies "significantly enhance" in the abstract.
 - [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md)
@@ -1424,12 +1724,12 @@ the "also appears in" column since it is universal.
 | entry | primary node (§1) | also appears in |
 |---|---|---|
 | [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md) | §1.6 peripheral only, no EEG | §3.3, §4.2, §4.3, §8.2, §9.3, §9.4 |
-| [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md) | §1.2 EEG-only and combined, no physiology-only | §2.1, §2.5, §2.7, §3.1, §3.6, §4.3, §5.5, §7.1, §7.6, §9.4 |
-| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | §1.1 three arms readable | §2.1, §2.2, §2.7, §3.1, §3.6, §3.7, §4.5, §5.5, §7.3, §8.2, §8.3, §8.4, §9.2, §9.4 |
-| [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md) | §1.5 combined only | §3.5, §3.7, §7.2, §7.4, §7.5, §7.7, §8.3, §9.1, §9.4 |
+| [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md) | §1.2 EEG-only and combined, no physiology-only | §2.1, §2.5, §2.7, §3.1, §3.6, §4.3, §5.5, §7.1, §7.6, §8.3, §9.4 |
+| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | §1.1 three arms readable | §2.1, §2.2, §2.7, §3.1 (membership withdrawn), §3.5, §3.6, §3.7, §4.5, §5.5, §7.3, §8.2, §8.3, §8.4, §9.2, §9.4 |
+| [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md) | §1.5 combined only | §3.3 (moved from §3.5 in Phase 4), §3.7, §7.2, §7.4, §7.5, §7.7, §8.3, §9.1, §9.2, §9.4 |
 | [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md) | §1.4 comparison inaccessible | §2.1, §5.4, §6.2, §8.5, §9.2, §9.3, §9.4 |
 | [haque-hrv-stress-review](../collection/multimodal-biosignals/haque-hrv-stress-review/card.md) | §1.7 no decoding arm | §3.7, §6.2, §8.2, §9.4 |
-| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | §1.1 three arms readable | §2.1, §3.2, §4.2, §4.3, §5.5, §6.1, §7.3, §8.2, §9.4 |
+| [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | §1.1 three arms readable | §2.1, §3.2, §4.2, §4.3, §5.5, §6.1, §6.2, §7.3, §8.2, §9.4 |
 | [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md) | §1.1 three arms readable | §2.1, §2.3, §2.6, §3.1, §3.6, §4.4, §4.5, §5.5, §7.2, §7.3, §7.5, §8.4, §9.1, §9.2, §9.4 |
 | [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md) | §1.6 peripheral only, no EEG | §2.7, §3.1, §7.2, §8.2, §8.3, §9.2, §9.4 |
 | [lee-2025-biosignal-fm-review](../collection/multimodal-biosignals/lee-2025-biosignal-fm-review/card.md) | §1.7 no decoding arm | §6.3, §9.4 |
@@ -1439,7 +1739,7 @@ the "also appears in" column since it is universal.
 | [makowski-2021-neurokit2](../collection/multimodal-biosignals/makowski-2021-neurokit2/card.md) | §1.7 no decoding arm | §3.7, §6.3, §8.2, §8.3, §9.4 |
 | [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) | §1.6 peripheral only, no EEG | §3.1, §7.5, §7.6, §8.1, §8.3, §8.4, §9.3, §9.4 |
 | [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md) | §1.3 EEG-only and peripheral-only, no combined | §4.1, §4.3, §4.5, §9.4 |
-| [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) | §1.6 peripheral only, no EEG | §2.8, §7.5, §8.1, §8.3, §8.4, §9.4 |
+| [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) | §1.6 peripheral only, no EEG | §2.8, §7.5, §8.1, §8.3, §8.4, §9.2, §9.4 |
 | [rotaru-2024-auditory-attention-bias](../collection/multimodal-biosignals/rotaru-2024-auditory-attention-bias/card.md) | §1.3 EEG-only and peripheral-only, no combined | §3.4, §4.1, §4.3, §4.5, §8.4, §9.4 |
 | [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) | §1.1 three arms readable | §2.1, §2.4, §2.7, §2.8, §3.5, §3.6, §3.7, §4.4, §5.5, §6.2, §7.1, §7.7, §8.2, §8.3, §9.2, §9.3, §9.4 |
 | [schiecke-2019-brain-heart-ccm](../collection/multimodal-biosignals/schiecke-2019-brain-heart-ccm/card.md) | §1.7 no decoding arm | §3.7, §5.2, §5.3, §9.4 |
@@ -1447,7 +1747,7 @@ the "also appears in" column since it is universal.
 | [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md) | §1.6 peripheral only, no EEG | §2.8, §3.1, §3.6, §4.4, §6.3, §8.2, §8.3, §9.2, §9.4 |
 | [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md) | §1.6 peripheral only, no EEG | §3.5, §3.6, §4.2, §4.3, §9.4 |
 | [zeng-brain-heart-ccm](../collection/multimodal-biosignals/zeng-brain-heart-ccm/card.md) | §1.7 no decoding arm | §4.4, §4.5, §5.1, §5.3, §5.5, §7.4, §9.4 |
-| [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) | §1.4 comparison inaccessible | §2.5, §3.2, §3.7, §4.2, §9.1, §9.3, §9.4 |
+| [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) | §1.4 comparison inaccessible | §2.5, §3.2, §3.7, §4.2, §9.1, §9.2, §9.3, §9.4 |
 
 Every entry appears in at least four nodes except
 [lee-2025-biosignal-fm-review](../collection/multimodal-biosignals/lee-2025-biosignal-fm-review/card.md),

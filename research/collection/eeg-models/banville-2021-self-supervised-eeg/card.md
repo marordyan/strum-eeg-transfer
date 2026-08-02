@@ -70,15 +70,26 @@ raw signal is not automatically informative; the paper shows one that is not.
   on the *unlabelled* version of the same two datasets used downstream, which is what makes the
   comparison clean. PC18: 994 overnight recordings from 994 individuals with suspected sleep
   apnoea, mean age 55, 33 percent female. TUHab v2.0.0: 2,993 recordings of 15 minutes or more
-  from 2,329 patients, mean age 49.3, 53.5 percent female. **Total hours: `not reported`** — the
-  paper gives recordings, subjects and window counts but never an hour figure, and the retained
-  duration cannot be reconstructed because TUHab recordings are cropped to a maximum of 20
-  minutes each.
-- **Parameter count**: `not reported`. The encoder is StagerNet, a 3-layer convolutional network
-  adapted from prior sleep-staging work with 16 convolutional channels (twice the original 8)
-  plus batch normalization, producing a 100-dimensional embedding. The paper describes the
-  architecture layer by layer but gives no parameter total, and remarks only that model capacity
-  is "relatively small".
+  from 2,329 patients, mean age 49.3, 53.5 percent of recordings female. **Total hours: `not
+  reported as an hour figure`, partly reconstructible (narrowed during the Phase 4 audit).** An
+  earlier version of this bullet said the retained duration "cannot be reconstructed". That is
+  true only of TUHab. The paper never states hours anywhere, but Table 1 gives PC18's window
+  counts, and 891,668 non-overlapping 30 s windows is about 7,430 hours. For TUHab the
+  reconstruction does fail, because the first minute of each recording is cropped and "Longer
+  files were also cropped such that a maximum of 20 minutes was used from each recording", so the
+  2,993 recordings of "15 minutes or more" have no recoverable total.
+- **Parameter count: 62,307 and 170,860 (corrected during the Phase 4 audit).** An earlier version
+  of this bullet recorded the parameter count as `not reported` and said the paper "gives no
+  parameter total". The paper gives two, one per embedder, and it uses two embedders, not one.
+  StagerNet, on PC18: a 3-layer convolutional network adapted from prior sleep-staging work with
+  16 convolutional channels (twice the original 8) plus batch normalization, producing a
+  100-dimensional embedding — "This yielded a total of 62,307 trainable parameters." ShallowNet,
+  on TUHab, taken as-is from prior TUH Abnormal work with only the output dimensionality changed
+  to D = 100 — "This yielded a total of 170,860 trainable parameters." CPC additionally uses a GRU
+  with hidden size 100. The "relatively small" remark the earlier version leaned on is about model
+  capacity in the discussion, not a substitute for the counts. What changes: this paper is now the
+  strand's smallest measured encoder by a wide margin, and its low-label advantage can be put on a
+  cost footing after all.
 - **Input contract**: differs by dataset, and the paper does not impose a common one. PC18: 30 Hz
   FIR low-pass with a Hamming window, downsampled to 100 Hz, restricted to channels F3-M2 and
   F4-M1, non-overlapping 30 s windows of shape 3000 x 2, native rate 200 Hz, referenced to M1 or
@@ -125,12 +136,34 @@ raw signal is not automatically informative; the paper shows one that is not.
   appear in both training and validation under the 80-20 split of the development set. The test
   set is the TUHab-provided evaluation set, which limits the exposure, but the validation-set
   leakage is real and the paper does not discuss it.
-- No parameter count and no compute budget are reported, so the low-label advantage cannot be
-  put on a cost footing against the supervised baseline.
+- **Compute budget, corrected during the Phase 4 audit.** An earlier version of this bullet said
+  "No parameter count and no compute budget are reported". Both are reported. The parameter counts
+  are above; the compute budget is stated verbatim as "deep learning models were trained on 1 or 2
+  Nvidia Tesla V100 GPUs for anywhere from a few minutes to 7h, depending on the amount of data,
+  early stopping and GPU configuration." It is a range rather than a per-model figure, so a
+  precise cost comparison between SSL and full supervision still cannot be made, but the claim
+  that nothing was reported was wrong.
 - The pretext-task hyperparameters τ_pos and τ_neg are swept over a wide grid per dataset and per
   task, and the best combination differs between datasets. The reported SSL numbers are therefore
-  the best of a search, while the fully supervised baseline is a single configuration; the paper
-  does not say whether the baseline received comparable tuning.
+  the best of a search, while the fully supervised baseline is a single configuration.
+  **Corrected during the Phase 4 audit:** an earlier version added that "the paper does not say
+  whether the baseline received comparable tuning". It says so explicitly, and lists it first among
+  its three self-identified limitations: "Given the computational requirements of training neural
+  networks on large EEG datasets, we fixed the training hyperparameters of the fully supervised
+  models (i.e., learning rate, batch size, dropout, weight decay) and reused the same values across
+  all data regimes. As a result, the fully supervised models typically stopped learning after only
+  a few epochs, although they might have been able to train longer with different hyperparameters.
+  We tested the impact of various training hyperparameter settings on a subset of the models and
+  saw that even though training can be slightly improved by changing hyperparameters, this effect
+  is not strong enough to change any of our conclusions (results not shown)." So the asymmetry is
+  disclosed and partially tested, but the test is unreported ("results not shown"), which is the
+  form the caveat should take.
+- The paper's second self-identified limitation is that the architecture was never searched: "Sticking
+  to a single fixed architecture for all models and data regimes means that these improvements -
+  which could help bridge (or widen) the gap between SSL methods and the various baselines - were
+  not taken into account in this work." Its third is that it does not attempt state-of-the-art
+  performance on either downstream task, and on PC18 sleep staging it states there is no prior art
+  to compare against at all.
 - Only two frontal channels are used on PC18, out of six recorded, "to reduce the dimensionality
   of the input data". The sleep-staging result therefore says nothing about how the objectives
   behave with a full montage.

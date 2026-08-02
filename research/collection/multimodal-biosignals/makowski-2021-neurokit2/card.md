@@ -82,11 +82,17 @@ package.
   the paper presents as the two most typical scenarios.
 - **Algorithm comparison**: the paper states that the package "allows for the comparison of
   different algorithms. For instance, using a suite of open-source databases, different algorithms
-  for ECG R-peak detection" can be evaluated against each other.
+  for ECG R-peak detection have been compared for their robustness (number of errors encountered),
+  efficiency (computation time) and accuracy (absolute distance from true R-peak location),
+  documented in the 'Studies' section of the package's documentation."
 - **Validation posture**: the abstract claims "validated pipelines" and the body says the library
-  "aims at being reliable and trustworthy" with continuous integration and testing. The specific
-  validation evidence — which algorithms were benchmarked, against which databases, with what
-  agreement — did not survive the extraction and is not quoted on this card.
+  "aims at being reliable and trustworthy", backed by "a comprehensive test suite (using pytest)
+  and continuous integration (using Travis-CI and GitHub actions)". Corrected in the Phase 4 audit:
+  an earlier version of this card said the specific validation evidence "did not survive the
+  extraction". It survives; what the source says is that the R-peak benchmark's *criteria* are the
+  three named above and that its *results* live in the package documentation, not in the article.
+  The gap is a deliberate pointer elsewhere by the paper, not an extraction failure — which matters,
+  because a documentation page is a moving target and an article is not.
 - **Provenance**: a re-forged successor to NeuroKit "1" (Makowski, 2020), retaining its most
   successful features.
 - **Uptake**: 1,322 citations at retrieval, which for a tool paper is a proxy for the package being
@@ -101,9 +107,11 @@ package.
 - No EEG. NeuroKit2 covers peripheral signals; MNE-Python covers the EEG side. Any pipeline in
   this project spans two toolkits, with two sets of conventions for epoching, resampling and
   event handling, and nothing in this entry addresses the interface between them.
-- "Validated pipelines" is a claim the article asserts more than it demonstrates in the accessible
-  text. The R-peak benchmarking is described as a capability of the package rather than reported
-  as a result with agreement statistics.
+- "Validated pipelines" is a claim the article asserts more than it demonstrates. The R-peak
+  benchmarking is named, with its three criteria, but its results are deferred to the package
+  documentation rather than reported in the paper, so the article carries no number a reader can
+  audit or cite. The paper also says pipelines "have been tested against established software such
+  as BioSPPy … hrv …" without reporting the agreement.
 - The package's convenience is also its risk: a high-level function that runs a full pipeline in
   one call makes it easy to produce features without recording which algorithm produced them. The
   `method` argument exists to counter this, but the default path does not require using it.
@@ -113,9 +121,13 @@ package.
 - Version drift: the article describes the package as of 2020–2021. Function names, defaults and
   available methods have changed since, so the article is a citation for the tool rather than
   documentation of the version anyone would run.
-- The comparison table and the code listings survive the extraction legibly, but the paper contains
-  no performance benchmark that could be quoted as a baseline number, so this entry supplies
-  infrastructure rather than a figure to beat.
+- This is the one entry in the strand whose `source.md` was not regenerated with pymupdf4llm, and it
+  shows: the two-column Springer layout is shredded and inter-word spaces are stripped, so the text
+  reads as run-together strings ("Webelievethat", "usingvalidatedpipelines") and the function names
+  lose their underscores (`bio_process` appears as "bio process"). `md_quality: rough` is correct.
+  Nothing quoted on this card depends on a table cell, but a re-extraction would be cheap.
+- The paper contains no performance benchmark that could be quoted as a baseline number, so this
+  entry supplies infrastructure rather than a figure to beat.
 
 ## Citations
 

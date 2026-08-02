@@ -26,7 +26,9 @@ md_quality: abstract-only
 The two standard ways of removing a confound from a decoding analysis both bias the result —
 post hoc counterbalancing upward, confound regression downward far enough to produce significant
 *below*-chance accuracy — and only confound regression performed inside every cross-validation
-fold gives an unbiased estimate.
+fold restores "plausible (above chance) model performance". ("Unbiased estimate" here previously
+overstated the abstract, whose claims are that the negative bias "disappears" and that the method
+"appears to appropriately control for confounds".)
 
 ## Summary
 
@@ -56,9 +58,12 @@ The direct transfer to this project is a warning about two moves it might otherw
 spoken-versus-written classifier is suspected of reading the auditory-versus-visual evoked
 response, the tempting fixes are to subsample trials so the nuisance variable is balanced, or to
 regress the nuisance signal out of the features first. This paper says the first inflates accuracy
-and the second deflates it, sometimes below chance, and that the only version that works puts the
-regression inside the cross-validation loop so the confound model is fitted on training data only.
-That is the same class of error as fitting a scaler on the full dataset before splitting, and it is
+and the second deflates it, sometimes below chance, and that the only version that works performs
+"the confound regression procedure ... in every fold of the cross-validation routine". *Why* that
+helps — presumably because the confound model is then fitted on training folds only and applied to
+held-out data — is this card's reading, not the abstract's: the abstract states where the procedure
+is performed and never describes what it is fitted on. That is the same class of error as fitting a
+scaler on the full dataset before splitting, and it is
 easy to get wrong in an EEG pipeline where preprocessing is habitually done once, up front, on the
 whole recording.
 
@@ -81,8 +86,10 @@ pipeline artefact before reading it as a finding.
 - **The fix**: performing confound regression "in every fold of the cross-validation routine" makes
   the negative bias disappear "in both the empirical analyses and simulations", yielding "plausible
   (above chance) model performance".
-- **Empirical case**: decoding gender from structural MRI while controlling for brain size. Not an
-  EEG case, and deliberately chosen as one where the confound is large and uncontroversial.
+- **Empirical case**: "we attempt to decode gender from structural MRI data while controlling for
+  the confound 'brain size'." Not an EEG case. (This bullet previously added that the case was
+  "deliberately chosen as one where the confound is large and uncontroversial" — an authorial
+  motive the abstract does not state.)
 - **Conclusion as stated**: "cross-validated confound regression is the only method that appears to
   appropriately control for confounds which thus can be used to gain more insight into the exact
   source(s) of information driving one's decoding analysis."
@@ -96,9 +103,12 @@ pipeline artefact before reading it as a finding.
   spoken-versus-written analysis has a confound that is not a scalar but a whole time-locked evoked
   response, and whether regressing that out per fold is even well posed is not addressed by
   anything read here.
-- Cross-validated confound regression removes the confound's *linear* contribution to each feature.
-  Whether that suffices when the confound and the target share nonlinear structure is not something
-  the abstract speaks to.
+- The abstract does not characterise the functional form of the confound-regression model. If it is
+  linear — which the name and the standard implementation suggest, but which **this source does not
+  state** — then it removes only the confound's linear contribution to each feature, and whether
+  that suffices when the confound and the target share nonlinear structure would be unaddressed
+  here. (This bullet previously asserted the linearity as fact in its first clause while conceding
+  in its second that the abstract is silent on the matter.)
 - The paper is about controlling a confound you have already identified and measured. For the
   project's case, the confound — the sensory evoked response to auditory versus visual
   presentation — is not separately measured, so there is no regressor to remove without first

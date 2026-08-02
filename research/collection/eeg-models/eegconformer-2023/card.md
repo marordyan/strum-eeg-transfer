@@ -111,6 +111,27 @@ rankings are not measuring the same thing.
   is 4.2 points above the small supervised baseline that pretrained models are most often compared
   to. On BCI IV 2b it reaches 84.63% against EEGNet 80.48% and ConvNet 79.37%; on SEED, 95.30%
   (κ = 0.9295) against RGNN 94.24% and SVM 86.08%.
+
+  **Unverifiable against the committed extraction (Phase 4 audit).** Every number in the paragraph
+  above comes from Tables II, III and IV, and those tables are *captions only* in `source.md`: the
+  extraction preserves "TABLE II / COMPARISONS WITH STATE-OF-THE-ART METHODS ON DATASETS I" and
+  then nothing, and the same for Tables III and IV. Re-extracting `source.pdf` does not recover
+  them either — the table bodies are not in the PDF's text layer. So none of these thirteen values
+  can be audited from the repository as it stands, and a later reader should treat them as
+  provisional rather than as sourced. What *can* be checked is that they are consistent with the
+  paper's prose, which states its margins without stating its accuracies: on Dataset II, "improvements
+  of 5.25% and 4.15% for ConvNet (p < 0.05) and EEGNet (p < 0.01)" — and 84.63 − 79.37 = 5.26,
+  84.63 − 80.48 = 4.15, so the Dataset II triple is corroborated. On Dataset I the only prose margin
+  is against FBCSP: "our Conformer significantly improves the accuracy by 10.91% over FBCSP
+  (p < 0.01)", which implies FBCSP at 67.75% but says nothing about the EEGNet and ConvNet values.
+  Dataset III has no prose margin at all — the text says only that "Conformer is still competitive
+  on Dataset III compared with other state-of-the-art methods" — so 95.30 / 94.24 / 86.08 rest on
+  nothing in the committed corpus. Do not propagate the Dataset I or Dataset III numbers into an
+  ontology or a cross-strand document without re-obtaining the tables.
+- **First-party margins that are in the text, and were missing from this card.** On Dataset I,
+  +10.91% over FBCSP (p < 0.01). On Dataset II, +5.25% over ConvNet (p < 0.05), +4.15% over EEGNet
+  (p < 0.01), and "an increasing accuracy of 12.5% on subject 1" over FBCSP. These are the paper's
+  own quantified claims and they survive the extraction, unlike the tables they were computed from.
 - **Ablation**: removing the self-attention module costs 6.02 average points on Dataset I
   (p < 0.01), ranging from 3.12 points on subject 3 to 8.68 on subject 6. Removing the
   segmentation-and-reconstruction augmentation costs 3.75 points, with the largest effect on the two
@@ -133,7 +154,18 @@ rankings are not measuring the same thing.
   the literature is to be the cheap comparison point. The figure-read value (~0.79M) and
   NeuralBench's 277K differ by roughly threefold, and nothing in either source explains the gap;
   most likely they are different configurations of the same architecture, but the paper gives no
-  way to check.
+  way to check. *Note added in the Phase 4 audit:* the ~0.79M / ~0.76M figure-read is not
+  verifiable either. Fig. 4's axis labels and data points are not in the text layer of `source.pdf`
+  and are absent from `source.md`; only the caption ("The influence of the depth of the
+  self-attention module (from 0 to 15) on the accuracy and the amounts of parameters for Dataset I
+  and II") and the prose remark that "the number of parameters increases proportionally with depth"
+  survive. Treat the 0.60–1.00 × 10⁶ axis range and the depth-6 readings as unverified.
+- **Extraction coverage.** `source.md` runs from the title to the references and is structurally
+  complete — Discussion and Conclusion are both present — so nothing was truncated. What it lost is
+  narrower and more damaging: all four numbered tables came through as captions with empty bodies,
+  and the Table IV caption is additionally shredded into repeated fragments. `md_quality: partial`
+  is the right frontmatter value for that. Re-extraction is not a fix here, because the PDF's text
+  layer does not contain the table bodies either.
 - The authors flag that they validate only oscillatory paradigms (motor imagery, emotion) and not
   event-related-potential data, and that the parameter scale "is not small" for a model of this kind.
 - The segmentation-and-reconstruction augmentation recombines segments drawn from the same class

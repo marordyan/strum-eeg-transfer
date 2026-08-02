@@ -90,20 +90,29 @@ language contrast in a small dyadic corpus sits in that region.
   BrainOmni 32.71M EEG time+frequency+space. Other — EEGPT-1 51.04M EEG time+space; NeuroLM 169.60M
   EEG time+frequency.
 - **Datasets covered:** 22 downstream classification tasks drawn from 18 public datasets, "as some
-  datasets contain multiple subtasks". Named in the extraction with their subject counts: CHB-MIT
-  (EEG, epilepsy, 23 subjects), MAYO (iEEG, drug-resistant epilepsy, 25), FNUSA (iEEG,
-  drug-resistant epilepsy, 14), Dep-BDI (EEG, depression, 122), MDD-64 (EEG, 30 healthy + 43 MDD),
-  SD-28 (EEG, schizophrenia, 28), UCSD (EEG, Parkinson's, 31 healthy + 15 PD), BCI-2a (22 channels,
-  3 s windows, 250 Hz, 130 min, 4 subject groups as tabulated), Chisco-R and Chisco-I (125 channels,
-  3.3 s, 500 Hz, 58.6 h, 39 subjects each). Task families are epilepsy, sleep staging, disease
-  diagnosis, communication, and affective computing.
+  datasets contain multiple subtasks". The suite's Table 2 lists all 18 with signal type, task,
+  subject count and number of categories: CHBMIT (EEG, epilepsy, 23 sub., 2), MAYO (iEEG, DRE, 25,
+  2), FNUSA (iEEG, DRE, 14, 2), Dep-BDI (EEG, depression, 122, 2), MDD-64 (EEG, MDD, 30H + 43MDD,
+  2), SD-28 (EEG, SD, 28, 2), UCSD (EEG, PD, 31H + 15PD, 2), ADFD (EEG, AD, 88, 2), ADHDAdult (EEG,
+  ADHD, 42H + 37ADHD, 2), ADHDChild (EEG, ADHD, 60H + 61ADHD, 2), ISRUC (EEG, sleep stage, 100, 5),
+  SleepEDFx (EEG, sleep stage, 44, 5), DEAP (EEG, emotion, 32, 4), SEED-IV (EEG, emotion, 15, 4),
+  EEGMat (EEG, mental workload, 36, 2), EEGMMIDB (EEG, MI & ME, 109, 4), BCI-2a (EEG, MI, 9, 4),
+  Chisco (EEG, concept classification, 5 sub., 39 categories). A second table in Appendix C gives
+  per-task recording parameters, e.g. "BCI-2a [11]|22|3s|250|130 min|4" and "Chisco-R
+  [116]|125|3.3s|500|58.6 h|39", whose columns are channels, window, sampling rate, duration and
+  number of classes. *Correction, made during review: an earlier version of this card listed only
+  nine of the eighteen datasets as "named in the extraction with their subject counts" — all
+  eighteen are in Table 2 — and read the last column of the Appendix C table as subjects, giving
+  "BCI-2a ... 4 subject groups" and "Chisco-R and Chisco-I ... 39 subjects each". That column is the
+  class count. Chisco has 5 subjects and 39 categories; BCI-2a has 9 subjects and 4 classes.* Task
+  families are epilepsy, sleep staging, disease diagnosis, communication, and affective computing.
 - **Supervised reference points:** SPaRCNet (epilepsy), DeprNet (depression), CCNSE (sleep staging),
   MSCARNet (communication and affective computing).
 - **Representative reported values** (AUROC ± sd, iEEG epilepsy): on MAYO, BENDR 0.93 ± 0.03,
   MBrain 0.92 ± 0.04, BIOT 0.90 ± 0.07; on FNUSA, MBrain 0.91 ± 0.08. On CHB-MIT, MBrain drops to
   0.71 ± 0.03 AUROC — the modality-dependence result.
-- Preprocessing fixed by the suite: downsampling, event-aligned window segmentation, channel
-  selection, and per-channel z-score normalization.
+- Preprocessing fixed by the suite: "bandpass and notch filtering, downsampling, event-aligned
+  window segmentation, channel selection, and perchannel z-score normalization".
 
 ## Open questions / limitations
 
@@ -122,19 +131,29 @@ language contrast in a small dyadic corpus sits in that region.
 - The paper's abstract says the platform "integrates 15 representative BFMs and 18 public datasets";
   the results section says "22 downstream classification tasks from 18 public datasets". These are
   reconcilable, but a reader quoting "18" should say whether they mean datasets or tasks.
-- Cohen's κ is listed among the reported metrics but does not appear in the result tables recovered
-  from the extraction, which report AUROC, accuracy, F1 and F2. Full results are deferred to
-  Appendix D.
+- Metrics are split by task type, not omitted: "For binary tasks, we report ... AUROC, Accuracy, F1,
+  and F2 ... For multi-class tasks, we report Accuracy, AUROC (one-vs-rest; OvR), macro-F1 (MF1),
+  and Cohen's 𝜅". Appendix D's per-dataset tables follow that division — Tables 8 to 22 (binary)
+  carry AUROC/Acc/F1/F2, Tables 23 to 29 (multi-class: BCI-2a, EEGMMIDB-I, EEGMMIDB-R, DEAP,
+  SEED-IV, Chisco-I, Chisco-R) carry AUROC/Acc/MF1/Kappa. *Correction, made during review: an
+  earlier version of this card said "Cohen's κ is listed among the reported metrics but does not
+  appear in the result tables recovered from the extraction ... Full results are deferred to
+  Appendix D." Appendix D is in the extraction in full, Tables 8 through 29, and Kappa is reported
+  in seven of those tables.*
 - The channel-permutation experiment perturbs train and validation while holding test fixed, which
   measures sensitivity to a training-time corruption rather than to a test-time one. It therefore
   answers "does the model depend on a specific channel ordering during learning" and not "does the
   model's representation encode absolute channel index", which is the stronger claim the framing
   invites. The suite's own sensitivity analysis over the quantile threshold q ∈ {0.05, 0.10, 0.20}
   reports that relative trends are stable but absolute values vary.
-- Several models in Table 1 (BFM, MBrain, Brant, BrainBERT) are named without a bibliographic
-  expansion in the recovered text, and "BFM" is used both as the abbreviation for the class of brain
-  foundation models and as the name of one specific 708.96M-parameter model. Quoting "BFM" without
-  context is ambiguous in this source.
+- "BFM" is used both as the abbreviation for the class of brain foundation models and as the name of
+  one specific 708.96M-parameter model, so quoting "BFM" without context is ambiguous in this
+  source. *Correction, made during review: an earlier version of this card added that BFM, MBrain,
+  Brant and BrainBERT "are named without a bibliographic expansion in the recovered text". All four
+  resolve in the reference list, which the extraction carries: [9] Darvishi Bayazi et al., [13] Cai
+  et al. "Mbrain: A multi-channel self-supervised learning framework for brain signals", [112] Zhang
+  et al. "Brant: Foundation model for intracranial neural signal", [90] Wang et al. "BrainBERT:
+  Self-supervised representation learning".*
 - No dyadic or multi-person task; no peripheral physiology.
 
 ## Citations

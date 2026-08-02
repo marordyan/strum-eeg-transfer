@@ -101,9 +101,22 @@ by construction, and available without a rating or a scorer.
 - [kothe-2023-nback-nirs](../collection/candidate-datasets/kothe-2023-nback-nirs/card.md) — the
   purest instance: the class *is* the value of *n* the experimenter set, at 0, 1 or 2, "balanced and
   pseudo-randomized across blocks, sets, and participants", with the 0-back case handled by
-  reserving a target letter so the motor response rate stays comparable. No validation of any kind
-  is reported against it — no subjective scale, no behavioural analysis — so its construct validity
-  rests entirely on the n-back paradigm's standing.
+  reserving a target letter (X, with Z also excluded from the stimulus set), so the target rate is
+  6 of 20 across every level of *n*. No subjective scale is administered and no analysis relates the
+  label to behaviour, so its construct validity rests entirely on the n-back paradigm's standing.
+
+  **Corrected in Phase 4, and the correction is worse than a missing validation.** This document
+  previously said "no validation of any kind is reported against it — no subjective scale, no
+  behavioural analysis". Behavioural accuracy at n = 2 *is* measured, and it is used — as one of the
+  two criteria defining the "OK" session subset the headline 71.5% is computed on: "a minimum
+  participant proficiency of at least 85% accuracy at the n-Back task at the n=2 difficulty level,
+  which excluded an additional two sessions", alongside a signal-quality criterion that excluded five
+  of 43. So the paper conditions its headline on behavioural performance at the hardest load level
+  while never reporting the accuracy distribution or relating it to label validity. That is a
+  selection on a close correlate of the dependent variable, not merely an absent validation. Two
+  further figures the card gained: the OK subset is 36 sessions, and the ~71% applies only to the
+  two-step 0-versus-2 contrast — adjacent levels run "around 60%", with 0-versus-1 "below 60%",
+  against a chance level of 50%.
 - [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md) — the stimulation
   condition per trial, nine types crossing three cortical targets with three waveforms, alongside
   two other label classes (§1.4, §1.2).
@@ -236,6 +249,22 @@ property the brief asks for under "agreement between label sources where more th
   - The cross-modal transfer analysis did not recover modality-independent structure (pictures 0.83,
     spoken 0.66, written 0.61), and the authors attribute this to picture trials biasing feature
     selection toward occipital sites rather than to amodal semantics being absent.
+
+    **Corrected in Phase 4, and this is the strand's most load-bearing entry.** Those three figures
+    are **means over four hand-picked subjects, not over the twenty-subject analysis group**: "For
+    this analysis we selected a subset of four subjects that showed high classification accuracies in
+    all the modalities (subjects nr 4, 5, 7, 14)." This document previously printed them with no
+    indication of their basis, a few lines below the genuine twenty-subject mean of 0.79 — which is
+    exactly the misreading the same paragraph is careful to head off for the 0.89 figure, committed
+    on a different number. The same applies to the paper's importance maps, which are averaged over
+    the five best-performing subjects per modality. Neither should enter a comparison table as a
+    group result, and the 0.83 must not be read against the 0.79 as though they were the same
+    quantity measured two ways.
+
+    A source-internal discrepancy the card also now records: the body text gives 0.83 (SD 0.06),
+    0.66 (SD 0.02) and 0.62 (SD 0.03) against Table 2's 0.83 / 0.66 / 0.61 with SDs 0.05 / 0.04 /
+    0.03. The card follows Table 2; this document carries Table 2's values with the disagreement
+    noted (§9.2).
   - The authors name a structural asymmetry that any spoken-versus-written epoching scheme inherits:
     "Auditory stimuli are spread out in time, whereas the others are presented instantaneously."
 
@@ -244,11 +273,20 @@ property the brief asks for under "agreement between label sources where more th
   supplies the diagnostic procedure and the ERP evidence, not a number for the contrast the project
   plans.
 
-### 1.8 The four tests that bound what a stimulus-condition label can mean
+### 1.8 The four entries that bound what a stimulus-condition label can mean
 
-Four entries, each supplying a different check, and they compose into a sequence rather than
-repeating one point. Two of the four are abstract-only cards (§7.2) and nothing quantitative should
-be taken from them.
+Four entries, and they compose into a sequence rather than repeating one point. Two of the four are
+abstract-only cards (§7.2) and nothing quantitative should be taken from them.
+
+**Membership correction, Phase 4, and it changes what this node is.** This node was titled "the four
+*tests*", on the reading that each entry supplies a check a project could run.
+[ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)
+does not. Its card had the paper's argument backwards — see the bullet below — and the corrected card
+also records that the paper "reports no results of its own and no procedure that can be run off the
+shelf"; it runs no analysis on any data, and the two accuracy figures in it (86% in V1, 65% in
+V5/+MT) are quoted from Seymour et al. rather than measured. So this strand's label-validity axis
+carries three runnable procedures and one constraint on interpretation, not four tests. Downstream
+documents keying on §1.8 as a list of diagnostics should key on the other three.
 
 - **Is there anything cognitive left to decode in this contrast?**
   [deniz-2019-modality-invariant-semantics](../collection/candidate-datasets/deniz-2019-modality-invariant-semantics/card.md)
@@ -274,19 +312,47 @@ be taken from them.
   [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)
   — the "decoder's dictum" stated and rejected. Information can be latent in a signal without being
   in "a format that can be easily read-out by a downstream neuron in order to guide action", so "a
-  sufficiently powerful nonlinear classifier could decode almost any arbitrary feature". The
-  constructive half is a criterion rather than a prohibition: tie decodability to behavioural
-  read-out, as in the illustrative study where retinotopic and lateral occipital cortex both carried
-  decodable shape-category information but only the latter showed stronger patterns on correct than
-  on incorrect trials.
+  sufficiently powerful nonlinear classifier could decode almost any arbitrary feature".
+
+  **Corrected in Phase 4: this document had the constructive half backwards, and the version it
+  carried is the option the paper rejects.** The earlier text read "The constructive half is a
+  criterion rather than a prohibition: tie decodability to behavioural read-out, as in the
+  illustrative study where retinotopic and lateral occipital cortex both carried decodable
+  shape-category information but only the latter showed stronger patterns on correct than on
+  incorrect trials." Section 4.3 is titled "Predicting behaviour is not enough" and closes: "In
+  summary, merely predicting behaviour using decodable information is not enough to revive the
+  dictum." Section 5 names it explicitly as the discarded alternative — "we considered one form of
+  augmentation-linking decoding results to behavioural outcomes-and argued that it was insufficient.
+  The problem was that linkages to behaviour do not show that the information is actually formatted
+  in a useable way." The correct/incorrect study is introduced at 4.3 as an illustration of the
+  *problem*, not of the remedy.
+
+  What the paper actually proposes is to connect behaviour to the *structure of the activation
+  space* via a psychologically plausible model: "if behaviour can be connected to the structure of
+  activation space in a psychologically plausible manner, then this may warrant the sort of inference
+  researchers have had in mind" — representational similarity against psychological spaces,
+  predicting response latency from distance to the decision boundary. For this project that is a
+  higher bar than a correct/incorrect split, not a cheaper one. A correct/incorrect test is still
+  worth running as a first filter, since a label that fails it is in trouble; passing it licenses
+  nothing, which is the paper's point.
 - **If the confound is identified, can it be removed?**
   [snoek-2019-confound-control](../collection/candidate-datasets/snoek-2019-confound-control/card.md)
   — not by the two obvious methods. Post hoc counterbalancing biases accuracy *upward*, because "the
   subsampling process ... tends to remove samples that are hard to classify or would be wrongly
   classified". Confound regression biases it *downward*, "even resulting in significant below chance
-  performance in some realistic scenarios". Only confound regression performed inside every
-  cross-validation fold is unbiased. The card adds a diagnostic reading: significant below-chance
-  accuracy should be read as a symptom of the analysis before it is read as a finding.
+  performance in some realistic scenarios". Only confound regression performed "in every fold of the
+  cross-validation routine" restores "plausible (above chance) model performance". The card adds a
+  diagnostic reading: significant below-chance accuracy should be read as a symptom of the analysis
+  before it is read as a finding.
+
+  **Hedged in Phase 4.** This bullet previously ended "is unbiased", which overstates an
+  abstract-only source: the abstract's claims are that the negative bias "disappears" and that the
+  method "appears to appropriately control for confounds". Two further hedges the card now carries
+  and this node must not quietly drop. *Why* per-fold regression helps — presumably because the
+  confound model is fitted on training folds only — is the card's reading, not the abstract's, which
+  says where the procedure is performed and never what it is fitted on. And the abstract does not
+  state that the regression is linear, so the standard caveat about nonlinear confound-target
+  structure rests on an assumption the source does not supply.
 
 Two limits that the four cards state about themselves, and that must travel with them. Three of the
 four are fMRI or structural MRI, and
@@ -378,7 +444,11 @@ subject-disjoint splits applies.
 
   - **The stimulus-duration control.** Each word's visual presentation duration is computed from the
     duration of the audio recording of the spoken version of the same sentence, by the formula
-    `(nletters/sumnletters) * (audiodur + 2000 - 150*nwords)` with a 300 ms floor. Without such a
+    `(nletters/sumnletters) * (audiodur + 2000 - 150*nwords)` with a 300 ms floor, each word followed
+    by a 300 ms blank screen. (Hedge added in Phase 4: the extraction drops the formula's operators,
+    rendering it "(nletters/sumnletters) (audiodur + 2000150 nwords)". The multiplication and the
+    minus are reconstructed from context and are **not verbatim**; the structure of the control is
+    established, the exact constants need the PDF.) Without such a
     control, a spoken-versus-written contrast is also a contrast in trial length, and epoch length is
     trivially decodable. This is the sentence-level form of the timing asymmetry that
     [simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)
@@ -479,9 +549,14 @@ identifier-level trap that a naive pipeline would fall into silently.
 The measurement of what these hazards cost lives in the sibling strands rather than here, and is
 linked rather than restated:
 [datasets-benchmarks/kamrud-2021-data-partitioning](../collection/datasets-benchmarks/kamrud-2021-data-partitioning/card.md)
-replicates five published cross-participant EEG models under shuffled and participant-held-out splits
-and reports error-rate increases between 35 percent and roughly 3,900 percent, with two of five at
-chance under the proper split;
+builds cross-participant EEG models on five public datasets under shuffled and participant-held-out
+splits and reports error-rate increases between 35 percent and roughly 3,900 percent, with **one** of
+the five at chance under the proper split. (**Corrected in Phase 4** on two counts. "Replicates five
+published models" is wrong: three of the five replicate a published workflow, and for PTSD and
+schizophrenia the authors state there was none to replicate, so those two use the authors' own
+multilayer perceptron. And "two of five at chance" was one. The 3,900 percent endpoint is also
+attributed by the paper to the schizophrenia dataset while its own table makes it the PTSD ratio, so
+the range is approximate.)
 [eeg-models/brookshire-2024-data-leakage](../collection/eeg-models/brookshire-2024-data-leakage/card.md)
 measures a 46.8-point inflation from segment-based to subject-based holdout on one clinical task. And
 [datasets-benchmarks/combrisson-2015-chance-level](../collection/datasets-benchmarks/combrisson-2015-chance-level/card.md)
@@ -554,13 +629,26 @@ auditory-non-verbal versus visual-non-verbal. The two axes of this ontology meet
   auditory counterpart. The factorial is complete over the four cells and the fifth task sits outside
   it.
 
-**One further consequence of the same design.** Response modality alternates between touchscreen and
-voice and is recorded per trial, and correctness is recorded per trial. That makes the behavioural
-read-out criterion of
-[ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)
-available in STRUM — the criterion that card flags as possibly unavailable "precisely where it is
-most needed", since "a passive stimulus condition with no task response ... has no correct/incorrect
-split to condition on". STRUM has one. That is a relation between two cards that neither states.
+**One further consequence of the same design, restated in Phase 4 because its premise was wrong.**
+Response modality alternates between touchscreen and voice and is recorded per trial, and correctness
+is recorded per trial, so STRUM does have a correct/incorrect split to condition on where a passive
+stimulus paradigm would not. What this document previously did with that fact was call it "the
+behavioural read-out criterion of
+[ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)"
+and treat its availability as a payoff of the design. That inverts the paper. Ritchie et al. argue
+that "merely predicting behaviour using decodable information is not enough": a correct-versus-
+incorrect contrast is the augmentation they consider and reject, because "linkages to behaviour do
+not show that the information is actually formatted in a useable way". The criterion they propose
+instead needs the *structure* of the activation space — similarity geometry against a psychological
+space, response latency predicted from distance to a decision boundary — which STRUM's per-trial
+correctness does not by itself supply.
+
+What survives is smaller and still worth stating. STRUM permits a correct/incorrect analysis, which
+is a cheap negative filter: a spoken-versus-written decode that does not track task performance at
+all is in trouble. It is not a positive test of representation, and this document should not be read
+as recommending it as one. The relation between the two cards therefore holds in the weaker
+direction only, and the stronger reading — which the gap analysis inherited from the earlier version
+of the Ritchie card — is withdrawn here.
 
 ---
 
@@ -624,7 +712,11 @@ the first class and is not:
   unknown". The derivation *class* is constrained; the derivation is not stated.
 - [deap-2012](../collection/candidate-datasets/deap-2012/card.md) — the same situation and the same
   discipline. BioSemi ActiveTwo, "but the paper does not describe the derivation of the distributed
-  data, so it is recorded as unknown rather than assumed from the hardware".
+  data, so it is recorded as unknown rather than assumed from the hardware". One trap the card added
+  in Phase 4 and this node should carry: the paper *does* say the EEG was "average referenced", but
+  that describes the authors' own analysis pipeline — alongside their 256 Hz down-sample and 2 Hz
+  high-pass — not the derivation of what is distributed. A reader who finds that line should not read
+  it as moving DEAP into the average-reference class above.
 
 **Unknown** — neither stated nor constrained:
 
@@ -686,8 +778,15 @@ spread is 20-fold.
   channels together, 300 Hz analogue anti-aliasing cutoff, audio channel synchronous at the same rate.
 - 1000 Hz — [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md), EEG and EOG.
 - 512 Hz — [strum-2018](../collection/candidate-datasets/strum-2018/card.md) (acquired at 2048 Hz and
-  resampled) and [deap-2012](../collection/candidate-datasets/deap-2012/card.md) (the widely
-  distributed preprocessed version is downsampled to 128 Hz).
+  resampled) and [deap-2012](../collection/candidate-datasets/deap-2012/card.md), whose EEG and
+  peripheral channels are both acquired at 512 Hz and, in the paper's own processing, "later
+  down-sampled to 256Hz". **Corrected in Phase 4**: this line previously gave 128 Hz as the rate of
+  "the widely distributed preprocessed version" and attributed the description to the paper. The
+  string "128 Hz" does not occur anywhere in DEAP's `source.md`, and 256 Hz is the only down-sample
+  rate the paper states. The 128 Hz figure is **unverified**: it may well describe the distributed
+  preprocessed `.dat` files, which are documented on the dataset website rather than in the paper,
+  and that host was unreachable at retrieval (§7.3). It is retained here as an unverified note and
+  must not be presented as the paper's figure.
 - 500 Hz — [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md),
   [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) (24-bit,
   0.05 µV resolution, no acquisition filtering),
@@ -703,8 +802,11 @@ amplifier and therefore at the same rate for
 [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md),
 [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) and
 [mous-2019](../collection/candidate-datasets/mous-2019/card.md); on separate devices at 64, 32, 4 and
-1 Hz for [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md); at 256 Hz
-against 128 Hz EEG for [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md); at 1 Hz
+1 Hz for [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md); at 256 Hz for
+ECG against 128 Hz EEG for [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md),
+whose GSR is 128 Hz at 12-bit and therefore matches the EEG rate — a figure the card recorded as
+"not stated in the extracted text" until the Phase 4 audit found it in the same sentence that names
+the Shimmer module; at 1 Hz
 against 100 Hz EEG for [sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md)'s
 respiration, temperature and EMG envelope. Any fusion architecture has to resolve that ratio, and it
 ranges from 1:1 to 100:1 within this corpus.
@@ -850,7 +952,9 @@ The strongest class, because the source itself demonstrates the channel carries 
   paper's own analysis is "an exemplary analysis of a slice" of the data. What is established, from
   section III: 2-channel ECG, 2-channel EOG and a 16-channel respiration belt, together with a
   43-channel EMG neckband, all on the *same 24-bit BioSemi amplifier as the EEG* — 269 channels per
-  subject, 538 across the pair. Also present and outside the project's plan: force plate, head-mounted
+  subject, 538 across the pair. (The 269 is from the STRUM paper's own inventory.
+  [lsl-2024](../collection/candidate-datasets/lsl-2024/card.md)'s footnote describing the same rig
+  says "267-channel BioSemi"; the two cards record both and pick neither, §9.1.) Also present and outside the project's plan: force plate, head-mounted
   eye tracker with scene camera, two video cameras, desk microphone, an instrumented Xbox 360
   controller, and a room-scale PhaseSpace motion-capture system at 480 Hz.
 
@@ -881,6 +985,15 @@ percent against 70 to 75 percent for peripheral physiology and eye measures, wit
 significant improvement from combining sensor groups. That is a negative result on fusion from a
 study designed to test it, and it is the reference point against which "adding peripheral physiology
 helps" would have to be argued.
+
+**Two Phase 4 additions from that card, and they pull in opposite directions.** The per-sensor
+accuracies are now on record and they sharpen the point for this project's channel set specifically:
+eye 0.75, respiration 0.70, skin conductance 0.63 and **ECG 0.61** against EEG 0.86 on the same
+contrast — so the cardiac channel STRUM carries is the weakest of the group in the one study that
+measured it alone. But the null is coarser than it looked: the paper states that under its binomial
+test "significance (p < 0.05) is reached for differences of around 10%", while its fusion increment
+was 3–5%. The reference point is therefore "no fusion gain larger than about ten points", which is
+compatible with a small real gain and is a weaker claim than this node previously carried.
 
 ### 5.4 No peripheral channels
 
@@ -966,8 +1079,14 @@ asymmetric, and the asymmetry is the finding.
   its card flags as "a real limit on what inter-participant analyses it can support" given that the
   dataset's own stated purpose includes quantifying synchronization "within and across all
   participating individuals". [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md)
-  uses manual triggers with no measured offset or jitter, which its card notes is "a weaker mechanism
-  than the hardware triggers used by the same laboratory".
+  also reports no measured offset or jitter. **Corrected in Phase 4**: this document previously added
+  that its manual triggers are "a weaker mechanism than the hardware triggers used by the same
+  laboratory", quoting the card. The source contradicts the contrast — LiveWire used "a custom
+  trigger-button electronic box connected to the EEG and IMU recording devices", and "manual"
+  describes the pulses being placed by hand at choreography-section boundaries, not an absence of
+  trigger hardware. The difference between the two datasets is when and how the pulses are issued.
+  What they genuinely share is the thing this node is about: neither reports a numeric
+  synchronisation error.
   [amigos-2021](../collection/candidate-datasets/amigos-2021/card.md) reports none for the four
   participants in a group relative to one another.
   [strum-2018](../collection/candidate-datasets/strum-2018/card.md) reports none either, though it
@@ -1014,7 +1133,10 @@ worth carrying forward, because they bound what a later reader may conclude from
   interface, which is itself a finding about registry coverage".
   [nemar-2022](../collection/candidate-datasets/nemar-2022/card.md) is the entry that exists partly
   because of this: it is the EEG-scoped browsable layer over the same archive, and its card notes the
-  difference between "600 datasets, mostly MRI" and a browsable EEG inventory.
+  difference between "600 datasets, mostly MRI" and a browsable EEG inventory. Phase 4 puts a number
+  on that inventory, which the card previously said it had none of: 72 EEG datasets from 2,664
+  participants as of February 2022. A registry sweep for a dyadic EEG corpus was searching a
+  two-figure holding.
 
 ---
 
@@ -1074,8 +1196,11 @@ and with one nobody could obtain.
 
 `_briefs/synthesis-practice.md` requires this distinction to survive into synthesis, and requires a
 node rather than a footnote where a strand has more than one or two such entries. This strand has
-five, in two different senses, and the senses have opposite implications for whether re-retrieval is
-worthwhile.
+several, in two different senses, and the senses have opposite implications for whether re-retrieval
+is worthwhile. (The count previously given as "five" did not match the six entries listed below even
+before the Phase 4 audit, which also downgraded one of them — see the
+[nemar-2022](../collection/candidate-datasets/nemar-2022/card.md) bullet. Replaced with a qualitative
+statement.)
 
 **Abstract-only: the paper reports the numbers and we could not read them.** Three entries, all three
 in §1.8, which is to say the label-validity axis is the part of the strand most affected.
@@ -1114,8 +1239,12 @@ in §1.8, which is to say the label-validity axis is the part of the strand most
   for a genuinely silent source.
 - [nemar-2022](../collection/candidate-datasets/nemar-2022/card.md) — CC BY-NC per Europe PMC, but
   both the Oxford University Press PDF endpoint and the Europe PMC full-text endpoint refused
-  automated download, so the card is written from a rough extraction and carries no scale numbers at
-  all.
+  automated download, so the card is written from a rough extraction. **Corrected in Phase 4**: the
+  clause that followed — "and carries no scale numbers at all" — was false, and so was the card
+  bullet it came from. The rough extraction does carry the per-modality inventory (72 EEG, 22 MEG,
+  12 iEEG datasets as of February 2022), the participant counts, the archive size and a plug-in
+  download figure. This entry does not belong in this node's roster of inaccessible facts on that
+  basis; the download refusal is real, the consequence claimed for it was not.
 
 ### 7.3 Retrieval failures that are properties of the record
 
@@ -1149,12 +1278,23 @@ the other entries. This node exists so that the coverage table does not have to 
   that "compliance is a floor, not a guarantee", since the two coordinate files are recommended rather
   than required and a fully valid BIDS-EEG dataset can carry no electrode coordinates.
 
-  `channels.tsv` also carries the §5 distinction in machine-readable form: it is where channel type
-  (EEG, EOG, ECG, EMG, MISC) and status live, rather than in a methods paragraph. Two candidate
-  datasets expose their peripheral inventory that way
-  ([tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md),
-  [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md)), and one
-  more in MEG form ([mous-2019](../collection/candidate-datasets/mous-2019/card.md)).
+  **Retracted in Phase 4.** This node previously continued: "`channels.tsv` also carries the §5
+  distinction in machine-readable form: it is where channel type (EEG, EOG, ECG, EMG, MISC) and
+  status live, rather than in a methods paragraph." **None of that is in this source.** The strings
+  "EOG", "ECG", "EMG", "MISC" and "peripheral" do not occur anywhere in the paper, and it never
+  describes a `type` column; what it says `channels.tsv` carries is "information not present in the
+  raw EEG data file such as filter settings and channel status (good/bad)". The `type` field and its
+  modality vocabulary belong to the live BIDS specification, not to this 2019 announcement, and the
+  card was importing them and attributing them here. The claim may well be true of BIDS today — it
+  needs the specification as its source. Until it has one, §5's peripheral-inventory sort is not
+  machine-checkable on this entry's authority.
+
+  What does hold: three candidate datasets are distributed in BIDS and therefore expose per-channel
+  metadata in that form —
+  [tes-eeg-ecg-2021](../collection/candidate-datasets/tes-eeg-ecg-2021/card.md),
+  [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) and
+  [mous-2019](../collection/candidate-datasets/mous-2019/card.md) in MEG form. (The card previously
+  said two in one place and named three in another; resolved to three.)
 
   Two limits the card names that matter for this strand specifically. Neither recommended format
   expresses a derivation scheme as a first-class concept — a bipolar channel appears as a channel
@@ -1176,8 +1316,18 @@ the other entries. This node exists so that the coverage table does not have to 
   adequately describing the timeline of the recording" — which is the standard
   [strum-2018](../collection/candidate-datasets/strum-2018/card.md) already uses, in an extended form
   of HED 1.0, and which the card identifies as "precisely the gap in which a label like 'spoken' versus
-  'written' gets defined inconsistently across datasets". And it is a Swartz Center product, one of the
-  two institutional homes the brief named for a STRUM author copy; STRUM is not in it.
+  'written' gets defined inconsistently across datasets". And it is the entry standing in for one of
+  the two institutional homes the brief named for a STRUM author copy; STRUM is not in it.
+
+  **Two Phase 4 corrections.** The Swartz Center attribution is weaker than "a Swartz Center
+  product": it rests on the author list (Delorme, Makeig), not on the paper, whose only institutional
+  statement about the site itself is that "The NEMAR website (nemar.org), maintained and developed at
+  SDSC, uses the HUBzero web framework"; SCCN appears in the source only as the home of EEGLAB. And
+  the card is no longer without scale numbers (§7.2) — as of February 2022 NEMAR held 72 EEG datasets
+  from 2,664 participants, 22 MEG datasets from 365, and 12 iEEG datasets from 202, over an
+  OpenNeuro archive it describes as "more than 644 open neuroimaging datasets". Seventy-two EEG
+  datasets is a small denominator, and it strengthens rather than softens what §6.4 concludes about
+  the multi-person sweep: there was little in the registry to find.
 
 ### 8.3 The synchronization framework
 
@@ -1210,6 +1360,25 @@ position, that the citation established only that LSL's authors cite STRUM and t
 **That defect was filed by this document and fixed in the same phase**: the card now quotes the STRUM
 methods directly and records the relationship as confirmed. Retained here as the record of a
 resolved disagreement, not a live one.
+
+The Phase 4 audit strengthened it from the other end as well.
+[lsl-2024](../collection/candidate-datasets/lsl-2024/card.md)'s own conclusion asserts the recording
+use rather than merely citing the paper: "In one multiperson, multiple touchscreen simulation [Kothe
+et al., 2018], we successfully used LSL to record from over 40 LSL data streams in recording sessions
+lasting multiple hours." So the link holds from both sources independently, and this document's
+earlier framing — that the citation "on its own would establish only that LSL's authors cite STRUM" —
+understated it.
+
+**A new kind-1 disagreement opened by the same footnote: STRUM's per-participant channel count, 267
+or 269.** [lsl-2024](../collection/candidate-datasets/lsl-2024/card.md)'s footnote describes "Two
+concurrent subjects, each with instruments including a 267-channel BioSemi, microphone, force plate,
+eye-tracking, three cameras, motion capture, and event marker streams", while
+[strum-2018](../collection/candidate-datasets/strum-2018/card.md) gives 206 EEG plus 43 EMG, 2 ECG,
+2 EOG and 16 respiration, which totals 269. Both cards record both readings and neither picks. The
+gap of two is the size of the ECG or the EOG pair, so it is not obviously a rounding, and §4.2 and
+§5.2 carry 269 from the primary source with this discrepancy noted rather than resolved. Note that
+STRUM's own channel count is separately self-contradictory at 206 against 205 (§9.2), so the two
+sources disagree on a figure one of them cannot state consistently.
 
 **Simanova's headline accuracy — 0.79 or 0.89, and the strand's own index takes the higher one.**
 [simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)
@@ -1248,18 +1417,33 @@ should be filed.
 
 The two cards are not asserting different facts; one flags an internal inconsistency in the source and
 the other does not, and the one that does not is the one this strand's §4.4 and §8.1 arguments rest
-on. The same pair diverges twice more. On formats:
-[eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md) says the specification "names
-only two recommended official data formats" (EDF and BrainVision), while
-[datasets-benchmarks/eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) records four
+on.
+
+**The formats divergence recorded here is now resolved, and the resolution mattered.** This document
+previously filed a second defect: that
+[eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md) said the specification "names
+only two recommended official data formats" (EDF and BrainVision) while
+[datasets-benchmarks/eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) recorded four
 permitted formats — the two official plus "unofficial but allowed" EEGLAB `.set`/`.fdt` and Biosemi
-`.bdf` — and flags "'Only two' official formats, then four are permitted" as a source inconsistency.
-That difference is load-bearing in this strand specifically, since
+`.bdf`. The Phase 4 audit fixed the `candidate-datasets` card, which now quotes the paper's own
+allowance of the two unofficial formats; the two cards agree, and only the `datasets-benchmarks`
+card additionally flags "'only two' then four" as a source inconsistency. The reason this was
+load-bearing in this strand and not merely tidy: reading only the `candidate-datasets` card would
+have led a screener to conclude that
 [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md) and
-[livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) distribute `.set` and
-[strum-2018](../collection/candidate-datasets/strum-2018/card.md) is BioSemi-acquired. On
-`events.tsv`: the `datasets-benchmarks` card lists it among the required files in the `eeg/`
-directory; the `candidate-datasets` card describes what it does without stating a requirement level.
+[livewire-2024](../collection/candidate-datasets/livewire-2024/card.md), which distribute `.set`, and
+BioSemi-acquired [strum-2018](../collection/candidate-datasets/strum-2018/card.md) could not be
+BIDS-compliant. They can.
+
+The pair still diverges on `events.tsv`: the `datasets-benchmarks` card lists it among the required
+files in the `eeg/` directory; the `candidate-datasets` card describes what it does without stating a
+requirement level.
+
+**And a third divergence closed in the opposite direction, by retraction rather than agreement.** The
+`channels.tsv` channel-type claim that §8.1 rested on is not in this paper at all, and the
+`candidate-datasets` card has withdrawn it. See §8.1; the consequence for this register is that the
+two cards no longer differ on what `channels.tsv` carries, because the stronger of the two readings
+was unsupported.
 
 **OpenNeuro: rounded figures against exact ones, and one card flags the source's internal gap while
 the other does not.**
@@ -1305,13 +1489,25 @@ The disagreement is in the literature, not in our corpus. Seven of the 19 entrie
   and the card notes the `.bib` entry still carried the dblp order and was corrected. Separately, the
   reference list is 21 works in OpenAlex against 24 in the printed bibliography, with three years
   disagreeing between the indexes and the printed list.
-- [deap-2012](../collection/candidate-datasets/deap-2012/card.md) — two enumerations of the peripheral
-  channels that disagree about whether ECG is present. One lists "electrocardiogram" among the
-  recorded signals; the sensor-placement figure and channel inventory list a plethysmograph for blood
-  volume and no cardiac electrode. The card applies the standing rule preferring figure and count over
-  body prose and therefore "does not assert that DEAP carries ECG", and names why this is not
-  pedantic: "blood volume pulse and ECG support different heart-rate-variability measures, and the
-  third comparison would be built on whichever one is actually there". Separately, "thirteen
+- [deap-2012](../collection/candidate-datasets/deap-2012/card.md) — **four** passages that disagree
+  about whether ECG is present, splitting two-to-two, and the card now records both readings and
+  picks neither. *For*: Section 6.1's enumeration lists "electrocardiogram" among the recorded
+  peripheral signals, and the preprocessing description refers to the shipped channels — "The trend
+  of the ECG and GSR signals was removed by subtracting the temporal low frequency drift." *Against*:
+  the Fig. 3 sensor-placement caption enumerates four EOG, four EMG, GSR, blood volume pressure,
+  temperature and respiration with no cardiac electrode, and Table 5's peripheral feature table has
+  no ECG row, its heart-rate and HRV features sitting under **blood volume pressure**.
+
+  **Corrected in Phase 4.** This entry previously read that two passages disagreed and that "the card
+  applies the standing rule preferring figure and count over body prose and therefore 'does not
+  assert that DEAP carries ECG'". Both halves were wrong: there are four passages, they split evenly,
+  and applying the figure-over-prose rule to an even split is a coin-flip dressed as a rule. The
+  question is open. Why this is not pedantic is unchanged: "blood volume pulse and ECG support
+  different heart-rate-variability measures, and the third comparison would be built on whichever one
+  is actually there" — and the object that would settle it, the distributed channel list, is
+  inaccessible rather than unreported (§7.2), so re-retrieval is worthwhile. Note also that the DEAP
+  card's `modalities` field omits `ecg`; that records the unresolved state and is not a finding of
+  absence. Separately, "thirteen
   peripheral physiological signals" does not reconcile with the eight signal types enumerated; the
   card carries the paper's figure and flags that it could not be reconciled (four EOG plus four EMG
   plus GSR, respiration, plethysmograph and temperature is twelve).
@@ -1320,10 +1516,17 @@ The disagreement is in the literature, not in our corpus. Seven of the 19 entrie
   arXiv preprint used for extraction is from 2017. The card uses 2021 and the `.bib` entry records the
   discrepancy.
 - [simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md)
-  — the transfer-learning table reports significance values with a second value in parentheses
-  (spoken 1.7×10⁻⁵ (0.001), written 0.02 (0.32)) whose meaning is defined in a table footnote the
-  extraction did not preserve legibly. The card quotes them as printed and declines the natural
-  uncorrected/corrected reading rather than asserting it.
+  — **this entry has been replaced in Phase 4.** It previously read that the transfer-learning
+  table's parenthetical significance values (spoken 1.7×10⁻⁵ (0.001), written 0.02 (0.32)) had a
+  meaning "defined in a table footnote the extraction did not preserve legibly", so the
+  uncorrected/corrected reading was declined. The footnote is present and legible four lines below
+  the table — "p-values, and Bonferroni corrected p-values" — so the parenthetical *is* the
+  Bonferroni-corrected value, nothing needed re-retrieving, and this was never a source
+  self-contradiction. What does belong here is a genuine one the audit found: the body text gives the
+  cross-modal transfer means as 0.83 (SD 0.06), 0.66 (SD 0.02) and 0.62 (SD 0.03) against Table 2's
+  0.83 / 0.66 / 0.61 with SDs 0.05 / 0.04 / 0.03 — a disagreement on the written-word mean and on all
+  three standard deviations. The card follows Table 2 and flags the discrepancy; §1.7 carries the
+  Table 2 values, and both are four-subject means (§1.7).
 - [datasets-benchmarks/eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md) — the
   should/may and two/four inconsistencies of §9.1a are *source* self-contradictions; they become a
   corpus defect only because one of our two cards records them and the other does not.
@@ -1357,8 +1560,14 @@ Recorded precisely so they are not promoted into §9.1.
 - **BOA's channel count.** 32 channels per participant as the nominal configuration, 31 for P01 on all
   three dyads because electrode CP6 was removed. A documented per-subject exception, not an
   inconsistency.
-- **DEAP's sampling rate.** 512 Hz as acquired against 128 Hz in the widely distributed preprocessed
-  version. The card states both and identifies which is which.
+- **DEAP's sampling rate.** 512 Hz as acquired against 256 Hz in the paper's own processing, both
+  stated by the source and identified as such. **Corrected in Phase 4**: this bullet previously gave
+  the second rate as "128 Hz in the widely distributed preprocessed version" and treated the pair as
+  a documented two-rates-one-recording case. The string "128 Hz" appears nowhere in DEAP's
+  `source.md`; 256 Hz is the only down-sample the paper states. The 128 Hz figure is plausible for
+  the distributed `.dat` files but is **unverified** in this corpus, its documentation being on a
+  host that was unreachable at retrieval, so it is not a kind-3 non-disagreement — it is an
+  unsourced number carried here with a hedge (§4.3).
 - **STRUM's sampling rate.** Acquired at 2048 Hz, resampled to 512 Hz. Two rates for one recording.
 - **STRUM's session hours.** "About 3.5 hours" per session is reported; "on the order of 98
   session-hours" for 28 pairs is arithmetic the card performs and explicitly marks as "arithmetic
@@ -1382,7 +1591,7 @@ manipulation geometry (§2), an ingestion contract (§4), a peripheral profile (
 | [boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md) | §6.1 three simultaneous participants | §1.5, §2.3, §2.4, §2.5, §4.1, §4.2, §4.3, §4.4, §4.5, §5.1, §6.2, §6.3, §7.1, §9.2 |
 | [deap-2012](../collection/candidate-datasets/deap-2012/card.md) | §5.1 peripheral channels as signal | §1.2, §2.2, §4.1, §4.2, §4.3, §4.4, §4.5, §7.1, §7.2, §9.2, §9.3 |
 | [deniz-2019-modality-invariant-semantics](../collection/candidate-datasets/deniz-2019-modality-invariant-semantics/card.md) | §1.8 what the contrast can be about | §3, §7.2 |
-| [eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md) | §8.1 the format specification | §4.4, §4.5, §5, §9.1a |
+| [eeg-bids-2019](../collection/candidate-datasets/eeg-bids-2019/card.md) | §8.1 the format specification | §4.4, §4.5, §9.1a (its §5 appearance was retracted in Phase 4 — see §8.1) |
 | [hinss-2023-passive-bci](../collection/candidate-datasets/hinss-2023-passive-bci/card.md) | §1.6 three label sources on the same trials | §1.1, §1.2, §1.4, §2.2, §2.3, §2.4, §2.5, §4.1, §4.2, §4.3, §4.4, §4.5, §5.1, §7.1, §9.3 |
 | [kothe-2023-nback-nirs](../collection/candidate-datasets/kothe-2023-nback-nirs/card.md) | §1.1 the experimental-parameter label, unvalidated | §2.2 |
 | [livewire-2024](../collection/candidate-datasets/livewire-2024/card.md) | §6.1 two simultaneous participants | §1.5, §2.3, §2.4, §4.1, §4.2, §4.3, §4.4, §4.5, §5.1, §6.2, §6.3, §7.1, §9.1a |
@@ -1390,7 +1599,7 @@ manipulation geometry (§2), an ingestion contract (§4), a peripheral profile (
 | [mous-2019](../collection/candidate-datasets/mous-2019/card.md) | §2.1 between-subjects manipulation | §1.1, §3, §4.1, §4.2, §4.3, §4.5, §5.1, §7.1, §8.1 |
 | [nemar-2022](../collection/candidate-datasets/nemar-2022/card.md) | §8.2 the registries | §6.4, §7.2 |
 | [openneuro-2021](../collection/candidate-datasets/openneuro-2021/card.md) | §8.2 the registries | §6.4, §7.1, §9.1a, §9.3 |
-| [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md) | §1.8 does a decode establish a representation | §3 |
+| [ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md) | §1.8 does a decode establish a representation — a constraint on interpretation, **not** a runnable diagnostic (Phase 4) | §3 |
 | [simanova-2010-eeg-object-categories](../collection/candidate-datasets/simanova-2010-eeg-object-categories/card.md) | §1.7 the one demonstrated failure | §2.2, §2.5, §3, §4.1, §4.2, §4.3, §5.4, §9.1, §9.2 |
 | [simanova-2012-modality-independent](../collection/candidate-datasets/simanova-2012-modality-independent/card.md) | §1.8 the test that isolates what survives | §2.2, §3, §7.2 |
 | [sleep-edfx](../collection/candidate-datasets/sleep-edfx/card.md) | §4.1 bipolar derivation | §1.3, §1.9, §2.2, §2.3, §2.5, §4.2, §4.3, §4.5, §5.1, §5.3, §7.1, §9.1a, §9.3 |

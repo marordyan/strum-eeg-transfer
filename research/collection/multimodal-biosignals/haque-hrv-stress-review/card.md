@@ -90,28 +90,56 @@ conclusions.
   review noting rule-based and fuzzy approaches are rare but attractive for interpretability.
 - **Structure**: sensing technologies, then multimodal preprocessing, then prediction models, then
   a features analysis, then challenges and mitigations.
-- **Per-study accuracy figures are not quoted on this card.** The review's value is in its large
-  landscape summary tables, and those are exactly what the two-column extraction destroys: the
-  tables collapse into unusable pipe fragments (see `meta.json.notes`). Quoting a number from the
-  extraction would risk attaching a value to the wrong study.
+- **Study window**: the 43 reviewed articles were "published between 2016 and 2021", selected after
+  eliminating 56 full-text candidates that were not stress-prediction studies using both HRV and AI.
+- **Per-study accuracy figures are available and are quoted below.** Corrected in the Phase 4
+  audit: an earlier version of this card said the landscape tables "collapse into unusable pipe
+  fragments" and refused to quote any number. The current `source.md` renders Tables 10-14 as
+  well-formed markdown with reference number, models, dataset, evaluation metric and performance in
+  separate columns — for example `|[88]|SVM and KNN|SWELL-KW|Acc|Acc of 0.9275|` and
+  `|[90]|NB, J48, RF and bagging|Private/8 participants|Acc|prediction Acc = 0.857|`. The extraction
+  was regenerated with pymupdf4llm (see `meta.json.notes`); the card's claim of loss described the
+  superseded markitdown conversion.
+- **Representative shallow-ML results (Table 11)**: [88] SVM/KNN on SWELL-KW, accuracy 0.9275;
+  [89] SVM/KNN/NB/LR on a private 35-participant set, accuracy 0.755, AUC 0.74; [90] NB/J48/RF/
+  bagging, 8 participants, accuracy 0.857; [75] KNN/SVM/DT/NB, 34 participants, accuracy 0.991;
+  [91] SVM, 34 students, accuracy 1.0 (two-level), 0.976 (three-level), 0.962 (four-level);
+  [92] SVM, 50 participants, AUC 0.994; [94] RF/SVM, 24 participants, accuracy 0.844; [95] five
+  models, 42 participants, sensitivity 0.78, specificity 0.80, accuracy 0.79; [96] five models,
+  9 older adults, RF accuracy 0.870 and AdaBoost 0.882. Table 12 adds [97] SVM/LR/RF at 80% on HRV
+  features alone against about 77% on HRV plus EDA together — a within-review instance of a
+  peripheral channel added and the accuracy going *down*.
+- **Cohort sizes in the tables are small**: of the rows above, the largest is 50 participants and
+  several are under 10, which is the concrete form of the review's own caution about the evidence
+  base.
+- **Split protocols do appear, but only in the prose**: the tables have no evaluation-protocol
+  column, while the running text records, for example, that [101] "obtains an overall
+  leaveone-participant-out F1-score of 80%". A reader wanting subject-wise numbers has to mine the
+  prose study by study.
+- **The review's own summary of the feature landscape**: "RMSSD, SDNN, pNN50, and AVNN are
+  determined to be the most often utilised HRV features in our tables. ECG, PPG, and GSR are the
+  most deployed sensors for data collect[ion]".
 - 98 citations at retrieval; Cognitive Computation 16(2), 455–481.
 
 ## Open questions / limitations
 
-- No per-study number is recorded here, which limits what this entry can contribute beyond the
-  taxonomy. A downstream reader wanting the engineered-feature bar as a *number* has to open the
-  PDF's tables.
+- The per-study numbers are now on this card, and the immediate lesson is that they are not usable
+  as a single "engineered-feature bar". They span 0.755 to 1.0 accuracy on different constructs,
+  different sensors, different cohort sizes and mostly unstated split protocols. The right reading
+  is a distribution of published accuracies, not a threshold to beat.
 - Pooling ECG-derived and PPG-derived HRV under one label is a validity problem the review does not
   appear to flag in the accessible text. Pulse-interval variability includes pulse-transit-time
   variation that R-R interval variability does not.
 - "Stress" across 43 studies spans acute laboratory stressors, driving, occupational monitoring and
   clinical anxiety. Aggregate statements about which features work best are averaging over
   constructs that need not share a physiological signature.
-- Reviews of this kind rarely report split protocols per study, and this one's tables record model,
-  preprocessing, sensors and features but not, in the visible rows, whether evaluation was
-  subject-wise. Given how strongly HRV indices are trait-like, that omission is consequential.
+- The summary tables have no evaluation-protocol column: Tables 3-9 record model, preprocessing,
+  sensors and features, and Tables 10-14 record model, dataset, metric and performance. Whether an
+  evaluation was subject-wise appears only sporadically in the prose. Given how strongly HRV indices
+  are trait-like, an accuracy of 0.991 on 34 participants with no stated protocol carries very
+  little.
 - Publication bias is not addressed in the accessible text: a table of 43 reported accuracies is a
-  table of published accuracies.
+  table of published accuracies, and the presence of a 1.0 in that table is the usual symptom.
 - The review predates the peripheral-foundation-model literature (`papagei-2024`,
   `mckeen-2025-ecg-fm`) and therefore cannot say whether learned representations beat these
   engineered features. That head-to-head comparison is missing from this strand entirely.

@@ -77,8 +77,10 @@ the coordinate fed to the NeRF encoding for a channel such as Fp1–F7 is unspec
 
 - **Pretraining corpus and total hours**: TUEG (14,987 subjects, 21,787.32 hours, 20 or 22 channels,
   bipolar) plus the Siena Scalp EEG Database (14 subjects, 141.0 hours, 29 channels, unipolar) —
-  21,928.32 hours in total, from Table 11. The abstract and introduction both round this to "over
-  21,000 hours" while Section 4.1 says "over 21,900 hours"; the table is the value carded. All
+  21,928.32 hours in total. Precision note added in the Phase 4 audit: Table 11 lists the two
+  per-dataset figures but states no total, so 21,928.32 is this card's sum of them, not a value the
+  paper prints. The abstract and introduction both round to "over 21,000 hours" while Section 4.1
+  says "over 21,900 hours (see Table 11)"; the summed table figure is the value carded. All
   subjects and recordings from TUAB, TUAR, TUSL and SEED-V were excluded from pretraining.
 - **Parameter count**: Base 7M, Large 43M, Huge 311.4M. The three differ in transformer depth
   (8 / 10 / 24), hidden size (256 / 576 / 1024), number of queries (4 / 6 / 8) and query size
@@ -141,7 +143,10 @@ the coordinate fed to the NeRF encoding for a channel such as Fp1–F7 is unspec
 - Scaling is inconsistent. Base to Huge is 44 times the parameters for 0.94 balanced-accuracy points
   on TUAB and 1.9 AUROC points on TUAR, and on SEED-V the Large model beats the Huge one on all
   three metrics. The paper reports the SEED-V case as "positive scaling from Base to Large" without
-  noting that Huge reverses it.
+  noting that Huge reverses it. Related, and worth knowing before quoting the abstract: its headline
+  pair — "balanced accuracies of 81.57% on TUAB and 39.18% on SEED-V" — takes the TUAB figure from
+  LUNA-Huge and the SEED-V figure from LUNA-Large, without saying so. There is no single LUNA
+  variant that achieves both.
 - The pretraining hours figure appears as three different roundings (>21,000 in the abstract and
   introduction, >21,900 in Section 4.1, 21,928.32 summing Table 11) with no discrepancy noted.
 - No dyadic or two-person recording, and no peripheral physiology. The channel-unification module is

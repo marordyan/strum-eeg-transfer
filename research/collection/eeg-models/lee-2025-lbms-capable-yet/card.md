@@ -25,8 +25,15 @@ md_quality: clean
 
 Across five BCI benchmarks under subject-independent cross-validation, the best fine-tuned
 foundation model averages 0.745 accuracy against EEGNet's 0.731 — a 1.4-point gain bought with
-2,394 versus 5.85 million to 78.5 million parameters — and with the backbone frozen the same
-models fall 8 to 10 points *below* the small supervised baselines.
+717,958 trainable parameters against EEGNet's 2,394, roughly 300× — and with the backbone frozen
+the same models fall 8 to 10 points *below* the small supervised baselines.
+**Corrected during the Phase 4 audit:** an earlier version of this line priced the 1.4-point gain
+at "2,394 versus 5.85 million to 78.5 million parameters". That range is LaBraM (5,854,288) and
+NeuroGPT full model (78,536,146), and neither is the model that scores 0.745. Table 1's best mean
+belongs to NeuroGPT (encoder), at 717,958 trainable parameters — two orders of magnitude smaller
+than the figure the card was quoting. The two biggest models score *below* it (0.742 and 0.736), so
+the correct reading is that the gain costs ~300× EEGNet rather than ~33,000×, and that within this
+comparison more parameters did not buy more accuracy.
 
 ## Summary
 
@@ -78,7 +85,14 @@ advantage over EEG-Inception is statistically significant on exactly one of five
   spatial embeddings (channel position within a global list of known electrodes) supplied as
   input — and, critically, "only data from electrodes which were present in the global list
   provided were used". For NeuroGPT: 250 Hz, band-pass 0.05–100 Hz, notch at 50, 60 and 100 Hz
-  and harmonics.
+  and harmonics. NeuroGPT's channel handling was missing from an earlier version of this bullet and
+  is the more interesting of the two, because it is an explicit montage-repair procedure rather than
+  a drop: "NeuroGPT's input data need to include a specific set of channels in a fixed order.
+  Therefore, for each benchmark dataset, we only use data from electrodes that are present in the
+  pretraining data. For any expected channels which are not included in the benchmark data, the
+  nearest available electrode's data is used (if the location is within a few centimeters),
+  otherwise the channel data are set to zero." Common average re-referencing was applied to all
+  downstream datasets, for all models.
 - **Most informative transfer number, with baseline**: mean accuracy across the five tasks —
   NeuroGPT encoder-only 0.745, LaBraM 0.742, NeuroGPT full model 0.736, against EEG-Inception
   0.733 (22,366 parameters) and EEGNet 0.731 (2,394 parameters). The best foundation model beats

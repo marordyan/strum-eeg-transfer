@@ -171,3 +171,41 @@ quotation becomes a claim about a file that no longer says it.
 `tools/validate_corpus.py` now fails on any unresolvable link from `research/synthesis/`, which
 catches renames and removals. It does **not** catch a quotation that no longer matches its source.
 After correcting any card, grep the synthesis directory for the entry's slug and re-read every hit.
+
+## Reviewing for correctness and attacking for refutation find different things
+
+The strongest evidence this review produced about its own method came from Phase 4, where the gap
+analysis was written and then handed to a second agent whose only instruction was to break it.
+
+Before that pass, the corpus had been through collection with a pilot, four strand ontologies, a
+cross-strand map, a scope diagram, and two full pull-request reviews. Every one of those layers read
+the STRUM card. None noticed that its extraction stopped at Section IV, so the dataset paper's own
+model comparison, its significance tests, and its authors' warning that the best models depend on eye
+activity were invisible to the entire review. Four conclusions rested on the omission, including a
+headline claim repeated to the user several times.
+
+The refutation pass found it in one run. It also retracted four of eleven gaps, reversed both
+headline arguments, and located three cards that contradicted their own sources.
+
+The difference is in the question. A reviewer asks "is this well-supported?", which is answered by
+checking that each claim has a citation and that the citation says what the text says. An attacker
+asks "can I break this?", which sends them looking for the counterexample the author did not cite,
+the source section the author did not read, and the step in the argument that does not follow. Those
+searches go to different places. A well-cited claim built on an incomplete reading passes the first
+test and fails the second.
+
+So, as standing practice for any phase that produces a claim someone will act on:
+
+- **Write and attack as separate jobs, by separate agents.** An author checking their own conclusions
+  is grading their own homework, and will re-read the passages that supported the claim rather than
+  the ones that might undermine it.
+- **Instruct the attacker to default to refuted.** A claim survives only if an attempt to break it
+  failed. "I could not find a counterexample" is a result; "this looks well-supported" is not.
+- **Name the claims that matter most and say why**, so the attack is spent on the load-bearing ones
+  rather than spread evenly.
+- **Attack the attacker.** The refutation here contained four errors of its own, one of which
+  attributed an inference to a paper that does not make it. Adversarial output is not authoritative
+  merely because it is adversarial, and the revision pass should verify it the same way.
+- **When a claim is refuted, keep it with what refuted it.** A retracted finding is evidence about the
+  review's own error rate, and deleting it hides the one measurement of reliability the process
+  produces.

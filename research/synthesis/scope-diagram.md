@@ -250,21 +250,63 @@ harder, and most of these would be.
 ### 3.1 Sources that could not be read
 
 Each strand carries a node for this, because the practice brief requires the
-inaccessible-versus-unreported distinction to survive into synthesis. Counts and locations:
+inaccessible-versus-unreported distinction to survive into synthesis.
 
-| strand | entries with a decisive fact reported-but-unread | where the register lives |
-|---|---|---|
-| `multimodal-biosignals` | 18 listed, out of 25 entries; 19 of 25 have at least one fact in one column or the other | [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §9.4, §1.4 |
-| `datasets-benchmarks` | 13 entries in 12 bullets, out of 18 | [datasets-benchmarks-ontology](./datasets-benchmarks-ontology.md) §7 |
-| `candidate-datasets` | two senses: 3 abstract-only, plus the read-in-part and not-redistributable cases | [candidate-datasets-ontology](./candidate-datasets-ontology.md) §7.2 |
-| `eeg-models` | 1 | [eeg-models-ontology](./eeg-models-ontology.md) §5.3 |
+**This register was recomputed card by card after the 2026-08-01 corpus audit, and it had to be.**
+The audit's largest single class of finding was cards asserting *in the present tense* that a table
+"did not survive" extraction when the extraction had since been regenerated — false absence claims of
+exactly the kind this register collects. Recomputing therefore moves the counts in both directions at
+once: entries leave because the fact was readable all along, and entries arrive because the audit
+found real losses nobody had recorded.
 
-The four registers already name every affected entry, so they are not re-enumerated here. What
-belongs to a boundary document is the shape: the strand whose centre of gravity is the ablation arm
-(`multimodal-biosignals`, where category 3 asks for EEG-only, physiology-only and combined numbers
-on one split) is also the strand whose sources were least readable, with four entries — §1.4 of its
-ontology — where the paper *computed* the comparison and the number did not reach the corpus. None
-of those four is a paper that declined to run the arm. A Phase 4 reader counting missing ablation
+Counts below apply one criterion consistently: **the card asserts that a specific decisive fact exists
+in the source, its figure, table, supplement, linked page or dataset host, and says it was not read.**
+Audit-reversed claims are excluded.
+
+| strand | entries with a decisive fact reported-but-unread | pre-audit figure | where the register lives |
+|---|---|---|---|
+| `multimodal-biosignals` | **17 of 25** | 18 listed of 25 | [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §9.4, §1.4 |
+| `datasets-benchmarks` | **10 of 18** | 13 entries in 12 bullets, of 18 | [datasets-benchmarks-ontology](./datasets-benchmarks-ontology.md) §7 |
+| `candidate-datasets` | **6 of 19** | two senses: 3 abstract-only, plus read-in-part and not-redistributable | [candidate-datasets-ontology](./candidate-datasets-ontology.md) §7.2 |
+| `eeg-models` | **7 of 22** | 1 | [eeg-models-ontology](./eeg-models-ontology.md) §5.3 |
+
+Three things about that table a Phase 4 reader needs.
+
+**The `eeg-models` row moved for two different reasons and only one of them is the audit.** Two
+entries are genuinely new: [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md),
+whose four numbered tables came through as captions with empty bodies and whose bodies are not in the
+PDF's text layer either, and
+[alexander-2019-cortical-waves](../collection/eeg-models/alexander-2019-cortical-waves/card.md),
+whose mixed-model effect sizes are in an S1 Table the corpus does not archive. The other five —
+`adabrain-bench-2025`, `bendr-2021`, `brainwave`, `eegpt-2024`, `sirca-2026-peft-motor-imagery` —
+predate the audit and were not counted because the ontology's §5.3 applies a narrower criterion,
+counting only corpus-access failures and not values the authors chose to put in a figure rather than
+a table. Both criteria are defensible; the row is stated here under the wider one, and the ontology
+under the narrower, and the two should not be added together.
+
+**The three strands that fell, fell because of the audit.** `multimodal-biosignals` loses
+`ahmad-2020-cognitive-load-framework` (both results tables are intact), `haque-hrv-stress-review`
+(Tables 10–14 render as well-formed markdown), `mostert-2018-eye-movement-confounds` (the subjects
+paragraph is intact and the residual ambiguity is the paper's) and
+`ding-2025-cross-attention-fusion` (the split protocol is stated twice and legibly), and gains
+`angkan-2024-invehicle-cognitive-load`, whose label distribution turns out to be figure-only rather
+than unstated. `datasets-benchmarks` loses `omnieeg-bench`, whose Supplementary Tables 2, 5, 6 and 7
+are all present, and gains
+[varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md),
+whose Table 1 body is absent.
+[bci-competition-iv-2a](../collection/datasets-benchmarks/bci-competition-iv-2a/card.md) stays but
+for a worse reason than before: the 2026-08-01 extraction regeneration silently dropped the official
+Brunner data-set description that had been appended to its `source.md`, which is a **regression in
+the record** rather than a standing retrieval limit, and it is the only one of its kind in the corpus.
+
+**The one shape-claim in this section survives intact.** The strand whose centre of gravity is the
+ablation arm (`multimodal-biosignals`, where category 3 asks for EEG-only, physiology-only and
+combined numbers on one split) is still the strand whose sources were least readable, with four
+entries — §1.4 of its ontology — where the paper *computed* the comparison and the number did not
+reach the corpus. Those four are `zheng-2018-emotionmeter`, `liu-2022-multimodal-robustness`,
+`li-2023-incongruity-fusion` and `ha-wearable-eeg-heg-hrv`, and all four are paywall or
+publisher-barrier cases rather than extraction losses, so the audit did not touch them. None of the
+four is a paper that declined to run the arm. A Phase 4 reader counting missing ablation
 arms must not count those four as evidence about the literature.
 
 The single most consequential inaccessible item named anywhere is
@@ -280,7 +322,12 @@ indexes:
 - `eecs.qmul.ac.uk`, host of both the DEAP and AMIGOS project pages, returned HTTP 503 throughout
   retrieval over both HTTP and HTTPS, so neither end-user licence text nor DEAP's distributed
   channel list could be read. DEAP's peripheral channel enumeration is contradictory *in the paper*
-  and the object that would resolve it is the unreadable one.
+  and the object that would resolve it is the unreadable one. The 2026-08-01 audit made this bullet
+  carry more weight rather than less: the contradiction runs across **four** passages, two each way,
+  where the card had described two and then resolved against ECG, and it now picks neither reading.
+  The same host outage is why the widely repeated 128 Hz rate for DEAP's preprocessed release is
+  marked unverified — the paper's only down-sampling rate is 256 Hz and the string "128 Hz" does not
+  occur in it.
 - IEEE Xplore blocks automated retrieval. This is why
   [strum-2018](../collection/candidate-datasets/strum-2018/card.md) — the project's own target
   dataset — was carded from a copy obtained through institutional access on 2026-08-01, cached
@@ -410,7 +457,13 @@ Three things about the window that a Phase 4 reader needs:
   Both are category-3 label-validity entries and both are load-bearing — the 2010 entry is the
   exemplar-versus-category result the science map's §2 uses at its finest grain. The crossing is not
   flagged on either card or in the strand index; it is recorded here so the window as stated and the
-  window as applied are not confused. See also §7.3.
+  window as applied are not confused. See also §7.3. One qualification the Phase 4 audit added to the
+  2010 entry, since a boundary reader weighing whether the crossing was worth it should have it: the
+  exemplar-versus-category result is a genuine twenty-subject finding, but the cross-modal transfer
+  figures on the same card (pictures 0.83, spoken 0.66, written 0.61) are means over "a subset of
+  four subjects that showed high classification accuracies in all the modalities", and the importance
+  maps are averaged over the five best subjects per modality. The part of that entry the window was
+  crossed for is intact; a different part of it is a best-case.
 
 ---
 
@@ -441,6 +494,20 @@ forecloses it.
   enumerates four distinct mechanisms — copied baselines, single-sourced descriptions, quoted
   comparators, and same-paper card divergence — by which the corpus contains the same measurement
   several times. Counting cards is not counting studies.
+- **Some of its numbers are marked unverified, and the mark does not travel with the number.** The
+  Phase 4 audit added a fifth class to that §11 list: values carded as sourced that turn out not to
+  be checkable against the archived source, kept rather than deleted so they are neither propagated
+  silently nor lost. Four instances —
+  [varoquaux-2018-cross-validation-failure](../collection/datasets-benchmarks/varoquaux-2018-cross-validation-failure/card.md)'s
+  confidence-bound table at n = 30, 300 and 1000;
+  [eegconformer-2023](../collection/eeg-models/eegconformer-2023/card.md)'s thirteen accuracy values,
+  where re-extraction does not help because the table bodies are not in the PDF's text layer;
+  [physionet-mi](../collection/datasets-benchmarks/physionet-mi/card.md)'s routinely-excluded
+  anomalous subjects, which no source read here states; and
+  [deap-2012](../collection/candidate-datasets/deap-2012/card.md)'s 128 Hz preprocessed rate. Anything
+  downstream that treats one of those as settled must carry the same mark. This is not a scope
+  boundary and it is recorded here because a reader using §6's three checks would otherwise find no
+  home for it.
 - **It is not a neutral sample of the field.** The seed sets were supplied by the user and are
   required entries; discovery expanded outward from them along the citation graph. Eight seed
   entries arrived without a resolvable identifier — one in strand A, six in strand B, one in
@@ -467,6 +534,12 @@ For any absence Phase 4 is about to name, three checks, in order:
 
 An absence in none of the three has not been checked against this document.
 
+A fourth check applies to *presences* rather than absences, and was added after the 2026-08-01 audit:
+**before Phase 4 rests an argument on a number, check whether the card marks it unverified or records
+two readings and adopts neither.** §5 lists the four unverified values;
+[science-map](./science-map.md) §11 lists both classes together. A marked value used as an unmarked
+one is the same error as an unchecked absence, running the other way.
+
 ---
 
 ## 7. Exclusions the corpus does not match, filed as defects
@@ -477,18 +550,24 @@ Recorded because an exclusion that was not honoured is a defect worth filing, an
 reader comparing the briefs against the corpus will otherwise find these unexplained. Nothing here
 is a judgment about whether the exclusion should have been drawn where it was.
 
-### 7.1 Camera-based physiology is excluded by strand B and is present in six of its entries
+### 7.1 Camera-based physiology is excluded by strand B and is present in seven of its entries
 
 [strand-multimodal-biosignals](../../_briefs/strand-multimodal-biosignals.md) excludes "camera-based
-or contactless physiology estimation" with no stated exception at the time this document was written. Six entries carry a signal that is
-video eye tracking rather than electrooculography, and every one of the six states the substitution
-on its own card:
+or contactless physiology estimation" with no stated exception at the time this document was written.
+**Seven** entries carry a signal that is video eye tracking rather than electrooculography, and every
+one of the seven states the substitution on its own card. The membership was recomputed after the
+2026-08-01 audit and moved by one in each direction: `hogervorst-2014-workload-comparison` joined it,
+`mostert-2018-eye-movement-confounds` left it (see below), and the net is seven rather than the six
+this list originally enumerated:
 
 - [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   — the entry is *entirely* eye-tracking-derived; "COLET is an eye-tracking dataset", and the paper
   positions eye tracking as an alternative to EEG, ECG and GSR.
 - [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
-  — "the measurement here is video eye tracking, not electrooculography".
+  — **no longer belongs on this list.** Its card formerly said "the measurement here is video eye
+  tracking, not electrooculography"; the source states that vertical and horizontal electrooculogram
+  were obtained alongside an Eyelink 1000, both at 1200 Hz, and the card was corrected in Phase 4.
+  The entry carries both instruments; what the paper does not do is compare decoders built from them.
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
   SMI eye tracker, "so the modality is gaze and pupil behaviour rather than" EOG.
 - [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)
@@ -496,18 +575,28 @@ on its own card:
 - [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   — "Gaze is recorded with an eye tracker, not electrooculography."
 - [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
-  — eye-tracking features alongside EEG.
+  — eye-tracking features from an SMI tracker alongside EEG, on SEED-IV.
+- [liu-2022-multimodal-robustness](../collection/multimodal-biosignals/liu-2022-multimodal-robustness/card.md)
+  — "SEED and SEED-IV/V pair EEG with eye tracking", and the card lists `eog` on that basis.
+- [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
+  — **added by the Phase 4 audit.** Its pupil-size and blink measures come from "a **Tobii T60
+  eye-tracker monitor**, not from electrooculography electrodes; the card tags the channel `eog` per
+  the strand's controlled vocabulary, as `ahmad-2020-cognitive-load-framework` does, but the
+  measurement is video eye tracking". The card adds the reason this matters beyond the register:
+  its eye channel scores 0.75 on the 2-back-versus-0-back contrast, second only to EEG's 0.86, and
+  that result had been available to be carried into an EOG argument it does not support.
 
 Two facts sit either side of this. The brief's own seed material introduced
 `wibirama-cognitive-load-eye-movement` and instructed the collector to "record which indices carry
 the classification, whether they were derived from eye tracking or from electrooculography", so the
 brief anticipated eye tracking in the corpus while its out-of-scope section excluded camera-based
-measurement. And [science-map](./science-map.md) records the
-consequence at tag level: the strand's controlled `eog` tag covers both instruments, eight cards
+measurement. And [science-map](./science-map.md) §13 records the
+consequence at tag level: the strand's controlled `eog` tag covers both instruments, seven cards
 record the substitution, and "three levels of specificity, one tag". The exclusion as written and
 the corpus as built do not agree; the cards are individually honest about it, and the boundary has since been
-restated: the brief now records the exception actually in force, and the count is eight entries
-rather than six.
+restated: the brief now records the exception actually in force. **The count is seven**, recomputed
+against the cards in the Phase 4 pass; an earlier version of this paragraph said eight and its own
+list held six, which is the kind of drift a register exists to prevent.
 
 **Remote photoplethysmography and camera-based respiration** remain excluded with no exception,
 per the amended strand B brief. Vacuously honoured: no entry in the corpus estimates physiology from
@@ -538,11 +627,25 @@ strand index.
 ### 7.4 One strand-internal divergence that a boundary reader will hit
 
 Four identifiers are carded twice by design (§1), and
-[science-map](./science-map.md) §11 records that **all four pairs diverge**, in every case because
-one card flags an ambiguity in the source and the other does not. That is a defect in our records
-rather than a fact about the field, it is already filed there with the entries named, and it is
-repeated here only because the double-carding rule in §1 is what produces it: the partition
+[science-map](./science-map.md) §11 records that **all four pairs diverge** — in three of the four
+because one card flags an ambiguity in the source and the other does not, and in the Sleep-EDF case
+because both flag and then apply opposite conventions to the same non-figure. That is a defect in our
+records rather than a fact about the field, it is already filed there with the entries named, and it
+is repeated here only because the double-carding rule in §1 is what produces it: the partition
 deliberately creates two records of one work, and nothing in the partition obliges them to agree.
+
+**One half of one divergence closed in the Phase 4 audit**, which is worth recording because it shows
+the mechanism is closable rather than structural. The EEG-BIDS pair diverged on two things: the
+requirement level of `electrodes.tsv`, and how many raw formats BIDS permits. The candidate card had
+said the specification "names only two recommended official data formats"; it now records all four —
+EDF and BrainVision as official, EEGLAB `.set`/`.fdt` and BioSemi `.bdf` as "unofficial" but allowed
+— which is what the benchmark card already said. The two cards now agree on formats and diverge only
+on the sidecar requirement level. The same audit removed an unsourced claim from the candidate card
+in the opposite direction: it had described `channels.tsv` as recording channel *type* over an
+EEG / EOG / ECG / EMG / MISC vocabulary, none of which appears in that 2019 announcement paper. That
+vocabulary belongs to the live BIDS specification and the corpus does not hold it — see
+[dataset-hierarchy](./dataset-hierarchy.md) §2.0, where the consequence is that the corpus has no
+machine-readable statement of channel type at all.
 
 ---
 
