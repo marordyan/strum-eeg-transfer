@@ -71,14 +71,17 @@ something about the geographic skew that `reve-2025` flags in its own corpus.
   OpenfMRI, launched June 2017.
 - **Scale at time of writing (9 October 2021)**: 604 datasets, 20,989 individual participants. 574
   datasets (95%) are human; the rest are mouse (17), rat (6), non-human primate (2), dog (1) and
-  juvenile pig (1). Median dataset size 23 subjects, 31 studies over 100 subjects, maximum 928.
+  juvenile pig (1). Median dataset size 23 subjects, 31 studies over 100 subjects, maximum 928 —
+  these three width figures come from the Figure 3 analysis and so are computed over the 502
+  DataLad-accessible datasets, not the 604.
 - **EEG specifically**: 81 scalp electroencephalography datasets and 8 intracranial
   electroencephalography datasets in Table 1, with "more than 60 EEG datasets ... deposited since the
   publication of the BIDS-EEG standard in 2019". For comparison, anatomical magnetic resonance
   imaging 501, functional magnetic resonance imaging 445, diffusion-weighted 53, magnetoencephalography
   23, positron emission tomography 10, arterial spin labeling 3.
 - **Data licence**: Creative Commons Zero public domain dedication by default. "While not legally
-  required, researchers using the data are expected to abide by community norms and cite the data."
+  required, researchers using the data are expected to abide by community norms and cite the data
+  following the guidelines included within each dataset."
 - **Access route**: no authentication. Web download, the OpenNeuro command line tool, DataLad, or
   Amazon S3 directly.
 - **Validation**: mandatory client-side Brain Imaging Data Structure validation before upload.
@@ -105,7 +108,14 @@ something about the geographic skew that `reve-2025` flags in its own corpus.
   data from 20,989 individual participants" against "the 502 OpenNeuro datasets available via
   DataLad as of 10/9/2021", both dated 9 October 2021. The 102-dataset gap is never reconciled. Any
   downstream statement of scale must say which figure it uses; the 604 is the archive total and the
-  502 is the DataLad-accessible subset the paper's own reuse analysis is computed over.
+  502 is the DataLad-accessible subset the paper's *dataset-size* analyses are computed over — the
+  Figure 3 width statistics, whose caption reads "Results are based on metadata derived directly from
+  the 502 OpenNeuro datasets available via DataLad as of 10/9/2021", matching the Materials and
+  methods paragraph headed "Dataset size analyses". *Correction, made during review: an earlier
+  version of this card said the 502 was the base of "the paper's own reuse analysis". It is not. The
+  reuse analysis is a literature search — "Potential reuses were identified by first searching Google
+  Scholar for the term 'OpenNeuro'" — with no dataset-count restriction, and it is what yields the
+  165 publications and 111 datasets.*
 - **Table 1's modality counts sum to 1,124 against 604 total datasets**, and the paper never states
   that a dataset may be counted under more than one modality. The "81 EEG datasets" figure is
   therefore not a count of EEG-only datasets, and using it as one would be a misreading the source

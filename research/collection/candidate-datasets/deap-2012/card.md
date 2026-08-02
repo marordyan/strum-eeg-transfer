@@ -25,8 +25,9 @@ md_quality: rough
 
 DEAP is the reference point for "EEG plus peripheral physiology" in this literature — 32
 participants, 32 research-grade EEG channels at 512 Hz and thirteen simultaneously recorded
-peripheral channels — but the paper's two enumerations of those peripheral channels disagree with
-each other about whether electrocardiography is among them.
+peripheral channels — but the paper is internally inconsistent about whether electrocardiography is
+among them, with two of its own methods passages naming an ECG channel and two enumerating the
+peripheral set without one.
 
 ## Summary
 
@@ -70,15 +71,35 @@ a different label-provenance class from the stimulus-condition labels the projec
 - **Simultaneous participants per recording**: 1.
 - **Channels**: 32 EEG, "placed according to the international 10-20 system", plus thirteen
   peripheral physiological channels.
-- **Sampling rate**: 512 Hz for EEG (the widely distributed preprocessed version is downsampled
-  to 128 Hz; the paper describes both the raw rate and the preprocessing).
-- **Peripheral channels present**: the paper gives two enumerations that do not agree. Section 3
-  states "thirteen peripheral physiological signals". The later enumeration lists "GSR,
-  respiration amplitude, skin temperature, electrocardiogram, blood volume by plethysmograph,
-  electromyograms of Zygomaticus and Trapezius muscles, and electrooculogram (EOG)", and the
-  sensor-placement figure caption lists four EOG electrodes and four EMG electrodes plus GSR,
-  plethysmograph, temperature and a respiration belt. Whether a distinct ECG channel exists is
-  therefore not resolvable from the paper alone; see Open questions.
+- **Sampling rate**: **512 Hz at acquisition, down-sampled to 256 Hz** in the paper's own
+  processing. "EEG was recorded at a sampling rate of 512 Hz using 32 active AgCl electrodes
+  (placed according to the international 10-20 system)"; and, of the peripheral set, "All the
+  physiological responses were recorded at a 512Hz sampling rate and later down-sampled to 256Hz
+  to reduce processing time." The EEG analysis pipeline likewise reports the data "average
+  referenced, down-sampled to 256Hz, and high-pass filtered with a 2 Hz cutoff-frequency".
+
+  **Corrected 2026-08-01, Phase 4 audit.** This field previously read "512 Hz for EEG (the widely
+  distributed preprocessed version is downsampled to 128 Hz; the paper describes both the raw rate
+  and the preprocessing)". The paper describes no such thing: **the string "128 Hz" does not occur
+  anywhere in `source.md`**, and the only down-sampling rate the paper gives is 256 Hz, in the two
+  passages quoted above. The 128 Hz figure is *unverified here* — it may well describe the
+  distributed preprocessed `.dat` files, which are documented on the dataset website rather than in
+  the paper, but that page was unreachable at retrieval time (see `meta.json`) and nothing in the
+  archived record supports it. It is retained as an explicitly unverified note rather than deleted,
+  and must not be presented as the paper's own figure in the comparison table.
+- **Peripheral channels present**: uncontested are electrooculography (4 electrodes),
+  electromyography (4 electrodes, zygomaticus major and trapezius), galvanic skin response,
+  respiration, blood volume by plethysmograph, and skin temperature. Section 3 states "Thirteen
+  peripheral physiological signals" were recorded. **Whether a distinct ECG channel is among them
+  is contradicted within the paper and is recorded here unresolved**, with all four passages
+  quoted; see Open questions.
+
+  **Corrected 2026-08-01, Phase 4 audit.** The earlier version described the contradiction as
+  holding between *two* passages and then resolved it against ECG, stating "this card does not
+  assert that DEAP carries ECG". Both parts were wrong. There are four relevant passages, not two,
+  and they split evenly, so the resolution was a coin-flip presented as a rule application. Under
+  the standing rule for self-contradicting sources the card now records both readings and picks
+  neither.
 - **Total hours**: not reported as a total. 40 trials of one minute per participant for 32
   participants, i.e. on the order of 21 hours of trial data plus baselines by arithmetic from the
   reported design.
@@ -99,21 +120,44 @@ a different label-provenance class from the stimulus-condition labels the projec
 - **Derivation scheme**: not stated in the accessible text. The acquisition is a BioSemi
   ActiveTwo, whose native output is referenced to the CMS/DRL driven-right-leg loop and is
   conventionally re-referenced offline, but the paper does not describe the derivation of the
-  distributed data, so it is recorded as unknown rather than assumed from the hardware.
+  distributed data, so it is recorded as unknown rather than assumed from the hardware. The one
+  reference statement the paper does make — the EEG was "average referenced" — describes the
+  authors' *own analysis* pipeline, alongside their down-sampling and 2 Hz high-pass, not the
+  derivation of what is distributed. Noted here so a later reader who finds that line does not read
+  it as settling the distributed data's reference.
 - **Electrode layout**: international 10-20, 32 active AgCl electrodes.
 - **Audio delivery**: stereo speakers at a "relatively loud" level, adjusted per participant for
   comfort — a per-participant stimulus variation that is not logged as a covariate.
 
 ## Open questions / limitations
 
-- **The paper contradicts itself about ECG.** One enumeration includes "electrocardiogram" among
-  the recorded peripheral signals; the sensor-placement figure and the channel inventory list a
-  plethysmograph for blood volume but no cardiac electrode. Under the standing rule the figure and
-  the count are preferred over the body prose, so this card does not assert that DEAP carries ECG.
+- **The paper contradicts itself about ECG, and the contradiction is not resolvable from the paper.**
+  Four passages bear on it, two each way, and the card picks neither.
+
+  *For an ECG channel.* Section 6.1's enumeration: "The following peripheral nervous system signals
+  were recorded: GSR, respiration amplitude, skin temperature, electrocardiogram, blood volume by
+  plethysmograph, electromyograms of Zygomaticus and Trapezius muscles, and electrooculogram
+  (EOG)." And the preprocessing description, which refers to the channels as shipped: "The trend of
+  the ECG and GSR signals was removed by subtracting the temporal low frequency drift. The low
+  frequency drift was computed by smoothing the signals on each ECG and GSR channels with a 256
+  points moving average."
+
+  *Against one.* The Fig. 3 caption, "Placement of peripheral physiological sensors", enumerates
+  "[Four] Electrodes were used to record EOG and 4 for EMG (zygomaticus major and trapezius
+  muscles). In addition, GSR, blood volume pressure (BVP), temperature and respiration were
+  measured" — no cardiac electrode. And Table 5, the peripheral feature table, has rows for skin
+  conductance, blood volume pressure, respiration pattern, skin temperature, and EMG/EOG, with no
+  ECG row; its heart-rate and heart-rate-variability features sit under **blood volume pressure**,
+  i.e. derived from the plethysmograph rather than from a cardiac electrode.
+
   This is not a pedantic distinction for this project: blood volume pulse and ECG support
   different heart-rate-variability measures, and the third comparison would be built on whichever
   one is actually there. Resolving it requires the distributed channel list, and the dataset page
-  was unreachable at retrieval time.
+  was unreachable at retrieval time — so this is a "reported but not accessible" case, and
+  re-retrieval of the channel list would settle it.
+
+  Note on the frontmatter: `modalities` does not list `ecg`. That reflects the unresolved state,
+  not a finding of absence, and should not be read as the card asserting DEAP has no ECG.
 - The "thirteen peripheral physiological signals" figure does not obviously reconcile with the
   eight signal *types* the paper enumerates; it is presumably a per-electrode count (four EOG plus
   four EMG plus GSR, respiration, plethysmograph, temperature is twelve). The card carries the

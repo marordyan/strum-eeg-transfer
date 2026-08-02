@@ -86,8 +86,12 @@ concerns whether a pretrained EEG checkpoint transfers.
   quote.
 - **Sparseness of the waves**: in both recordings and models, fewer than 1 percent of neurons in
   a local patch spike as a wave passes, which the authors contrast with the dense waves of
-  epileptic seizure. Sparse waves "modulate but do not completely overwhelm" the feedforward
-  input.
+  epileptic seizure. Verbatim: "when a wave passes over a local patch of cortex, only a tiny
+  fraction (<1%) of the neurons spike. This profile contrasts with the dense waves that occur, for
+  example, during epileptic seizures. Unlike dense waves, sparse waves propagate across single
+  cortical regions along long-range horizontal fibers, modulating but not completely overwhelming
+  the feedforward input." (An earlier version of this bullet quoted the last clause as "modulate
+  but do not completely overwhelm", which is a re-inflection rather than the source's wording.)
 - **Wave-vs-shuffle control**: the recurrent model that produces short-term predictions loses
   them when its connections are randomly shuffled, and retraining does not restore them. This is
   the article's strongest cited evidence that wave-supporting architecture, not capacity, is what
@@ -119,9 +123,20 @@ concerns whether a pretrained EEG checkpoint transfers.
 - Published as an opinion-format review in Trends in Neurosciences. Every empirical result is
   drawn from cited work, several of which are the authors' own, so the article's selectivity
   cannot be checked from the article itself.
-- No open questions are raised about the analogy's failure modes. The "Outstanding questions"
-  material asks how waves interact with spontaneous activity and across regions, not under what
-  conditions the transformer analogy would be false.
+- No open questions are raised about the analogy's failure modes. **Corrected during the Phase 4
+  audit:** an earlier version described the "Outstanding questions" box as asking "how waves
+  interact with spontaneous activity and across regions". It contains four questions and none is
+  about spontaneous activity; three of the four are explicitly framed in transformer terms, which
+  is the opposite of the earlier characterisation. Verbatim: "In the framework of transformer-like
+  encoding, what would be the 'context length' of a traveling wave, and could multiple cycles of
+  waves implement longer context lengths?"; "How do the properties of traveling waves change in
+  different regions of cortex, or at the whole-brain scale? Could these changes be related to
+  changing 'context length' in terms of transformers?"; "How can recurrent architectures, where
+  nodes have dense interconnections as in the cortex, provide advantages in sequence-to-sequence
+  prediction in transformer-type networks?"; "What role do feedback connections play in shaping
+  traveling waves in cortex, and how could they play a role in these artificial neural network
+  architectures?" The narrower original point survives: all four take the analogy as given and ask
+  how to extend it, and none asks under what conditions it would be false.
 
 ## Citations
 

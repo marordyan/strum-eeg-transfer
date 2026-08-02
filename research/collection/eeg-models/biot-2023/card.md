@@ -89,8 +89,10 @@ dyadic recording session.
   unconstrained; missing channels and missing segments are supported by construction.
 - **Most informative transfer number, with baseline**: on CHB-MIT seizure detection, vanilla BIOT
   trained from scratch reaches 0.6640 ± 0.0037 balanced accuracy against the best supervised
-  baseline, CNN-Transformer, at 0.6389 ± 0.0067 — a 2.5-point margin — while SPaRCNet, the
-  baseline the authors call strongest overall, reaches only 0.5876. Pretraining then adds a
+  baseline, CNN-Transformer, at 0.6389 ± 0.0067 — a 2.5-point margin — while SPaRCNet reaches only
+  0.5876. (The authors' actual wording is narrower than an earlier version of this card implied:
+  "SPaRCNet is a strong model among all the baselines except on the CHB-MIT task", not the
+  strongest overall.) Pretraining then adds a
   further 4.3 points: BIOT pretrained on six EEG datasets reaches 0.7068 ± 0.0457. So the
   architecture is worth about 2.5 points over the best supervised comparator and pretraining is
   worth about 4.3 points on top of the same architecture, which is the separation this strand
@@ -100,13 +102,30 @@ dyadic recording session.
   AUROC (0.8752 versus 0.8679). Adding all six EEG sources gives the best balanced accuracy.
   On the multi-class IIIC Seizure task the same progression moves balanced accuracy only from
   0.5762 (vanilla) to 0.5800 (PREST+SHHS), under 0.4 points.
-- **Missing-data study**: TUEV is perturbed by masking 0 to 5 half-second segments per channel
-  independently, 0 to 4 of 16 channels, or both, with the stated assumption that masking does not
-  alter the label.
-- **Supervised transfer with format change**: models supervised-pretrained on IIIC Seizure or TUEV
-  under five channel/duration formats (8 or 16 channels, 2.5 to 10 seconds) are fine-tuned on
-  CHB-MIT and TUEV with the prediction layer swapped. The authors attribute the benefit to shared
-  seizure-pattern content rather than to format flexibility per se.
+- **Missing-data study**: recordings are perturbed by masking 0 to 5 half-second segments per
+  channel independently, 0 to 4 of 16 channels, or both, with the stated assumption that masking
+  does not alter the label. Figure 3 runs this on TUEV *and* IIIC Seizure, not TUEV alone as an
+  earlier version of this bullet said. Baselines are made compatible by zero-imputing the masked
+  regions. Finding: "'Missing channels' affects the performance more than 'Missing segments',
+  which makes sense as segment masking still preserves information from all channels."
+- **Supervised transfer with format change (corrected during the Phase 4 audit).** An earlier
+  version of this bullet said the models were "supervised-pretrained on IIIC Seizure or TUEV under
+  five channel/duration formats (8 or 16 channels, 2.5 to 10 seconds)" and "fine-tuned on CHB-MIT
+  and TUEV". Three of those four particulars are wrong. Verbatim, Section 3.5: "We pre-train on
+  the training set of CHB-MIT, IIIC Seizure, TUAB and fine-tunes on TUEV (which has 16 channels
+  and 5s duration). All datasets use 200Hz sampling rate. We design three sets of configurations
+  for the pre-trained datasets: Format (i) uses the first 8 channels and 10s duration; Format (ii)
+  uses the full 16 channels but only the first 5s recording; Format (iii) uses full 16 channels and
+  full 10s recording." So: **three** formats, not five; pretraining sources are CHB-MIT, IIIC
+  Seizure and TUAB, not IIIC Seizure or TUEV; durations are 5 s and 10 s, with no 2.5 s condition;
+  fine-tuning in the main text is on TUEV only, with the CHB-MIT version in Appendix B.2. The
+  prediction layer is indeed swapped. What changes: the format sweep is coarser than the card
+  claimed, and the one comparison it licenses is Format (ii) versus Format (iii) — the paper finds
+  that "the configuration of (16 channels, 10 seconds) encodes longer duration and works
+  consistently better" even though Format (ii) matches TUEV's own format, i.e. more pretraining
+  signal beats format alignment. The authors attribute the transfer benefit to shared content:
+  "TUAB and TUEV are both recorded from Temple University and share some common information, while
+  IIIC seizure and TUEV are both related to seizure detection and may share some latent patterns."
 - **Release**: code and pretrained models at https://github.com/ycq091044/BIOT. No licence is
   stated for the released weights in the paper.
 - Compute: eight RTX A6000 GPUs, 512 GB memory. Results in the main tables are the mean and

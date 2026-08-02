@@ -57,10 +57,13 @@ measurement is eye tracking. And the six-electrode above-the-ear montage is a de
 that puts EEG at a disadvantage relative to a full cap, which inflates the apparent value of the
 eye channel in a way that would not carry over to a high-density STRUM recording.
 
-The cross-session number is the more useful one for this project. Within-session 85.11% drops to
-72.39% across sessions on the same subjects — a 12.7-point cost from session change alone, larger
-than most reported fusion gains in this strand. Any gain the project measures should be reported
-against that scale.
+The cross-session number is the more useful one for this project. 85.11% drops to 72.39% across
+sessions on the same subjects — nominally a 12.7-point cost from session change alone, larger than
+most reported fusion gains in this strand. The two figures are not exactly commensurable: the
+abstract calls 85.11% "the best mean accuracy" and 72.39% simply "a mean recognition accuracy …
+across sessions", so the gap mixes a best-case with an average and 12.7 is an upper bound on the
+session cost rather than an estimate of it. Even discounted, it is the right order of magnitude to
+measure a fusion gain against.
 
 ## Notable details
 

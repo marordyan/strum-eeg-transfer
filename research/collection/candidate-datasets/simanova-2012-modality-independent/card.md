@@ -45,10 +45,19 @@ fMRI signal independently of the input modality".
 ## Relevance to the review
 
 This entry carries the design pattern the project needs, in a paper by the same group as
-`simanova-2010-eeg-object-categories` and using the same four-category logic. Where the 2010 EEG
+`simanova-2010-eeg-object-categories`. Where the 2010 EEG
 study found that a within-modality classifier failed to generalise to unseen exemplars, this study
 shows what the positive version of the test looks like: train on one modality, test on another,
 and report only what transfers.
+
+**Corrected 2026-08-01, Phase 4 audit.** The first sentence previously continued "...and using the
+same four-category logic". That is unsupported and, on the closest available evidence, wrong. The
+abstract states no category count at all — its only "4" is the number of *stimulus modalities*
+("a semantic categorization task with 4 stimulus modalities (spoken and written names, photographs,
+and natural sounds)"). And the 2010 study it is being compared to decoded **two** semantic
+categories, animals versus tools, over eight exemplars, with a third non-decoded task category.
+This card's own limitations section already records the category set as unread; the claim
+contradicted its own disclaimer.
 
 For a project planning to label epochs spoken versus written, the implication runs in a specific
 direction. This paper establishes that the *category* signal generalises across presentation

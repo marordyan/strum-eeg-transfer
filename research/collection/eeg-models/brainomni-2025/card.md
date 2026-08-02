@@ -43,9 +43,15 @@ reconstructor the forward solution, and the cross-attention weights a data-depen
 operator in place of a fixed leadfield-derived one. Stage 2 masks 50% of positions in the
 (C′, T) token grid and predicts all four residual-vector-quantisation layers non-autoregressively.
 Pretraining uses 1,997 hours of EEG and 656 hours of MEG from 22 public datasets. On eight EEG,
-two MEG and one joint dataset under 5-fold cross-subject cross-validation, BrainOmni_base reports
-the best balanced accuracy on every task except PhysioNet-MI, and an ablation shows joint EEG-MEG
-pretraining beating either single-modality variant on all four datasets tested.
+two MEG and one joint dataset under 5-fold cross-subject cross-validation, *some* BrainOmni variant
+takes the best balanced accuracy on every task except PhysioNet-MI, and an ablation shows joint
+EEG-MEG pretraining beating either single-modality variant on all four datasets tested.
+**Corrected during the Phase 4 audit:** an earlier version of this sentence credited that clean
+sweep to BrainOmni_base specifically. Tables 2 and 3 do not support that — BrainOmni_tiny beats
+BrainOmni_base on MDD (0.886 against 0.877), MEG-MMI (0.610 against 0.604) and SomatoMotor (0.863
+against 0.832). The paper's own wording is variant-agnostic: "BrainOmni achieves the highest
+performance on all tasks, with a close second-best place on the PhysioNet-MI dataset." Scale is
+therefore not monotonically helpful across this benchmark set, which the paper does not remark on.
 
 ## Relevance to the review
 
@@ -160,9 +166,11 @@ the suite's number is a like-for-like ranking against the other checkpoints in t
   gradiometer, magnetometer), so an ECG, EOG or respiration channel has no representation in the
   current model.
 - The sensor-embedding ablation improving TUEV while degrading every other dataset is reported in
-  Table 6 but described in the text as uniformly harmful ("the exclusion of sensor embedding
-  significantly undermines the downstream performance"). The table is carded here; the prose
-  overstates it.
+  Table 6 but not acknowledged in the text, which reads "the exclusion of sensor embedding
+  significantly undermines the downstream performance, especially on challenging MEG and EMEG
+  datasets". The prose does qualify itself by dataset difficulty, so it is not the flat
+  overstatement an earlier version of this bullet described; what it never does is name the one
+  dataset where removing the sensor embedding helps.
 - Bipolar derivations are not discussed. Every downstream EEG dataset is used in referential form,
   so the question of what position to assign a differential channel — which `reve-2025` answers with
   a midpoint — does not arise in this paper and is unanswered for it.

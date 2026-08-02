@@ -42,7 +42,8 @@ one-second epochs from −300 ms. Within-modality single-trial accuracy reached 
 was "lower though still significant for some subjects" for spoken and written words. The authors
 then ran a leave-one-exemplar-out test — training on some concepts and testing on a concept the
 classifier had never seen — and a cross-modal transfer-learning analysis (pictures 0.83, spoken
-words 0.66, written words 0.61).
+words 0.66, written words 0.61, these three over a hand-picked subset of four high-performing
+subjects rather than the full group).
 
 ## Relevance to the review
 
@@ -71,9 +72,9 @@ the strand brief names.
 
 Third, and useful as a negative result: the cross-modal transfer analysis did not recover
 modality-independent semantics. The authors report that "the important electrophysiological patterns
-for the cross[-modal analysis]" were at posterior occipital sites, and conclude "it is likely that
-picture trials biased the classification algorithm such that mostly data features in occipital sites
-were selected". They offer timing as one explanation — "Auditory stimuli are spread out in time,
+for the cross-modal classification were largely located in occipital cortical sites", and conclude
+"it is likely that picture trials biased the classification algorithm such that mostly data
+features in occipital sites were selected". They offer timing as one explanation — "Auditory stimuli are spread out in time,
 whereas the others are presented instantaneously" — which is itself a structural asymmetry between
 spoken and written stimuli that any spoken-versus-written epoching scheme inherits.
 
@@ -98,7 +99,23 @@ spoken and written stimuli that any spoken-versus-written epoching scheme inheri
   "lower though still significant for some subjects" — for written words significant in only two of
   twenty subjects.
 - **Cross-modal transfer learning** (Table 2): pictures 0.83 (SD 0.05), spoken words 0.66 (SD 0.04),
-  written words 0.61 (SD 0.03).
+  written words 0.61 (SD 0.03). **These are means over four hand-picked subjects, not over the
+  20-subject analysis group.**
+
+  **Corrected 2026-08-01, Phase 4 audit.** These three figures were previously given with no
+  indication of their basis, immediately alongside genuine 20-subject group means (0.79 for
+  pictures, and the within-modality results above), which invited exactly the misreading the card
+  is careful to head off for the 0.89 figure. The source: "For this analysis we selected a subset of
+  four subjects that showed high classification accuracies in all the modalities (subjects nr 4, 5,
+  7, 14)." The same applies to the importance maps this card leans on in "Relevance to the review",
+  which are "averaged over five subjects that showed highest classification performance in each
+  modality (Figure 5)". Neither is a group result, and neither should enter a comparison table as
+  one.
+
+  A source-internal discrepancy, recorded rather than reconciled: the body text gives "0.83 (SD =
+  0.06) for pictures, 0.66 (SD = 0.02) for audio and 0.62 (SD = 0.03) for text", against Table 2's
+  0.83 / 0.66 / 0.61 with SDs 0.05 / 0.04 / 0.03. The card follows Table 2 and flags that the paper
+  disagrees with itself on the written-word mean and on all three standard deviations.
 - **The generalization test and its outcome** — the single most transferable finding: the classifier
   "failed to predict the semantic category of a previously unseen item", and the authors' inference
   is that it separated exemplars rather than categories, "possibly through the use of perceptual
@@ -109,8 +126,8 @@ spoken and written stimuli that any spoken-versus-written epoching scheme inheri
   at the category level.
 - **Repetition caveat raised by the authors**: "in our experiment the stimuli were repeated many
   times, and it has been shown previously that category-related effects reduce with repeated
-  stimuli", which they list as something "to be taken into account in the design of future semantic
-  encoding experiments".
+  stimuli". They add: "These issues should be taken into account in the design of future semantic
+  encoding experiments."
 - **ERP morphology by modality**, useful because it names exactly the components a
   spoken-versus-written classifier would exploit: pictures — P1 at ~110 ms, visual N1 at ~160 ms,
   largest at infero-temporal and occipital sites, followed by broad negativity 280–550 ms; spoken
@@ -135,9 +152,15 @@ spoken and written stimuli that any spoken-versus-written epoching scheme inheri
 - Only Dutch monosyllables, one laboratory, one task. Generalisation of the exemplar-versus-category
   finding to continuous or sentence-level language is untested here.
 - The transfer-learning table reports significance values with a second value in parentheses
-  (spoken words 1.7×10⁻⁵ (0.001), written words 0.02 (0.32)) whose meaning is defined in the table
-  footnote, which the extraction did not preserve legibly. The uncorrected/corrected reading is the
-  natural one but is not asserted here; the numbers are quoted as printed.
+  (spoken words 1.7×10⁻⁵ (0.001), written words 0.02 (0.32)). The parenthetical is the
+  **Bonferroni-corrected** p-value: the Table 2 footnote reads "p-values, and Bonferroni corrected
+  p-values."
+
+  **Corrected 2026-08-01, Phase 4 audit.** This bullet previously said the footnote's meaning was
+  undetermined because "the extraction did not preserve [it] legibly", and declined to assert the
+  uncorrected/corrected reading. The footnote is present and legible in `source.md`, four lines
+  below the table. This was a false absence claim of the kind that wrongly discourages
+  re-retrieval — nothing needed re-retrieving.
 
 ## Citations
 

@@ -101,8 +101,17 @@ read.
 - **No model selection**: the authors state that because they reused published architectures
   unchanged, "no model selection was performed; performing ongoing validation on the test is
   therefore not a source of data leakage" — a deliberate design choice so that the only leakage
-  under study is the one being manipulated. Training ran 70 epochs with no early stopping,
-  RMSProp, batch size 32, learning rate 0.00001.
+  under study is the one being manipulated. **Training settings, corrected during the Phase 4
+  audit:** an earlier version of this bullet gave a single recipe — "70 epochs with no early
+  stopping, RMSProp, batch size 32, learning rate 0.00001". Those are Experiment 2's settings only.
+  The paper reports two. Experiment 1 (Alzheimer's): "Models were trained for 70 epochs without any
+  early stopping or hyperparameter tuning. A batch size of 32, initial learning rate of 0.0001, and
+  the Adam optimizer were used". Experiment 2 (seizure): "Models were trained for 70 epochs with no
+  early stopping. We used the RMSProp optimimzer with a batch size of 32 and a learning rate of
+  0.00001." The optimizer and the learning rate differ by an order of magnitude between the two
+  experiments; only the epoch count and batch size are shared. Nothing in the leakage argument
+  depends on this, but a reader reproducing either experiment from the card would have had the
+  wrong optimizer for one of them.
 - The within-subject result is the more surprising of the two: even when the task is to label
   moments *inside* a subject's own recording, holding out whole subjects still costs 14 points, so
   the leak is not confined to between-subject diagnosis.

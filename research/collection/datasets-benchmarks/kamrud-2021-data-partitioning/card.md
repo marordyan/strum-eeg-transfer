@@ -23,9 +23,9 @@ md_quality: clean
 
 ## TL;DR
 
-Five published cross-participant EEG models are replicated twice each, once with participants
-shuffled across the split as the original papers did and once with participants held out, and the
-error rate rises by between 35 percent and roughly 3,900 percent — on two of the five datasets the
+Cross-participant EEG models are built twice on each of five public datasets, once with participants
+shuffled across the split as the source papers did and once with participants held out, and the
+error rate rises by between 35 percent and roughly 3,900 percent — on one of the five datasets the
 participant-disjoint model is at chance.
 
 ## Summary
@@ -34,17 +34,30 @@ The paper argues that a cross-participant EEG model — one intended to work on 
 seen — is invalidated by any split that puts a participant's data on both sides, because individual
 differences and non-stationarity make the training and test input distributions differ, which is
 covariate shift, which breaks the independent-and-identically-distributed assumption the split
-relies on. It tests this by replicating five published models on five public datasets under two
-partitioning schemes with the data volume held constant: improper, "all participant data were
+relies on. It tests this on five public datasets under two
+partitioning schemes with the data volume held constant. Three of the five replicate a published
+model (Min et al. on driver fatigue, Ni et al. on confused students, Farsi et al. on alcoholism);
+for the other two the authors state there was nothing to replicate — "Since this dataset has not yet
+been used for published research in the area of machine learning, there is no machine learning
+workflow we are attempting to replicate" (PTSD) and "As with the PTSD dataset, we did not have a
+published neural network methodology to replicate for this dataset" (schizophrenia) — so those two
+use the authors' own multilayer perceptron, plus a random-forest classifier on schizophrenia. The
+two schemes are: improper, "all participant data were
 shuffled together and one-twelfth of the data were randomly selected for the test set", and proper,
 "one participant was selected for the test set, and the remaining 11 participants were selected for
 the training set", realized as leave-one-participant-out or leave-N-participants-out cross-validation.
 The rule stated is absolute: "if participant A is used for training, then not even a single
 observation from participant A should be used for validation or testing". Error rates rise on every
-dataset. The paper then shows a mechanism: two transformations that artificially reduce
-inter-participant variability raise proper-protocol accuracy substantially (entropy features from
-0.50 to 0.80, spectral from 0.50 to 0.72 under shift-to-median) while doing nothing under the
-improper protocol, "because the model has seen each participant's input distribution".
+dataset. The paper then shows a mechanism with two transformations that artificially reduce
+inter-participant variability. Only one of them, shift to median, raises proper-protocol accuracy —
+entropy features from 0.50 to 0.80 and spectral from 0.50 to 0.72, per its Table 1 — and it leaves
+the improper numbers untouched at 0.91 and 0.82, because under that protocol "the model has seen
+each participant's input distribution". The other, shifted Heaviside, leaves proper accuracy at
+0.50 and 0.47 and *lowers* the improper figures to 0.72 and 0.66.
+*Correction, made during review: an earlier version of this card attributed the proper-protocol gain
+to both transformations and said both did "nothing under the improper protocol". Table 1 shows the
+gain belongs to shift to median alone, and shifted Heaviside moves the improper numbers by 19 and 16
+points.*
 
 ## Relevance to the review
 
@@ -131,8 +144,9 @@ project's claim is about a fixed cohort rather than about new people.
   than over participants or folds. Under participant-disjoint evaluation the sampling unit is the
   participant, and n is 10 to 122. The paper never says how the intervals were computed. Taking
   them at face value would understate the uncertainty on exactly the comparison the paper is making.
-- **The 3,900 percent figure is attributed to the wrong dataset.** The abstract, discussion and
-  conclusion attribute it to schizophrenia, but 0.197/0.005 ≈ 39× is the PTSD ratio, and the paper's
+- **The 3,900 percent figure is attributed to the wrong dataset.** The Discussion attributes it to
+  schizophrenia — "all the way up to a 3900% increase in error rate in the case of the schizophrenia
+  dataset" — but 0.197/0.005 ≈ 39× is the PTSD ratio, and the paper's
   own section 4.4 calls PTSD "the 2nd largest difference". The schizophrenia MLP ratio is 0.008 →
   0.50, roughly 62×. Following the standing rule, the per-dataset table values are carded above and
   the discrepancy recorded here; the range in the abstract, "between 35% and 3900%", should be
@@ -141,8 +155,9 @@ project's claim is about a fixed cohort rather than about new people.
   Table 3, while the stated interval (0.448, 0.472) is centred on 0.46; driver-fatigue proper
   accuracy is 0.540 in the body and 0.50 in Table 1; PTSD observations per participant are 200 in
   one sentence and 260 three sentences later; alcoholism channels are 64 in the body and 62 in
-  Appendix A.3; confused-students participants are 10 in Table 2 but "all nine participants" in the
-  replication text, against a leave-two-out design that implies 10; the confused-students effect is
+  Appendix A.3; confused-students participants are 10 in Table 2 but "Sessions from all nine
+  participants were merged together" in the passage describing Ni et al.'s protocol, against a
+  leave-two-out design that implies 10; the confused-students effect is
   "over 33%" in the body and 35% in the abstract.
 - **An undiscussed second leakage source.** For confused students the data were "segmented using a
   sliding sequence window of 15 samples in length and slides by 12 samples", i.e. overlapping
@@ -153,9 +168,17 @@ project's claim is about a fixed cohort rather than about new people.
   the improper baselines are reconstructions rather than the published numbers (which are reported
   separately and are higher still).
 - The two variability-reducing transformations are presented as evidence for the covariate-shift
-  mechanism, not as a recommended method; shifted-Heaviside "reduced clustering but did not help",
-  and the paper draws the right conclusion, that reducing inter-participant variability "does not
-  necessarily imply an improvement in cross-participant model accuracy".
+  mechanism, not as a recommended method. Of shifted Heaviside the paper says the reduction in
+  inter-participant variability "did not result in any significant effects on cross-participant
+  model performance", and it draws the right conclusion, that reducing inter-participant variability
+  "does not necessarily imply an improvement in cross-participant model accuracy". *Correction, made
+  during review: an earlier version of this bullet put "reduced clustering but did not help" in
+  quotation marks. That string does not occur in the paper; the substance is right, the quotation
+  was not.*
+- The two split-definition quotations in the Summary ("one-twelfth of the data", "the remaining 11
+  participants") come from section 3.1, where they define the partitions for the covariate-shift
+  demonstration on the 12-participant driver-fatigue data. The general five-dataset protocol is
+  stated separately, and the fold structures differ per dataset as carded above.
 
 ## Citations
 

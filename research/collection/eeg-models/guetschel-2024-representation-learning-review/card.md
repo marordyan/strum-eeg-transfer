@@ -85,12 +85,23 @@ strand has collected.
   procedure".
 - **Most informative transfer number, with baseline**: `not reported`. This is a survey with no
   experiments of its own, and it does not aggregate the surveyed articles' accuracies into any
-  comparable quantity — there is no results table anywhere in it (the string "Table" does not
-  occur in the text). Its quantitative content is entirely bibliometric: 81 articles reviewed in
-  depth, approximately 31 using autoencoders ("approximately half of the articles surveyed"),
-  approximately a quarter using GANs though "none of the surveyed articles employed GANs for the
-  purpose of EEG representation learning", and 13 using SSL of which ten were published in 2022 or
-  later.
+  comparable quantity — there is no results table anywhere in it (the word "Table" does not occur
+  in `source.md`; the only two matches are inside "unstable" and "interpretable"). Its quantitative
+  content is entirely bibliometric: 81 articles reviewed in depth; autoencoders reported three
+  different ways (see limitations); and 13 using SSL of which ten were published in 2022 or later
+  — "We identified 13 studies employing self-supervised learning (SSL) techniques, among which ten
+  were published in 2022 or later".
+- **GANs, corrected during the Phase 4 audit.** An earlier version of the bullet above said
+  "approximately a quarter using GANs though 'none of the surveyed articles employed GANs for the
+  purpose of EEG representation learning'". Both halves are wrong. No proportion of articles using
+  GANs is stated anywhere; the word "quarter" does not appear in the source. And the quoted string
+  is not in the paper. What the paper says, verbatim, is: "In the context of BCIs, we did not find
+  any article using them for that purpose, but it could be worth investigating this further" —
+  i.e. *zero*, not a quarter, and phrased as a research gap rather than a count. The paper's
+  reason: "GANs are known to be difficult to train (long and unstable) such that their use as
+  unsupervised feature extractors remains marginal in general." What changes: GANs are in the
+  review's taxonomy as an unexplored option for BCI, not as a used technique, which strengthens
+  rather than weakens the review's gap-finding.
 - **The negative headline**: "none of these have led to standard foundation models that are picked
   up by the BCI community", and "there currently is no such model that has been widely adopted by
   the BCI community". As of the review's cutoff, adoption rather than publication is the missing
@@ -129,12 +140,26 @@ strand has collected.
 - No quantitative synthesis is attempted. The review counts articles by technique but never
   compares the techniques on any outcome, so it cannot support a claim that one pretext task
   transfers better than another — only that the field has tried each.
-- The article counts are given loosely and inconsistently between the abstract and the discussion:
-  the abstract states "a predominance of 31 articles using autoencoders" out of 81, which is
-  38 percent, while the discussion says autoencoder-based approaches account for "approximately
-  half of the articles surveyed". The card records both; the abstract's figure is the specific one.
-- Selection criteria are described but no PRISMA-style flow, inter-rater agreement, or search-date
-  cutoff is reported, so the 81 articles are not a reproducible sample.
+- The autoencoder count is given **three** ways, not two as an earlier version of this bullet said.
+  The abstract states "a predominance of 31 articles using autoencoders" out of 81, which is
+  38 percent. Section 2 states "Among the resulting 56+25 articles, many use similar techniques, in
+  particular, 34 articles employed autoencoders to learn a representation." The discussion says
+  autoencoder-based approaches account for "approximately half of the articles surveyed", which is
+  about 40. The card records all three and adopts none; 31 and 34 are both specific and both stated
+  by the authors, which is the self-contradicting-source case.
+- **Selection reproducibility, corrected during the Phase 4 audit.** An earlier version said
+  "no PRISMA-style flow, inter-rater agreement, or search-date cutoff is reported". One of those
+  three is right. The search date *is* reported — "This search was conducted on April 1<sup>st</sup>
+  2024" — along with a publication-year floor ("We restricted our search to articles published
+  after 2014"), the two databases used and why Google Scholar was dropped, the 65-term query
+  structure, and a title-only restriction. A selection flow *is* reported, with counts at every
+  stage: 87 from Web of Science plus 43 from PubMed, 101 after deduplication, 76 after title
+  screening, 67 after removing five paywalled, three non-English and one unavailable, 56 after
+  abstract screening, plus 25 added post-search from reference sections and prior knowledge — and
+  "A flow diagram summarizing the selection process is provided by Figure 1." What remains true is
+  the absence of inter-rater agreement, and the fact that 25 of the 81 articles (31 percent) were
+  added by author judgement outside the search protocol, which is the real reproducibility limit
+  here rather than a missing flow diagram.
 - The recommendations are unconditioned: they say what should be built, not what would count as
   evidence that it worked. The benchmark recommendation is the exception, specifying a fixed
   fine-tuning procedure and multiple tasks.

@@ -82,10 +82,14 @@ Fixed field set required of every `type: dataset` card in this strand:
 - **Channels**: 2 EEG derivations, Fpz-Cz and Pz-Oz, plus horizontal electrooculography, submental
   chin electromyography, and an event marker. Sleep-cassette files "often also contain oro-nasal
   respiration and rectal body temperature".
-- **Sampling rate**: EEG and electrooculography at 100 Hz in both studies. Electromyography is
-  high-pass filtered, rectified and low-pass filtered, and the resulting envelope in microvolts
-  root-mean-square is sampled at 1 Hz. Oro-nasal airflow, rectal body temperature and the event
-  marker are also at 1 Hz.
+- **Sampling rate**: EEG and electrooculography at 100 Hz in both studies. Electromyography differs
+  between the subsets. Sleep-cassette: "The submental-EMG signal was electronically highpass
+  filtered, rectified and low-pass filtered after which the resulting EMG envelope expressed in uV
+  rms (root-mean-square) was sampled at 1Hz. Oro-nasal airflow, rectal body temperature and the
+  event marker were also sampled at 1Hz." Sleep-telemetry: "EOG, EMG and EEG signals were sampled at
+  100 Hz, and the event marker at 1 Hz." *Correction, made during review: an earlier version of this
+  card gave the 1 Hz rectified electromyography envelope as a property of the dataset as a whole. It
+  is a property of the sleep-cassette subset; telemetry electromyography is at 100 Hz.*
 - **Total hours**: not stated. Derivable in principle — 153 recordings of about 20 hours and 44 of
   about 9 hours — but the landing page gives no total and the durations are approximate, so this card
   does not compute one. Total uncompressed size is 8.1 GB.
@@ -105,8 +109,13 @@ Fixed field set required of every `type: dataset` card in this strand:
   s3://physionet-open/sleep-edfx/1.0.0/`.
 - **Checkpoints pretrained on or evaluated against it**: evaluated by BIOT, EEGPT, LaBraM and
   CBraMod under `adabrain-bench` (balanced accuracy 64.95, 60.99, 68.94, 69.47 respectively in the
-  cross-subject setting, against 69.55 for the best supervised model, ST-Tran — the one dataset in
-  that table where a supervised model takes the top spot on balanced accuracy). Named as a
+  cross-subject setting, against 69.55 for the best supervised model, ST-Tran — one of three
+  datasets in that table where a supervised model takes the top spot on balanced accuracy, the
+  others being Siena, where Conformer's 72.87 beats BIOT's 71.67, and HMC, where Conformer's 73.84
+  beats LaBraM's 71.94. *Correction, made during review: an earlier version of this card called
+  Sleep-EDF "the one dataset in that table where a supervised model takes the top spot on balanced
+  accuracy". AdaBrain-Bench's Table 2 has three such rows, all in its clinical-monitoring group; the
+  fourth member of that group, SHHS, goes to CBraMod at 73.51 against ST-Tran's 68.67.* Named as a
   pretraining source for BIOT indirectly via SHHS rather than Sleep-EDF itself. Sleep staging is
   among the task families in `omnieeg-bench`, `brain4fms` and `neuralbench`.
 

@@ -68,7 +68,7 @@ blockwise cross-validation with the four experimental task sets as the folds, so
 adjacent trials never straddle a fold boundary — a discipline directly applicable to a small
 within-subject EEG dataset, where random trial-level splits leak through temporal autocorrelation.
 
-There is also a provenance note: three of the four authors are at Intheon, and two of them
+There is also a provenance note: all four authors are at Intheon, and two of them
 (Christian Kothe and Tim Mullen) are STRUM authors. This is the closest visible published work by
 that group to a decoding study on a workload-style label.
 
@@ -77,14 +77,21 @@ that group to a decoding study on a workload-style label.
 - **Label type**: task difficulty as an experimental parameter, *n* ∈ {0, 1, 2}. Not self-report,
   not behavioural performance, not physiological proxy.
 - **Label validation**: none reported beyond the design itself. The paper reports no subjective
-  workload scale (no NASA-TLX, no Karolinska scale) and no analysis relating behavioural accuracy
-  to the label, so the label's construct validity rests entirely on the n-back paradigm's
-  established status. Contrast `hinss-2023-passive-bci`, which validates its task-difficulty labels
-  against subjective scales and behavioural performance.
+  workload scale (no NASA-TLX, no Karolinska scale), and it reports **no analysis relating
+  behavioural accuracy to the label or to decodability** — though behavioural accuracy at n=2 is
+  measured and is used, as the gate for the "OK" subset (see Session exclusion). So the paper
+  conditions its headline result on behavioural performance without ever reporting the accuracy
+  distribution or relating it to the label's validity. Construct validity rests on the n-back
+  paradigm's established status. Contrast `hinss-2023-passive-bci`, which validates its
+  task-difficulty labels against subjective scales and behavioural performance.
 - **Design equating**: "Conditions for n were limited to 0, 1, 2 and were balanced and
   pseudo-randomized across blocks, sets, and participants". The 0-back case is handled by reserving
-  a fixed target letter (X, excluded from the stimulus set for the other conditions) so the motor
-  response rate is comparable.
+  a fixed target letter: "each such trial consisted of 20 successive stimulus presentations (6 of
+  them targets) using 18 consonants of the Latin alphabet, excluding X and Z as stimuli (X was
+  reserved for the 0-back condition as the target letter)." The target rate (6 of 20) is therefore
+  equated across *n*. (This bullet previously added "so the motor response rate is comparable" as
+  the design intent; that rationale is this card's inference and is not stated by the paper. It
+  also named only X as excluded from the stimulus set, where the paper excludes X **and Z**.)
 - **Trial structure**: 36 trials per session; 55 s per trial of which 40 s is task performance; 20
   stimulus presentations per trial with 6 targets.
 - **Participants and device**: 43 participants; a 3,198 dual-channel NIRS device. The paper frames
@@ -96,9 +103,18 @@ that group to a decoding study on a workload-style label.
 - **Headline number**: 71.5 ± 9.2 % for 0-back versus 2-back on the quality-filtered ("OK") session
   subset, used as the starting point for an ablation in which "each model aspect contributes to the
   overall performance".
-- **Session exclusion**: results are reported both on an "ALL" subset of 43 sessions with no
-  exclusion and on a filtered "OK" subset, so a data-quality exclusion is applied and reported
-  rather than hidden.
+- **Session exclusion**: results are reported both on an "ALL" set of 43 sessions with no exclusion
+  and on a filtered "OK" subset of **36 sessions**. The filter has **two** criteria, not one:
+  "The criteria for the OK subset were at most 15% coefficient of variation (CoV) of raw intensity
+  on average across all channels, a measure of signal quality, which was not met in five of 43
+  sessions, and a minimum participant proficiency of at least 85% accuracy at the n-Back task at
+  the n=2 difficulty level, which excluded an additional two sessions."
+
+  **Corrected 2026-08-01, Phase 4 audit.** This bullet previously described the filter as "a
+  data-quality exclusion", naming only the first criterion. The second is a **behavioural
+  proficiency** threshold, which matters here because it means the headline number is computed on
+  sessions pre-selected for good task performance at the hardest load level — a selection on the
+  dependent variable's close correlate. The OK subset size (36) was also not stated.
 
 ## Open questions / limitations
 
@@ -108,9 +124,14 @@ that group to a decoding study on a workload-style label.
 - The label is never validated against anything external. If the question is whether a
   task-parameter label supports a cognitive claim, this paper assumes the answer rather than
   testing it.
-- Binary classification between pairs of *n* levels at around 71 % is modest, and the paper does
-  not report what a within-subject chance-level permutation distribution looks like, so how far
-  above chance that is under the blockwise split is not stated in what was read.
+- Accuracy is modest and **~71 % holds only for the two-step 0-versus-2 contrast**. The paper:
+  "The proposed method had accuracies in the ca. 70% regime for the two-level n=0 vs 2 n-Back
+  contrast, and around 60% between adjacent workload levels (n=0 vs 1 and n=1 vs 2)", and for 0
+  versus 1 "performance of all methods is below 60%". Chance is 50 % ("Chance level is indicated by
+  a dashed line at 50% accuracy"). The paper does not report a within-subject chance-level
+  permutation distribution, so how far above chance these sit under the blockwise split is not
+  stated. (This bullet previously read "Binary classification between pairs of *n* levels at around
+  71 %", generalising the best contrast to all three pairs, and did not state the chance level.)
 - The "ALL" versus "OK" session subsets mean two numbers exist for every result; the card quotes
   the OK-subset figure because it is the one the paper uses as its ablation baseline, and this is
   flagged so a later reader does not treat 71.5 % as the headline for all 43 sessions.

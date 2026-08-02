@@ -24,9 +24,17 @@ md_quality: rough
 ## TL;DR
 
 The Lab Streaming Layer synchronises independently clocked acquisition devices in software rather
-than in hardware, and this paper is the first to publish measured numbers for how well it does
-that — sub-millisecond jitter between professional amplifiers, with a fixed device offset that
-has to be measured and subtracted separately.
+than in hardware, and this paper is the reference description of the framework together with its
+authors' own timing measurements — sub-millisecond jitter between professional amplifiers, with a
+fixed device offset that has to be measured and subtracted separately.
+
+**Corrected 2026-08-01, Phase 4 audit.** This previously claimed the paper "is the first to publish
+measured numbers for how well it does that". The paper explicitly disclaims priority, positioning
+itself after prior validation work: "LSL has been extensively tested and validated by the biosignal
+research community in several studies" (eight citations), and "Here, we provide some data
+concerning LSL's performance on a local network". Its conclusion likewise credits others with the
+headline result: "Recent benchmarks have demonstrated that LSL achieves sub-millisecond
+synchronization accuracy [Blum et al., 2021], [Chuang et al., 2021], [Iwama et al., 2022]".
 
 ## Summary
 
@@ -50,11 +58,23 @@ This entry sits in category 1 because synchronisation precision is what bounds a
 cross-participant analysis, and a two-person recording built on LSL inherits the numbers below
 as its floor. It also matters as the tooling context for STRUM: the strand brief flags that STRUM
 was plausibly recorded with this toolchain, and this paper is one of exactly two works that cite
-STRUM. That citation on its own would establish only that LSL's authors cite STRUM. The STRUM
-methods, read in full on 2026-08-01, settle it directly: "Time synchronization was done using the
-Lab Streaming Layer", with each two-participant session written to a single time-synchronized XDF
-file. The relationship is recorded as confirmed on `strum-2018`, and this card's numbers therefore
-apply to STRUM rather than merely resembling its setup.
+STRUM. The link is established twice over, from both ends. This paper's own conclusion states that
+LSL was used to make the recording: "In one multiperson, multiple touchscreen simulation [Kothe et
+al., 2018], we successfully used LSL to record from over 40 LSL data streams in recording sessions
+lasting multiple hours", with a footnote describing "Two concurrent subjects, each with instruments
+including a 267-channel BioSemi, microphone, force plate, eye-tracking, three cameras, motion
+capture, and event marker streams." And the STRUM methods, read in full on 2026-08-01, say the same
+directly: "Time synchronization was done using the Lab Streaming Layer", with each two-participant
+session written to a single time-synchronized XDF file. The relationship is recorded as confirmed
+on `strum-2018`, and this card's numbers therefore apply to STRUM rather than merely resembling its
+setup.
+
+Two details worth carrying. First, the earlier version of this paragraph said the citation "on its
+own would establish only that LSL's authors cite STRUM"; that understated it, since the citing
+sentence asserts the recording use. Second, an **unreconciled channel-count discrepancy** between
+the two sources: this paper's footnote says "267-channel BioSemi", while `strum-2018` gives 206 EEG
+plus 43 EMG, 2 ECG, 2 EOG and 16 respiration, which totals 269. Both readings are recorded and
+neither is picked.
 
 The concrete value for this strand is that it supplies the reference numbers against which the
 two multi-person EEG datasets found here can be judged. Both `boa-actors-2025` and
@@ -80,10 +100,21 @@ therefore a specification gap rather than an unanswerable question.
   tight distribution centered around zero with standard deviation of approximately 0.5 ms,
   indicating excellent synchronization performance", for professional hardware with uniform
   sampling rates.
-- **Jitter handling is not free**: "Disabling jitter handling (`HandleJitter = false`) increased
-  jitter by at least" a substantial factor (the extracted sentence is truncated at that point in
-  the retrievable text; the direction is unambiguous, the magnitude is not quoted here). Performance
-  "varied significantly with device type and parameter settings".
+- **Jitter handling is not free, and its sign depends on the hardware**: "Disabling jitter handling
+  (HandleJitter = false) increased jitter by at least one order of magnitude for professional-grade
+  devices, as shown in the EEG-EMG comparison where the uncorrected jitter distribution was
+  substantially broader. Interestingly, for consumer-grade hardware such as a webcam, disabling
+  jitter handling sometimes improved synchronization. This occurs because highly irregular sampling
+  rates violate the Gaussian delay distribution assumptions underlying the jitter correction
+  algorithm." Performance "varied significantly with device type and parameter settings".
+
+  **Corrected 2026-08-01, Phase 4 audit.** This bullet previously truncated the quotation at
+  "increased jitter by at least" and stated that "the extracted sentence is truncated at that point
+  in the retrievable text; the direction is unambiguous, the magnitude is not quoted here". The
+  magnitude — "at least one order of magnitude for professional-grade devices" — is present in
+  `source.md`; nothing was missing. The card also omitted the reversal for consumer-grade hardware,
+  which is the operationally relevant half for anyone using a webcam or consumer sensor in the
+  stack. The same false truncation claim appears in this entry's `meta.json` notes.
 - **The offset is fixed, the jitter is small**: this is the operationally important shape of the
   result. LSL does not remove the constant transport delay of a device; it makes that delay stable
   enough that a single pre-measured constant can be subtracted. Any recording that did not measure
@@ -94,9 +125,23 @@ therefore a specification gap rather than an unanswerable question.
   clocks, as well as their relative drift, is continually measured" and corrected.
 - **What it replaces**: the paper's own framing of the alternative is that "'start/stop' events"
   are insufficient because "such a setup may cause synchronization to drift by many milliseconds
-  within mere minutes of data collection". Hardware alternatives — transistor-transistor logic
-  pulse trains, dedicated clock channels, the precision time protocol — reach "tens of
-  microseconds" for digitally triggered events but require dedicated hardware.
+  within mere minutes of data collection". On hardware alternatives the paper says: "Recent
+  advances in hardware-managed synchronization can improve common clock accuracy for digitally
+  triggered events to tens of microseconds, including solutions based on shared clocks and
+  analog-to-digital (A/D) converters [Chuang et al., 2021] and radio-frequency trigger modules
+  [Cerone et al., 2022]. However, the use of hardware data synchronization approaches is very often
+  not feasible in laboratories without resources to engineer special-purpose solutions". The
+  precision time protocol is named separately as an alternative that "requires dedicated hardware",
+  with no precision figure attached.
+
+  **Corrected 2026-08-01, Phase 4 audit.** This bullet previously attributed the tens-of-microseconds
+  figure to "transistor-transistor logic pulse trains, dedicated clock channels, the precision time
+  protocol", and the Citations block attributed it to Artoni et al. (2017). Neither matches the
+  source. The tens-of-microseconds claim belongs to Chuang et al. (2021) and Cerone et al. (2022),
+  for shared clocks / A-D converters and radio-frequency trigger modules. Artoni et al. (2017) is
+  cited for a different and coarser figure: "A recent study of multimodal MoBI data collection
+  methods concluded that frequent TTL pulses are needed to retain millisecond synchronization
+  between data streams [Artoni et al., 2017]" — milliseconds, not microseconds.
 - **Container format**: recordings are written by LabRecorder to XDF, which is the format most
   multi-stream MoBI datasets in this area are distributed in or converted from.
 - **Citation position**: this is one of the 2 works citing `strum-2018`.
@@ -129,5 +174,8 @@ Primary: `lsl-2024`
   which synchronise by trigger rather than by LSL and neither of which reports a measured error.
 - `hinss-2023-passive-bci` — a dataset in this strand that does use LSL, distributing its event
   markers as an "LSL trigger list".
-- Artoni et al. (2017) and Chuang et al. (2021) — the hardware-synchronisation alternatives this
+- Chuang et al. (2021) and Cerone et al. (2022) — the hardware-synchronisation alternatives this
   paper positions LSL against, reaching tens of microseconds at the cost of dedicated hardware.
+- Artoni et al. (2017) — cited by this paper for the weaker claim that frequent TTL pulses are
+  needed to retain *millisecond* synchronisation in MoBI recordings. (Artoni is also a co-author of
+  this paper; the 2017 work is a separate study.)

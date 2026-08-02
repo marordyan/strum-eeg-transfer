@@ -72,9 +72,18 @@ subjective rather than stimulus-defined.
 - **Simultaneous participants per recording**: 4 in the group setting; 1 in the individual
   setting and in the whole short videos experiment.
 - **Channels**: 14 EEG. Named in the paper as AF3, F7, F3, FC5, T7, P7, O1, O2, P8, T8, FC6, F4,
-  F8, AF4, "according to the 10-20 system". Plus 3 ECG electrodes and a GSR module.
-- **Sampling rate**: EEG 128 Hz at 14-bit resolution; ECG 256 Hz at 12-bit; GSR sampled by the
-  Shimmer platform (rate not stated in the extracted text).
+  F8, AF4, "according to the 10-20 system". Plus 3 ECG electrodes (two at the arm crooks, one at
+  the left ankle as reference) and a 2-electrode GSR module on the left hand.
+- **Sampling rate**: EEG 128 Hz at 14-bit resolution; ECG 256 Hz at 12-bit; GSR **128 Hz at
+  12-bit**.
+
+  **Corrected 2026-08-01, Phase 4 audit.** This field previously read "GSR sampled by the Shimmer
+  platform (rate not stated in the extracted text)". The rate *is* stated, in the same section 3.3
+  sentence that names the module: "GSR signal recorded using the Shimmer 2R platform extended with
+  a GSR module board (128 Hz, 12 bit resolution), with two electrodes placed at the middle
+  phalanges of the left hand's middle and index fingers." The earlier version asserted an absence
+  the source contradicts — the form that wrongly tells a downstream reader there is nothing to
+  re-retrieve.
 - **Peripheral channels present**: electrocardiography and galvanic skin response, both usable as
   signal — the paper's own framing is that EEG, ECG and GSR "have shown good performance in affect
   estimation studies". No EOG, no respiration.

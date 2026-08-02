@@ -67,8 +67,11 @@ annotation." If STRUM's spoken and written conditions are marked in EDF+, this r
 epoching by condition mechanical rather than manual — and where a lab has not followed it, the labels
 have to be reconstructed.
 
-One absence is worth recording. EDF+ stores channel *labels*, standardized as texts, and has no
-mechanism at all for electrode coordinates. Re-derivation is described as label manipulation:
+One absence is worth recording. EDF+ stores channel *labels*, standardized as texts, and the
+specification page carries no mechanism at all for electrode coordinates — the word "coordinate"
+does not occur in it. The caveat is that the page's linked companion, the standard-texts list at
+`edftexts.html`, is not in `source.md`, so the absence is established for the specification proper
+and not for the standard-texts document it defers to. Re-derivation is described as label manipulation:
 "because electrode locations are specified using standard texts, re-montaging (i.e. re-referencing)
 EEG derivations can be done automatically". A coordinate-based checkpoint reading an EDF+ file must
 therefore infer positions from the standard label, which is exactly what `reve-2025` does — it uses
@@ -137,20 +140,27 @@ identifiable name or position. That gap is filled by `eeg-bids` with `electrodes
   several files. For anyone reasoning about session-level grouping in a split, this means a session
   is not reliably one file.
 - **"Epoch" is used in two incompatible senses.** A data record is described as a "fixed-duration
-  epoch of the recorded signals"; three sections later, "unscored epochs should be coded as the
-  integer number 9" refers to 30-second sleep-scoring intervals. These are different objects and the
-  specification never disambiguates them. "Window" appears as a third near-synonym for the data
+  epoch of the recorded signals"; in section 2.3, "Unscored epochs should be coded as the integer
+  number 9" refers to sleep-scoring intervals. These are different objects and the
+  specification never disambiguates them. *Correction, made during review: an earlier version of
+  this bullet called the second sense "30-second sleep-scoring intervals" and placed it "three
+  sections later". The specification states no scoring-epoch length anywhere; the section 3.3
+  worked example's sleep-stage annotations run 660, 300, 180, 300, 210, 270 and 30 seconds. The
+  30 seconds was an external convention, not this source.* "Window" appears as a third near-synonym for the data
   record duration in the electromyography and neurophysiology examples.
 - **"Montage", "derivation" and "re-referencing" are used interchangeably** in one sentence, and the
   table of contents heading ("Montages in a routine EEG") does not match the section heading
   ("Routine EEG"). Strictly a montage is a set of derivations and re-referencing is one way to
   produce them; the specification collapses the three, which matters because the format stores
   labels only and cannot express a coordinate.
-- **Sleep-stage nomenclature is inconsistent between sections**: section 2.3 gives the
-  Rechtschaffen and Kales scheme "W,1,2,3,4,R,M ... coded ... as the integer numbers 0,1,2,3,4,5,6",
-  while the section 3.3 annotation example uses American Academy of Sleep Medicine names
-  ("Sleep stage N1", "N2", "N3"). No mapping between the two is given, and there is no stage 4 in the
-  example's scheme. This is the same mismatch that appears between `sleep-edf-expanded`'s hypnograms
+- **Sleep-stage nomenclature is inconsistent between sections**: section 2.3 gives "sleep stages
+  W,1,2,3,4,R,M ... coded in the data records as the integer numbers 0,1,2,3,4,5,6 respectively",
+  while the section 3.3 annotation example uses the names "Sleep stage N1", "N2", "N3". No mapping
+  between the two is given, and there is no stage 4 in the example's scheme. *Correction, made
+  during review: an earlier version of this bullet named the two schemes Rechtschaffen and Kales
+  and American Academy of Sleep Medicine. Neither name — nor "AASM" — appears anywhere in the
+  specification; the identification is external and has been removed, though the mismatch itself is
+  real.* This is the same mismatch that appears between `sleep-edf-expanded`'s hypnograms
   and the five-class labels the benchmark suites report.
 - **`md_quality` is `partial` for a specific reason**: the unprintable delimiter bytes 20 and 21 are
   the specification, and the HTML-to-text conversion silently dropped them, so every worked

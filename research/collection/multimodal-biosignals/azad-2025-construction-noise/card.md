@@ -79,7 +79,11 @@ close to nothing.
   0.555. Below the 67% majority-class rate, with low variance, so the authors conclude "the
   performance gap is systematic and not due to high variance".
 - **Combined number**: accuracy 0.796 (0.769–0.823), macro-F1 0.766 (0.733–0.798), AUROC 0.856
-  (0.819–0.892). Coefficient of variation at most 5% across metrics.
+  (0.819–0.892). The prose says the coefficient of variation "remained low (≤5% across metrics)",
+  but Table 4's own fusion row reads `|Fusion|CoV (%)|2.44|3.23|5.49|3.86|2.93|2.52|`, so recall's
+  CoV is 5.49. A minor internal inconsistency, noted in the Phase 4 audit because the card
+  previously repeated the prose claim as fact. Note also that four of the six fusion CoV values are
+  identical to the EEG row's, which looks like a copy in the table rather than a coincidence.
 - **Split protocol, contested inside the paper.** The Methods describe 5-fold subject-independent
   GroupKFold; the Conclusion states "This study used 5-fold cross-validation **without subject-wise
   separation**. Therefore, the results reflect overall performance rather than strict

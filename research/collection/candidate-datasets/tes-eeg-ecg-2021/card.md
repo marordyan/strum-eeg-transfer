@@ -62,10 +62,19 @@ measurement rather than a categorical stimulus condition or a post-hoc rating. T
 outside the circularity trap this strand worries about, at the cost of not being a discrete
 classification target.
 
-The confound to record is that stimulation is present throughout. Every session contains
-stimulation artefacts in the EEG which the paper itself notes "produces large voltage artifacts in
-the EEG during ramp-up and ramp-down", so any use of this data for pretraining or fine-tuning has
-to decide what to do with stimulation periods.
+The confound to record is that stimulation is present throughout, so any use of this data for
+pretraining or fine-tuning has to decide what to do with stimulation periods. The paper's own
+statement is: "The band-pass filtering applied in Fig. 3 for display purposes, produces large
+voltage artifacts in the EEG during ramp-up and ramp-down, as well as removing DC voltage
+artifacts, which is present in unfiltered EEG-stimulation data."
+
+**Corrected 2026-08-01, Phase 4 audit.** The earlier version quoted "produces large voltage
+artifacts in the EEG during ramp-up and ramp-down" as the paper describing the *stimulation*
+contaminating the EEG. It inverts the sentence: the grammatical subject of "produces" is the
+band-pass filtering applied for display, so the large ramp transients are a **filtering** artefact,
+not a property of the released raw data. What the source does attribute to the stimulation is the
+**DC voltage artifacts**, "present in unfiltered EEG-stimulation data" — which the display
+filtering removes. The underlying caution stands; its mechanism was misattributed.
 
 ## Notable details
 
@@ -115,8 +124,10 @@ to decide what to do with stimulation periods.
 
 - Transcranial electrical stimulation is applied in every session. This is the point of the
   dataset and simultaneously the reason it is not a clean substrate for representation learning:
-  the EEG contains stimulation artefacts by construction, and the paper reports removing DC
-  artefacts and large ramp transients only for display purposes.
+  the unfiltered EEG contains DC voltage artefacts by construction. The band-pass filtering the
+  paper applies for display purposes removes those DC artefacts but itself produces large voltage
+  artefacts at the stimulation ramps, so neither the raw nor the display-filtered view is clean at
+  the ramp boundaries.
 - One task, one behavioural measure. There is no categorical cognitive-state label and no
   stimulus-modality manipulation, so nothing in this dataset speaks to the spoken-versus-written
   label question.

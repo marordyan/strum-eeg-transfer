@@ -68,10 +68,17 @@ stored signals, `electrodes.tsv` plus `coordsystem.json` describe positions in a
 frame. A model like REVE needs the latter; a dataset that ships only the former forces the
 approximation documented on the `reve-2025` card.
 
-The third is the connection to the corpus. Every upload to OpenNeuro must pass Brain Imaging Data
-Structure validation, and "more than 60 EEG datasets have been deposited since the publication of the
-BIDS-EEG standard in 2019" — so the growth in the heterogeneous, non-clinical part of the pretraining
+The third is the connection to the corpus, which this paper only gestures at — "Accessibility is not
+directly addressed by BIDS, but by repositories that build on BIDS, such as OpenNeuro
+(https://openneuro.org)" — and which the `openneuro` card supplies. Per `openneuro`, that is
+Markiewicz et al. 2021 and not this paper, every upload to OpenNeuro "must first pass a BIDS
+validation step" and "more than 60 EEG datasets have been deposited since the publication of the
+BIDS-EEG standard in 2019". So the growth in the heterogeneous, non-clinical part of the pretraining
 corpora that `reve-2025` and `omnieeg-bench` both depend on is downstream of this specification.
+*Correction, made during review: an earlier version of this card stated the validation rule and
+quoted the 60-dataset sentence inside the discussion of this 2019 paper, with no attribution. Neither
+is in this paper, which could not report deposits made since its own publication; both are in the
+`openneuro` source.*
 
 ## Notable details
 
@@ -134,7 +141,8 @@ corpora that `reve-2025` and `omnieeg-bench` both depend on is downstream of thi
   argues every release needs: nothing in EEG-BIDS obliges a pre-partitioned release to document its
   grouping. Subject identity is recoverable from the directory structure, which is the necessary
   condition; whether a derived split respects it is not the standard's concern.
-- The paper is six years old and the specification has moved; version numbers of the standard are not
+- The paper is seven years old (received 16 January 2019, accepted 7 May 2019, published in volume 6
+  of 2019) and the specification has moved; version numbers of the standard are not
   given anywhere in the paper, so it cannot be used to determine what a current conformant dataset
   contains.
 - Small-caps rendering in the retrieved PDF flattens author names and headings to lowercase

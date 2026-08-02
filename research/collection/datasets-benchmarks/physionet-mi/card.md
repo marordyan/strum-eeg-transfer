@@ -120,9 +120,11 @@ Other details:
   S109 are listed under Files; the abstract and background sections never give a number. Widely
   cited as 109, and consistent with `moabb`'s table, but the landing page does not assert it.
 - **No total-hours figure and no per-run durations beyond "one-minute" and "two-minute".**
-- **Known data-quality problems are not mentioned on the landing page.** It is well established in
-  the BCI literature that several subjects in this dataset have anomalous run timings or sampling
-  rates and are routinely excluded; the page carries no errata and no exclusion list. Any figure
+- **Known data-quality problems are not mentioned on the landing page.** Several subjects in this
+  dataset are widely reported to have anomalous run timings or sampling rates and to be routinely
+  excluded — **unverified**, flagged during review: that is field knowledge, it is not on the landing
+  page, and no source read in this strand states it, so it needs a citation before it is relied on.
+  What the page does establish is that it carries no errata and no exclusion list. Any figure
   computed over "109 subjects" and any figure computed over the usual excluded subset are different
   quantities, and no source read here states which was used. `moabb` records 109 subjects with no
   exclusions.

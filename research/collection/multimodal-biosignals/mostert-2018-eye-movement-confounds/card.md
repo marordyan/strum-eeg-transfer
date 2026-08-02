@@ -90,11 +90,19 @@ is carried forward.
   analysis, with the signal baseline-corrected on -200 to 0 ms relative to cue onset to remove slow
   drift. The paper describes the resulting effect as significant though "only marginally" at the
   encoding stage, and stable through the delay.
-- **Participants**: 36 volunteers recruited, 24 selected for the MEG experiment. The extracted text
-  describing exclusions is mangled at exactly this point — it reads that "three were excluded from
-  MEG analysis due to poor data quality and [...] eye movements, because the eye-tracker failed to
-  track the eye reliably in those subjects" — so the exact analysed n is not recoverable from
-  source.md and would need the PDF's methods paragraph.
+- **Participants**: the Subjects paragraph is intact in `source.md` and reads in full:
+  "Thirty-six human volunteers were recruited from the local institute's subject pool to participate
+  in a behavioral screening session. Of these, 24 (13 male; mean age: 26.8 years, range: 18-60) were
+  selected to participate in the MEG experiment … Of these 24 selected subjects, three were excluded
+  from MEG analysis due to poor data quality and another four were excluded from the analyses
+  regarding eye movements, because the eye-tracker failed to track the eye reliably in those
+  subjects." So the MEG analysis has 21. The eye-movement analyses have either 20 (24 minus the four
+  eye-tracker failures) or 17 (if the word "another" means the three poor-quality exclusions also
+  apply); the sentence does not disambiguate, and no analysed n is stated anywhere else, so neither
+  figure is adopted here. Corrected in the Phase 4 audit: an earlier version of this card said the
+  sentence was "mangled at exactly this point" and that the counts were not recoverable. The
+  extraction was regenerated with pymupdf4llm (see `meta.json.notes`); the residual ambiguity is the
+  paper's, not the converter's.
 - **Preprocessing that did not suffice**: the cleaning pipeline targeted heartbeat, blinks and eye
   movements; the authors state the eye-movement removal was imperfect. Data were then
   baseline-corrected on -200 to 0 ms relative to stimulus onset.
@@ -123,8 +131,9 @@ is carried forward.
 - The gaze-based decoding significance is described as marginal at encoding. A marginal effect
   that is nonetheless sufficient to invalidate a result is an uncomfortable combination, and the
   paper does not resolve how strong a gaze effect has to be before it matters.
-- Sample-size accounting is unclear in the extracted text (see above), so per-subject consistency
-  of the gaze effect cannot be stated from this card.
+- Sample-size accounting is ambiguous in the paper itself (see above): the MEG analysis is 21
+  subjects, but whether the eye-movement analyses run on 20 or 17 is not stated. Per-subject
+  consistency of the gaze effect is not reported either way.
 - The task is visual working memory with orientation gratings. Whether the same stimulus-specific
   gaze stabilisation occurs for auditory or linguistic stimuli — the project's case — is not
   tested, and the mechanism would be different (reading saccades rather than encoding-position

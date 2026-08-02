@@ -109,8 +109,10 @@ dataset in a different label-provenance class from every screen-paradigm dataset
 - **Suggested preprocessing shipped with the paper**: downsample to 240 Hz for joint EEG-video
   visualisation, H-infinity ocular filtering driven by the four EOG channels (q = 1e-10, p0 = 0.5,
   gamma = 1.15), average re-reference via PREP, 5th-order Butterworth band-pass 0.01–50 Hz, a
-  second-order motion artefact filter, artefact rejection at 10 standard deviations, then extended
-  Infomax ICA with dipole fitting against the MNI template.
+  second-order motion artefact filter, Artifact Subspace Reconstruction rebuilding any period whose
+  amplitude exceeds "κ = 10 standard deviations", then extended Infomax ICA with dipole fitting
+  against the MNI template. (ASR *reconstructs* the contaminated periods rather than rejecting
+  them; this line previously read "artefact rejection at 10 standard deviations".)
 - **Known data gaps recorded by the authors**: recording 3 for dyad A is missing its final two
   minutes of inertial data due to a technical error.
 

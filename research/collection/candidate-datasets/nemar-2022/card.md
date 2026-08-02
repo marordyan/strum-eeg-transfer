@@ -23,7 +23,8 @@ md_quality: rough
 
 ## TL;DR
 
-NEMAR is a Swartz Center gateway that filters OpenNeuro down to the neuroelectromagnetic
+NEMAR is a gateway, maintained at SDSC and authored from the Swartz Center orbit, that filters
+OpenNeuro down to the neuroelectromagnetic
 modalities, adds per-dataset quality visualisation, and connects the selected data directly to San
 Diego Supercomputer Center compute through the Neuroscience Gateway — so it is the registry to
 browse when the question is specifically "which EEG datasets exist and are any of them usable".
@@ -60,9 +61,13 @@ happened without constraining *how they are named*, which is precisely the gap i
 "spoken" versus "written" gets defined inconsistently across datasets. A project intending to
 compare label schemes across corpora will run into that gap.
 
-There is also a provenance note worth recording: NEMAR comes from the Swartz Center for
-Computational Neuroscience, which is one of the two institutional homes named in the strand brief
-as places to check for a STRUM author copy. STRUM is not in NEMAR — no registry sweep located it.
+There is also a provenance note worth recording, with a caveat on its basis. The Swartz Center
+connection — one of the two institutional homes named in the strand brief as places to check for a
+STRUM author copy — rests on the author list (Delorme, Makeig) rather than on the paper text. The
+extraction carries no affiliation block, and the only institutional home `source.md` states for the
+site itself is SDSC: "The NEMAR website (nemar.org), maintained and developed at SDSC, uses the
+HUBzero web framework". SCCN appears in the source only as the home of EEGLAB. STRUM is not in
+NEMAR — no registry sweep located it.
 
 ## Notable details
 
@@ -94,8 +99,26 @@ as places to check for a STRUM author copy. STRUM is not in NEMAR — no registr
 
 - NEMAR holds no data of its own. Every access-route, licence and format question resolves to the
   underlying OpenNeuro dataset, so this card cannot certify anything about a specific corpus.
-- The paper reports no dataset count, no per-modality inventory and no usage figures in the text
-  read here, so this card carries no scale numbers.
+- **Scale figures, as of the paper's own snapshot dates** (this bullet previously asserted the
+  paper reported none of these):
+
+  "As of February 2022, there were 72 EEG datasets (from 2664 participants) on NEMAR, 22 MEG
+  datasets (from 365 participants) and 12 iEEG datasets (from 202 participants). Of the 72 EEG
+  datasets, 37 use the EEGLAB data format and have likely been formatted using the bids-matlab-tools
+  EEGLAB plug-in". For the underlying archive: "The OpenNeuro archive (8) currently offers more than
+  644 open neuroimaging datasets from more than 22 000 participants." And a usage figure: "As of
+  January 2022, the bids-matlab-tools plug-in, available from the EEGLAB plug-in manager, had been
+  downloaded 844 times."
+
+  **Corrected 2026-08-01, Phase 4 audit.** The bullet previously read "The paper reports no dataset
+  count, no per-modality inventory and no usage figures in the text read here, so this card carries
+  no scale numbers." All three sub-claims are false, and the missing figures are exactly the
+  per-modality inventory a strand deciding where to look for EEG data needs. Note the 72 EEG
+  datasets are the whole of NEMAR's EEG holdings as of February 2022 — a small number, which
+  strengthens rather than weakens this card's point that the registry sweep for a STRUM-like dyadic
+  corpus had little to find. Note also that NEMAR's restatement of OpenNeuro's size (644 datasets,
+  22 000 participants) is larger than the "more than 600 datasets" quoted from `openneuro-2021`
+  elsewhere on this card; the two are snapshots at different dates, not a conflict.
 - The compute integration is tied to the Neuroscience Gateway and San Diego Supercomputer Center
   allocations. Whether it is usable by an arbitrary external project, and under what allocation
   process, is not something the read text settles.
@@ -112,8 +135,8 @@ Primary: `nemar-2022`
 
 - `openneuro-2021` — the archive NEMAR is a gateway to; every dataset is ultimately an OpenNeuro
   dataset.
-- `eeg-bids-2019` — the EEG formatting standard NEMAR requires, co-authored by two of this paper's
-  authors.
+- `eeg-bids-2019` — the EEG formatting standard NEMAR requires, sharing one author (Delorme) with
+  this paper. (This line previously said two; the author lists intersect only in Delorme.)
 - `strum-2018` — the Swartz Center connection; STRUM was not located in NEMAR or in any other
   registry swept for this strand.
 - Bigdely-Shamlo et al., Hierarchical Event Descriptors — the event-annotation standard this paper
