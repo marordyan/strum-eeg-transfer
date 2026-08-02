@@ -521,6 +521,44 @@ def test_synthesis_link_rot_is_a_violation(tmp_path: Path) -> None:
     assert not any("paper-one/card.md' does not resolve" in v for v in violations)
 
 
+def test_synthesis_link_with_text_spliced_into_the_target_is_caught(tmp_path: Path) -> None:
+    """The exact damage that slipped past the first version of this check.
+
+    A correction was spliced inside a link target by a careless regex edit, so
+    the target began ". " instead of "./" and the narrower pattern skipped it.
+    The document shipped with a broken link and the validator reported clean.
+    """
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+    syn = tmp_path / "research" / "synthesis"
+    syn.mkdir(parents=True)
+    (syn / "some-ontology.md").write_text(
+        "See [paper-one](. Correction: spliced text../collection/strand-a/paper-one/card.md).\n",
+        encoding="utf-8",
+    )
+
+    violations, _, _, _ = vc.run_validation(tmp_path)
+
+    assert any("does not resolve" in v for v in violations)
+
+
+def test_synthesis_external_links_are_not_checked(tmp_path: Path) -> None:
+    """A URL is not a path and must not be reported as unresolvable."""
+    write_entry(tmp_path, "strand-a", "paper-one")
+    write_strand_index(tmp_path, "strand-a", ["paper-one"])
+    write_strand_bib(tmp_path, "strand-a", ["paper-one"])
+    syn = tmp_path / "research" / "synthesis"
+    syn.mkdir(parents=True)
+    (syn / "some-ontology.md").write_text(
+        "See [doi](https://doi.org/10.1234/x) and [top](#section).\n", encoding="utf-8"
+    )
+
+    violations, _, _, _ = vc.run_validation(tmp_path)
+
+    assert violations == []
+
+
 def test_synthesis_link_with_anchor_resolves(tmp_path: Path) -> None:
     """A link carrying a #section anchor still points at a real file."""
     write_entry(tmp_path, "strand-a", "paper-one")

@@ -477,18 +477,21 @@ Recorded because an exclusion that was not honoured is a defect worth filing, an
 reader comparing the briefs against the corpus will otherwise find these unexplained. Nothing here
 is a judgment about whether the exclusion should have been drawn where it was.
 
-### 7.1 Camera-based physiology is excluded by strand B and is present in six of its entries
+### 7.1 Camera-based physiology is excluded by strand B and is present in seven of its entries
 
 [strand-multimodal-biosignals](../../_briefs/strand-multimodal-biosignals.md) excludes "camera-based
 or contactless physiology estimation" with no stated exception at the time this document was written. Six entries carry a signal that is
 video eye tracking rather than electrooculography, and every one of the six states the substitution
 on its own card:
 
-- [wibirama-cognitive-load-eye-movement](. Correction: the entry carries both instruments. Its source records vertical and horizontal electrooculogram alongside an Eyelink 1000, both at 1200 Hz; the card previously denied this and was corrected in Phase 4. What the paper does not do is compare decoders built from the two../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
+- [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   — the entry is *entirely* eye-tracking-derived; "COLET is an eye-tracking dataset", and the paper
   positions eye tracking as an alternative to EEG, ECG and GSR.
 - [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
-  — "the measurement here is video eye tracking, not electrooculography".
+  — **no longer belongs on this list.** Its card formerly said "the measurement here is video eye
+  tracking, not electrooculography"; the source states that vertical and horizontal electrooculogram
+  were obtained alongside an Eyelink 1000, both at 1200 Hz, and the card was corrected in Phase 4.
+  The entry carries both instruments; what the paper does not do is compare decoders built from them.
 - [zheng-2018-emotionmeter](../collection/multimodal-biosignals/zheng-2018-emotionmeter/card.md) —
   SMI eye tracker, "so the modality is gaze and pupil behaviour rather than" EOG.
 - [ahmad-2020-cognitive-load-framework](../collection/multimodal-biosignals/ahmad-2020-cognitive-load-framework/card.md)

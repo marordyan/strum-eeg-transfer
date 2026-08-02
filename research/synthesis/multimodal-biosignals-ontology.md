@@ -99,7 +99,8 @@ combined-minus-EEG-only gain and a peripheral-only floor.
   (75%).
 - [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
   — EEG 0.794 (95% CI 0.768–0.820) versus EDA 0.557 (0.528–0.586) versus fused 0.796 (0.769–0.823),
-  5-fold subject-independent GroupKFold, 25 participants. The EDA arm sits below the 67%
+  5-fold GroupKFold described as subject-independent in the Methods and denied in the Conclusion
+  ("without subject-wise separation"), 25 participants. The EDA arm sits below the 67%
   majority-class rate, and the authors state the gap "is systematic and not due to high variance".
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — EEG-only 0.823 / 0.841 / 0.836 across three backbones, ECG-only 0.798 with HRV features and
@@ -271,13 +272,14 @@ to something other than the peripheral signal, and the cards say so themselves.
 | [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md), LOSO binary | 61.20% | not run | 67.04% | +5.84 | leave-one-subject-out | 21 |
 | [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md), LOSO ternary | 41.59% | not run | 47.80% | +6.21 | leave-one-subject-out | 21 |
 | [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md) | ~86% | 70–75% | "a little over 90%" | ~+4, not significant | within-subject, train early / test late | 14 |
-| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | 0.794 | 0.557 | 0.796 | +0.002 | 5-fold GroupKFold, subject-independent | 25 |
+| [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md) | 0.794 | 0.557 | 0.796 | +0.002 | **contested**: Methods say 5-fold GroupKFold subject-independent, Conclusion says "without subject-wise separation" | 25 |
 | [ha-wearable-eeg-heg-hrv](../collection/multimodal-biosignals/ha-wearable-eeg-heg-hrv/card.md) | not accessible | not accessible | not accessible | "19% maximum improvement" | not accessible | not accessible |
 
 The relation between the two rightmost columns and the delta column is the structure this table
 exists to make visible, and it is a relation between entries rather than a verdict about the field.
 The three entries whose split geometry is stated and either subject-disjoint or otherwise designed
-against inflation — the LOSO grid, the GroupKFold study, and a within-subject temporal split — report
+against inflation — the LOSO grid, the contested GroupKFold study, and a within-subject temporal split
+— report
 +5.84 / +6.21, +0.002, and a difference their own authors call not significant. The third is not
 subject-disjoint and its card says so explicitly, every model being personal; it earns its place here
 because its temporal split is designed against time-dependence inflation, which is a different
@@ -883,7 +885,11 @@ states the substitution itself, so this is a property of the vocabulary rather t
   [wibirama-cognitive-load-eye-movement](../collection/multimodal-biosignals/wibirama-cognitive-load-eye-movement/card.md)
   (COLET, an eye-tracking dataset),
   [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
-  (EyeLink 1000; "a deliberate abstraction"), and
+  (**correction, Phase 4**: this entry does not belong on this list. Its source records vertical and
+  horizontal electrooculogram alongside an EyeLink 1000, both at 1200 Hz, so it carries both
+  instruments; the phrase "a deliberate abstraction" quoted here was retracted from the card. What the
+  paper does not do is compare decoders built from the two, which is where the strand's ocular
+  question actually sits), and
   [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   (gaze as an eye-movement proxy; "an eye tracker gives position, EOG gives a potential difference
   that mixes gaze angle with blink and with the corneo-retinal offset").
@@ -1155,7 +1161,9 @@ records the same absence.
 ### 8.3 The window mismatch, which every entry that names both windows names as a mismatch
 
 The strongest cross-card regularity in this facet. The peripheral branch's natural integration window
-is five to sixty seconds; a stimulus-locked EEG epoch is two to four. Eight entries state a window and
+is five to twenty seconds; a stimulus-locked EEG epoch is two to four. Eight entries state a window and
+(corrected in Phase 4: the sixty-second upper bound came from this ontology reading PaPaGei's card,
+which attributed a comparator's segment length to the paper itself. The paper uses ten seconds.)
 none reconciles the two scales.
 
 - [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
@@ -1171,7 +1179,8 @@ none reconciles the two scales.
 - [mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md) — 5 s
   non-overlapping segments, "long relative to a stimulus-locked EEG epoch and short relative to
   reliable HRV estimation — an awkward middle for either use".
-- [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — 60 s segments.
+- [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) — 10 s segments; an
+  earlier version of this line said 60 s, which the source attributes to a cited comparator.
 - [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
   — 10 s non-overlapping epochs, each "treated as an independent sample".
 - [kuttala-2023-hierarchical-fusion](../collection/multimodal-biosignals/kuttala-2023-hierarchical-fusion/card.md)

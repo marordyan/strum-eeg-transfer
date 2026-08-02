@@ -40,6 +40,14 @@ withdrawn claims are kept in place with what refuted them, because the pattern i
 finding about how this review checks itself — §2.1 and §5.3 — and because a gap analysis that quietly
 deletes its errors is less trustworthy than one that shows them.
 
+**And a second revision, after a full review of that refutation pass.** No further gap is retracted;
+five arguments are weakened or restated at the strength their evidence supports, and two claims lost
+part of their evidence base when the cards under them were corrected. The changes are listed in §8 and
+each is made at the point of use with what it previously said. The pattern in this round is different
+from the first: the failures were not unchecked falsifiers but arguments carried one step past their
+source — a design fact generalised beyond the sentence stating it, a curve read outside the arm it
+measures, a significance result quoted for the comparisons it resolved and not the ones it did not.
+
 ---
 
 ## 1. Column one: what prior work covers
@@ -91,10 +99,21 @@ mechanisms, each entry in exactly one
 at all is answerable in advance.
 
 **That scale does not order the models is supported by six independent measurements.**
-[eeg-models-ontology](./eeg-models-ontology.md) §2.5. Two entries dissent and both are qualitative.
+[eeg-models-ontology](./eeg-models-ontology.md) §2.5. Two entries dissent, and the earlier text here
+called both of them qualitative, which is true of only one.
+[reve-2025](../collection/eeg-models/reve-2025/card.md) reports improvement with size while fitting no
+scaling law and showing only a trend; but
+[brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) reports a number — its tiny model at
+0.886 against its base model at 0.877 on MDD. That figure cuts against its own side of the argument,
+which is why it does not change the balance, but it is a measurement and should not be filed as an
+impression.
 
 **That a small supervised or classical model frequently matches or beats a checkpoint is supported by
-six entries, four of them third-party.** [eeg-models-ontology](./eeg-models-ontology.md) §4.2.
+six entries, five of them third-party.** [eeg-models-ontology](./eeg-models-ontology.md) §4.2. The
+earlier count of four understated it: the one first-party entry is
+[bendr-2021](../collection/eeg-models/bendr-2021/card.md), whose own authors report fine-tuning "mostly
+on par with the fully supervised counterpart"; the other five — Sirca, Lee, Lin, Zare and
+AdaBrain-Bench — are third-party.
 
 **That the adaptation regime reorders the models is demonstrated rather than asserted**, inside two
 suites, with opposite signs for different checkpoints
@@ -129,7 +148,10 @@ section, with what refuted each and what if anything survives, because a retract
 about this review's own method and deleting it would destroy the finding. Two of the four leave a
 narrower residue behind them, which §4 still builds a route on. Seven gaps survive: two (L2, L10)
 restated at the size the evidence supports rather than the size first claimed, and one (L5) relocated
-from an instrumentation claim that was false to a comparison claim that holds.
+from an instrumentation claim that was false to a comparison claim that holds. In the second revision
+L2 and L10 were narrowed again — L2 to the one pair of remedies its own falsifier and route name, L10
+to what survives three discounts rather than two — and L6's stated defence against the failure mode
+that killed L7 was found to rest on a false universal and is restated as a disjunct.
 
 Each survivor carries the four elements guard one requires. Where the scope check found a *bounded*
 resource limit sitting behind an otherwise genuine absence, the bound is stated inside the gap rather
@@ -140,13 +162,13 @@ Ordering carries no ranking. Column three (§4) selects from these.
 
 | # | the absence | scope class | recorded null search |
 |---|---|---|---|
-| L2 | two of the five *enumerated* remedies run on the same data | genuine, bounded | none |
+| L2 | post-hoc erasure against cross-validated confound regression, on one dataset | genuine, bounded | none |
 | L4 | what ocular-artifact removal costs in task accuracy | genuine | none |
 | L5 | decoders from EOG electrodes compared against decoders from eye tracking | genuine | none |
 | L6 | a frozen EEG encoder paired with a frozen peripheral encoder | genuine, bounded | none |
 | L8 | spoken versus written decoded from EEG within subject | genuine, bounded | none |
 | L9 | a measured cross-participant synchronization precision | genuine | partial |
-| L10 | an open EEG dyadic release from a second laboratory | genuine | **yes, seven queries** |
+| L10 | an open EEG dyadic release from a second laboratory | genuine | **yes — seven queries, four discounted** |
 | L1 | **retracted** — AdaBrain-Bench measures it | — | — |
 | L3 | **retracted as stated**; a narrower residue survives | — | — |
 | L7 | **retracted as stated**; a narrower residue survives | — | — |
@@ -158,7 +180,10 @@ gap. [scope-diagram](./scope-diagram.md) §5 states that the corpus has no scree
 per-strand search records of §3.4 "cover category 1 of one strand and the STRUM citation search, and
 nothing else". So L10 is the only absence in this document that rests on having looked and found
 nothing. The rest rest on the combined coverage of entries collected for other reasons, plus, in
-several cases, cards declaring the absence about themselves.
+several cases, cards declaring the absence about themselves. L10's advantage over them is real but
+smaller than "seven queries" reads: four of the seven carry no information about the field, and the
+gap's positive content comes down to the composition of one fifteen-hit return. The arithmetic is in
+L10's scope check.
 
 **And a second note, which the retractions force and which the first note was too mild to carry.**
 [scope-diagram](./scope-diagram.md) §6 check 3 is a disjunction: an absence counts as a property of
@@ -173,7 +198,19 @@ L6, L8) are marked at the point of use.
 
 ---
 
-### L2. No entry runs two of the five enumerated identity-confound remedies
+### L2. Post-hoc erasure and cross-validated confound regression have never been compared on one dataset
+
+**Restated at the width of the falsifier and the route.** This gap was headlined "no entry runs two of
+the five enumerated identity-confound remedies", and that headline is broader than anything below it.
+The falsifier names a pair, the route (A3) runs a pair, and the pair is the same one in both places:
+post-hoc linear erasure against confound regression inside every fold. That is not an accident of
+drafting. Of the five enumerated remedies, only those two are commensurable — two procedures applied to
+one set of embeddings and one set of folds, whose outputs are the same kind of object and can be
+reported side by side. A held-out generalization test across exemplars or modalities and a separate
+functional localizer are properties of a *stimulus design*, not procedures a second paper can bolt onto
+an existing dataset; and the fifth, behavioural read-out, runs on no data at all (below). A falsifier
+of the form "any two of five" is therefore satisfiable in practice by one pair, so the gap is stated at
+that width here and the wider form is withdrawn.
 
 **The evidence.** The corpus holds five procedures for one problem, in three strands
 ([science-map](./science-map.md) §2): post-hoc linear erasure
@@ -187,7 +224,15 @@ training the decoder on a separate functional localizer
 ([mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)),
 and tying decodability to behavioural read-out
 ([ritchie-2019-decoding-limits](../collection/candidate-datasets/ritchie-2019-decoding-limits/card.md)).
-No entry runs two **of these five**.
+No entry runs the first two against each other, and no entry runs any two **of these five**.
+
+**How that list was built, which bears on how much the count is worth.**
+[science-map](./science-map.md) §2 enumerates the five as one bullet per entry — one procedure taken
+from each of five cards. "Five procedures, one entry each, none compared" is therefore partly a
+description of the enumeration's construction rather than an independent finding about the field: a
+list assembled by taking one procedure per paper cannot exhibit a paper running two. What survives the
+observation is not the count but the specific non-comparison the falsifier names, which is checkable
+against the two cards that do run more than one procedure and is what the paragraph below establishes.
 
 **The headline was first written as "no entry runs two identity-confound remedies", and in that form
 it is false.** Two entries run more than one procedure.
@@ -210,9 +255,11 @@ criterion is a recommendation illustrated with somebody else's published study. 
 entry each, none compared" counted a non-runner as a runner. The defensible statement is four
 implemented procedures plus one recommended one, and no comparison across them.
 
-The consequence still holds and is the reason the gap matters: the enumerated remedies are not
-ordered, so a project told to control for identity has several options and no evidence about which to
-pick across the boundaries the science map draws.
+The consequence still holds and is the reason the gap matters, though it too is narrower than first
+written: a project told to control for identity has two applicable and unordered post-hoc procedures
+and no evidence about which to pick. The wider claim — that all five are unordered against each other
+— is true but mostly uninteresting, because three of the five cannot be run against the other two on
+one dataset in the first place.
 
 **The scope check.** Genuine absence, with a bounded caveat. All five remedies live in strands the
 corpus has, so this is not a partition error. No brief excludes confound methodology: strand A excludes
@@ -227,11 +274,12 @@ cross-validated confound regression published in the neuroimaging methods litera
 EEG paper in this corpus would not have been reached. So: genuine for the EEG literature the corpus
 reaches, undetermined for the methods literature beyond it.
 
-**The falsifier.** One paper applying two of the five *enumerated* remedies to one dataset and
-reporting both results — for instance LEACE erasure and cross-validated confound regression on the
-same embeddings and the same folds. Note that the earlier, wider falsifier ("one paper applying two
-confound-control procedures") has already fired twice, on Snoek and on Lin, which is what forced the
-restatement above.
+**The falsifier.** One paper applying post-hoc linear erasure and cross-validated confound regression
+to the same embeddings and the same folds, and reporting both results. This is the same width as the
+headline and the same width as A3, which is the point of the restatement. Two wider falsifiers have
+already fired and are recorded rather than reused: "one paper applying two confound-control
+procedures" fired on Snoek and on Lin, and "one paper applying two of the five enumerated remedies"
+is not a test the corpus can meaningfully run, for the commensurability reason above.
 
 **The search record.** None.
 
@@ -306,10 +354,11 @@ corpus cannot say how much of a tracker-derived result an EOG derivation would r
 ([scope-diagram](./scope-diagram.md) §7.1), and no card claims a two-instrument decoder comparison
 exists anywhere. Not a partition: `channels.tsv`'s machine-readable channel type
 ([eeg-bids](../collection/datasets-benchmarks/eeg-bids/card.md)) records the electrode type and not the
-instrument, so the format strand cannot hold the distinction either. Note that
-[scope-diagram](./scope-diagram.md) §7.1 still lists Mostert as an entry whose "measurement here is
-video eye tracking, not electrooculography"; that line is stale against the corrected card, and §7
-below records it as a synthesis-layer item to close.
+instrument, so the format strand cannot hold the distinction either. An earlier version of this
+paragraph recorded [scope-diagram](./scope-diagram.md) §7.1 as still listing Mostert among the entries
+whose "measurement here is video eye tracking, not electrooculography". That has since been fixed: §7.1
+now marks the entry as no longer belonging on that list and states that it carries both instruments.
+The corresponding item in §7 below is discharged.
 
 **The falsifier.** One study reporting an ocular-derived decoding result from electrooculography
 electrodes and from a simultaneous eye tracker on the same trials.
@@ -336,14 +385,20 @@ reports competitive linear probing whose figures did not survive extraction;
 [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)
 freezes pretrained backbones that are ImageNet-lineage image models rather than biosignal foundation
 models; [ding-2025-cross-attention-fusion](../collection/multimodal-biosignals/ding-2025-cross-attention-fusion/card.md)
-trains its branches. From the other side, the EEG checkpoints have no representation for a peripheral
-channel at all: [bendr-2021](../collection/eeg-models/bendr-2021/card.md) drops "reference electrodes,
-EOG and other auxiliary channels", and
-[brainomni-2025](../collection/eeg-models/brainomni-2025/card.md)'s Sensor Encoder type vocabulary has
-exactly three values, so "an ECG, EOG or respiration channel has no representation in the current
-model". The one apparent exception is not one:
-[biot-2023](../collection/eeg-models/biot-2023/card.md) pretrains across resting EEG, sleep EEG and
-ECG and fine-tunes on any of them **one modality at a time**.
+trains its branches.
+
+From the other side, the earlier text here said the EEG checkpoints "have no representation for a
+peripheral channel at all", and that is a false universal contradicted by this document's own §3 U3.
+[biot-2023](../collection/eeg-models/biot-2023/card.md) is pretrained on resting EEG, sleep EEG **and**
+ECG, and channel identity enters through a single learned lookup keyed on the channel, so an ECG lead
+owns a row in the same vocabulary as an EEG derivation. A peripheral channel is represented there. What
+BIOT does not do is take EEG and ECG in one input: it fine-tunes on any of them **one modality at a
+time**. The claim holds for the two checkpoints it was actually derived from —
+[bendr-2021](../collection/eeg-models/bendr-2021/card.md) drops "reference electrodes, EOG and other
+auxiliary channels", and [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md)'s Sensor
+Encoder type vocabulary has exactly three values (EEG, gradiometer, magnetometer), so "an ECG, EOG or
+respiration channel has no representation in the current model" — and it does not generalise past
+them.
 
 **The scope check.** Genuine absence, bounded. Fusion architectures are strand B's category 2 and
 peripheral foundation models its category 1; both were collected, and both released peripheral
@@ -360,10 +415,19 @@ checkpoint, reporting an EEG-only arm on the same split.
 
 **The search record.** None, and one recorded discovery failure pointing the other way. This is a
 second gap resting only on the unsound disjunct of §6 check 3 — four cards each declining the
-configuration — and it has the same shape as L7, which that pattern got wrong. What distinguishes it
-is that the blocking fact is on the *EEG* side and is structural rather than declarative: the
-checkpoints have no channel type for a peripheral signal, which is a property of published input
-contracts rather than an omission anyone reports.
+configuration — and it has the same shape as L7, which that pattern got wrong.
+
+**The defence against that failure mode, restated after it was found to be overstated.** The gap
+previously claimed a distinguishing feature: that unlike L7, its blocking fact sat on the *EEG* side
+and was structural rather than declarative, because "the checkpoints have no channel type for a
+peripheral signal". With BIOT counted correctly that defence survives only as a disjunct. For BENDR
+and BrainOmni the structural claim holds and is a property of published input contracts. For BIOT it
+does not: the contract admits a peripheral channel and the missing thing is a *combined-input
+experiment*, which is exactly the declarative kind of absence — nobody reports having run it — that
+L7's failure showed to be weak evidence. So L6 now rests on a structural bar over part of the
+checkpoint set and a self-declaration over the rest. That is weaker than the defence as written, and
+it moves L6 closer to L4 and L8 than the earlier text allowed. Recorded rather than repaired, because
+the repair is a search and none was run.
 
 ### L8. Spoken versus written has never been decoded from EEG within subject
 
@@ -385,16 +449,22 @@ spoken-language contrast".
 
 **The scope check.** Genuine absence, **bounded**. Strand D's category 3 and category 5 both target
 exactly this contrast; the collection found the four entries above and no fifth.
-**The bound:** forty-eight of OmniEEG-Bench's fifty-four datasets and eight of Brain4FMs's eighteen are
-not named on their cards, because the per-dataset tables live in supplementary material and an
-appendix ([scope-diagram](./scope-diagram.md) §3.1, [dataset-hierarchy](./dataset-hierarchy.md) §1).
-A within-subject auditory-versus-visual language task could be sitting inside those 56 unnamed
-recordings and this corpus would not see it. That is a resource limit with a named cause and a known
-closing action.
+**The bound, and it is smaller than first stated:** forty-eight of OmniEEG-Bench's fifty-four datasets
+and eight of Brain4FMs's eighteen are not named on their cards
+([scope-diagram](./scope-diagram.md) §3.1, [dataset-hierarchy](./dataset-hierarchy.md) §1). A
+within-subject auditory-versus-visual language task could be sitting inside those 56 unnamed
+recordings and this corpus would not see it. But the stated *cause* was wrong for the larger of the
+two. [omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md) has since retracted its
+own claim that "supplementary tables 5 to 7 were outside the retrieved document": Supplementary Tables
+2, 5, 6 and 7 are all present, and the card records that the per-dataset accuracies "are therefore
+verifiable from this source". So for 48 of the 56, closing the bound is a re-read of a document the
+corpus already holds, not a re-retrieval. Only Brain4FMs's eight remain behind an appendix that was
+not obtained. The resource limit is real and the closing action is cheaper than the earlier text
+implied.
 
 **The falsifier.** One paper reporting within-subject EEG decoding of auditory versus visual language
-presentation with a stated split. Recovering OmniEEG-Bench's supplementary tables 5 to 7 would either
-close the gap or tighten it.
+presentation with a stated split. Reading OmniEEG-Bench's Supplementary Tables 5 to 7, which are
+present in the retrieved source, would either close the gap or tighten it.
 
 **The search record.** None ran on the contrast itself. This is the third survivor whose positive
 support is a set of cards declining the contrast rather than a search for it, and the bound above is
@@ -468,22 +538,47 @@ simultaneous participants, two of them from one laboratory, and none of the thre
 ones exceeds 28 channels ([candidate-datasets-ontology](./candidate-datasets-ontology.md) §6.2).
 
 **The scope check.** Genuine absence, and it is the corpus's only absence backed by a recorded null
-search — but two of the seven returns must be discounted, and the index says so itself. First, the
-OpenNeuro zeros mean "nothing tagged with that keyword", because
+search — but **three** discounts apply, not the two the earlier text allowed, and after them the gap
+rests on much less than "seven queries" suggests.
+
+First, the OpenNeuro zeros mean "nothing tagged with that keyword", because
 [openneuro-2021](../collection/candidate-datasets/openneuro-2021/card.md) records that
 `DatasetSearchInput` has no free-text field, so whether the zero reflects the archive's holdings or its
-tagging "cannot be distinguished from the interface". That is a resource limit inside an otherwise
-genuine finding. Second, the `opencite` returns were not empty but the wrong kind of thing — reviews
-and methods papers, most of which strand D's hyperscanning exclusion turns away
-([scope-diagram](./scope-diagram.md) §1.1). What survives both discounts is the PubMed zero and the
-fNIRS/fMRI composition of what does get released, which is a boundary of the field.
+tagging "cannot be distinguished from the interface". Second, the `opencite` returns were not empty but
+the wrong kind of thing — reviews and methods papers, most of which strand D's hyperscanning exclusion
+turns away ([scope-diagram](./scope-diagram.md) §1.1).
+
+**Third, and this is the one the earlier text treated as the gap's strongest return: the PubMed
+title-only zero carries no information about the field, because it has demonstrated zero recall on
+known positives.** The query is
+`EEG[Title] AND dataset[Title] AND (dyad*/dyadic/interpersonal/two-person)[Title]`, and it returned 0.
+The corpus holds two entries it should have found if it were a valid probe —
+[boa-actors-2025](../collection/candidate-datasets/boa-actors-2025/card.md) and
+[livewire-2024](../collection/candidate-datasets/livewire-2024/card.md), both open dyadic EEG releases,
+both in *Scientific Data* and therefore both PubMed-indexed, and both returned by the adjacent
+`"Sci Data"[Journal]` query in the same table. A query that misses two positives already in this
+corpus cannot be read as evidence that a third does not exist; it is evidence that dataset descriptors
+do not put those words in their titles. The earlier text said "what survives both discounts is the
+PubMed zero", and the PubMed zero is precisely what does not survive.
+
+**What is left, stated arithmetically because the document leans on this gap's search record.** Of the
+seven tabulated queries, four now carry no information about the field: the two `opencite` sweeps, the
+OpenNeuro keyword zeros, and the title-only zero. Of the three remaining, two returned only known
+positives — the `Sci Data` query's two carded releases, and the 2-hit `(dual-EEG OR hyperscanning) AND
+open dataset` query, whose one dataset is fNIRS. So the gap's positive content reduces to the
+composition of a **single fifteen-hit query**, PubMed
+`hyperscanning[Title] AND (dataset[Title] OR data[Title])`, every dataset release in which is fNIRS or
+fMRI, corroborated by one hit from the 2-hit query. That is still the only absence in this document
+backed by looking, and it is still worth more than the six that rest on card self-declarations. It is
+not seven independent probes, and §2's table row should be read with that in mind.
 
 **The falsifier.** One published, downloadable EEG data descriptor with two or more simultaneously
 recorded participants, more than ten pairs, and a stimulus-condition label, from a group other than
 Contreras-Vidal's. The falsifier is stated at more than ten pairs and outside one laboratory precisely
 because the unqualified version has already fired.
 
-**The search record.** Yes — seven queries, two discounted, tabulated.
+**The search record.** Yes — seven queries, tabulated; three discounts covering four of them, and one
+fifteen-hit query carrying the surviving claim.
 
 **And the sharpening.** [strum-2018](../collection/candidate-datasets/strum-2018/card.md) is the
 release the restated gap describes as missing: 56 participants as 28 pairs at 206 channels, from a
@@ -553,15 +648,27 @@ downstream number above roughly 137 channels. BrainOmni's dense evaluations are 
 densest EEG downstream set is PhysioNet-MI at 64. The supported-channel inventory for the scalp-EEG
 checkpoints is BIOT 18 fixed, EEGPT 58, LaBraM 137, CBraMod arbitrary via an input-conditioned channel
 embedding ([adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md); LaBraM's figure
-is contested at 136/137/128, [science-map](./science-map.md) §11), and
+is contested at 136 against 137, [science-map](./science-map.md) §11), and
 [reve-2025](../collection/eeg-models/reve-2025/card.md)'s corpus spans 396 unique electrode names on
 mostly 10-5 layouts without a dense downstream number. On the data side, the densest recording any
-carded checkpoint has been **evaluated on** is Grosse-Wentrup 2009 at 128 in
-[moabb](../collection/datasets-benchmarks/moabb/card.md)'s table, followed by Chisco at 125 in
-[brain4fms](../collection/datasets-benchmarks/brain4fms/card.md) and Things-EEG at 63
-([dataset-hierarchy](./dataset-hierarchy.md) §7). STRUM at 206 is denser than all of them and is the
-densest EEG layout in the corpus; the earlier text called Grosse-Wentrup "the densest recording
-anywhere in the corpus", which contradicted STRUM eight sections later and is corrected here.
+carded checkpoint has been **evaluated on** is Chisco at 125 in
+[brain4fms](../collection/datasets-benchmarks/brain4fms/card.md), followed by Things-EEG at 63
+([dataset-hierarchy](./dataset-hierarchy.md) §7). Two corrections are folded into that sentence. The
+earlier text called Grosse-Wentrup 2009 "the densest recording anywhere in the corpus", which
+contradicted STRUM eight sections later. And Grosse-Wentrup at 128 is not the right comparator for
+this claim at all: it appears in [moabb](../collection/datasets-benchmarks/moabb/card.md)'s table, and
+MOABB's own card records **checkpoints covered: none** — it benchmarks six classical pipelines and
+predates the foundation-model literature. It is the densest recording in the corpus's *benchmark*
+tables; it is not a recording any checkpoint has been evaluated on. STRUM at 206 is denser than all of
+them and is the densest EEG layout in the corpus.
+
+Note also that LaBraM's channel figure is contested at 136 against 137
+([science-map](./science-map.md) §11), and the earlier text folded a third value, 128, into that
+dispute. It does not belong there.
+[labram-2024](../collection/eeg-models/labram-2024/card.md)'s 128 is the size of a **position-embedding
+table** that a harmonised pipeline fits to each dataset's channel count, which is a different quantity
+from the montage figure AdaBrain-Bench's body and Table 7 disagree about. Two values are in dispute,
+not three.
 
 That residue keeps its **bound by §3 U5** — five of the six uncarded checkpoints are unknown on this
 axis — and it is what A2 in §4 rests on. A2 is a smaller contribution than the retracted gap implied,
@@ -687,10 +794,19 @@ returned HTTP 503 throughout retrieval over both protocols — and the DEAP case
 because the paper contradicts itself about whether an ECG channel exists and the object that would
 settle it is the unreadable one ([deap-2012](../collection/candidate-datasets/deap-2012/card.md)).
 TUAB's and TUEV's `_AAREADME` behind a registration wall, which is where patient-disjointness of the
-field's most reported partition would be recorded. OmniEEG-Bench's 48 and Brain4FMs's 8 unnamed
-datasets, in supplementary material. Both strand B reviews' reference lists, behind anti-bot barriers.
-None of these is a fact about the field, and each is closable by re-retrieval.
+field's most reported partition would be recorded. Brain4FMs's 8 unnamed datasets, in an appendix that
+was not obtained. Both strand B reviews' reference lists, behind anti-bot barriers. None of these is a
+fact about the field, and each is closable by re-retrieval.
 [scope-diagram](./scope-diagram.md) §3.1, §3.2.
+
+**One member of that list has been partly discharged and is moved out of it.** OmniEEG-Bench's 48
+unnamed datasets were filed here on the strength of that card's statement that its supplementary
+tables were outside the retrieved document. The card has since retracted that: Supplementary Tables 2,
+5, 6 and 7 are all present, and the per-dataset accuracies "are therefore verifiable from this source"
+([omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md)). The 48 are still unnamed on
+the card, so every claim bounded by them stays bounded; what changes is the closing action, from
+re-retrieval to re-reading a source already held. The same correction applies wherever this document
+cites the OmniEEG bound — L8 and §5.1.
 
 **U7. "Nobody estimates physiology from a camera without contact."** — **Scope judgment, vacuously
 honoured.** Remote photoplethysmography and camera-based respiration remain excluded with no exception
@@ -771,8 +887,10 @@ formula to achieve; and the auditory-spread-in-time asymmetry must be handled, w
 unaddressed ([candidate-datasets-ontology](./candidate-datasets-ontology.md) §3). None of the three is
 established. Two further conditions were not visible before the full paper was read, and both are
 developed in §6.3: the two visual cells sit on **different screens** — text comms left, satellite map
-right — so the transfer test's ocular component changes sign between the training cells and the test
-cells; and stimuli are presented over **loudspeakers** in a room seating both participants, so a
+right — so any *signed* horizontal ocular component of the decision function is not comparable between
+the training cells and the test cells, and the screen assignment of the two auditory cells is not
+stated anywhere in the paper and has to be recovered from the event stream before the transfer test is
+specified; and stimuli are presented over **loudspeakers** in a room seating both participants, so a
 visual-verbal trial for one subject can co-occur with an audible auditory-verbal stimulus for the
 other, which contaminates the visual cell of the label itself.
 
@@ -781,9 +899,13 @@ other, which contaminates the visual cell of the label itself.
 [brainomni-2025](../collection/eeg-models/brainomni-2025/card.md) reports numbers at 269, 306 and 372
 sensors (§2.1). What has not been done is a scalp-EEG checkpoint above roughly 137 channels. A2 is
 that, and it is a narrower claim than the retracted gap supported.
-*Dataset:* STRUM at 206, the densest EEG layout in the corpus and 60% denser than the densest
-recording any carded checkpoint has been evaluated on
-([dataset-hierarchy](./dataset-hierarchy.md) §7).
+*Dataset:* STRUM at 206, the densest EEG layout in the corpus and **65% denser** than the densest
+recording any carded checkpoint has been evaluated on — Chisco at 125 in
+[brain4fms](../collection/datasets-benchmarks/brain4fms/card.md)
+([dataset-hierarchy](./dataset-hierarchy.md) §7). The earlier figure of 60% was computed against
+Grosse-Wentrup 2009 at 128, which belongs to
+[moabb](../collection/datasets-benchmarks/moabb/card.md)'s table and is therefore the wrong
+comparator: MOABB benchmarks six classical pipelines and covers no checkpoints at all (§2.1).
 *Method:* the checkpoint choice is forced and narrow.
 [cbramod-2025](../collection/eeg-models/cbramod-2025/card.md) is the **only** carded checkpoint whose
 spatial mechanism admits 206 channels without a name lookup, a coordinate, or a selection step: its
@@ -864,8 +986,14 @@ and the 2×2 does not subtract it, because gaze differs between reading and list
 material is verbal or not ([candidate-datasets-ontology](./candidate-datasets-ontology.md) §3). So on
 this label the removal cost and the confound magnitude are the same number. That makes the measurement
 easier to obtain and harder to interpret, and the interpretation must be stated as a confound estimate
-rather than as a cost. §6.3 adds the further complication that the 2×2's two visual cells sit on
-different screens, which changes the sign of the horizontal-EOG component between them.
+rather than as a cost. §6.3 adds a further complication that bears on *which* ocular features may be
+used: the 2×2's two visual cells sit on different screens, so a signed horizontal derivation is not
+comparable across them, while the sign-invariant family — vertical deflection, blink rate — is. STRUM's
+electrooculography is described only as "2-channel" with no stated placement, so whether a horizontal
+derivation even exists in it is unrecorded and is one more thing the author request has to establish.
+*And a scheduling note:* A5 and A7 are two measurements but **one campaign**. Both run on STRUM's
+ocular instrumentation, both are gated on the same author request, and neither can start before it
+returns. They should be costed and scheduled as one item, not two.
 
 **A6 — the L7 residue, engineered against pretrained peripheral features on a cognitive-state task.**
 *What it is now worth:* the comparison exists in two other forms already —
@@ -887,7 +1015,9 @@ embeddings, one task, one split, with the EEG arm reported alongside. Angkan's 5
 precedent for how wide the engineered arm should be, and is wider than twelve.
 *What would have to be true:* very little. This is the cheapest of the seven, the engineered space is
 "small enough to compute exhaustively", and both sides are released. The binding risk is the window
-mismatch of §6.3, which applies to whichever side wins.
+mismatch of §6.3 — smaller than the earlier text claimed, now that the corpus's peripheral window range
+is 5 to 20 seconds rather than 5 to 60, but still real against a stimulus-locked epoch of 2 to 4, and
+it applies to whichever side wins.
 *One hazard on the substrate:* GX's participant identifiers are not stable across repeats — one
 participant appears as 22, 23 and 24 — so "a subject-wise split built naively on the identifier column
 would leak".
@@ -906,9 +1036,10 @@ orientation working memory rather than a language contrast.
 *Method:* run the same ocular decoder on the EOG derivation and on the tracker's gaze and pupil
 channels, on the same trials, and report both. Mostert's deposit is the cheap open rehearsal for the
 pipeline before STRUM arrives.
-*What would have to be true:* the eye-tracker stream must be released and time-aligned with the
-amplifier stream. STRUM records it, but the tracker is a separate device rather than an amplifier
-channel, and no measured device offset is reported for it —
+*What would have to be true:* A7 shares A5's precondition — the same author request — and adds one of
+its own, which is why the two are one campaign but not one measurement. **The eye-tracker stream must
+be released and time-aligned with the amplifier stream.** STRUM records it, but the tracker is a
+separate device rather than an amplifier channel, and no measured device offset is reported for it —
 [lsl-2024](../collection/candidate-datasets/lsl-2024/card.md) establishes that LSL "does not remove
 the constant transport delay of a device; it makes that delay stable enough that a single pre-measured
 constant can be subtracted. Any recording that did not measure its device offsets carries them
@@ -938,7 +1069,10 @@ registry sweep, and a data licence that is unknown rather than restrictive
 on STRUM depends first on that request succeeding, and on the cap layout or electrode coordinates
 being obtainable in the same request, since A2 turns on them. Phase 5 should treat the data request
 and the coordinate request as one action with a go/no-go outcome, and should have GX and COG-BCI as
-the named fallback for A3 and A6.
+the named fallback for A3 and A6. **A5 and A7 should be scheduled as a single campaign** rather than
+as two routes: they are two measurements on the same instrumentation, gated on the same request, and
+A7 carries one further precondition of its own — a released, time-aligned eye-tracker stream whose
+device offset is unmeasured and must be either recovered from the authors or estimated.
 
 ---
 
@@ -997,7 +1131,13 @@ preserved, because only the second is closable.
   TUAB number in this corpus inherits that partition.
 - **What most of the field's leaderboard rows were computed on.** Forty-eight of OmniEEG-Bench's 54
   and eight of Brain4FMs's 18 evaluation datasets have no identity in this corpus
-  ([dataset-hierarchy](./dataset-hierarchy.md) §1, §5.2).
+  ([dataset-hierarchy](./dataset-hierarchy.md) §1, §5.2). This bullet belongs in §5.1 only for
+  Brain4FMs. The OmniEEG half is **not** inaccessible: that card has retracted its own claim that the
+  supplementary tables were outside the retrieved document, and records Supplementary Tables 2, 5, 6
+  and 7 as present with per-dataset accuracies verifiable
+  ([omnieeg-bench](../collection/datasets-benchmarks/omnieeg-bench/card.md)). Forty-eight of the 56 are
+  therefore unread rather than unreachable, which is a defect in this corpus's extraction and not a
+  claim the corpus cannot make.
 
 ### 5.2 Questions where the corpus holds two entries pointing opposite ways and no basis to choose
 
@@ -1015,7 +1155,8 @@ preserved, because only the second is closable.
   cognitive load, therefore EOG will help" is crossing a boundary the corpus does not license.
 - **Does peripheral physiology add information beyond EEG?** Consistent with near-zero:
   [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
-  (+0.002), [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
+  (+0.002, but see below on what its split is),
+  [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
   (not significant), and the EEG+ECG cell of
   [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
   (+2.75, the smallest of its three pairings). Inconsistent:
@@ -1046,20 +1187,27 @@ Stated as self-criticism, because the previous two subsections are about the cor
 about the writing.
 
 - **"The apparent value of peripheral physiology shrinks toward zero as evaluation gets stricter."**
-  This is the load-bearing claim of §6.3 and it rests on **three** readable arms with stated splits:
+  This is the load-bearing claim of §6.3. It was written as resting on **three** readable arms with
+  stated splits; it rests on **two**.
   [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
-  (n = 25, acoustic annoyance),
+  (n = 25, acoustic annoyance) has been removed from the count: its card now records that the Methods
+  describe 5-fold subject-independent GroupKFold while the Conclusion states the study "used 5-fold
+  cross-validation **without subject-wise separation**", and until that is settled the entry "cannot be
+  counted among the corpus's subject-disjoint evaluations and its +0.002 fusion gain cannot be read as
+  a subject-independent result". What is left is
   [hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
-  (n = 14, workload) and
+  (n = 14, workload, train-on-early/test-on-late within subject) and
   [angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
-  (n = 21, driving load). Sixty participants across three studies, three different manipulations, none
-  of them a stimulus-locked language contrast, and the strongest of the three (+0.002) is *gated* so
-  that its headline is a mixture of the fused and EEG-only outputs rather than a fusion measurement.
-  The direction is supported. The magnitude is not, and no quantity in §6.3 should be read as an
-  effect-size estimate.
+  (n = 21, driving load, leave-one-subject-out). **Thirty-five participants across two studies**, two
+  different manipulations, neither a stimulus-locked language contrast. Azad is still evidence — its
+  +0.002 is near zero under any reading of its folds, and its fusion gate is an admission independent
+  of the split — but it is no longer one of the arms this claim's *protocol-strictness* form counts,
+  because what its protocol was is exactly the thing in dispute. The direction is supported, on less
+  than it was. The magnitude is not, and no quantity in §6.3 should be read as an effect-size estimate.
 - **"A small supervised model frequently matches or beats a checkpoint."** Better supported — six
-  entries, four of them third-party re-runs rather than quoted tables
-  ([eeg-models-ontology](./eeg-models-ontology.md) §4.2) — but two qualifications hold. One of the six
+  entries, **five** of them third-party rather than quoted tables, the one first-party entry being
+  BENDR ([eeg-models-ontology](./eeg-models-ontology.md) §4.2; the count of four in §1 and here was
+  wrong in the direction of understating the support) — but two qualifications hold. One of the six
   has its magnitude behind a paywall and only its sign on record
   ([sirca-2026-peft-motor-imagery](../collection/eeg-models/sirca-2026-peft-motor-imagery/card.md)),
   and the corpus's general caution applies to the rest: "there is always a concern that authors
@@ -1081,8 +1229,10 @@ about the writing.
   ([strum-2018](../collection/candidate-datasets/strum-2018/card.md)). §6.0 offers a reconciliation
   for the second and third of those, and it is a hypothesis, not a resolution. The 2×2 is a **design
   property as quoted**, not a validated one: whether its cells are balanced, and whether they are
-  matched on stimulus duration, is unrecorded — and §6.3 now adds that two of its four cells differ in
-  screen position and two in spatialisation, which is a design fact the 2×2's symmetry hides.
+  matched on stimulus duration, is unrecorded — and §6.3 now adds that the two visual cells differ in
+  screen position, that the two auditory cells differ in spatialisation, and that **which side screen
+  each auditory cell occupies is not stated by the paper at all**. All three are design facts the 2×2's
+  symmetry hides, and the third is an absence in the source rather than an asymmetry in the design.
 - **The pair-session argument in §6.0** is this document's own inference in its *unit* claim. No card
   treats the co-participant as a level of identity, and [science-map](./science-map.md) §2's table of
   six levels has no row for it. What is now quoted rather than inferred is the mechanism: stimuli are
@@ -1107,13 +1257,16 @@ The review exists to test three comparisons. Each is assessed against the corpus
 and would not establish. Where the corpus says the plan is sound, that is said; where it says a
 comparison would not establish what it appears to, that is said equally plainly.
 
-### 6.0 One finding that conditions all three: the pair-session is the defensible holdout unit, and n=28 is not the reason to expect nothing
+### 6.0 One finding that conditions all three: the pair-session is the defensible holdout unit, and n=28 bounds what is resolvable without being a reason to expect nothing
 
 **This section previously argued that STRUM's n of about 28 puts every effect inside the confidence
-interval, and that argument is withdrawn.** It was the most consequential conclusion in the document
+interval, and that universal is withdrawn.** It was the most consequential conclusion in the document
 and it was wrong in a way that would have discouraged the project from work its own dataset paper has
-already shown to be feasible. What survives is the split-unit recommendation, which is a design
-choice, not a power verdict. The two are separated below because conflating them was the original
+already shown to be feasible. What replaces it is not "the effect is detectable" but a measured floor:
+the dataset paper resolved a twelve-point and a six-point difference on these data and failed to
+resolve a four-point and a two-point one, at a denominator more favourable than the one this document
+recommends. What survives independently of all that is the split-unit recommendation, which is a design
+choice and not a power verdict. The three are separated below because conflating them was the original
 error.
 
 #### What survives: the pair-session as the defensible conservative unit
@@ -1175,6 +1328,17 @@ stronger than all three.
    design: cross-validate within subject, then "conclusions should be drawn from the group, and not at
    the subject level". STRUM is a multi-trial, multi-subject, within-subject cognitive design. It is
    the case the paper carves out, not the case it warns about.
+
+   **One tension inside this reason, which the earlier text did not state.** The exemption and the
+   prescription do not rest on the same n. The exemption is granted because such studies "often have
+   access to higher sample sizes using multiple trials per subjects and multiple subjects" — that is,
+   its mechanism is the trial count. The prescription routes inference to the group level, where the
+   trial count is precisely what is *not* the degrees of freedom: the unit is whatever the group is
+   composed of, and under the pair-session recommendation above that is 28 pairs. Both halves of
+   Varoquaux are being used here, and they point at different denominators. Reason 1 therefore
+   licenses "this is not the design class the paper warns about"; it does not license "and therefore n
+   is large". The empirical refutation below is what carries the argument, and it should not be read
+   as leaning on this one.
 2. **Which n the table refers to was never settled.** The document's own cited card records that for
    EEG, where one participant contributes thousands of epochs, which n Varoquaux's table indexes "is
    exactly the question ... and this paper does not settle it". Reading "n = 30" as "30 pair-sessions"
@@ -1192,24 +1356,42 @@ stronger than all three.
    context of pipeline search across arbitrary choices. So reason 3 is the weakest of the three and is
    stated at that strength.
 
-**And the empirical refutation, which is stronger than all three.** STRUM's own authors resolved a
-12-point difference between methods on this exact recording. Section V reports response-error
-detection with dual-spectral regularized logistic regression at **Az 0.75 ± 0.13**, HDCA at
-**0.71 ± 0.10** and plain shrinkage LDA at **0.63 ± 0.07**, all significantly above the 0.5 chance
-level, with "differences between DSLR the other two methods ... highly significant at p<0.01".
-Task-performance estimation over 8-second windows reached 0.55 ± 0.06 to 0.61 ± 0.08, "above the
-chance level of 0.5 at p<0.01", with the DLCSPcv-versus-CSP difference significant at p<0.05 — a
-difference of about six points. The protocol was per-subject blockwise cross-validation matched to the
+**And the empirical refutation, which is stronger than all three — but which also measures its own
+floor.** STRUM's own authors resolved a 12-point difference between methods on this exact recording.
+Section V reports response-error detection with dual-spectral regularized logistic regression at
+**Az 0.75 ± 0.13**, HDCA at **0.71 ± 0.10** and plain shrinkage LDA at **0.63 ± 0.07**, all
+significantly above the 0.5 chance level, with "differences between DSLR the other two methods ...
+highly significant at p<0.01". The protocol was per-subject blockwise cross-validation matched to the
 5-block session structure, with nested blockwise CV for hyperparameters and t-tests for significance.
 
-One caveat, so this is not over-read. The authors' significance tests are across **subjects**, not
-across pair-sessions, so their effective denominator is roughly 50 to 56 rather than 28, and a project
-that adopts the pair-session unit of the previous subsection halves it. That weakens the argument by a
-factor of two on n; it does not restore the retracted claim, because the retracted claim was that at
-this scale "the interval swallows the effect" for differences of the size the corpus reports, and a
-12-point difference at p<0.01 and a six-point difference at p<0.05 were both resolved here under
-matched folds. **Model-versus-model differences of the size this project is looking for have been
-detected on this recording.** The claim that they cannot be is refuted by the dataset paper.
+**The same section also reports where that resolution stops, and the earlier text quoted only the half
+that helped.** Task-performance estimation over 8-second windows gives CSP 0.55 ± 0.06, Spec-CSP
+0.56 ± 0.07, FBCSP 0.59 ± 0.07 and DLCSPcv 0.61 ± 0.08, all above chance at p<0.01 — and then:
+"**only** the difference between DLCSPcv and CSP was significant at p<0.05". So on this recording, at
+this n, a six-point model-versus-model difference was resolved and a **four-point** one
+(FBCSP 0.59 against CSP 0.55) and a **two-point** one (DLCSPcv 0.61 against FBCSP 0.59) were not. The
+resolution floor for the task-performance family sits somewhere between four and six points.
+
+**Three statements in this document have to be reconciled, and reconciling them costs the verdict
+some of its strength.** (i) Section V resolved 12 points and six points. (ii) Section V failed to
+resolve four points and two points, at n of about 50 to 56 subjects. (iii) §6.2 puts the effect
+comparison 2 must detect at "a median of a few points" across AdaBrain-Bench's per-dataset margins,
+and this section recommends the pair-session unit, which roughly **halves** the denominator to 28. Put
+together: the *median* of the target effect distribution sits at or below the floor Section V
+demonstrates, and moving to the pair-session unit raises that floor rather than lowering it. The
+authors' own significance tests are across subjects, not across pair-sessions, so their denominator is
+the more favourable one.
+
+**So the claim is restated at the strength the evidence carries.** Model-versus-model differences of
+the size this project is looking for have been detected on this recording **at the tail of the target
+distribution, not at its median** — twelve points yes, six points yes, four points no. The retracted
+claim is still retracted: it said the interval swallows *every* effect, and that is false, because two
+differences were resolved here under matched folds. But the replacement is not "the effect is
+detectable"; it is that detectability depends on where in the distribution the effect falls, that the
+demonstrated floor is four to six points at the more favourable denominator, and that a project
+targeting a few points at n = 28 pair-sessions is working at or under that floor. A pre-registered
+effect size and a power calculation are therefore not optional here, and §7 records that the corpus
+supplies neither for this contrast.
 
 #### The contradiction with §6.2, resolved
 
@@ -1314,39 +1496,65 @@ concluded that a null in comparison 2 would be uninterpretable. **Banville's axi
 per class, not unlabelled data volume.** Gigabytes of recording say nothing about where a dataset sits
 on it.
 
-Counting the right quantity reverses the conclusion. STRUM's two verbal side tasks share a stimulus
-set of "ca. 200 non-repeating statement sentences", so a subject sees on the order of **100 trials per
-class** if the pool is divided between the auditory-verbal and visual-verbal tasks, or about 200 if
-each task draws a set of that size. Pooled across 50 to 56 subjects, that is roughly **5,000 to 11,000
-labelled examples per class** — straddling Banville's inversion point rather than sitting far above
-it, and per subject two orders of magnitude below it, deep in the regime where pretraining helps most.
-(The estimate is arithmetic on the card's sentence count and should be checked against the released
-event stream; a lower figure is possible if some presentations are unusable.)
+Counting the right quantity changes the conclusion, though not by as much as this section first
+claimed. STRUM's two verbal side tasks share a stimulus set of "ca. 200 non-repeating statement
+sentences", so a subject sees on the order of **100 trials per class** if the pool is divided between
+the auditory-verbal and visual-verbal tasks, or about 200 if each task draws a set of that size.
+Pooled across 50 to 56 subjects, that is roughly **5,000 to 11,000 labelled examples per class**.
 
-So the inference runs the other way. **A null in comparison 2 would be *more* informative, not less**:
-STRUM is at or below the label volume where the corpus's own measurement says self-supervision should
-still be winning, so a foundation model failing to beat a small supervised network here is a failure
-in the regime most favourable to it. That is a result about transfer, not a result about dataset size.
+**The hedge on that range needs to be wider than it was.** Two things narrow it downward and the
+earlier parenthesis covered neither. First, the 11,000 end requires the *less* natural reading of the
+source. The sentence is "The shared feature of the two verbal tasks is that the stimulus set is a
+collection of ca. 200 non-repeating statement sentences" — read straightforwardly, that is one shared
+pool of about 200 split across the two tasks, giving about 100 per class and roughly 5,000 to 5,600
+pooled; the doubled reading, one 200-sentence set per task, is what produces 11,000 and is not what the
+sentence says. Second, the same paragraph adds that "a majority of statements and queries are
+identified as distractors by means of having a call-sign different from the one given to the subject at
+the beginning of the experiment". Whether a distractor presentation counts as a labelled example for a
+modality contrast is a decision, not a fact — the stimulus is still delivered in its modality — but if
+it does not, the usable count falls by more than half again. The honest range is therefore anchored
+nearer 5,000 than 11,000 and has a plausible floor well below it. It is arithmetic on a sentence count
+in a paper that does not report trials per condition, and the released event stream is the only thing
+that settles it (§7).
 
-One mapping detail matters for which arm the curve applies to. Banville's contrast is **frozen
+**So the inference is weaker than "reversed".** The earlier text concluded that a null in comparison 2
+would be *more* informative than a null elsewhere. That overshoots. Banville's curve at 5,000 to 11,000
+examples per class is in the neighbourhood of its crossover, and the crossover is by definition where
+the measured advantage is approximately zero: the card records full supervision overtaking only "above
+roughly 10,000 examples per class" and then "by a 1.6-3.5% margin only", with CPC on TUHab "within
+about 1 percent" of supervision at full labels. A null in that neighbourhood is the *predicted*
+outcome of Banville's own measurement, not a failure of transfer in its best regime. What the corrected
+count supports is the negative form: **STRUM's label count is not high enough to make a null
+uninformative.** The earlier argument — that raw data volume put STRUM far above the inversion point,
+so a null would say nothing — is refuted. The positive form, that a null here would be especially
+damning, is not supported and is withdrawn. The earlier text also added that the per-subject count sits
+"two orders of magnitude below" the inversion point, "deep in the regime where pretraining helps most";
+that clause is dropped, because it silently switches to a per-subject training regime that none of the
+three comparisons uses.
+
+**And one mapping detail restricts which arm any of this applies to.** Banville's contrast is **frozen
 features read out by a linear probe** against a fully trained supervised network — the card records
 this explicitly as "not the like-for-like fine-tuning comparison that later work in this strand runs".
-The inversion point therefore locates the **frozen probe** arm of comparison 2, not the fine-tuned
-one. Since §6.2 already recommends reporting both, the curve gives the frozen arm a published
-expectation to be measured against, and the fine-tuned arm has none.
+The curve therefore indexes the **frozen probe** arm and nothing else. Comparison 2 as planned is
+fine-tuning. Since §6.2 recommends reporting both arms, the curve gives the frozen arm a published
+expectation to be measured against; **the fine-tuned arm, which is the planned comparison, has none**,
+and no label-count expectation from Banville may be carried to it.
 
 [adabrain-bench-2025](../collection/eeg-models/adabrain-bench-2025/card.md) still reaches a related
 explanation from the other direction, attributing its small margins to downstream datasets being large
 enough that supervised learning suffices — but its datasets are TUAB, SHHS and Sleep-EDF-scale, and
 STRUM is not.
 
-**Verdict: sound, with one design change, and the change survives with its rationale reversed.** Report
-comparison 1 as a **label-count curve** rather than at a single operating point, following Banville's
-design. The reason is no longer "to check whether STRUM is above the inversion point and therefore
-uninformative"; it is that the curve is the shape of the effect the project is testing, that STRUM's
-label count sits in the interesting part of it, and that a curve locates the result on an axis the
-corpus has already measured instead of leaving it as one point. It costs several training runs of a
-small network and it remains the highest-value change to the plan in this document.
+**Verdict: sound, with one design change, and the change survives with its rationale restated rather
+than reversed.** Report comparison 1 as a **label-count curve** rather than at a single operating
+point, following Banville's design. The reason is no longer "to check whether STRUM is above the
+inversion point and therefore uninformative", and it is not "a null here would be especially
+informative" either — near the crossover, the measured advantage in either direction is small enough
+that a single operating point is close to uninterpretable whichever way it comes out. That is the
+argument for the curve: it is the shape of the effect the project is testing, STRUM's label count
+lands in the flat part where one point says least, and a curve locates the result on an axis the
+corpus has already measured. It costs several training runs of a small network and it remains the
+highest-value change to the plan in this document.
 
 ### 6.2 Comparison 2 — an off-the-shelf pretrained EEG model fine-tuned on STRUM
 
@@ -1427,21 +1635,38 @@ to transfer rather than to one model's channel contract. Report the pair-session
 subject-disjoint arm, on the authors' blockwise protocol, with group-level inference over per-pair
 scores and a permutation null (§6.0).
 
-**Verdict: sound in premise, conditional in execution, and with one claimed strength withdrawn.** The
-comparison is worth running. Its out-of-distribution property is now measured to be worth about a
-third of a balanced-accuracy point and should not be sold as a contribution. What is genuinely in its
-favour is the label geometry: within-subject variation, an identity remedy that is predicted to help
-rather than hurt, and a label count that sits in the part of Banville's curve where pretraining is
-supposed to win. Stated as "we fine-tuned checkpoint X and it beat a from-scratch baseline", it would
-claim considerably more than it establishes.
+**Verdict: sound in premise, conditional in execution, with one claimed strength withdrawn and a
+second narrowed to one arm.** The comparison is worth running. Its out-of-distribution property is now
+measured to be worth about a third of a balanced-accuracy point and should not be sold as a
+contribution.
+
+What remains in its favour is the label geometry, and it has to be split in two, because the earlier
+text claimed both halves for the comparison as a whole and only one of them applies that widely.
+*Within-subject label variation, with an identity remedy predicted to help rather than hurt, applies
+to comparison 2 in either regime* — it is a property of the design, and Lin's 6-to-12-point improvement
+from erasure is measured on fine-tuned as well as frozen representations. *The label-count argument
+does not.* Banville's curve is a frozen-probe-versus-supervised contrast (§6.1), so "STRUM's label
+count sits in the part of the curve where pretraining is supposed to win" is a statement about the
+**frozen arm**, which the plan treats as the secondary report. For the fine-tuned arm — the comparison
+as actually specified — the corpus supplies no label-count expectation at all. That is a further reason
+to report both arms rather than one: without the frozen arm there is nothing in the corpus to locate
+the result against.
+
+Stated as "we fine-tuned checkpoint X and it beat a from-scratch baseline", the comparison would claim
+considerably more than it establishes.
 
 ### 6.3 Comparison 3 — the fine-tuned model plus peripheral physiology
 
 This is the comparison the corpus says would not establish what it appears to. The case was rebuilt
-after the refutation pass: one of its two legs — that the effect is too small to detect at this n —
-is withdrawn with §6.0, and the other, that the channels most likely to show a gain would show it for
-the wrong reason, is now much stronger, because STRUM's own authors observed the mechanism operating
-on these data and because the 2×2 control has a design flaw the earlier reading did not see.
+after the refutation pass and adjusted again after the review that followed it. One of its two legs —
+that the effect is too small to detect at this n — is mostly withdrawn with §6.0, which now also
+records the resolution floor Section V demonstrates and so keeps power as a background concern rather
+than dropping it entirely. The other leg, that the channels most likely to show a gain would show it
+for the wrong reason, is stronger than when it was written, because STRUM's own authors observed the
+mechanism operating on these data. Two of the supports added for it in the last revision have been
+cut back below: the 2×2's screen geometry constrains *which ocular features* the diagnostic may use
+rather than breaking the diagnostic, and the peripheral window mismatch is a third the size it was
+stated at.
 
 **The premise is sound at the specification level, and the card says so.** STRUM carries 2-channel
 ECG, 2-channel EOG and a 16-channel respiration belt, all on the same 24-bit BioSemi amplifier as the
@@ -1453,9 +1678,23 @@ in the corpus carrying all three of the project's named modalities. The card's o
 **Four findings say the effect it would measure is close to zero, and the fourth — the temporal-scale
 mismatch — is the one that is structural rather than statistical.**
 
-*The gain shrinks toward zero as evaluation gets stricter.* The three entries whose split geometry is
-stated and either subject-disjoint or designed against inflation report +5.84 / +6.21, +0.002, and a
-difference their own authors call not significant. The two double-digit gains in the corpus are the two
+*The gain shrinks toward zero as evaluation gets stricter.* This relation was stated over **three**
+entries whose split geometry is stated and either subject-disjoint or designed against inflation. It
+now has **two clean arms**, not three.
+[angkan-2024-invehicle-cognitive-load](../collection/multimodal-biosignals/angkan-2024-invehicle-cognitive-load/card.md)
+reports +5.84 / +6.21 under leave-one-subject-out, and
+[hogervorst-2014-workload-comparison](../collection/multimodal-biosignals/hogervorst-2014-workload-comparison/card.md)
+reports a difference its own authors call not significant under a train-on-early/test-on-late split.
+[azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)'s
++0.002 no longer belongs in this list: its card records the Methods and the Conclusion contradicting
+each other on subject-wise separation, the Conclusion saying the study "used 5-fold cross-validation
+**without subject-wise separation**", and concludes that "this entry cannot be counted among the
+corpus's subject-disjoint evaluations". A relation between *protocol strictness* and *gain* cannot take
+a data point whose protocol is the thing in dispute. Two arms in one direction is weaker evidence than
+three, and it is stated at that strength; what it is not is refuted, because both surviving arms still
+run the strict protocol and both still report near-nothing. Azad's number continues to bear on the
+separate question of whether the gain is near zero *at all* — +0.002 is small under either reading of
+its folds — and it is used only for that below. The two double-digit gains in the corpus are the two
 whose denominators the cards flag as unverifiable:
 [salam-eeg-ecg-stress](../collection/multimodal-biosignals/salam-eeg-ecg-stress/card.md) describes its
 split three mutually inconsistent ways, and
@@ -1479,19 +1718,44 @@ in terms of both accuracy and F1 on the fusion-validation subset; otherwise, pre
 EEG." The headline is a mixture of the fused and the EEG-only model's outputs and the paper does not
 report how often the gate fired. Its card's reading is the one that matters: "a system that has to gate
 its own fusion behind a per-fold check is a system whose designers observed that fusion sometimes
-hurts." This is also the protocol the strand names as the one this project should copy.
+hurts." That reading is independent of the split, which is why this observation survives the split
+dispute above while the protocol-strictness relation loses the data point.
 
-*The time scales do not meet, and this one is structural rather than statistical.* The peripheral
-integration window is 5 to 60 seconds; a stimulus-locked EEG epoch is 2 to 4. Eight entries state a
-window and none reconciles the two
-([multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §8.3).
-[wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md) is
-the only entry that sweeps it: 2 s to 20 s buys about 0.012 AUROC, and its card records that "a 20 s
-window cannot resolve a stimulus-locked contrast at all".
-[mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md)'s 5 s is "an
-awkward middle for either use". STRUM's label is stimulus-locked: a stimulus sequence with a query
-about the preceding, no-longer-displayed stimulus. **So HRV and the respiration belt are at the wrong
-temporal scale for the planned label by construction**, and this is not a tuning problem.
+**And the recommendation this section previously attached to it is withdrawn.** The earlier text said
+Azad's was "the protocol the strand names as the one this project should copy". It is not, and it
+cannot be, because the paper does not agree with itself about what the protocol was: the Methods
+describe 5-fold subject-independent GroupKFold and the Conclusion denies subject-wise separation. A
+protocol that is contested inside its own paper is not a template. The design elements this project
+should take from Azad are narrower and survive the dispute on their own: carving calibration and
+threshold subsets out of the training folds only, touching the test folds for nothing but testing, and
+reporting whether a fusion gate is in place and how often it fired. The **split** recommendation for
+this project comes from §6.0 — the pair-session-disjoint and subject-disjoint arms on the authors'
+blockwise protocol — and not from here.
+
+*The time scales do not meet, and this one is structural rather than statistical — but the gap is a
+third the size this section claimed.* The peripheral integration window across the corpus is **5 to 20
+seconds**, not 5 to 60; a stimulus-locked EEG epoch is 2 to 4. The 60-second upper bound came from one
+card and has been withdrawn:
+[papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) records that its segment
+length "is 10 s, corrected in Phase 4: an earlier version of this card said 60 s, which the source
+attributes to a cited comparator rather than using itself", and that this card "was the sole source of
+the 60-second upper bound in the multimodal ontology's window range, so that range is 5 to 20 seconds
+rather than 5 to 60". The remaining eight-entry spread is Ding at 4 s, McKeen and Kuttala at 5 s,
+Kumar and PaPaGei at 10 s, Azad's EDA and Wang's longest sweep point at 20 s
+([multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §8.3, whose text still carries
+the 60 s figure and is recorded in §7 as an item to close).
+
+The mismatch survives at the corrected size, and the reasons it survives do not depend on the upper
+bound. [wang-2025-sedation-non-eeg](../collection/multimodal-biosignals/wang-2025-sedation-non-eeg/card.md)
+is the only entry that sweeps the window: 2 s to 20 s buys about 0.012 AUROC, and its card records that
+"a 20 s window cannot resolve a stimulus-locked contrast at all".
+[mckeen-2025-ecg-fm](../collection/multimodal-biosignals/mckeen-2025-ecg-fm/card.md)'s 5 s — the
+applicable contract for STRUM, since PaPaGei is PPG and STRUM has no PPG — is "an awkward middle for
+either use", long relative to a stimulus-locked epoch and short relative to reliable HRV estimation.
+STRUM's label is stimulus-locked: a stimulus sequence with a query about the preceding,
+no-longer-displayed stimulus. **So HRV and the respiration belt are still at the wrong temporal scale
+for the planned label**, by a factor of roughly two to ten rather than of two to thirty, and it is
+still a property of what the signals integrate rather than a hyperparameter.
 
 **The respiration belt specifically — STRUM's most distinctive peripheral asset — has one readable arm
 in the corpus and it is a null.** `eeg`+`resp` appears in 4 of 25 entries; three carry no accessible
@@ -1534,34 +1798,77 @@ tell you *whether* a classifier trained on the verbal cells is reading sensory m
 language. That is a diagnosis, it is worth having, and it is what A1 and A5 are for. It is not a
 correction.
 
-**A design fact that breaks the diagnostic as currently specified.** STRUM's two visual side tasks are
-on **different screens**. The laboratory description places "a comm chatter task (large black text
-message display to the left) on the left screen, and a satellite map task (right overhead view ...)"
-on the right, across three vertically mounted 24-inch monitors per seat. So the visual-verbal cell is
-a left-gaze task and the visual-non-verbal cell is a right-gaze task. A classifier trained on
-auditory-verbal against visual-verbal learns, among other things, "gaze left". Tested on
-auditory-non-verbal against visual-non-verbal, the visual cell now demands "gaze right", and the
-horizontal-EOG component of the decision function **carries the opposite sign**. Such a classifier can
-transfer at chance or below while being maximally ocular — and the protocol as written reads "does not
-transfer" as "not ocular". **The diagnostic can return exactly the wrong answer, and it returns it in
-the case the project most needs to detect.**
+**A design fact that constrains which ocular features the diagnostic may use — restated, because the
+earlier version of this paragraph claimed more than the source supports and aimed at the wrong
+confound.** STRUM's two visual side tasks are on **different screens**. The laboratory description
+places "a comm chatter task (large black text message display to the left) on the left screen, and a
+satellite map task (right overhead view ...)" on the right, across three vertically mounted 24-inch
+monitors per seat, with response buttons "at the bottom of the respective screens". That much is on
+record: the visual-verbal cell is a left-screen task and the visual-non-verbal cell is a right-screen
+task, so any **signed** horizontal ocular component of a decision function is not comparable between
+the training pair and the test pair, and a classifier that leans on it can transfer at chance while
+being ocular.
 
-The auditory cells are asymmetric in a matching way. The auditory-non-verbal task presents sounds
-"from one of three directions (left, right, back)" and queries the direction; the auditory-verbal task
-presents pre-recorded sentences over the loudspeakers with no spatialisation reported. So one auditory
-cell invites orienting behaviour and the other does not, and the two auditory cells are not
-interchangeable as a control for each other any more than the two visual cells are.
+**Three corrections to how that was argued.**
 
-**What a corrected design would need.** At minimum: (i) sign-invariant ocular features — magnitude of
-horizontal deflection, saccade rate, blink rate — rather than signed horizontal EOG, so that a
-left-gaze and a right-gaze task are not opposites; (ii) transfer evaluated in **both** directions, and
-with the classifier's weights inspected, rather than accepting a chance-level transfer as evidence of
-no ocular content; (iii) an explicit gaze-direction covariate per cell, which the head-mounted tracker
-supplies directly and A7 would build; (iv) if a within-modality control is wanted, the natural-visual
-"Curbside Items" task, which plays out in the *centre* viewport, as a third visual cell whose gaze
-geometry differs from both side screens; and (v) reporting whether the ocular decoder is above chance
-on each cell pair separately, since a single transfer number cannot distinguish "no ocular content"
-from "ocular content with inverted sign".
+*First, the premise that the auditory cells are gaze-neutral is unsupported.* The earlier text treated
+the horizontal asymmetry as confined to the visual cells. It is not, because the same sentence puts
+the auditory tasks on the side screens too: the side screens hold "two auditory tasks (represented by
+yellow rounded rectangles), a comm chatter task ... on the left screen, and a satellite map task". Both
+auditory tasks occupy side screens, both have response buttons at the bottom of whichever screen they
+sit on, and **the paper never says which auditory task is on which side**. What weak evidence exists
+runs against the earlier reading rather than for it: the Sounds task is described with "The bottom
+right button bar is used for tactile responses", which would put the auditory-non-verbal cell on the
+right alongside Satellite Map and leave Audio Comms on the left alongside Text Comms. Under that
+assignment horizontal gaze is *common within each cell pair* and cancels rather than inverting — it
+never enters the decision function at all, and the sign-flip failure mode does not arise. The
+assignment is unrecorded, so neither reading is established; the honest statement is that the
+diagnostic's behaviour under signed horizontal features **depends on a fact the paper does not
+report**.
+
+*Second, STRUM's ocular instrumentation may not carry the signal the argument is about.* The dataset
+is described only as carrying "2-channel EOG", with no placement stated anywhere. Whether a horizontal
+derivation exists in it — as opposed to two vertical channels, or one per eye — is unrecorded. An
+argument that turns on the sign of a horizontal derivation is conditional on a channel whose existence
+this corpus cannot confirm.
+
+*Third, and most importantly, the argument does not cover the confound that matters.* Vertical
+electrooculography, blink rate and pupil signals carry **no left-right sign**. They take the same value
+in a left-screen and a right-screen reading task, so they transfer across the cell pairs, and for them
+the diagnostic returns the correct answer: a classifier that leans on blinks trains on the verbal pair,
+transfers to the non-verbal pair, and is thereby detected. And the sign-invariant family is precisely
+the one STRUM's own authors observed. Section V names "frontal patterns typical for eye activity" in
+its best response-error models — the blink and vertical family, not a horizontal gaze signal. The
+earlier text concluded that "the diagnostic can return exactly the wrong answer, and it returns it in
+the case the project most needs to detect". That is backwards: it returns the wrong answer for a
+feature family that may not be recorded and whose geometry is unknown, and the right answer for the
+family the dataset's authors actually documented.
+
+**The position that holds.** The signed horizontal component is unreliable as a transfer feature and
+should not be one. The screen assignment of the two auditory tasks is unrecorded and must be resolved
+from the event stream before the transfer design is fixed. And the diagnostic remains sound for the
+sign-invariant ocular signals — vertical deflection, blink rate, saccade rate as a magnitude — which
+are the ones this dataset's authors reported contaminating their models.
+
+**What the design needs, restated accordingly.** (i) Build the ocular arm from **sign-invariant**
+features — magnitude of horizontal deflection, saccade rate, blink rate, vertical deflection — rather
+than from signed horizontal EOG. This is the main remedy and it makes the screen-assignment question
+moot for the diagnostic itself. (ii) Resolve the screen assignment of Audio Comms and Sounds from the
+event stream, and report it, since it is needed for any analysis that does use a signed feature and
+since the paper's own two statements about the button bars do not settle it. (iii) Evaluate transfer in
+**both** directions and inspect the classifier's weights, rather than accepting a chance-level transfer
+as evidence of no ocular content. (iv) Carry an explicit gaze-direction covariate per cell, which the
+head-mounted tracker supplies directly and A7 would build. (v) If a within-modality control is wanted,
+use the natural-visual "Curbside Items" task, which plays out in the *centre* viewport, as a third
+visual cell whose gaze geometry differs from both side screens. (vi) Report whether the ocular decoder
+is above chance on each cell pair separately.
+
+**A separate asymmetry, which is on record and is not about screens.** The auditory-non-verbal task
+presents sounds "from one of three directions (left, right, back)" and queries the direction; the
+auditory-verbal task presents pre-recorded sentences over the loudspeakers with no spatialisation
+reported. One auditory cell invites orienting behaviour and the other does not. This is stated by the
+source rather than inferred, it holds whichever screen each task occupies, and it means the two
+auditory cells are not interchangeable as a control for each other.
 
 **A second, unaddressed threat to the label itself, from the same paragraph of the paper.** Stimuli
 are presented over loudspeakers in a room seating both participants. The paper's within-subject
@@ -1583,16 +1890,19 @@ ascending, which if true makes a cardiac channel closer to a noisy copy of what 
 than to a new source. Per §5.1 this entry reports no coefficients, no significance levels and no
 shared-stimulus control, so it is consistent with the fusion nulls rather than evidence for them.
 
-**Verdict: this comparison, as planned, would not establish what it appears to — but for reasons of
-construct validity rather than of power.** The power argument this verdict previously rested on is
-withdrawn with §6.0: an effect of a few points is detectable at this n under a matched-pair protocol,
-and STRUM's own authors detected twelve. What stands is that the two channels most likely to produce a
+**Verdict: this comparison, as planned, would not establish what it appears to — primarily for reasons
+of construct validity rather than of power.** The power argument this verdict previously rested on is
+withdrawn with §6.0, though less completely than the earlier text allowed: differences of six and
+twelve points were resolved on this recording, differences of two and four points were not, and the
+effect this comparison targets is nearer the second range. Power is therefore a background concern
+rather than the decisive one. What stands as decisive is that the two channels most likely to produce a
 visible gain would produce it for the wrong reason. EOG would produce it through the
 reading-versus-listening confound, which the dataset's own authors already observed contaminating
-their best models on these data, and which the 2×2 diagnoses rather than removes — and diagnoses
-unreliably, because of the screen geometry above. HRV and the respiration belt would be read at a
-5-to-60-second window against a stimulus-locked label they cannot resolve. A gain measured under those
-conditions is not a measurement of what peripheral physiology adds.
+their best models on these data, and which the 2×2 diagnoses rather than removes — reliably for the
+sign-invariant ocular features the authors named, unreliably for a signed horizontal derivation that
+may not even be recorded here. HRV and the respiration belt would be read at a 5-to-20-second window
+against a stimulus-locked label of 2 to 4 seconds that they cannot resolve. A gain measured under
+those conditions is not a measurement of what peripheral physiology adds.
 
 **What would have to change, and it is a change of question rather than of method.** Run comparison 3
 as a **falsification** rather than as a measurement of added value:
@@ -1600,10 +1910,12 @@ as a **falsification** rather than as a measurement of added value:
 - Report the physiology-only arm. Only four entries in the whole corpus run three arms on one split,
   and in two of those the peripheral arm sits at or below a trivial baseline. A physiology-only floor
   on STRUM would be a contribution on its own and costs one extra model.
-- Test the ocular gain against the non-verbal cells — **with the corrections above**, since the
-  uncorrected version of this test can read a maximally ocular classifier as non-ocular. If a
-  sign-invariant ocular decoder helps on both cell pairs, the gain is ocular behaviour tracking the
-  sensory channel, not physiology informing a language contrast. That is A5 and A7, and it converts
+- Test the ocular gain against the non-verbal cells, **built from sign-invariant features**. So
+  restricted, the test is sound and is the one the corpus supports: if a sign-invariant ocular decoder
+  helps on both cell pairs, the gain is ocular behaviour tracking the sensory channel, not physiology
+  informing a language contrast — and the sign-invariant family is the one STRUM's authors observed
+  carrying the contamination. A signed horizontal derivation must not be used for this test, and
+  whether STRUM records one at all is unknown. That is A5 and A7, run as one campaign, and it converts
   the trap into the finding.
 - Audit the cross-participant audio contamination of the visual-verbal cell before anything else. It
   is a query over the event stream, it costs nothing, and if the rate is high it changes what the
@@ -1612,10 +1924,20 @@ as a **falsification** rather than as a measurement of added value:
   well-motivated rather than novel. The engineered space is a dozen recurring indices, or
   fifty-three in Angkan's implementation, and omitting it is in the corpus's own words hard to
   justify.
-- Do not run HRV or respiration against the stimulus-locked label. Run them against a label that lives
-  at their time scale — STRUM's session was designed to induce "a moderate degree of fatigue" over
-  3.5 hours, which is a slow within-session covariate no other entry in the candidate strand designs
-  for, and which is the right temporal object for a 5-to-60-second peripheral window. The dataset's
+- **Do not make the stimulus-locked label the primary target for HRV or respiration.** The flat
+  prohibition the earlier text carried was sized to a 60-second peripheral window that the corpus no
+  longer supports; at 5 to 20 seconds the mismatch against a 2-to-4-second epoch is real but is a
+  factor of two to ten rather than of two to thirty, and a 5-second ECG-FM segment against a 4-second
+  epoch is close enough that the arm is worth *reporting* rather than refusing. What does not change is
+  where the primary analysis should sit. Run these channels against a label that lives at their time
+  scale — STRUM's session was designed to induce "a moderate degree of fatigue" over 3.5 hours, which
+  is a slow within-session covariate no other entry in the candidate strand designs for, and which is
+  the right temporal object for a 5-to-20-second peripheral window. Report the stimulus-locked arm as
+  a secondary, stated as a resolution-limited comparison rather than as a measurement of what the
+  peripheral channel carries; that is the distinction Azad's card draws about its own EDA arm, where
+  "some of the EDA arm's weakness is a resolution mismatch rather than an absence of information, and
+  the paper does not separate the two". Separating the two is available here and is worth the extra
+  arm. The dataset's
   own task-performance analysis is exactly such a label, it is published with numbers to compare
   against, and it is the one label class Section V found resting on cortical rather than artifactual
   sources.
@@ -1645,12 +1967,37 @@ corpus revision should close.
   review that surveyed the field from a primary study reporting what it did not run. Four retractions
   in §2.1 are the cost. The check should be split, and any Phase 4 or 5 absence resting on the weak
   disjunct should be re-derived from a survey of the other cards or from a search.
-- **A stale line in the scope diagram.** [scope-diagram](./scope-diagram.md) §7.1 lists
-  [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
-  among the entries whose "measurement here is video eye tracking, not electrooculography". The
-  corrected card records both instruments on the same trials at 1200 Hz. The camera-exclusion defect
-  §7.1 files is unaffected in substance — the entry does carry video eye tracking — but the count and
-  the framing should be revisited.
+- ~~**A stale line in the scope diagram.**~~ **Closed.** [scope-diagram](./scope-diagram.md) §7.1
+  listed [mostert-2018-eye-movement-confounds](../collection/multimodal-biosignals/mostert-2018-eye-movement-confounds/card.md)
+  among the entries whose "measurement here is video eye tracking, not electrooculography". It now
+  marks the entry as no longer belonging on that list and records both instruments at 1200 Hz. The
+  camera-exclusion defect §7.1 files is unaffected in substance, and L5's scope check has been updated.
+  One residue: §7.1's own heading still reads "present in six of its entries" while the body removes
+  one of the six, so the count in the heading and the count in the list now differ by one.
+- **A stale window figure in the fusion ontology.**
+  [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §8.3 opens "The peripheral
+  branch's natural integration window is five to sixty seconds" and lists
+  [papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md) at "60 s segments". The card
+  has been corrected to 10 s and states that it "was the sole source of the 60-second upper bound in
+  the multimodal ontology's window range, so that range is 5 to 20 seconds rather than 5 to 60". §6.3
+  uses the corrected range; the ontology still carries the old one and should be updated, along with
+  §8.4's neighbouring PaPaGei description if it depends on the segment length.
+- **Two propagations from the corrected Azad card.**
+  [azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
+  now records its Methods and its Conclusion contradicting each other on subject-wise separation, and
+  concludes the entry "cannot be counted among the corpus's subject-disjoint evaluations".
+  [multimodal-biosignals-ontology](./multimodal-biosignals-ontology.md) §2.1, §3.6 and §9.2 should be
+  checked for statements that count it as a subject-independent result, and §7.3 for the
+  protocol-to-copy framing this document has withdrawn (§6.3).
+- **Which side screen each of STRUM's two auditory tasks occupies.** The paper places both auditory
+  tasks on the side screens and never says which is which; the Sounds description's "The bottom right
+  button bar is used for tactile responses" points one way and the Fig. 2 caption's listing of two
+  button sets does not settle it. §6.3's ocular diagnostic depends on the answer for any signed
+  horizontal feature. No document in the corpus records it, and the released event stream — or the
+  author request — is what would.
+- **STRUM's EOG placement.** The dataset is described only as carrying "2-channel EOG", with no
+  placement anywhere in the source or on the card. Whether a horizontal derivation exists is therefore
+  unrecorded, and A5, A7 and §6.3's ocular argument all touch it.
 - **STRUM's usable session count.** "3 datasets were excluded due to interruptions" and the paper does
   not restate the surviving figure. §6.0 offers a reconciliation — 13 f + 49 m = 62, 62 − 56 = 6 =
   three pairs, so 28 may already be the post-exclusion count — and it is a hypothesis. No document in
@@ -1670,10 +2017,17 @@ corpus revision should close.
   gives 0.79 for semantic category within modality, which is a different contrast. STRUM's own Section
   V now supplies the nearest thing — Az 0.75 ± 0.13 for response errors and 0.55 to 0.61 for task
   performance on these data under blockwise CV — but on different labels, so it bounds what this
-  recording yields rather than what this contrast yields.
+  recording yields rather than what this contrast yields. This is now load-bearing rather than
+  housekeeping: §6.0 records that Section V resolved six points and failed to resolve four, so a
+  project targeting "a median of a few points" needs the effect size it does not have.
 - **The labelled-trial count per class.** §6.1's Banville argument needs it and derives it
-  arithmetically from "ca. 200 non-repeating statement sentences". No document in the corpus states
-  trials per condition per subject, and the released event stream is the only thing that would.
+  arithmetically from "ca. 200 non-repeating statement sentences". Two things the source says make the
+  derivation looser than a range of 5,000 to 11,000 suggests: the sentence describes the pool as the
+  *shared* stimulus set of the two verbal tasks, which reads as about 100 per task rather than 200, and
+  "a majority of statements and queries are identified as distractors", so the usable count depends on
+  a decision nobody has made about whether distractor presentations are labelled examples. No document
+  in the corpus states trials per condition per subject, and the released event stream is the only
+  thing that would.
 - **No compute or cost figure for fine-tuning any EEG checkpoint.** The corpus's only cost accounting
   is [kumar-2026-attention-eeg-ecg-stress](../collection/multimodal-biosignals/kumar-2026-attention-eeg-ecg-stress/card.md)'s
   fusion overhead, so whether comparison 2 is feasible on the project's hardware is unassessable from
@@ -1692,12 +2046,17 @@ Every claim above is grounded in a card, a Phase 3 synthesis document, or a brie
 decision. Where this document reasons beyond its sources — §6.0's pair-session *unit* claim and its
 common-mode-cancellation argument, §6.1's per-class trial arithmetic, §6.3's screen-geometry and
 cross-participant-audio inferences, §4's dataset recommendations, and the weighting of the two flagged
-fusion entries in §5.2 — that is marked at the point of use and repeated in §5.3.
+fusion entries in §5.2 — that is marked at the point of use and repeated in §5.3. Two of those are
+now marked as *conditional on facts the source does not report* rather than merely as inference:
+§6.3's screen-geometry argument depends on which side screen each auditory task occupies, which the
+paper never states, and on whether STRUM's 2-channel EOG includes a horizontal derivation, which is
+also unstated.
 
 The scope check of guard one was applied to every candidate absence, including the eight in §3 that
 failed it. Every surviving gap in §2 carries evidence, a scope classification, a falsifier, and a
-statement of whether a null search backs it; the one gap with a recorded null search is L10 and the
-difference is visible in §2's table rather than smoothed away.
+statement of whether a null search backs it; the one gap with a recorded null search is L10, and its
+search record is now stated at four discounted queries out of seven rather than two, which is visible
+in §2's table rather than smoothed away.
 
 **Revision, after an adversarial refutation pass.** Four gaps were retracted (L1, L3, L7, L11), two
 restated at a smaller size (L2, L10), one restated at a different location (L5), and three sections
@@ -1715,6 +2074,47 @@ and the "densest recording in the corpus" claim that contradicted STRUM. The ref
 authoritative either, and two of its own claims did not survive checking; both are noted at the point
 of use — the AdaBrain range **is** sourceable as a derivation from Table 2, and Varoquaux does not
 himself invoke common-mode cancellation for same-fold paired comparisons.
+
+**Second revision, after a full review of the refutation pass.** No gap was retracted and none was
+added; seven survive, as before. What changed is the strength at which five arguments are stated and
+the evidence base under two claims.
+
+*Weakened or restated.* §6.3's screen-position argument, which claimed the 2×2 diagnostic "can return
+exactly the wrong answer": both auditory tasks also occupy side screens and the paper never says which
+is which, STRUM's EOG placement is unrecorded, and the sign-invariant ocular family — the one STRUM's
+authors actually observed — transfers correctly, so the diagnostic is sound for it. §6.1's Banville
+reversal, which overshot twice: 5,000 to 11,000 examples per class is the neighbourhood where Banville
+measures approximately zero advantage, so a null there is predicted rather than especially informative,
+and the curve indexes the frozen-probe arm rather than comparison 2 as planned; the per-subject clause
+is dropped. §6.0's power argument, which quoted the resolved differences from Section V and not the
+unresolved ones: four points and two points were not resolved at n of about 50 to 56, the target effect
+has a median of a few points, and the pair-session unit halves the denominator. L6's search record,
+which claimed the EEG checkpoints "have no representation for a peripheral channel at all" against
+this document's own §3 U3. L10's scope check, which discounted two of seven queries and should
+discount three, since the PubMed title-only zero fails to retrieve two known positives the corpus
+already holds. L2, whose headline was wider than its own falsifier and route.
+
+*Two claims rested on cards that have since been corrected.*
+[azad-2025-construction-noise](../collection/multimodal-biosignals/azad-2025-construction-noise/card.md)
+can no longer be counted among the corpus's subject-disjoint evaluations, because its Methods and its
+Conclusion contradict each other on subject-wise separation; the protocol-to-copy recommendation is
+withdrawn, the §6.3 gain-versus-protocol relation drops from three clean arms to two, and §5.3's
+supporting arms drop from three to two and from 60 participants to 35. And
+[papagei-2024](../collection/multimodal-biosignals/papagei-2024/card.md)'s segment length is 10 s, not
+60 s, so the corpus's peripheral window range is 5 to 20 seconds; the mismatch against a
+stimulus-locked epoch survives at a third the claimed size and the flat instruction not to run HRV or
+respiration against the stimulus-locked label is restated proportionately.
+
+*Smaller corrections.* The densest recording a carded checkpoint has been evaluated on is Chisco at
+125 in [brain4fms](../collection/datasets-benchmarks/brain4fms/card.md), not Grosse-Wentrup at 128 in
+[moabb](../collection/datasets-benchmarks/moabb/card.md), which covers no checkpoints — so A2's "60%
+denser" becomes 65%. "Six entries, four of them third-party" is five third-party. "Two entries dissent
+and both are qualitative" is false for BrainOmni, which reports 0.886 against 0.877. LaBraM's 128 is a
+position-embedding-table size and does not belong in the 136-versus-137 dispute. The OmniEEG bound is
+partly discharged by that card's own retraction of its supplementary-material claim. A5 and A7 are
+recorded as one campaign on one author request. And §7 gains four new items: the fusion ontology's
+stale 60 s window, the Azad propagations, STRUM's auditory-task screen assignment, and STRUM's EOG
+placement.
 
 `uv run python tools/validate_corpus.py` exits 0 at the time of writing, with 84 entries checked, 0
 violations, six checkpoint-coverage warnings (§3 U5) and four shared-identifier warnings

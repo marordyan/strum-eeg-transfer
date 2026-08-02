@@ -53,7 +53,8 @@ separate auditory stimulus marker and a spoken-versus-written contrast, so the q
 a peripheral channel adds anything when the manipulation is acoustic is the closest available
 analogue, and the answer here is essentially no.
 
-Second, the split is honestly subject-independent (GroupKFold on participant), the calibration and
+Second, the split is described in the Methods as subject-independent (GroupKFold on participant),
+though the Conclusion denies subject-wise separation; see the split-protocol note. The calibration and
 threshold subsets are carved out of the training folds only, and the test folds are used for
 nothing but testing. That is the protocol this project should copy, and it is the protocol under
 which the fusion gain evaporates: +0.002 accuracy, +0.001 F1, with overlapping confidence
@@ -79,7 +80,15 @@ close to nothing.
   performance gap is systematic and not due to high variance".
 - **Combined number**: accuracy 0.796 (0.769–0.823), macro-F1 0.766 (0.733–0.798), AUROC 0.856
   (0.819–0.892). Coefficient of variation at most 5% across metrics.
-- **Split protocol**: 5-fold subject-independent GroupKFold; all windows from a given participant
+- **Split protocol, contested inside the paper.** The Methods describe 5-fold subject-independent
+  GroupKFold; the Conclusion states "This study used 5-fold cross-validation **without subject-wise
+  separation**. Therefore, the results reflect overall performance rather than strict
+  subject-independent generalization." Recorded as a self-contradiction rather than reconciled. Until
+  it is settled, this entry cannot be counted among the corpus's subject-disjoint evaluations and its
+  +0.002 fusion gain cannot be read as a subject-independent result. An earlier version of this card
+  presented the subject-independent reading as settled; the Phase 4 gap analysis inherited that and
+  recommended copying the protocol.
+- **Split protocol as described in the Methods**: 5-fold GroupKFold; all windows from a given participant
   assigned to a single fold. Within each training fold, 15% held out for validation and split 1:1
   into a temperature-scaling calibration subset and a fusion/threshold subset.
 - **Participants**: 25.

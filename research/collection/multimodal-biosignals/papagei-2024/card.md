@@ -86,7 +86,11 @@ rather than a direct dependency; hence `relevance: medium`.
   everything resampled down to 125 Hz.
 - **Input contract**: single-channel PPG; Chebyshev-style band-pass with cut-offs at 0.5 Hz and
   12 Hz; flat-segment rejection when more than 25% of a segment is flat; z-score normalisation;
-  resample to 125 Hz. Segment lengths of 60 s are used, following prior wearable-PPG work.
+  resample to 125 Hz. **Segment length is 10 s**, corrected in Phase 4: an earlier version of this
+  card said 60 s, which the source attributes to a cited comparator rather than using itself. The
+  source reads "Segment the signal into 10-second windows", noting that other studies use 30 s. This
+  card was the sole source of the 60-second upper bound in the multimodal ontology's window range, so
+  that range is 5 to 20 seconds rather than 5 to 60.
 - **Architecture**: 18 convolutional blocks, initial filter size 32 doubling every 4 blocks,
   single fully-connected projection to 512 dimensions. PaPaGei-S adds an expert block of three
   parallel two-layer FCNNs giving a 128-dimensional embedding. PaPaGei-P uses augmentations
