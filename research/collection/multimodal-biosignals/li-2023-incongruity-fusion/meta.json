@@ -1,0 +1,9 @@
+{
+  "doi": "10.1016/j.inffus.2023.102220",
+  "source_url": "https://doi.org/10.1016/j.inffus.2023.102220",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (Information Fusion, Elsevier)",
+  "redistribution_ok": false,
+  "notes": "WORST RETRIEVAL IN THE STRAND. The DOI supplied by the brief is correct and resolves in OpenAlex, Crossref, Semantic Scholar and DBLP, but no abstract is available from any of them: OpenAlex's abstract_inverted_index is null, Crossref deposits no abstract for this Elsevier title, and Semantic Scholar returns abstract null with openAccessPdf.status CLOSED. ScienceDirect returns an 832 kB anti-bot challenge page for both plausible PII values, with no citation_title or description metadata, and the ouci.dntb.gov.ua Crossref mirror has no record. source.md therefore carries the verified bibliographic record plus a paraphrased method description assembled from two independent web-search snippets of the ScienceDirect abstract page, explicitly flagged there as second-hand. One contamination was caught and removed: the first search summary attributed 'UAGCFNet' to this paper, which a follow-up search showed belongs to a different article (Neural Networks, 10.1016/j.neunet.2025.107363). No numerical result of any kind was recoverable. YEAR: OpenAlex and Semantic Scholar say 2023, Crossref's issue date is May 2024; the brief and this card use 2023."
+}

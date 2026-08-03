@@ -1,0 +1,9 @@
+{
+  "doi": "10.1093/bjps/axx023",
+  "source_url": "https://doi.org/10.1093/bjps/axx023",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "CC-BY (hybrid open access; Unpaywall reports licence cc-by on the University of Chicago Press host, and Europe PMC records cc by for PMC6505581)",
+  "redistribution_ok": false,
+  "notes": "PAPER LICENCE: CC BY, per two independent indexes (Unpaywall oa_status 'hybrid', licence 'cc-by', best_oa_location https://www.journals.uchicago.edu/doi/pdf/10.1093/bjps/axx023; Europe PMC licence 'cc by', isOpenAccess 'Y'). PDF NOT ARCHIVED because the download failed, not because the licence forbids it: a GET of the University of Chicago Press PDF URL with a browser user-agent returned a 5,795-byte HTML interstitial. pdf_status is therefore not-available rather than archived, and redistribution_ok is left false so the validator's committed-PDF invariant is not relied on for a file that does not exist. RE-ATTEMPT: the CC-BY PDF should be obtainable from a browser at the uchicago URL or from PMC6505581; archiving it later is straightforward. DATA LICENCE: not applicable; this is a conceptual paper with no data. EXTRACTION: source.md was built from the Europe PMC full-text XML for PMC6505581 and is complete and readable -- single-column philosophy prose, no tables, section headings preserved -- hence md_quality clean. The article's figures (illustrating the MVPA pipeline) are reduced to caption text, which does not affect anything quoted on the card. VENUE NOTE: the journal moved to University of Chicago Press, so the open PDF is hosted at journals.uchicago.edu while the DOI prefix remains Oxford's 10.1093; both resolve to the same article, volume 70, issue 2, pages 581-607."
+}

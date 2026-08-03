@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/EMBC.2015.7320106",
+  "source_url": "https://doi.org/10.1109/EMBC.2015.7320106",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "publisher-paywall (IEEE EMBC 2015 proceedings)",
+  "redistribution_ok": false,
+  "notes": "IDENTIFIER RESOLUTION -- the strand brief lists this seed with no resolved identifier. Keyword search did not find it; an OpenAlex title.search query on the exact title returned exactly one work, W2295698653, DOI 10.1109/embc.2015.7320106, 2015, 30 citations. This is a conference paper in the 37th Annual International Conference of the IEEE Engineering in Medicine and Biology Society, not a journal article, so the bib entry is @inproceedings. PAGES: OpenAlex reports first_page 7418 and last_page 21, which is a truncated PubMed-style range; the bib entry records 7418--7421. NO FULL TEXT: IEEE Xplore is paywalled and no repository copy was located, so source.md is a metadata and abstract snapshot from OpenAlex. The abstract is short (772 characters) and describes the parameter-sensitivity result only in general terms, which is why the card cannot list which specific parameters matter and by how much -- the fact the brief most wanted from this entry."
+}

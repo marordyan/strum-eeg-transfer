@@ -1,0 +1,20 @@
+[project]
+name = "strum-eeg-transfer"
+version = "0.1.0"
+description = "EEG foundation-model transfer study on the STRUM dataset: literature-review corpus and tooling."
+requires-python = ">=3.11"
+dependencies = []
+
+[dependency-groups]
+dev = ["pytest", "ruff", "pyyaml"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["tools"]

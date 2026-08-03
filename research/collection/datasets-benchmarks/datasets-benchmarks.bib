@@ -1,0 +1,251 @@
+% Strand C: pretraining corpora, benchmarks, and evaluation protocols.
+% Citation keys equal entry slugs verbatim, per the project addendum in
+% research/collection/_schema/paper-card.md. Entry type, venue, year and the
+% full author list were verified for every entry against the source PDF's own
+% title block or against Crossref before being appended here; where the
+% automatically retrieved metadata was wrong, the correction is noted in the
+% entry. Four entries are datasets or corpora with no citable article; those
+% are @misc and say so.
+
+% ---------------------------------------------------------------------------
+% 1. Large EEG pretraining corpora
+% ---------------------------------------------------------------------------
+
+@article{tuh-eeg-corpus,
+  title        = {The {Temple University Hospital EEG} Data Corpus},
+  author       = {Obeid, Iyad and Picone, Joseph},
+  journal      = {Frontiers in Neuroscience},
+  volume       = {10},
+  pages        = {196},
+  year         = {2016},
+  publisher    = {Frontiers Media SA},
+  doi          = {10.3389/fnins.2016.00196},
+  url          = {https://doi.org/10.3389/fnins.2016.00196},
+  note         = {Frontiers labels this a Data Report rather than a research article. Crossref returns no page number for the record; 196 is the article number, which Frontiers uses in place of pagination. Two authors, confirmed against the PDF title block.}
+}
+
+@misc{sleep-edf-expanded,
+  title        = {Sleep-{EDF} Database Expanded},
+  author       = {Kemp, Bob},
+  howpublished = {PhysioNet, version 1.0.0},
+  year         = {2018},
+  doi          = {10.13026/C2X676},
+  url          = {https://physionet.org/content/sleep-edfx/1.0.0/},
+  note         = {@misc because the entry is carded from the dataset landing page; no data descriptor article exists. Bob Kemp is the sole author of record on the PhysioNet page. The year given is that of the 197-recording expansion described on the page (March 2018); the page's own metadata says ``Published: Oct. 24, 2013. Version: 1.0.0'', which describes the earlier 61-recording release, so the page's version string does not track its content. The landing page additionally asks users to cite Kemp et al., IEEE Trans. Biomed. Eng. 47(9):1185--1194 (2000), doi 10.1109/10.867928, which is a study of slow-wave microcontinuity rather than a data descriptor and is paywalled.}
+}
+
+@article{openneuro,
+  title        = {The {OpenNeuro} resource for sharing of neuroscience data},
+  author       = {Markiewicz, Christopher J. and Gorgolewski, Krzysztof J. and Feingold, Franklin and Blair, Ross and Halchenko, Yaroslav O. and Miller, Eric and Hardcastle, Nell and Wexler, Joe and Esteban, Oscar and Goncavles, Mathias and Jwa, Anita and Poldrack, Russell},
+  journal      = {eLife},
+  volume       = {10},
+  pages        = {e71774},
+  year         = {2021},
+  publisher    = {eLife Sciences Publications, Ltd},
+  doi          = {10.7554/eLife.71774},
+  url          = {https://doi.org/10.7554/eLife.71774},
+  note         = {The tenth author's surname is printed ``Goncavles'' in the article's own title block and is recorded that way by Crossref; it appears elsewhere in the literature as Gon\c{c}alves. Reproduced as printed.}
+}
+
+% ---------------------------------------------------------------------------
+% 2. Downstream benchmarks the checkpoints report on
+% ---------------------------------------------------------------------------
+
+@mastersthesis{tuab,
+  title        = {Automated Interpretation of Abnormal Adult Electroencephalograms},
+  author       = {Lopez de Diego, Silvia},
+  school       = {Temple University},
+  year         = {2017},
+  month        = aug,
+  url          = {https://isip.piconepress.com/publications/ms_theses/2017/abnormal/thesis/},
+  note         = {@mastersthesis because this is the document the Neural Engineering Data Consortium downloads page names as the description of the TUH Abnormal EEG Corpus (TUAB); no data descriptor article and no DOI exist for the corpus itself. Distributed as thesis\_v31.docx. The corpus is obtained separately, by registration, at rsync path data/tuh\_eeg/tuh\_eeg\_abnormal/v3.0.1.}
+}
+
+@misc{tuev,
+  title        = {The {TUH EEG} Events Corpus ({TUEV})},
+  author       = {Obeid, Iyad and Picone, Joseph},
+  howpublished = {Neural Engineering Data Consortium, Temple University, version 2.0.1},
+  year         = {2016},
+  url          = {https://isip.piconepress.com/projects/nedc/html/tuh_eeg/},
+  note         = {@misc because no citable article and no DOI exist for this subset: unlike TUAB, the downloads page links no descriptive document for TUEV, and its entire public documentation is one paragraph listing the six annotation classes. Authorship and year are attributed to the parent corpus release (Obeid and Picone), which is the closest defensible attribution; users of TUEV in the literature conventionally cite the parent corpus paper, carded here as tuh-eeg-corpus.}
+}
+
+@misc{physionet-mi,
+  title        = {{EEG} Motor Movement/Imagery Dataset},
+  author       = {Schalk, Gerwin},
+  howpublished = {PhysioNet, version 1.0.0},
+  year         = {2009},
+  month        = sep,
+  doi          = {10.13026/C28G6P},
+  url          = {https://physionet.org/content/eegmmidb/1.0.0/},
+  note         = {@misc because the entry is carded from the dataset landing page. This is the citation the landing page itself supplies as BibTeX, with the key rewritten to the slug per the project addendum; the page's own key was PhysioNet-eegmmidb-1.0.0. RRID:SCR\_007345. The page additionally asks users to cite Schalk et al., IEEE Trans. Biomed. Eng. 51(6):1034--1043 (2004), doi 10.1109/TBME.2004.827072, which describes the BCI2000 system rather than this dataset and is paywalled.}
+}
+
+@article{bci-competition-iv-2a,
+  title        = {Review of the {BCI} Competition {IV}},
+  author       = {Tangermann, Michael and M{\"u}ller, Klaus-Robert and Aertsen, Ad and Birbaumer, Niels and Braun, Christoph and Brunner, Clemens and Leeb, Robert and Mehring, Carsten and Miller, Kai J. and M{\"u}ller-Putz, Gernot R. and Nolte, Guido and Pfurtscheller, Gert and Preissl, Hubert and Schalk, Gerwin and Schl{\"o}gl, Alois and Vidaurre, Carmen and Waldert, Stephan and Blankertz, Benjamin},
+  journal      = {Frontiers in Neuroscience},
+  volume       = {6},
+  pages        = {55},
+  year         = {2012},
+  publisher    = {Frontiers Media SA},
+  doi          = {10.3389/fnins.2012.00055},
+  url          = {https://doi.org/10.3389/fnins.2012.00055},
+  note         = {Eighteen authors, verified against the PDF title block and matching Crossref. This review is the citation the dataset distributors require: ``the only restriction that the present article is referenced upon any publication of results''. The per-dataset recording parameters are not in this article but in the official description, Brunner C, Leeb R, M\"uller-Putz GR, Schl\"ogl A, Pfurtscheller G, ``BCI Competition 2008 -- Graz data set A'', https://www.bbci.de/competition/iv/desc\_2a.pdf, which has no independent bibliographic record and is appended to this entry's source.md rather than given its own key.}
+}
+
+% ---------------------------------------------------------------------------
+% 3. Benchmark suites and standardized protocols
+% ---------------------------------------------------------------------------
+
+@article{adabrain-bench,
+  title        = {{AdaBrain-Bench}: Benchmarking Brain Foundation Models for Brain-Computer Interface Applications},
+  author       = {Wu, Jiamin and Ren, Zichen and Wang, Junyu and Zhu, Pengyu and Song, Yonghao and Liu, Mianxin and Zheng, Qihao and Bai, Lei and Ouyang, Wanli and Song, Chunfeng},
+  journal      = {arXiv preprint arXiv:2507.09882},
+  year         = {2025},
+  eprint       = {2507.09882},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2507.09882},
+  note         = {No DOI exists and OpenAlex holds no record for this work, so there is nothing for opencite to return; the arXiv identifier was resolved through the arXiv web search interface, which returned exactly one hit for the exact title. Record is at v2 (5 August 2025); year is the first-posting year. Ten authors, verified against the v2 PDF title block.}
+}
+
+@article{omnieeg-bench,
+  title        = {{OmniEEG-Bench}: A Standardized Evaluation Benchmark for {EEG} Foundation Models},
+  author       = {Lu, Ziling and Li, Zongsheng and Shen, Xinke and Lou, Kexin and Xin, Yingyue and Chen, Xiaoqi and Wang, Shinan and Chen, Xiang and Fan, Jiahao and Huang, Chenyu and Xu, Xin and Hou, Zhoujie and Wei, Chen and Liu, Quanying},
+  journal      = {arXiv preprint arXiv:2606.00815},
+  year         = {2026},
+  doi          = {10.48550/arXiv.2606.00815},
+  eprint       = {2606.00815},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2606.00815},
+  note         = {The DOI is the DataCite identifier minted by arXiv; no publisher DOI exists. OpenAlex holds two records for this work (W7163194613 with the DOI, W7163596785 without) and renders the eleventh author as ``Xin Xu (11989)''; the arXiv abs page gives ``Xin Xu'', which is used here. Fourteen authors, verified against the abs page and the PDF title block.}
+}
+
+@article{brain4fms,
+  title        = {{Brain4FMs}: A Benchmark of Foundation Models for Electrical Brain Signal},
+  author       = {Shen, Fanqi and Yang, Enhong and Li, Jiahe and Hong, Junru and Pan, Xiaoran and Yuan, Zhizhang and Li, Meng and Yang, Yang},
+  journal      = {arXiv preprint arXiv:2602.11558},
+  year         = {2026},
+  eprint       = {2602.11558},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2602.11558},
+  note         = {No DOI exists. Supplied by the strand brief as OpenAlex W7128864510; the arXiv identifier was resolved through the OpenAlex REST API, since opencite cannot look up a bare OpenAlex work ID. OpenAlex renders the second author as ``Yang Enhong''; the arXiv abs page and the PDF title block both give ``Enhong Yang'', which is used here. The PDF title block also gives ``Junru Chen'' where OpenAlex gives ``Junru Hong''; the OpenAlex and abs-page form is used, and the discrepancy is flagged. Eight authors. Title is singular ``Signal'' as printed.}
+}
+
+@article{neuralbench,
+  title        = {{NeuralBench}: A Unifying Framework to Benchmark {NeuroAI} Models},
+  author       = {Banville, Hubert and d'Ascoli, St{\'e}phane and Dahan, Simon and Rapin, J{\'e}r{\'e}my and Careil, Marl{\`e}ne and Benchetrit, Yohann and L{\'e}vy, Jarod and Panchavati, Saarang and Ratouchniak, Antoine and Zhang, Mingfang and Cascardi, Elisa and Begany, Katelyn and Brooks, Teon and King, Jean-R{\'e}mi},
+  journal      = {arXiv preprint arXiv:2605.08495},
+  year         = {2026},
+  eprint       = {2605.08495},
+  archiveprefix = {arXiv},
+  primaryclass = {cs.LG},
+  url          = {https://arxiv.org/abs/2605.08495},
+  note         = {No DOI exists. Supplied by the strand brief as OpenAlex W7161091175; the arXiv identifier was resolved through the OpenAlex REST API. OpenAlex splits the tenth author into two entries, ``Mingfang'' and ``Zhang'', giving a spurious fifteenth author; the arXiv abs page prints ``Mingfang (Lucy) Zhang'', so this entry records fourteen authors.}
+}
+
+@article{moabb,
+  title        = {{MOABB}: trustworthy algorithm benchmarking for {BCIs}},
+  author       = {Jayaram, Vinay and Barachant, Alexandre},
+  journal      = {Journal of Neural Engineering},
+  volume       = {15},
+  number       = {6},
+  pages        = {066011},
+  year         = {2018},
+  publisher    = {IOP Publishing},
+  doi          = {10.1088/1741-2552/aadea0},
+  url          = {https://doi.org/10.1088/1741-2552/aadea0},
+  note         = {The version of record is cited. The document actually read was the arXiv preprint arXiv:1805.06427 v1 (16 May 2018), because two attempts to download the open-access publisher PDF returned an IOP bot-manager captcha page rather than a PDF; the preprint may differ from the version of record and the card flags one specific respect in which later MOABB documentation does. Title capitalisation follows Crossref, which gives lowercase ``trustworthy''.}
+}
+
+% ---------------------------------------------------------------------------
+% 4. Evaluation protocol conventions and their critiques
+% ---------------------------------------------------------------------------
+
+@article{kamrud-2021-data-partitioning,
+  title        = {The Effects of Individual Differences, Non-Stationarity, and the Importance of Data Partitioning Decisions for Training and Testing of {EEG} Cross-Participant Models},
+  author       = {Kamrud, Alexander and Borghetti, Brett and {Schubert Kabban}, Christine},
+  journal      = {Sensors},
+  volume       = {21},
+  number       = {9},
+  pages        = {3225},
+  year         = {2021},
+  publisher    = {MDPI},
+  doi          = {10.3390/s21093225},
+  url          = {https://doi.org/10.3390/s21093225},
+  note         = {The third author's surname is the two-word ``Schubert Kabban'' and is braced so BibTeX does not treat ``Schubert'' as a given name; Crossref records family = ``Schubert Kabban''.}
+}
+
+@article{combrisson-2015-chance-level,
+  title        = {Exceeding chance level by chance: The caveat of theoretical chance levels in brain signal classification and statistical assessment of decoding accuracy},
+  author       = {Combrisson, Etienne and Jerbi, Karim},
+  journal      = {Journal of Neuroscience Methods},
+  volume       = {250},
+  pages        = {126--136},
+  year         = {2015},
+  publisher    = {Elsevier},
+  doi          = {10.1016/j.jneumeth.2015.01.010},
+  url          = {https://doi.org/10.1016/j.jneumeth.2015.01.010},
+  note         = {Paywalled with no open-access location; carded from the PubMed abstract (PMID 25596422). Bibliographic fields verified against Crossref.}
+}
+
+@article{varoquaux-2018-cross-validation-failure,
+  title        = {Cross-validation failure: Small sample sizes lead to large error bars},
+  author       = {Varoquaux, Ga{\"e}l},
+  journal      = {NeuroImage},
+  volume       = {180},
+  pages        = {68--77},
+  year         = {2018},
+  publisher    = {Elsevier},
+  doi          = {10.1016/j.neuroimage.2017.06.061},
+  url          = {https://doi.org/10.1016/j.neuroimage.2017.06.061},
+  note         = {Published in the Comments and Controversies section. Single author. The version of record is cited; the document read was the arXiv preprint arXiv:1706.07581, whose title block capitalises ``small'' where the published title capitalises ``Small''. Crossref's capitalisation is used.}
+}
+
+% ---------------------------------------------------------------------------
+% 5. Formats and tooling standards
+% ---------------------------------------------------------------------------
+
+@article{eeg-bids,
+  title        = {{EEG-BIDS}, an extension to the brain imaging data structure for electroencephalography},
+  author       = {Pernet, Cyril R. and Appelhoff, Stefan and Gorgolewski, Krzysztof J. and Flandin, Guillaume and Phillips, Christophe and Delorme, Arnaud and Oostenveld, Robert},
+  journal      = {Scientific Data},
+  volume       = {6},
+  number       = {1},
+  pages        = {103},
+  year         = {2019},
+  publisher    = {Springer Nature},
+  doi          = {10.1038/s41597-019-0104-8},
+  url          = {https://doi.org/10.1038/s41597-019-0104-8},
+  note         = {Published as a Comment rather than as a research article. Seven authors; Pernet and Appelhoff contributed equally. The PDF renders author names in small caps, which the extraction flattened to lowercase (``arnaud Delorme''); capitalisation here follows Crossref.}
+}
+
+@article{edf-plus,
+  title        = {European data format `plus' ({EDF+}), an {EDF} alike standard format for the exchange of physiological data},
+  author       = {Kemp, Bob and Olivan, Jesus},
+  journal      = {Clinical Neurophysiology},
+  volume       = {114},
+  number       = {9},
+  pages        = {1755--1761},
+  year         = {2003},
+  publisher    = {Elsevier},
+  doi          = {10.1016/S1388-2457(03)00123-8},
+  url          = {https://www.edfplus.info/specs/edfplus.html},
+  note         = {The journal article is paywalled with no open-access location. The canonical specification is the author-maintained page at https://www.edfplus.info/specs/edfplus.html, which is what was read and what the url field points to; that page attributes itself to this article. Bibliographic fields verified against Crossref.}
+}
+
+@article{mne-python,
+  title        = {{MEG} and {EEG} data analysis with {MNE-Python}},
+  author       = {Gramfort, Alexandre and Luessi, Martin and Larson, Eric and Engemann, Denis A. and Strohmeier, Daniel and Brodbeck, Christian and Goj, Roman and Jas, Mainak and Brooks, Teon and Parkkonen, Lauri and H{\"a}m{\"a}l{\"a}inen, Matti},
+  journal      = {Frontiers in Neuroscience},
+  volume       = {7},
+  pages        = {267},
+  year         = {2013},
+  publisher    = {Frontiers Media SA},
+  doi          = {10.3389/fnins.2013.00267},
+  url          = {https://doi.org/10.3389/fnins.2013.00267},
+  note         = {Crossref returns only the first author for this record. The full eleven-author list was restored from the PDF's own title block and independently confirmed against the journal's citation line printed in the article. This is the correction the collection practice document warns about: an automatically retrieved author list that silently drops ten authors.}
+}

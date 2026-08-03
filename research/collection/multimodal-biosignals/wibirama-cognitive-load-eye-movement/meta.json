@@ -1,0 +1,9 @@
+{
+  "doi": "10.1109/ACCESS.2025.3613292",
+  "source_url": "https://doi.org/10.1109/ACCESS.2025.3613292",
+  "retrieved_at": "2026-07-31",
+  "pdf_sha256": null,
+  "pdf_license": "unknown (IEEE Access is gold OA, but no licence statement could be read for this record)",
+  "redistribution_ok": false,
+  "notes": "IDENTIFIER RESOLUTION -- the strand brief lists this seed with no resolved identifier, and it was the hardest of the four to resolve. `uvx opencite search` on the exact title returned nothing relevant (top hit an unrelated eye-movement review). An OpenAlex title.search query on the exact title returned count 0. An OpenAlex author search on 'Wibirama' returned 188 works, none with this title; searches on the distinctive co-author surnames 'Nurlatifa' and 'Fristiana' also missed it. It was located by web search, which surfaced IEEE Xplore document 11176051, and then confirmed against Crossref: a query.bibliographic request on the exact title returns DOI 10.1109/access.2025.3613292 as hit [1], IEEE Access 13, 167324-167343, 2025, with the author families Wibirama, Abu Ishaq Alfarozi, Riznandi Suhari, Hari Fristiana, Nurlatifa, Insap Santosa -- the brief's six authors. The identifier is confirmed against Crossref, not constructed. Caution for anyone re-searching: a different, similarly titled 2026 paper by the same group exists (Array, 10.1016/j.array.2025.100669, 'Cognitive load classification during online shopping using deep learning on time series eye movement indices'); it is not this entry. RETRIEVAL FAILED: the IEEE stamp endpoint returned HTML and OpenAlex lists no OA PDF URL, so source.md is a metadata and abstract snapshot and the licence could not be read; deny-by-default gives 'unknown' with no PDF."
+}
