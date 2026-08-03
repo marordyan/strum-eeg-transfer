@@ -1,5 +1,6 @@
 .context/
 CLAUDE.md
+CLAUDE1.md
 .claude/*.local.md
 
 __pycache__/
